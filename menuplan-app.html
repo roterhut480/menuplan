@@ -296,6 +296,7 @@ input:focus,select:focus{border-color:var(--red)}
 </div>
 
 <script>
+const PROXY='https://menuplan-proxy.shop-242.workers.dev';
 const SYSTEM = `Du bist ein Kochassistent für 2 Personen in Zürich.
 REGELN:
 - 1 Person vegetarisch (kein Fisch/Meeresfrüchte), 1 Person vegi + optional Fleisch als Beilage
@@ -311,7 +312,7 @@ REGELN:
 ANTWORT: Nur valides JSON, kein Text davor/danach:
 {"vorschlaege":[{"id":1,"thema":"Kurzes Thema","kochabende":["Montag","Mittwoch","Freitag"],"gerichte":[{"tag":"Montag","abend":"Gerichtsname","mittag_naechster_tag":"Mittagsname","mittag_tag":"Dienstag","zutaten":[{"name":"Karotten","menge":"2 Stk"},{"name":"Parmesan","menge":"80g"}],"schritte_vegi":[{"text":"Schritt 1","timer_min":0},{"text":"20 Min. köcheln","timer_min":20}],"schritte_fleisch":[{"text":"Fleisch-Option: Hähnchen separat anbraten","timer_min":6}],"prep_next":["Reste in Tupperdose","Mittags 3 Min. Mikrowelle"],"einfrieren":["2 Portionen einfrieren","Beschriften + einfrieren"],"tipp":"Kochtipp"}]}]}`;
 
-const API_B='https://api.getbring.com/rest';
+const API_B=PROXY+'/bring';
 const BH={'X-BRING-API-KEY':'cof4Nc6D8saplXjE3h3HXqHH8m7VU2i1Gs0g85Sp','X-BRING-CLIENT':'android','X-BRING-APPLICATION':'bring','X-BRING-COUNTRY':'CH','Content-Type':'application/x-www-form-urlencoded'};
 
 let G={nights:3,bringToken:null,bringUUID:null,bringLists:[],suggestions:[],selectedSug:null,cookSteps:[],currentStep:0,activeStep:0,completedSteps:new Set(),timerInterval:null,timerLeft:0,timerTotal:0};
@@ -380,7 +381,7 @@ async function goSuggest(){
   const msg=`Generiere genau 3 Menüvorschläge mit je ${G.nights} Kochabenden für diese Woche.${theme?` Thema: ${theme}.`:''}${existing?` Vorhandene Zutaten: ${existing}.`:''}`;
 
   try{
-    const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:5000,system:SYSTEM,messages:[{role:'user',content:msg}]})});
+    const r=await fetch(PROXY+'/anthropic',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:5000,system:SYSTEM,messages:[{role:'user',content:msg}]})});
     if(!r.ok)throw new Error(`API ${r.status}`);
     const d=await r.json();
     const raw=d.content?.[0]?.text||'';
