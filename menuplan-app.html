@@ -363,7 +363,8 @@ async function loadBringLists(){
     const h={...BH,Authorization:G.bringToken,'X-BRING-USER-UUID':G.bringUUID,'Content-Type':'application/json'};
     const r=await fetch(`${API_B}/bringusers/${G.bringUUID}/lists`,{headers:h});
     if(!r.ok)return;
-    const d=await r.json();G.bringLists=d.lists||[];
+    const d=await r.json();
+    G.bringLists=Array.isArray(d.lists)?d.lists:Array.isArray(d)?d:[];
     $('bring-list-sel').innerHTML=G.bringLists.map(l=>`<option value="${l.listUuid}">${l.name}</option>`).join('');
     $('bring-import-form').style.display='block';$('bring-not-logged').style.display='none';
   }catch(e){}
@@ -494,8 +495,18 @@ async function doImport(){
   const hj={...h,'Content-Type':'application/json'};
   try{
     if(clearFirst){
-      const r=await fetch(`${API_B}/v2/bringlists/${listUuid}`,{headers:hj});
-      if(r.ok){const d=await r.json();for(const it of(d.items||[])){await fetch(`${API_B}/bringlists/${listUuid}`,{method:'POST',headers:h,body:new URLSearchParams({purchase:it.itemId||it.name,remove:'true'}).toString()});await sleep(80);}}
+      try{
+        const r=await fetch(`${API_B}/v2/bringlists/${listUuid}`,{headers:hj});
+        if(r.ok){
+          const d=await r.json();
+          const purchaseList=d.purchase||d.items||[];
+          const arr=Array.isArray(purchaseList)?purchaseList:[];
+          for(const it of arr){
+            const name=it.itemId||it.name||it;
+            if(name){await fetch(`${API_B}/bringlists/${listUuid}`,{method:'POST',headers:h,body:new URLSearchParams({purchase:name,remove:'true'}).toString()});await sleep(80);}
+          }
+        }
+      }catch(ex){console.warn('Liste leeren fehlgeschlagen:',ex);}
     }
     for(let i=0;i<items.length;i++){
       $('import-prog-bar').style.width=`${Math.round((i/items.length)*100)}%`;
