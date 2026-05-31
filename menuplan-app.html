@@ -186,6 +186,9 @@ input:focus,select:focus{border-color:var(--red)}
       <span>Menüvorschläge generieren</span>
       <span>→</span>
     </button>
+    <button class="btn btn-outline" style="margin-top:8px;font-size:13px" onclick="loadTestData()">
+      🧪 Testdaten laden (ohne API)
+    </button>
   </div>
 
   <div id="home-status"></div>
@@ -741,6 +744,37 @@ async function loadBringListsAndShow(){
     if(pwF)pwF.style.display='none';
     $('import-btn').textContent='In Bring! importieren';
   }
+}
+
+function loadTestData(){
+  G.suggestions=[{
+    id:1, thema:"Test – Mediterran", kochabende:["Montag","Mittwoch","Freitag"],
+    gerichte:[
+      {tag:"Montag",abend:"Saag Paneer mit Basmatireis",mittag_naechster_tag:"Saag Paneer aufgewärmt",mittag_tag:"Dienstag",
+       zutaten:[{name:"Paneer",menge:"450g"},{name:"Spinat TK",menge:"500g"},{name:"Zwiebel",menge:"1 Stk"},{name:"Basmatireis",menge:"400g"}],
+       schritte_vegi:[{text:"Ghee erhitzen, Paneer goldbraun anbraten, beiseite stellen.",timer_min:0},{text:"Zwiebel, Knoblauch, Ingwer anschwitzen. Gewürze rösten.",timer_min:0},{text:"Spinat zugeben, 10 Min. köcheln lassen.",timer_min:10},{text:"Paneer zurück, mit Zitrone abschmecken.",timer_min:0}],
+       schritte_fleisch:[{text:"Hähnchen separat mit Gewürzen anbraten – neben Saag Paneer servieren.",timer_min:6}],
+       prep_next:["Saag Paneer in Tupperdose abfüllen","Reis separat abfüllen","Mittags: 3 Min. Mikrowelle"],
+       einfrieren:["2 Portionen Saag Paneer einfrieren","Beschriften und einfrieren"],
+       tipp:"Spinat gut ausdrücken damit die Sauce nicht wässrig wird."},
+      {tag:"Mittwoch",abend:"Zucchini-Ricotta-Pasta",mittag_naechster_tag:"Kalter Pastasalat",mittag_tag:"Donnerstag",
+       zutaten:[{name:"Pasta",menge:"600g"},{name:"Zucchini",menge:"3 Stk"},{name:"Ricotta",menge:"250g"},{name:"Parmesan",menge:"80g"},{name:"Cherrytomaten",menge:"200g"}],
+       schritte_vegi:[{text:"Pasta kochen – 200g für Do beiseite stellen.",timer_min:0},{text:"Zucchini goldbraun braten, Knoblauch zugeben.",timer_min:0},{text:"Ricotta und Parmesan einrühren, Kochwasser zugeben.",timer_min:0},{text:"Pasta unterheben, abschmecken.",timer_min:0}],
+       schritte_fleisch:[{text:"Pancetta separat knusprig ausbraten und über die Pasta streuen.",timer_min:4}],
+       prep_next:["200g Pasta mit Öl in Tupperdose","Cherrytomaten halbiert dazu","Olivenöl, Zitrone, Parmesan drüber","Mittags kalt essen – kein Aufwärmen nötig"],
+       einfrieren:["2 Portionen Pasta + Sauce einfrieren","Auftauen: über Nacht, 3 Min. Mikrowelle"],
+       tipp:"Ricotta erst am Schluss einrühren – nicht zu lange kochen."},
+      {tag:"Freitag",abend:"Ratatouille mit weissen Bohnen",mittag_naechster_tag:"Ratatouille-Suppe",mittag_tag:"Samstag",
+       zutaten:[{name:"Zucchini",menge:"2 Stk"},{name:"Aubergine",menge:"1 Stk"},{name:"Peperoni",menge:"2 Stk"},{name:"Weisse Bohnen",menge:"2 Dosen"},{name:"Feta",menge:"200g"}],
+       schritte_vegi:[{text:"Aubergine salzen, 10 Min. ziehen lassen, trocken tupfen.",timer_min:10},{text:"Gemüse anbraten, Tomaten und Bohnen zugeben.",timer_min:0},{text:"25 Min. köcheln lassen.",timer_min:25},{text:"Feta und Basilikum darüber.",timer_min:0}],
+       schritte_fleisch:[{text:"Merguez separat anbraten – neben Ratatouille servieren.",timer_min:8}],
+       prep_next:["Ratatouille in Topf, 500ml Bouillon dazu, pürieren","In Tupperdosen abfüllen","Mittags: 4 Min. Mikrowelle, Feta drüber"],
+       einfrieren:["2 Portionen Ratatouille einfrieren","Auftauen: über Nacht, 4 Min. Mikrowelle"],
+       tipp:"Ratatouille schmeckt am nächsten Tag noch besser."}
+    ]
+  }];
+  G.selectedSug=0;
+  goWeek();
 }
 </script>
 </body>
