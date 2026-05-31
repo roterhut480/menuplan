@@ -1,0 +1,932 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Menüplan App</title>
+<style>
+:root {
+  --bg: #0d0d0d;
+  --surface: #171717;
+  --surface2: #202020;
+  --surface3: #2a2a2a;
+  --border: #303030;
+  --border2: #404040;
+  --accent: #a8e063;
+  --accent-dim: rgba(168,224,99,0.12);
+  --blue: #60a5fa;
+  --blue-dim: rgba(96,165,250,0.12);
+  --orange: #fb923c;
+  --orange-dim: rgba(251,146,60,0.1);
+  --red: #f87171;
+  --green: #4ade80;
+  --text: #f0f0f0;
+  --text2: #a0a0a0;
+  --text3: #606060;
+  --r: 10px;
+  --r-lg: 16px;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overscroll-behavior:none}
+.screen{display:none;min-height:100vh;padding:16px;padding-bottom:40px;max-width:520px;margin:0 auto}
+.screen.active{display:block}
+
+/* Header */
+.hdr{display:flex;align-items:center;gap:12px;margin-bottom:24px;padding-top:8px}
+.hdr-back{width:36px;height:36px;border-radius:50%;background:var(--surface2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:18px;flex-shrink:0}
+.hdr h1{font-size:20px;font-weight:600;letter-spacing:-0.3px}
+.hdr-sub{font-size:13px;color:var(--text2);margin-top:2px}
+
+/* Cards */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:16px;margin-bottom:12px}
+.card-label{font-size:11px;font-weight:600;letter-spacing:1.2px;text-transform:uppercase;color:var(--text3);margin-bottom:12px}
+
+/* Buttons */
+.btn{width:100%;padding:14px;border:none;border-radius:var(--r);font-size:15px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:opacity .15s,transform .1s}
+.btn:active{transform:scale(.97)}
+.btn-accent{background:var(--accent);color:#0d0d0d}
+.btn-ghost{background:var(--surface2);color:var(--text);border:1px solid var(--border)}
+.btn-blue{background:var(--blue-dim);color:var(--blue);border:1px solid rgba(96,165,250,.3)}
+.btn:disabled{opacity:.4;cursor:not-allowed;transform:none}
+.btn+.btn{margin-top:8px}
+
+/* Inputs */
+input,select{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:15px;padding:12px 14px;outline:none;transition:border-color .2s;font-family:inherit}
+input:focus,select:focus{border-color:var(--accent)}
+input[type=password]{letter-spacing:3px}
+.field{margin-bottom:12px}
+.field label{display:block;font-size:13px;color:var(--text2);margin-bottom:6px}
+
+/* Chips */
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px}
+.chip{padding:6px 14px;border-radius:100px;font-size:13px;font-weight:500;cursor:pointer;border:1px solid var(--border);background:var(--surface2);color:var(--text2);transition:all .15s}
+.chip.on{background:var(--accent-dim);border-color:var(--accent);color:var(--accent)}
+
+/* Status */
+.status{padding:12px 14px;border-radius:var(--r);font-size:13px;line-height:1.5;margin-bottom:12px}
+.status.info{background:var(--blue-dim);border:1px solid rgba(96,165,250,.3);color:var(--blue)}
+.status.ok{background:rgba(74,222,128,.1);border:1px solid rgba(74,222,128,.3);color:var(--green)}
+.status.err{background:rgba(248,113,113,.1);border:1px solid rgba(248,113,113,.3);color:var(--red)}
+
+/* Week suggestions */
+.suggestion{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:16px;margin-bottom:12px;cursor:pointer;transition:border-color .2s}
+.suggestion:active{background:var(--surface2)}
+.suggestion.selected{border-color:var(--accent);background:var(--accent-dim)}
+.sug-num{font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--text3);margin-bottom:8px}
+.sug-title{font-size:15px;font-weight:600;margin-bottom:8px;line-height:1.4}
+.sug-days{display:flex;flex-direction:column;gap:4px}
+.sug-day{font-size:13px;color:var(--text2);display:flex;gap:8px;align-items:baseline}
+.sug-day-name{font-weight:500;color:var(--text);min-width:28px;font-size:12px}
+.sug-next{font-size:11px;color:var(--text3);margin-top:2px}
+
+/* Einkaufsliste */
+.item-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border)}
+.item-row:last-child{border-bottom:none}
+.item-name{font-size:14px;font-weight:500;flex:1}
+.item-spec{font-size:12px;color:var(--text2)}
+.item-check{width:20px;height:20px;border-radius:50%;border:1.5px solid var(--border2);flex-shrink:0;cursor:pointer;transition:all .15s;display:flex;align-items:center;justify-content:center}
+.item-check.done{background:var(--accent);border-color:var(--accent)}
+.item-check.done::after{content:'✓';font-size:11px;color:#0d0d0d;font-weight:700}
+
+/* Recipe steps */
+.step-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:16px;margin-bottom:12px;transition:all .2s}
+.step-card.done{opacity:.5;border-color:transparent}
+.step-card.active{border-color:var(--accent)}
+.step-num{font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--text3);margin-bottom:6px}
+.step-text{font-size:15px;line-height:1.6;margin-bottom:10px}
+.step-note{font-size:13px;color:var(--orange);background:var(--orange-dim);border-radius:6px;padding:8px 10px;margin-bottom:10px;border-left:2px solid var(--orange)}
+.step-actions{display:flex;gap:8px}
+
+/* Timer */
+.timer-display{font-size:40px;font-weight:700;font-variant-numeric:tabular-nums;color:var(--accent);text-align:center;letter-spacing:-1px;margin:8px 0}
+.timer-label{font-size:13px;color:var(--text2);text-align:center;margin-bottom:12px}
+.timer-bar-wrap{background:var(--surface3);border-radius:100px;height:4px;overflow:hidden;margin-bottom:12px}
+.timer-bar{height:100%;background:var(--accent);border-radius:100px;transition:width 1s linear}
+
+/* Progress dots */
+.progress-dots{display:flex;gap:6px;justify-content:center;margin-bottom:20px;flex-wrap:wrap}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--border2)}
+.dot.done{background:var(--accent)}
+.dot.active{background:var(--blue);box-shadow:0 0 0 3px var(--blue-dim)}
+
+/* Nav tabs */
+.tabs{display:flex;background:var(--surface2);border-radius:var(--r);padding:3px;margin-bottom:20px;gap:2px}
+.tab{flex:1;padding:8px;border-radius:7px;font-size:13px;font-weight:500;text-align:center;cursor:pointer;color:var(--text2);transition:all .15s}
+.tab.on{background:var(--surface);color:var(--text)}
+
+/* Spinner */
+.spin{display:inline-block;width:16px;height:16px;border:2px solid rgba(0,0,0,.2);border-top-color:#0d0d0d;border-radius:50%;animation:spin .7s linear infinite}
+.spin.light{border-color:rgba(255,255,255,.2);border-top-color:var(--text)}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* Progress bar */
+.prog-wrap{background:var(--surface2);border-radius:100px;height:6px;overflow:hidden;margin:10px 0}
+.prog-bar{height:100%;background:var(--accent);border-radius:100px;transition:width .3s ease}
+
+/* Print */
+@media print{
+  body{background:#fff;color:#000}
+  .no-print{display:none!important}
+  .screen{display:block!important;min-height:auto}
+  #screen-print{padding:0}
+}
+</style>
+</head>
+<body>
+
+<!-- ===== SCREEN: HOME ===== -->
+<div class="screen active" id="screen-home">
+  <div class="hdr" style="justify-content:space-between">
+    <div>
+      <h1>🥦 Menüplan</h1>
+      <div class="hdr-sub" id="home-sub">Eure Wochenplanung</div>
+    </div>
+    <div style="text-align:right">
+      <div id="home-user" style="font-size:13px;color:var(--text2)"></div>
+    </div>
+  </div>
+
+  <div id="home-status"></div>
+
+  <!-- Bring Login Card -->
+  <div class="card" id="bring-card">
+    <div class="card-label">Bring! Konto</div>
+    <div id="bring-loggedin" style="display:none">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+        <div style="width:10px;height:10px;border-radius:50%;background:var(--green);flex-shrink:0"></div>
+        <span id="bring-email-show" style="font-size:13px;color:var(--text2)"></span>
+      </div>
+      <button class="btn btn-ghost" style="font-size:13px;padding:10px" onclick="bringLogout()">Abmelden</button>
+    </div>
+    <div id="bring-loginform">
+      <div class="field"><label>Bring! E-Mail</label><input type="email" id="bring-email" placeholder="deine@email.com"></div>
+      <div class="field"><label>Passwort</label><input type="password" id="bring-pw" placeholder="••••••••"></div>
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;cursor:pointer" onclick="document.getElementById('save-creds').click()">
+        <input type="checkbox" id="save-creds" checked style="width:18px;height:18px;accent-color:var(--accent)">
+        <span style="font-size:13px;color:var(--text2)">Anmeldedaten speichern</span>
+      </div>
+      <button class="btn btn-ghost" id="bring-login-btn" onclick="bringLogin()">Anmelden</button>
+    </div>
+  </div>
+
+  <!-- Kochdetails -->
+  <div class="card">
+    <div class="card-label">Kochdetails</div>
+    <div class="field">
+      <label>Anzahl Kochabende diese Woche</label>
+      <div class="chips" id="nights-chips">
+        <div class="chip" onclick="setNights(2)">2</div>
+        <div class="chip on" onclick="setNights(3)">3</div>
+        <div class="chip" onclick="setNights(4)">4</div>
+      </div>
+    </div>
+    <div class="field">
+      <label>Thema / Wunsch (optional)</label>
+      <input type="text" id="theme-input" placeholder="z.B. mediterran, asiatisch, leicht…">
+    </div>
+    <div class="field">
+      <label>Bereits vorhandene Zutaten (optional)</label>
+      <input type="text" id="existing-input" placeholder="z.B. Kartoffeln 2kg, Kichererbsen">
+    </div>
+  </div>
+
+  <button class="btn btn-accent" onclick="goSuggest()">
+    <span>Menüvorschläge generieren</span>
+  </button>
+
+  <!-- Gespeicherte Wochen -->
+  <div id="saved-weeks-card" style="display:none;margin-top:16px">
+    <div class="card-label" style="padding:0 4px">Gespeicherte Wochen</div>
+    <div id="saved-weeks-list"></div>
+  </div>
+</div>
+
+<!-- ===== SCREEN: VORSCHLÄGE ===== -->
+<div class="screen" id="screen-suggest">
+  <div class="hdr">
+    <div class="hdr-back" onclick="goHome()">←</div>
+    <div>
+      <h1>Menüvorschläge</h1>
+      <div class="hdr-sub">Wähle eine Abfolge</div>
+    </div>
+  </div>
+
+  <div id="suggest-status" class="status info" style="display:none"></div>
+  <div id="suggest-loading" style="text-align:center;padding:40px;color:var(--text2)">
+    <div class="spin light" style="width:24px;height:24px;margin:0 auto 12px"></div>
+    <div style="font-size:14px">Claude generiert Vorschläge…</div>
+  </div>
+  <div id="suggest-list"></div>
+  <button class="btn btn-accent" id="select-btn" style="display:none" onclick="goWeek()">
+    Diese Woche planen →
+  </button>
+  <button class="btn btn-ghost" style="display:none;margin-top:8px" id="regen-btn" onclick="goSuggest()">
+    Neue Vorschläge generieren
+  </button>
+</div>
+
+<!-- ===== SCREEN: WOCHE ===== -->
+<div class="screen" id="screen-week">
+  <div class="hdr">
+    <div class="hdr-back" onclick="showScreen('screen-suggest')">←</div>
+    <div>
+      <h1 id="week-title">Woche</h1>
+      <div class="hdr-sub" id="week-sub"></div>
+    </div>
+  </div>
+
+  <div class="tabs">
+    <div class="tab on" onclick="weekTab('einkauf')">🛒 Einkauf</div>
+    <div class="tab" onclick="weekTab('rezepte')">👨‍🍳 Rezepte</div>
+  </div>
+
+  <!-- Einkauf Tab -->
+  <div id="tab-einkauf">
+    <div id="bring-import-card" class="card">
+      <div class="card-label">In Bring! importieren</div>
+      <div id="bring-list-select" style="display:none">
+        <div class="field">
+          <label>Welche Liste?</label>
+          <select id="bring-list-sel"></select>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;cursor:pointer" onclick="document.getElementById('clear-list').click()">
+          <input type="checkbox" id="clear-list" checked style="width:18px;height:18px;accent-color:var(--accent)">
+          <span style="font-size:13px;color:var(--text2)">Liste vorher leeren</span>
+        </div>
+        <button class="btn btn-accent" id="import-btn" onclick="doImport()">In Bring! importieren</button>
+      </div>
+      <div id="bring-not-logged" style="font-size:13px;color:var(--text2)">
+        Bitte zuerst auf der Startseite bei Bring! anmelden.
+      </div>
+    </div>
+
+    <div class="prog-wrap" id="import-prog-wrap" style="display:none">
+      <div class="prog-bar" id="import-prog-bar"></div>
+    </div>
+    <div id="import-status"></div>
+
+    <div class="card" id="einkauf-list-card">
+      <div class="card-label">Einkaufsliste</div>
+      <div id="einkauf-list"></div>
+    </div>
+  </div>
+
+  <!-- Rezepte Tab -->
+  <div id="tab-rezepte" style="display:none">
+    <div id="rezepte-list"></div>
+  </div>
+</div>
+
+<!-- ===== SCREEN: KOCHEN ===== -->
+<div class="screen" id="screen-cook">
+  <div class="hdr no-print">
+    <div class="hdr-back" onclick="showScreen('screen-week')">←</div>
+    <div>
+      <h1 id="cook-title">Kochen</h1>
+      <div class="hdr-sub" id="cook-sub"></div>
+    </div>
+  </div>
+
+  <div class="progress-dots no-print" id="cook-dots"></div>
+
+  <div id="cook-step-container"></div>
+
+  <div style="display:flex;gap:8px;margin-top:16px" class="no-print">
+    <button class="btn btn-ghost" id="prev-btn" onclick="cookNav(-1)" style="flex:.8">←</button>
+    <button class="btn btn-accent" id="next-btn" onclick="cookNav(1)" style="flex:1">Weiter</button>
+  </div>
+
+  <button class="btn btn-ghost no-print" style="margin-top:8px;font-size:13px" onclick="showScreen('screen-week')">
+    Zurück zur Übersicht
+  </button>
+</div>
+
+<!-- ===== SCREEN: PRINT ===== -->
+<div class="screen" id="screen-print">
+  <div class="no-print" style="display:flex;gap:8px;margin-bottom:16px">
+    <button class="btn btn-ghost" onclick="showScreen('screen-week')" style="flex:.5">← Zurück</button>
+    <button class="btn btn-accent" onclick="window.print()" style="flex:1">📄 Als PDF speichern</button>
+  </div>
+  <div id="print-content"></div>
+</div>
+
+<script>
+const SYSTEM_PROMPT = `Du bist ein Kochassistent für einen 2-Personen-Haushalt in Zürich.
+
+REGELN:
+- 1 Person vegetarisch (kein Fisch/Meeresfrüchte), 1 Person vegi + optional Fleisch
+- Basis-Rezept IMMER vegetarisch; Fleisch als optionale Beilage separat
+- Mittags NUR Mikrowelle oder kalt – kein Herd, kein Toaster, kein frisches Ei braten
+- Jedes Kochrezept macht: 2 Portionen Abend + 2 Portionen Mittag nächsten Tag + 2 Portionen Einfrieren = 6 total
+- Reste für nächsten Mittag müssen sich klar vom Abendessen unterscheiden (andere Textur/Komponenten)
+- Nie 2 schwere KH-Quellen kombinieren (z.B. Bohnen + Kartoffeln)
+- Haltbarkeit: empfindliche Zutaten (Spinat, frisches Fleisch) früh in der Woche; Robustes später
+- Avocado max. 2-3 Tage nach Kauf – nie für späte Wochentage einplanen
+- Mediterran oder thematisch kohärent damit Zutaten sich überschneiden
+- Proteinreich für beide (Hülsenfrüchte, Tofu, Tempeh, Eier, Käse, Paneer)
+
+ANTWORT-FORMAT (nur valides JSON, kein Text davor/danach):
+{
+  "vorschlaege": [
+    {
+      "id": 1,
+      "thema": "Kurzes Thema",
+      "kochabende": ["Montag", "Mittwoch", "Freitag"],
+      "gerichte": [
+        {
+          "tag": "Montag",
+          "abend": "Name des Abendgerichts",
+          "mittag_naechster_tag": "Name des Mittagsgerichts",
+          "mittag_tag": "Dienstag",
+          "zutaten": [
+            {"name": "Zucchini", "menge": "2 Stk"},
+            {"name": "Parmesan", "menge": "80g"}
+          ],
+          "schritte_vegi": [
+            {"text": "Schritt 1 Text", "timer_min": 0},
+            {"text": "Schritt 2 – 15 Min. köcheln lassen", "timer_min": 15}
+          ],
+          "schritte_fleisch": [
+            {"text": "Fleisch-Option: Hähnchen separat anbraten", "timer_min": 6}
+          ],
+          "prep_next": [
+            "Reste in Tupperdose abfüllen",
+            "Mittags: 3 Min. Mikrowelle"
+          ],
+          "einfrieren": [
+            "2 Portionen Sauce einfrieren",
+            "Beschriften und einfrieren"
+          ],
+          "tipp": "Kurzer Kochtipp"
+        }
+      ]
+    }
+  ]
+}`;
+
+let state = {
+  nights: 3,
+  bringToken: null,
+  bringUUID: null,
+  bringLists: [],
+  suggestions: [],
+  selectedSug: null,
+  currentRecipeIdx: 0,
+  currentStepIdx: 0,
+  timerInterval: null,
+  timerLeft: 0,
+  timerTotal: 0,
+  checkedItems: {},
+  savedWeeks: []
+};
+
+const API_B = 'https://api.getbring.com/rest';
+const B_HEADERS = {
+  'X-BRING-API-KEY': 'cof4Nc6D8saplXjE3h3HXqHH8m7VU2i1Gs0g85Sp',
+  'X-BRING-CLIENT': 'android',
+  'X-BRING-APPLICATION': 'bring',
+  'X-BRING-COUNTRY': 'CH',
+  'Content-Type': 'application/x-www-form-urlencoded',
+};
+
+function $(id){ return document.getElementById(id); }
+function sleep(ms){ return new Promise(r => setTimeout(r, ms)); }
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  $(id).classList.add('active');
+  window.scrollTo(0, 0);
+}
+
+function goHome(){ showScreen('screen-home'); }
+
+function setNights(n) {
+  state.nights = n;
+  document.querySelectorAll('#nights-chips .chip').forEach(c => {
+    c.classList.toggle('on', parseInt(c.textContent) === n);
+  });
+}
+
+function showStatus(id, msg, type='info') {
+  const el = $(id);
+  el.textContent = msg;
+  el.className = `status ${type}`;
+  el.style.display = 'block';
+}
+function hideStatus(id){ $(id).style.display = 'none'; }
+
+// ============================================================
+// BRING! LOGIN
+// ============================================================
+window.addEventListener('DOMContentLoaded', () => {
+  const saved = localStorage.getItem('bring_sess');
+  if (saved) {
+    try {
+      const s = JSON.parse(saved);
+      state.bringToken = s.token;
+      state.bringUUID = s.uuid;
+      $('bring-email').value = s.email || '';
+      showBringLoggedIn(s.email);
+      loadBringLists();
+    } catch(e) { localStorage.removeItem('bring_sess'); }
+  }
+  loadSavedWeeks();
+});
+
+async function bringLogin() {
+  const email = $('bring-email').value.trim();
+  const pw = $('bring-pw').value;
+  if (!email || !pw) return;
+  $('bring-login-btn').innerHTML = '<span class="spin"></span> Anmelden…';
+  $('bring-login-btn').disabled = true;
+  try {
+    const res = await fetch(`${API_B}/v2/bringauth`, {
+      method: 'POST',
+      headers: B_HEADERS,
+      body: new URLSearchParams({email, password: pw}).toString()
+    });
+    if (!res.ok) throw new Error(res.status === 401 ? 'Falsche Zugangsdaten' : `Fehler ${res.status}`);
+    const d = await res.json();
+    state.bringToken = `${d.token_type} ${d.access_token}`;
+    state.bringUUID = d.uuid;
+    if ($('save-creds').checked) {
+      localStorage.setItem('bring_sess', JSON.stringify({token: state.bringToken, uuid: state.bringUUID, email}));
+    }
+    showBringLoggedIn(email);
+    await loadBringLists();
+  } catch(e) {
+    showStatus('home-status', `Anmeldung fehlgeschlagen: ${e.message}`, 'err');
+  } finally {
+    $('bring-login-btn').innerHTML = 'Anmelden';
+    $('bring-login-btn').disabled = false;
+  }
+}
+
+function showBringLoggedIn(email) {
+  $('bring-loginform').style.display = 'none';
+  $('bring-loggedin').style.display = 'block';
+  $('bring-email-show').textContent = email;
+  $('home-user').textContent = '🟢 Bring! verbunden';
+}
+
+function bringLogout() {
+  state.bringToken = null;
+  state.bringUUID = null;
+  state.bringLists = [];
+  localStorage.removeItem('bring_sess');
+  $('bring-loginform').style.display = 'block';
+  $('bring-loggedin').style.display = 'none';
+  $('home-user').textContent = '';
+}
+
+async function loadBringLists() {
+  if (!state.bringToken) return;
+  try {
+    const h = {...B_HEADERS, Authorization: state.bringToken, 'X-BRING-USER-UUID': state.bringUUID, 'Content-Type': 'application/json'};
+    const res = await fetch(`${API_B}/bringusers/${state.bringUUID}/lists`, {headers: h});
+    if (!res.ok) return;
+    const d = await res.json();
+    state.bringLists = d.lists || [];
+    const sel = $('bring-list-sel');
+    sel.innerHTML = state.bringLists.map(l => `<option value="${l.listUuid}">${l.name}</option>`).join('');
+    updateBringImportCard();
+  } catch(e) { console.warn('Listen laden:', e); }
+}
+
+function updateBringImportCard() {
+  if (state.bringToken && state.bringLists.length) {
+    $('bring-list-select').style.display = 'block';
+    $('bring-not-logged').style.display = 'none';
+  } else {
+    $('bring-list-select').style.display = 'none';
+    $('bring-not-logged').style.display = 'block';
+  }
+}
+
+// ============================================================
+// CLAUDE SUGGESTIONS
+// ============================================================
+async function goSuggest() {
+  showScreen('screen-suggest');
+  $('suggest-loading').style.display = 'block';
+  $('suggest-list').innerHTML = '';
+  $('select-btn').style.display = 'none';
+  $('regen-btn').style.display = 'none';
+  hideStatus('suggest-status');
+  state.selectedSug = null;
+
+  const theme = $('theme-input').value.trim();
+  const existing = $('existing-input').value.trim();
+  const userMsg = `Generiere ${state.nights} Menüvorschläge (je ${state.nights} Kochabende) für diese Woche.${theme ? ` Thema: ${theme}.` : ''}${existing ? ` Bereits vorhanden: ${existing}.` : ''} Bitte exakt 3 verschiedene Abfolgen vorschlagen.`;
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 4000,
+        system: SYSTEM_PROMPT,
+        messages: [{role: 'user', content: userMsg}]
+      })
+    });
+
+    if (!res.ok) throw new Error(`API Fehler: ${res.status}`);
+    const d = await res.json();
+    const raw = d.content?.[0]?.text || '';
+
+    let parsed;
+    try {
+      const match = raw.match(/\{[\s\S]*\}/);
+      parsed = JSON.parse(match ? match[0] : raw);
+    } catch(e) {
+      throw new Error('Antwort konnte nicht verarbeitet werden. Bitte nochmals versuchen.');
+    }
+
+    state.suggestions = parsed.vorschlaege || [];
+    $('suggest-loading').style.display = 'none';
+    renderSuggestions();
+    $('regen-btn').style.display = 'block';
+
+  } catch(e) {
+    $('suggest-loading').style.display = 'none';
+    showStatus('suggest-status', `Fehler: ${e.message}`, 'err');
+    $('suggest-status').style.display = 'block';
+    $('regen-btn').style.display = 'block';
+  }
+}
+
+function renderSuggestions() {
+  const el = $('suggest-list');
+  el.innerHTML = state.suggestions.map((s, i) => `
+    <div class="suggestion" id="sug-${i}" onclick="selectSug(${i})">
+      <div class="sug-num">Option ${i+1}</div>
+      <div class="sug-title">${s.thema}</div>
+      <div class="sug-days">
+        ${s.gerichte.map(g => `
+          <div class="sug-day">
+            <span class="sug-day-name">${g.tag.slice(0,2)}</span>
+            <span>${g.abend}</span>
+          </div>
+          <div class="sug-next">↳ ${g.mittag_tag}: ${g.mittag_naechster_tag}</div>
+        `).join('')}
+      </div>
+    </div>
+  `).join('');
+}
+
+function selectSug(i) {
+  state.selectedSug = i;
+  document.querySelectorAll('.suggestion').forEach((el, idx) => {
+    el.classList.toggle('selected', idx === i);
+  });
+  $('select-btn').style.display = 'block';
+}
+
+// ============================================================
+// WEEK SCREEN
+// ============================================================
+function goWeek() {
+  if (state.selectedSug === null) return;
+  const sug = state.suggestions[state.selectedSug];
+  $('week-title').textContent = sug.thema;
+  $('week-sub').textContent = sug.kochabende ? sug.kochabende.join(' · ') : '';
+  updateBringImportCard();
+  renderEinkaufsliste(sug);
+  renderRezepte(sug);
+  weekTab('einkauf');
+  showScreen('screen-week');
+}
+
+function weekTab(tab) {
+  document.querySelectorAll('.tabs .tab').forEach((t, i) => {
+    t.classList.toggle('on', (i === 0 && tab === 'einkauf') || (i === 1 && tab === 'rezepte'));
+  });
+  $('tab-einkauf').style.display = tab === 'einkauf' ? 'block' : 'none';
+  $('tab-rezepte').style.display = tab === 'rezepte' ? 'block' : 'none';
+}
+
+function getAllItems(sug) {
+  const items = [];
+  const seen = new Set();
+  sug.gerichte.forEach(g => {
+    (g.zutaten || []).forEach(z => {
+      const key = z.name.toLowerCase();
+      if (!seen.has(key)) {
+        seen.add(key);
+        items.push({name: z.name, menge: z.menge});
+      } else {
+        const existing = items.find(i => i.name.toLowerCase() === key);
+        if (existing) existing.menge += ' + ' + z.menge;
+      }
+    });
+  });
+  return items;
+}
+
+function renderEinkaufsliste(sug) {
+  const items = getAllItems(sug);
+  const el = $('einkauf-list');
+  el.innerHTML = items.map((item, i) => `
+    <div class="item-row" id="item-row-${i}">
+      <div class="item-check" id="item-check-${i}" onclick="toggleItem(${i})"></div>
+      <div>
+        <div class="item-name">${item.name}</div>
+        <div class="item-spec">${item.menge}</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function toggleItem(i) {
+  state.checkedItems[i] = !state.checkedItems[i];
+  const check = $(`item-check-${i}`);
+  const row = $(`item-row-${i}`);
+  check.classList.toggle('done', state.checkedItems[i]);
+  row.style.opacity = state.checkedItems[i] ? '0.4' : '1';
+}
+
+function renderRezepte(sug) {
+  const el = $('rezepte-list');
+  el.innerHTML = sug.gerichte.map((g, ri) => `
+    <div class="card">
+      <div class="card-label">${g.tag}sabend</div>
+      <div style="font-size:17px;font-weight:600;margin-bottom:4px">${g.abend}</div>
+      <div style="font-size:13px;color:var(--text2);margin-bottom:16px">→ ${g.mittag_tag}: ${g.mittag_naechster_tag}</div>
+      <button class="btn btn-accent" onclick="startCook(${ri})">
+        Jetzt kochen →
+      </button>
+      <button class="btn btn-ghost" style="margin-top:8px" onclick="showPrint(${ri})">
+        📄 Als PDF
+      </button>
+    </div>
+  `).join('');
+}
+
+// ============================================================
+// BRING! IMPORT
+// ============================================================
+async function doImport() {
+  if (!state.bringToken || !state.selectedSug === null) return;
+  const sug = state.suggestions[state.selectedSug];
+  const listUuid = $('bring-list-sel').value;
+  if (!listUuid) return;
+
+  const items = getAllItems(sug);
+  const clearFirst = $('clear-list').checked;
+  const btn = $('import-btn');
+  btn.innerHTML = '<span class="spin"></span> Importiere…';
+  btn.disabled = true;
+  $('import-prog-wrap').style.display = 'block';
+
+  const h = {...B_HEADERS, Authorization: state.bringToken, 'X-BRING-USER-UUID': state.bringUUID};
+  const hJson = {...h, 'Content-Type': 'application/json'};
+
+  try {
+    if (clearFirst) {
+      const res = await fetch(`${API_B}/v2/bringlists/${listUuid}`, {headers: hJson});
+      if (res.ok) {
+        const d = await res.json();
+        for (const item of (d.items || [])) {
+          await fetch(`${API_B}/bringlists/${listUuid}`, {
+            method: 'POST', headers: h,
+            body: new URLSearchParams({purchase: item.itemId || item.name, remove: 'true'}).toString()
+          });
+          await sleep(80);
+        }
+      }
+    }
+
+    for (let i = 0; i < items.length; i++) {
+      const {name, menge} = items[i];
+      $('import-prog-bar').style.width = `${Math.round((i/items.length)*100)}%`;
+      await fetch(`${API_B}/bringlists/${listUuid}`, {
+        method: 'POST', headers: h,
+        body: new URLSearchParams({purchase: name, specification: menge}).toString()
+      });
+      await sleep(120);
+    }
+
+    $('import-prog-bar').style.width = '100%';
+    showStatus('import-status', `✓ ${items.length} Artikel in Bring! importiert!`, 'ok');
+    btn.innerHTML = '✓ Importiert';
+
+  } catch(e) {
+    showStatus('import-status', `Import fehlgeschlagen: ${e.message}`, 'err');
+    btn.innerHTML = 'Nochmals versuchen';
+    btn.disabled = false;
+  }
+}
+
+// ============================================================
+// COOKING GUIDE
+// ============================================================
+function startCook(recipeIdx) {
+  state.currentRecipeIdx = recipeIdx;
+  state.currentStepIdx = 0;
+  clearInterval(state.timerInterval);
+
+  const sug = state.suggestions[state.selectedSug];
+  const g = sug.gerichte[recipeIdx];
+  $('cook-title').textContent = g.abend;
+  $('cook-sub').textContent = `${g.tag}sabend · beide Varianten`;
+
+  const allSteps = buildSteps(g);
+  state.cookSteps = allSteps;
+
+  renderDots();
+  renderCookStep();
+  showScreen('screen-cook');
+}
+
+function buildSteps(g) {
+  const steps = [];
+  const vegiSteps = g.schritte_vegi || [];
+  const fleischSteps = g.schritte_fleisch || [];
+
+  vegiSteps.forEach(s => steps.push({...s, type: 'vegi'}));
+  fleischSteps.forEach(s => steps.push({...s, type: 'fleisch'}));
+
+  if (g.prep_next?.length) {
+    steps.push({text: g.prep_next.join('\n'), type: 'prep', timer_min: 0});
+  }
+  if (g.einfrieren?.length) {
+    steps.push({text: g.einfrieren.join('\n'), type: 'freeze', timer_min: 0});
+  }
+  return steps;
+}
+
+function renderDots() {
+  const total = state.cookSteps.length;
+  $('cook-dots').innerHTML = Array.from({length: total}, (_, i) => {
+    let cls = i < state.currentStepIdx ? 'done' : i === state.currentStepIdx ? 'active' : '';
+    return `<div class="dot ${cls}"></div>`;
+  }).join('');
+}
+
+function renderCookStep() {
+  const step = state.cookSteps[state.currentStepIdx];
+  const isLast = state.currentStepIdx === state.cookSteps.length - 1;
+  clearInterval(state.timerInterval);
+
+  let typeLabel = '';
+  let bg = '';
+  if (step.type === 'vegi') { typeLabel = '🌿 Basis (beide)'; bg = ''; }
+  else if (step.type === 'fleisch') { typeLabel = '🍖 Fleisch-Beilage'; bg = `background:var(--orange-dim);border:1px solid var(--orange);`; }
+  else if (step.type === 'prep') { typeLabel = '📦 Für morgen vorbereiten'; bg = `background:var(--blue-dim);border:1px solid rgba(96,165,250,.3);`; }
+  else if (step.type === 'freeze') { typeLabel = '🧊 Einfrieren'; bg = `background:rgba(96,165,250,.05);border:1px solid rgba(96,165,250,.2);`; }
+
+  const lines = step.text.split('\n').filter(Boolean);
+
+  let timerHtml = '';
+  if (step.timer_min > 0) {
+    state.timerLeft = step.timer_min * 60;
+    state.timerTotal = state.timerLeft;
+    timerHtml = `
+      <div class="timer-display" id="timer-disp">${formatTime(state.timerLeft)}</div>
+      <div class="timer-label">Timer für diesen Schritt</div>
+      <div class="timer-bar-wrap"><div class="timer-bar" id="timer-bar" style="width:100%"></div></div>
+      <button class="btn btn-blue" onclick="startTimer()" id="timer-btn">▶ Timer starten</button>
+    `;
+  }
+
+  $('cook-step-container').innerHTML = `
+    <div class="step-card active" style="${bg}">
+      <div class="step-num">Schritt ${state.currentStepIdx + 1} / ${state.cookSteps.length} · ${typeLabel}</div>
+      ${lines.map(l => `<div class="step-text">${l}</div>`).join('')}
+      ${timerHtml}
+    </div>
+  `;
+
+  $('prev-btn').disabled = state.currentStepIdx === 0;
+  $('next-btn').textContent = isLast ? '✓ Fertig' : 'Weiter →';
+}
+
+function cookNav(dir) {
+  clearInterval(state.timerInterval);
+  const newIdx = state.currentStepIdx + dir;
+  if (newIdx < 0) return;
+  if (newIdx >= state.cookSteps.length) {
+    showScreen('screen-week');
+    return;
+  }
+  state.currentStepIdx = newIdx;
+  renderDots();
+  renderCookStep();
+}
+
+function startTimer() {
+  $('timer-btn').textContent = '⏸ Läuft…';
+  $('timer-btn').disabled = true;
+  state.timerInterval = setInterval(() => {
+    state.timerLeft--;
+    if (state.timerLeft <= 0) {
+      clearInterval(state.timerInterval);
+      $('timer-disp').textContent = '✓ Fertig!';
+      $('timer-disp').style.color = 'var(--green)';
+      $('timer-bar').style.width = '0%';
+      $('timer-btn').textContent = '✓ Timer fertig';
+      return;
+    }
+    $('timer-disp').textContent = formatTime(state.timerLeft);
+    const pct = Math.round((state.timerLeft / state.timerTotal) * 100);
+    $('timer-bar').style.width = pct + '%';
+    if (state.timerLeft <= 30) $('timer-disp').style.color = 'var(--red)';
+  }, 1000);
+}
+
+function formatTime(s) {
+  const m = Math.floor(s / 60);
+  const sec = s % 60;
+  return `${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}`;
+}
+
+// ============================================================
+// PDF / PRINT
+// ============================================================
+function showPrint(recipeIdx) {
+  const sug = state.suggestions[state.selectedSug];
+  const g = sug.gerichte[recipeIdx];
+  const items = getAllItems(sug);
+
+  $('print-content').innerHTML = `
+    <h1 style="font-size:22px;font-weight:700;margin-bottom:4px">${g.abend}</h1>
+    <p style="color:#666;margin-bottom:20px">${g.tag}sabend → ${g.mittag_tag}: ${g.mittag_naechster_tag}</p>
+
+    <h2 style="font-size:16px;font-weight:600;margin-bottom:10px">Zutaten</h2>
+    <table style="width:100%;border-collapse:collapse;margin-bottom:20px">
+      ${(g.zutaten||[]).map(z => `
+        <tr>
+          <td style="padding:5px 0;border-bottom:1px solid #eee;font-weight:500">${z.name}</td>
+          <td style="padding:5px 0;border-bottom:1px solid #eee;color:#666;text-align:right">${z.menge}</td>
+        </tr>
+      `).join('')}
+    </table>
+
+    <h2 style="font-size:16px;font-weight:600;margin-bottom:10px">🌿 Zubereitung (Basis)</h2>
+    ${(g.schritte_vegi||[]).map((s,i) => `
+      <div style="margin-bottom:10px">
+        <strong>${i+1}.</strong> ${s.text}
+        ${s.timer_min ? `<span style="color:#666;font-size:13px"> [${s.timer_min} Min.]</span>` : ''}
+      </div>
+    `).join('')}
+
+    ${g.schritte_fleisch?.length ? `
+      <h2 style="font-size:16px;font-weight:600;margin:16px 0 10px;color:#b45309">🍖 Fleisch-Beilage (optional)</h2>
+      ${g.schritte_fleisch.map((s,i) => `<div style="margin-bottom:10px"><strong>${i+1}.</strong> ${s.text}</div>`).join('')}
+    ` : ''}
+
+    <h2 style="font-size:16px;font-weight:600;margin:16px 0 10px;color:#1d4ed8">📦 Für morgen vorbereiten</h2>
+    ${(g.prep_next||[]).map((s,i) => `<div style="margin-bottom:8px"><strong>${i+1}.</strong> ${s}</div>`).join('')}
+
+    <h2 style="font-size:16px;font-weight:600;margin:16px 0 10px;color:#0369a1">🧊 Einfrieren</h2>
+    ${(g.einfrieren||[]).map((s,i) => `<div style="margin-bottom:8px"><strong>${i+1}.</strong> ${s}</div>`).join('')}
+
+    ${g.tipp ? `<div style="background:#fefce8;border-left:3px solid #ca8a04;padding:12px;margin-top:16px;border-radius:4px"><strong>💡 Tipp:</strong> ${g.tipp}</div>` : ''}
+
+    <h2 style="font-size:16px;font-weight:600;margin:24px 0 10px">🛒 Vollständige Einkaufsliste</h2>
+    <table style="width:100%;border-collapse:collapse">
+      ${items.map(z => `
+        <tr>
+          <td style="padding:5px 0;border-bottom:1px solid #eee">☐ ${z.name}</td>
+          <td style="padding:5px 0;border-bottom:1px solid #eee;color:#666;text-align:right">${z.menge}</td>
+        </tr>
+      `).join('')}
+    </table>
+  `;
+
+  showScreen('screen-print');
+}
+
+// ============================================================
+// SAVED WEEKS
+// ============================================================
+function loadSavedWeeks() {
+  try {
+    state.savedWeeks = JSON.parse(localStorage.getItem('saved_weeks') || '[]');
+    renderSavedWeeks();
+  } catch(e) {}
+}
+
+function renderSavedWeeks() {
+  if (!state.savedWeeks.length) {
+    $('saved-weeks-card').style.display = 'none';
+    return;
+  }
+  $('saved-weeks-card').style.display = 'block';
+  $('saved-weeks-list').innerHTML = state.savedWeeks.map((w, i) => `
+    <div class="card" style="cursor:pointer" onclick="loadSavedWeek(${i})">
+      <div style="font-size:14px;font-weight:500">${w.thema}</div>
+      <div style="font-size:12px;color:var(--text2);margin-top:4px">${w.kochabende?.join(' · ') || ''}</div>
+    </div>
+  `).join('');
+}
+
+function loadSavedWeek(i) {
+  state.suggestions = [state.savedWeeks[i]];
+  state.selectedSug = 0;
+  goWeek();
+}
+</script>
+</body>
+</html>
