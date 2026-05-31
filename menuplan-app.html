@@ -363,7 +363,7 @@ function bringLogout(){
 async function loadBringLists(){
   if(!G.bringToken)return;
   try{
-    const h={...BH,Authorization:G.bringToken,'X-BRING-USER-UUID':G.bringUUID,'Content-Type':'application/json'};
+    const h={...BH,Authorization:G.bringToken,'X-BRING-USER-UUID':G.bringUUID};
     const r=await fetch(`${API_B}/bringusers/${G.bringUUID}/lists`,{headers:h});
     if(!r.ok)return;
     const d=await r.json();
