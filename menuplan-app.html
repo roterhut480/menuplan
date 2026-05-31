@@ -162,28 +162,7 @@ input:focus,select:focus{border-color:var(--red)}
     <p id="home-sub">Deine Wochenplanung</p>
   </div>
 
-  <!-- Bring Login -->
-  <div class="card">
-    <div class="card-pad">
-      <div class="card-title">Bring! Konto</div>
-      <div id="bring-badge" style="display:none">
-        <div class="user-badge">
-          <div class="user-dot"></div>
-          <span class="user-email" id="bring-email-show"></span>
-        </div>
-        <button class="btn btn-outline" style="padding:10px;font-size:13px" onclick="bringLogout()">Abmelden</button>
-      </div>
-      <div id="bring-form">
-        <div class="field"><label>E-Mail</label><input type="email" id="bring-email" placeholder="deine@email.com" autocomplete="email"></div>
-        <div class="field"><label>Passwort</label><input type="password" id="bring-pw" placeholder="••••••••" autocomplete="current-password"></div>
-        <label style="display:flex;align-items:center;gap:8px;margin-bottom:14px;cursor:pointer;font-size:13px;color:var(--text2)" onclick="document.getElementById('save-creds').click()">
-          <input type="checkbox" id="save-creds" checked style="width:18px;height:18px;accent-color:var(--red)">
-          Anmeldedaten speichern
-        </label>
-        <button class="btn btn-outline" id="bring-login-btn" onclick="bringLogin()">Anmelden</button>
-      </div>
-    </div>
-  </div>
+
 
   <!-- Kochdetails -->
   <div class="card">
@@ -257,14 +236,18 @@ input:focus,select:focus{border-color:var(--red)}
       <div class="card-pad">
         <div class="card-title">In Bring! importieren</div>
         <div id="bring-import-area">
-          <div id="bring-not-logged" style="font-size:13px;color:var(--gray3)">Bitte auf der Startseite bei Bring! anmelden.</div>
-          <div id="bring-import-form" style="display:none">
-            <div class="field"><label>Welche Liste?</label><select id="bring-list-sel"></select></div>
-            <label style="display:flex;align-items:center;gap:8px;margin-bottom:12px;cursor:pointer;font-size:13px;color:var(--text2)" onclick="document.getElementById('clear-list').click()">
-              <input type="checkbox" id="clear-list" checked style="width:18px;height:18px;accent-color:var(--red)">
-              Liste vor Import leeren
-            </label>
-            <button class="btn btn-red" id="import-btn" onclick="doImport()">In Bring! importieren</button>
+          <div id="bring-not-logged" style="display:none"></div>
+          <div id="bring-import-form">
+            <div class="field"><label>Bring! E-Mail</label><input type="email" id="bring-email" placeholder="deine@email.com" autocomplete="email"></div>
+            <div class="field"><label>Passwort</label><input type="password" id="bring-pw" placeholder="••••••••" autocomplete="current-password"></div>
+            <div id="bring-list-wrap" style="display:none">
+              <div class="field"><label>Welche Liste?</label><select id="bring-list-sel"></select></div>
+              <label style="display:flex;align-items:center;gap:8px;margin-bottom:12px;cursor:pointer;font-size:13px;color:var(--text2)" onclick="document.getElementById('clear-list').click()">
+                <input type="checkbox" id="clear-list" checked style="width:18px;height:18px;accent-color:var(--red)">
+                Liste vor Import leeren
+              </label>
+            </div>
+            <button class="btn btn-red" id="import-btn" onclick="doImportOrLogin()">In Bring! importieren</button>
           </div>
         </div>
         <div class="import-prog" id="import-prog" style="display:none"><div class="import-prog-bar" id="import-prog-bar"></div></div>
@@ -341,7 +324,10 @@ function setNights(n){G.nights=n;document.querySelectorAll('#nights-chips .chip'
 
 window.addEventListener('DOMContentLoaded',()=>{
   const s=localStorage.getItem('bring_s');
-  if(s){try{const d=JSON.parse(s);G.bringToken=d.t;G.bringUUID=d.u;$('bring-email').value=d.e||'';showBringIn(d.e);loadBringLists()}catch(e){localStorage.removeItem('bring_s')}}
+  if(s){try{const d=JSON.parse(s);G.bringToken=d.t;G.bringUUID=d.u;
+    if($('bring-email'))$('bring-email').value=d.e||'';
+    loadBringListsAndShow();
+  }catch(e){localStorage.removeItem('bring_s')}}
 });
 
 async function bringLogin(){
@@ -692,6 +678,57 @@ function showPrint(ri){
       ${items.map(z=>`<tr><td style="padding:6px 0;border-bottom:1px solid #f0f0f0">☐ ${z.name}</td><td style="padding:6px 0;border-bottom:1px solid #f0f0f0;color:#888;text-align:right">${z.menge}</td></tr>`).join('')}
     </table>`;
   show('s-print');
+}
+
+async function doImportOrLogin(){
+  // If already have token and lists, do import
+  if(G.bringToken && G.bringLists.length){
+    doImport(); return;
+  }
+  // Otherwise try to login first
+  const email=$('bring-email')?.value?.trim();
+  const pw=$('bring-pw')?.value;
+  if(!email||!pw){
+    const st=$('import-status');
+    st.className='status err';
+    st.textContent='Bitte E-Mail und Passwort eingeben.';
+    st.style.display='block';
+    return;
+  }
+  const btn=$('import-btn');
+  btn.innerHTML='<span class="spin white"></span> Anmelden…';btn.disabled=true;
+  try{
+    const r=await fetch(`${API_B}/v2/bringauth`,{method:'POST',headers:BH,body:new URLSearchParams({email,password:pw}).toString()});
+    if(!r.ok)throw new Error(r.status===401?'Falsche Zugangsdaten':`Fehler ${r.status}`);
+    const d=await r.json();
+    G.bringToken=`${d.token_type} ${d.access_token}`;G.bringUUID=d.uuid;
+    localStorage.setItem('bring_s',JSON.stringify({t:G.bringToken,u:G.bringUUID,e:email}));
+    await loadBringListsAndShow();
+    doImport();
+  }catch(e){
+    const st=$('import-status');
+    if(e.message.includes('fetch')){
+      st.className='status err';
+      st.textContent='Bring! ist über den Browser leider nicht erreichbar (CORS). Import muss manuell erfolgen.';
+    } else {
+      st.className='status err';st.textContent=`Fehler: ${e.message}`;
+    }
+    st.style.display='block';
+    btn.innerHTML='In Bring! importieren';btn.disabled=false;
+  }
+}
+
+async function loadBringListsAndShow(){
+  await loadBringLists();
+  if(G.bringLists.length && $('bring-list-wrap')){
+    $('bring-list-wrap').style.display='block';
+    // Hide email/pw fields
+    const emailF=document.querySelector('#bring-import-form .field:nth-child(1)');
+    const pwF=document.querySelector('#bring-import-form .field:nth-child(2)');
+    if(emailF)emailF.style.display='none';
+    if(pwF)pwF.style.display='none';
+    $('import-btn').textContent='In Bring! importieren';
+  }
 }
 </script>
 </body>
