@@ -506,7 +506,7 @@ async function doImport(){
           const arr=Array.isArray(purchaseList)?purchaseList:[];
           for(const it of arr){
             const name=it.itemId||it.name||it;
-            if(name){await fetch(`${API_B}/bringlists/${listUuid}`,{method:'POST',headers:h,body:new URLSearchParams({purchase:name,remove:'true'}).toString()});await sleep(80);}
+            if(name){await fetch(`${API_B}/v2/bringlists/${listUuid}`,{method:'POST',headers:h,body:new URLSearchParams({purchase:name,remove:'true'}).toString()});await sleep(80);}
           }
         }
       }catch(ex){console.warn('Liste leeren fehlgeschlagen:',ex);}
@@ -514,7 +514,7 @@ async function doImport(){
     for(let i=0;i<items.length;i++){
       $('import-prog-bar').style.width=`${Math.round((i/items.length)*100)}%`;
       const {name,menge}=items[i];
-      await fetch(`${API_B}/bringlists/${listUuid}`,{method:'POST',headers:h,body:new URLSearchParams({purchase:name,specification:menge}).toString()});
+      await fetch(`${API_B}/v2/bringlists/${listUuid}`,{method:'POST',headers:h,body:new URLSearchParams({purchase:name,specification:menge}).toString()});
       await sleep(120);
     }
     $('import-prog-bar').style.width='100%';
