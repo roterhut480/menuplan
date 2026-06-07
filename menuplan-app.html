@@ -5,776 +5,480 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Menüplan</title>
 <style>
-:root{--red:#e8390e;--red-light:#fff2ef;--red-mid:#fce8e4;--green:#2e7d32;--green-light:#f0faf4;--blue:#1565c0;--blue-light:#e8f0fe;--orange:#e65100;--orange-light:#fff3e0;--gray:#f5f5f5;--gray2:#e0e0e0;--gray3:#888;--gray4:#555;--text:#111;--text2:#555;--text3:#888;--border:#e0e0e0;--white:#fff;--r:10px;--r-lg:14px}
+:root{--red:#e8390e;--rl:#fff2ef;--grn:#2e7d32;--grl:#f0faf4;--blu:#1565c0;--bll:#e8f0fe;--orn:#e65100;--orl:#fff3e0;--gr:#f5f5f5;--gr2:#e0e0e0;--gr3:#888;--txt:#111;--txt2:#555;--bdr:#e0e0e0;--r:10px;--rlg:14px}
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f3f3f3;color:var(--text);min-height:100vh}
-.screen{display:none;min-height:100vh;background:#f3f3f3;padding-bottom:32px}
-.screen.active{display:block}
-
-/* Top bar */
-.topbar{background:var(--red);padding:14px 16px 12px;display:flex;align-items:center;gap:12px}
-.topbar-back{color:#fff;font-size:22px;cursor:pointer;line-height:1;padding:2px 6px 2px 0;opacity:.9}
-.topbar h1{font-size:18px;font-weight:700;color:#fff;flex:1;letter-spacing:-.2px}
-.topbar-sub{font-size:12px;color:rgba(255,255,255,.7);margin-top:2px}
-
-/* Cards */
-.card{background:var(--white);border-radius:var(--r-lg);margin:12px 12px 0;overflow:hidden;border:0.5px solid var(--border)}
-.card-pad{padding:14px 16px}
-.card-title{font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--gray3);margin-bottom:12px}
-.section-title{font-size:18px;font-weight:700;color:var(--text);padding:20px 16px 8px}
-
-/* Buttons */
-.btn{width:100%;padding:14px;border:none;border-radius:var(--r);font-size:14px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:opacity .15s,transform .1s;letter-spacing:.1px}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f3f3f3;color:var(--txt);min-height:100vh}
+.scr{display:none;min-height:100vh;background:#f3f3f3;padding-bottom:32px}
+.scr.on{display:block}
+.tbar{background:var(--red);padding:14px 16px 12px;display:flex;align-items:center;gap:12px}
+.tbar-bk{color:#fff;font-size:22px;cursor:pointer;padding-right:6px;opacity:.9}
+.tbar h1{font-size:17px;font-weight:700;color:#fff;flex:1}
+.tbar-sub{font-size:11px;color:rgba(255,255,255,.7);margin-top:1px}
+.hero{background:var(--red);padding:24px 16px 20px;text-align:center}
+.hero h1{font-size:24px;font-weight:800;color:#fff;letter-spacing:-.3px}
+.hero p{font-size:13px;color:rgba(255,255,255,.75);margin-top:4px}
+.card{background:#fff;border-radius:var(--rlg);margin:10px 10px 0;border:.5px solid var(--bdr);overflow:hidden}
+.cp{padding:14px 16px}
+.clbl{font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--gr3);margin-bottom:10px}
+.btn{width:100%;padding:13px;border:none;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:transform .1s,opacity .15s}
 .btn:active{transform:scale(.97);opacity:.9}
 .btn-red{background:var(--red);color:#fff}
-.btn-outline{background:#fff;color:var(--text2);border:0.5px solid var(--border)}
-.btn-outline-red{background:#fff;color:var(--red);border:1px solid var(--red)}
-.btn:disabled{opacity:.35;cursor:not-allowed;transform:none}
-
-/* Inputs */
-input,select,textarea{width:100%;background:#fff;border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:14px;padding:11px 14px;outline:none;font-family:inherit;transition:border-color .2s}
-input:focus,select:focus{border-color:var(--red)}
-.field{margin-bottom:12px}
-.field label{display:block;font-size:13px;color:var(--text2);margin-bottom:6px;font-weight:500}
-
-/* Tabs */
-.tabs{display:flex;background:#f0f0f0;border-radius:8px;padding:3px;margin:12px 12px 0}
-.tab{flex:1;padding:8px;border-radius:6px;font-size:13px;font-weight:600;text-align:center;cursor:pointer;color:var(--gray3);transition:all .15s}
-.tab.on{background:#fff;color:var(--text);box-shadow:0 1px 3px rgba(0,0,0,.12)}
-
-/* Status */
-.status{padding:12px 14px;border-radius:var(--r);font-size:13px;line-height:1.5;margin:12px 12px 0}
-.status.ok{background:#e8f5e9;border:0.5px solid #a5d6a7;color:var(--green)}
-.status.err{background:#ffebee;border:0.5px solid #ef9a9a;color:#c62828}
-.status.info{background:var(--blue-light);border:0.5px solid #90caf9;color:var(--blue)}
-
-/* Suggestion cards */
-.sug-card{background:#fff;border-radius:var(--r-lg);margin:10px 12px 0;border:1.5px solid var(--border);cursor:pointer;overflow:hidden;transition:border-color .15s}
-.sug-card.selected{border-color:var(--red);border-width:2px}
-.sug-header{padding:12px 14px 8px;border-bottom:0.5px solid var(--gray)}
-.sug-num{font-size:10px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--gray3);margin-bottom:4px;display:flex;align-items:center;gap:6px}
-.sug-num .check{width:18px;height:18px;background:var(--red);border-radius:50%;display:none;align-items:center;justify-content:center}
-.sug-card.selected .sug-num .check{display:flex}
-.sug-card.selected .sug-num{color:var(--red)}
-.sug-title{font-size:15px;font-weight:700;color:var(--text)}
-.sug-body{padding:10px 14px}
-.sug-day{display:flex;gap:8px;align-items:baseline;margin-bottom:4px;font-size:12px}
-.sug-day-name{font-weight:700;color:var(--text);min-width:24px;font-size:11px}
-.sug-day-dish{color:var(--text2)}
-.sug-next{font-size:11px;color:var(--gray3);padding-left:32px;margin-bottom:6px}
-
-/* Einkaufsliste */
-.item-row{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:0.5px solid var(--gray)}
-.item-row:last-child{border-bottom:none}
-.item-check{width:22px;height:22px;border-radius:50%;border:2px solid var(--border);flex-shrink:0;cursor:pointer;transition:all .15s;display:flex;align-items:center;justify-content:center}
-.item-check.done{background:var(--red);border-color:var(--red)}
-.item-name{font-size:14px;font-weight:500;flex:1}
-.item-spec{font-size:12px;color:var(--gray3);margin-top:1px}
-.item-row.done-row .item-name,.item-row.done-row .item-spec{text-decoration:line-through;opacity:.4}
-
-/* Recipe list */
-.recipe-card{background:#fff;border-radius:var(--r-lg);margin:10px 12px 0;border:0.5px solid var(--border);overflow:hidden}
-.recipe-header{background:#f9f9f9;padding:12px 16px;border-bottom:0.5px solid var(--border)}
-.recipe-day{font-size:10px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--gray3);margin-bottom:3px}
-.recipe-name{font-size:16px;font-weight:700;color:var(--text)}
-.recipe-next{font-size:12px;color:var(--gray3);margin-top:3px}
-.recipe-actions{padding:12px 16px;display:flex;flex-direction:column;gap:8px}
-
-/* Progress bar top */
-.prog-top{height:4px;background:var(--gray2)}
-.prog-top-bar{height:100%;background:var(--red);transition:width .4s ease}
-
-/* Import progress */
-.import-prog{background:var(--gray2);border-radius:100px;height:6px;margin:8px 0;overflow:hidden}
-.import-prog-bar{height:100%;background:var(--red);border-radius:100px;transition:width .3s ease}
-
-/* ===== COOK SCREEN ===== */
-.cook-topbar{background:var(--red);padding:14px 16px 0}
-.cook-topbar-top{display:flex;align-items:center;gap:10px;margin-bottom:10px}
-.cook-back{color:rgba(255,255,255,.8);font-size:22px;cursor:pointer;padding-right:4px}
-.cook-title{font-size:17px;font-weight:700;color:#fff;flex:1}
-.cook-step-label{font-size:13px;color:rgba(255,255,255,.8)}
-.cook-segments{display:flex;gap:3px;padding-bottom:0}
-.seg{height:4px;border-radius:2px;flex:1;background:rgba(255,255,255,.3);transition:background .3s}
-.seg.done{background:rgba(255,255,255,.7)}
-.seg.active{background:#fff}
-
-.cook-body{padding:16px}
-.cook-type-badge{display:inline-flex;align-items:center;gap:5px;border-radius:100px;padding:4px 12px;font-size:11px;font-weight:700;margin-bottom:12px}
-.badge-vegi{background:var(--green-light);color:var(--green);border:0.5px solid #a5d6a7}
-.badge-fleisch{background:var(--orange-light);color:var(--orange);border:0.5px solid #ffcc80}
-.badge-prep{background:var(--blue-light);color:var(--blue);border:0.5px solid #90caf9}
-.badge-freeze{background:#e3f2fd;color:#0277bd;border:0.5px solid #90caf9}
-
-.cook-step-text{font-size:17px;font-weight:500;color:var(--text);line-height:1.6;margin-bottom:16px}
-.cook-step-lines{font-size:14px;color:var(--text2);line-height:1.8;margin-bottom:16px}
-
-.timer-box{background:#f9f9f9;border-radius:var(--r);padding:14px;margin-bottom:16px;text-align:center;border:0.5px solid var(--border)}
-.timer-display{font-size:40px;font-weight:700;color:var(--text);font-variant-numeric:tabular-nums;letter-spacing:-1px}
-.timer-display.running{color:var(--red)}
-.timer-display.done{color:var(--green)}
-.timer-sub{font-size:12px;color:var(--gray3);margin-bottom:10px}
-.timer-prog{background:var(--gray2);border-radius:100px;height:4px;margin-bottom:10px;overflow:hidden}
-.timer-prog-bar{height:100%;background:var(--red);border-radius:100px;transition:width 1s linear}
-
-.cook-actions{display:flex;flex-direction:column;gap:8px}
-.cook-nav{display:flex;gap:8px}
-.cook-nav .btn{flex:1;padding:12px}
-
-.already-done{display:flex;align-items:center;gap:8px;padding:10px 14px;background:#f9f9f9;border-radius:8px;margin-bottom:12px;cursor:pointer;border:0.5px solid var(--border)}
-.already-done-check{width:20px;height:20px;border-radius:50%;border:2px solid var(--border);flex-shrink:0;display:flex;align-items:center;justify-content:center}
-.already-done-check.on{background:var(--green);border-color:var(--green)}
-.already-done span{font-size:13px;color:var(--text2)}
-
-/* Spinner */
-.spin{display:inline-block;width:18px;height:18px;border:2px solid rgba(232,57,14,.25);border-top-color:var(--red);border-radius:50%;animation:spin .7s linear infinite}
-.spin.white{border-color:rgba(255,255,255,.3);border-top-color:#fff}
-@keyframes spin{to{transform:rotate(360deg)}}
-
-/* Home logo */
-.home-hero{background:var(--red);padding:28px 16px 24px;text-align:center}
-.home-hero h1{font-size:26px;font-weight:800;color:#fff;letter-spacing:-.5px;margin-bottom:4px}
-.home-hero p{font-size:14px;color:rgba(255,255,255,.7)}
-
-/* User badge */
-.user-badge{display:flex;align-items:center;gap:10px;padding:10px 14px;background:#f9f9f9;border-radius:8px;margin-bottom:12px}
-.user-dot{width:9px;height:9px;border-radius:50%;background:var(--green);flex-shrink:0}
-.user-email{font-size:13px;color:var(--text2)}
-
-/* Chips */
+.btn-out{background:#fff;color:var(--txt2);border:.5px solid var(--bdr)}
+.btn-grn{background:#fff;color:var(--grn);border:1px solid var(--grn)}
+.btn:disabled{opacity:.35;pointer-events:none}
+.btn+.btn{margin-top:8px}
+.chip{padding:7px 14px;border-radius:100px;font-size:13px;font-weight:600;cursor:pointer;border:1.5px solid var(--bdr);background:#fff;color:var(--gr3);display:inline-block;transition:all .15s}
+.chip.on{background:var(--rl);border-color:var(--red);color:var(--red)}
 .chips{display:flex;gap:8px;flex-wrap:wrap}
-.chip{padding:7px 16px;border-radius:100px;font-size:13px;font-weight:600;cursor:pointer;border:1.5px solid var(--border);background:#fff;color:var(--text2);transition:all .15s}
-.chip.on{background:var(--red-light);border-color:var(--red);color:var(--red)}
-
-@media print{
-  body{background:#fff}
-  .no-print{display:none!important}
-  .screen{display:block!important;background:#fff;padding:0}
-}
+input,select{width:100%;background:#fff;border:1px solid var(--bdr);border-radius:7px;color:var(--txt);font-size:14px;padding:10px 12px;outline:none;font-family:inherit;transition:border-color .2s}
+input:focus,select:focus{border-color:var(--red)}
+.fld{margin-bottom:10px}
+.fld label{display:block;font-size:12px;color:var(--txt2);margin-bottom:5px;font-weight:500}
+.tabs{display:flex;background:#ebebeb;border-radius:8px;padding:3px;margin:10px 10px 0}
+.tab{flex:1;padding:7px;border-radius:6px;font-size:13px;font-weight:600;text-align:center;cursor:pointer;color:var(--gr3);transition:all .15s}
+.tab.on{background:#fff;color:var(--txt);box-shadow:0 1px 3px rgba(0,0,0,.1)}
+.st{padding:10px 12px;border-radius:8px;font-size:13px;line-height:1.5;margin:10px 10px 0}
+.st.ok{background:#e8f5e9;border:.5px solid #a5d6a7;color:#1b5e20}
+.st.er{background:#ffebee;border:.5px solid #ef9a9a;color:#b71c1c}
+.st.inf{background:var(--bll);border:.5px solid #90caf9;color:var(--blu)}
+.sug{background:#fff;border-radius:var(--rlg);margin:8px 10px 0;border:1.5px solid var(--bdr);cursor:pointer;overflow:hidden}
+.sug.sel{border-color:var(--red);border-width:2px}
+.sug-h{padding:10px 12px 8px;border-bottom:.5px solid #f5f5f5}
+.sug-n{font-size:10px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;color:var(--gr3);margin-bottom:3px;display:flex;align-items:center;gap:6px}
+.sug.sel .sug-n{color:var(--red)}
+.sug-t{font-size:14px;font-weight:700;color:var(--txt)}
+.sug-b{padding:8px 12px}
+.sug-d{font-size:12px;color:var(--txt2);margin-bottom:2px}
+.sug-nx{font-size:11px;color:#bbb;margin-bottom:5px;padding-left:28px}
+.irow{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:.5px solid #f5f5f5}
+.irow:last-child{border-bottom:none}
+.ichk{width:20px;height:20px;border-radius:50%;border:1.5px solid var(--bdr);flex-shrink:0;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s}
+.ichk.on{background:var(--red);border-color:var(--red)}
+.iname{font-size:13px;font-weight:500;flex:1}
+.ispec{font-size:11px;color:var(--gr3)}
+.irow.done .iname,.irow.done .ispec{text-decoration:line-through;opacity:.4}
+.rcard{background:#fff;border-radius:var(--rlg);margin:8px 10px 0;border:.5px solid var(--bdr);overflow:hidden}
+.rh{background:#f9f9f9;padding:10px 14px;border-bottom:.5px solid var(--bdr)}
+.rday{font-size:10px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;color:var(--gr3);margin-bottom:2px}
+.rname{font-size:15px;font-weight:700;color:var(--txt)}
+.rnext{font-size:11px;color:#bbb;margin-top:2px}
+.ract{padding:10px 14px;display:flex;flex-direction:column;gap:7px}
+.ctbar{background:var(--red);padding:14px 16px 0}
+.ctop{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.cback{color:rgba(255,255,255,.8);font-size:20px;cursor:pointer;padding-right:4px}
+.ctit{font-size:16px;font-weight:700;color:#fff;flex:1}
+.cstep{font-size:12px;color:rgba(255,255,255,.75)}
+.cjump{background:rgba(255,255,255,.2);border-radius:6px;padding:4px 10px;font-size:11px;font-weight:700;color:#fff;cursor:pointer;display:none;white-space:nowrap}
+.csegs{display:flex;gap:3px;padding-bottom:0}
+.cseg{height:4px;border-radius:2px;flex:1;background:rgba(255,255,255,.25)}
+.cseg.done{background:rgba(255,255,255,.6)}
+.cseg.act{background:#fff}
+.cprog{height:4px;background:rgba(0,0,0,.06)}
+.cprogb{height:100%;background:var(--red);transition:width .4s}
+.cbody{padding:14px}
+.badge{display:inline-flex;align-items:center;gap:5px;border-radius:100px;padding:4px 11px;font-size:11px;font-weight:700;margin-bottom:10px}
+.bv{background:var(--grl);color:var(--grn);border:.5px solid #a5d6a7}
+.bf{background:var(--orl);color:var(--orn);border:.5px solid #ffcc80}
+.bp{background:var(--bll);color:var(--blu);border:.5px solid #90caf9}
+.bfr{background:#e3f2fd;color:#0277bd;border:.5px solid #90caf9}
+.cstxt{font-size:16px;font-weight:500;color:var(--txt);line-height:1.6;margin-bottom:14px}
+.csml{font-size:13px;color:var(--txt2);line-height:1.8;margin-bottom:14px}
+.tbox{background:#f9f9f9;border-radius:8px;padding:12px;margin-bottom:14px;text-align:center;border:.5px solid var(--bdr)}
+.tdisp{font-size:38px;font-weight:700;color:var(--txt);font-variant-numeric:tabular-nums;letter-spacing:-1px}
+.tdisp.run{color:var(--red)}.tdisp.fin{color:var(--grn)}
+.tsub{font-size:11px;color:var(--gr3);margin-bottom:8px}
+.tprog{background:var(--gr2);border-radius:100px;height:3px;margin-bottom:8px;overflow:hidden}
+.tprogb{height:100%;background:var(--red);border-radius:100px;transition:width 1s linear}
+.adone{display:flex;align-items:center;gap:10px;padding:9px 12px;background:#f9f9f9;border-radius:8px;margin-bottom:12px;cursor:pointer;border:.5px solid var(--bdr)}
+.adchk{width:19px;height:19px;border-radius:50%;border:1.5px solid var(--bdr);flex-shrink:0;display:flex;align-items:center;justify-content:center}
+.adchk.on{background:var(--grn);border-color:var(--grn)}
+.cnav{display:flex;gap:8px}
+.cnav .btn{flex:1;padding:11px;font-size:13px}
+.spin{display:inline-block;width:16px;height:16px;border:2px solid rgba(232,57,14,.25);border-top-color:var(--red);border-radius:50%;animation:sp .7s linear infinite}
+.spin.w{border-color:rgba(255,255,255,.3);border-top-color:#fff}
+@keyframes sp{to{transform:rotate(360deg)}}
+.prog{background:var(--gr2);border-radius:100px;height:5px;margin:6px 0;overflow:hidden}
+.progb{height:100%;background:var(--red);border-radius:100px;transition:width .3s}
+.dbg{font-family:monospace;font-size:11px;background:#f5f5f5;padding:8px;border-radius:6px;margin-top:8px;word-break:break-all;max-height:100px;overflow-y:auto;display:none}
 </style>
 </head>
 <body>
 
-<!-- ===== HOME ===== -->
-<div class="screen active" id="s-home">
-  <div class="home-hero">
-    <h1>🥦 Menüplan</h1>
-    <p id="home-sub">Deine Wochenplanung</p>
-  </div>
-
-
-
-  <!-- Kochdetails -->
-  <div class="card">
-    <div class="card-pad">
-      <div class="card-title">Diese Woche</div>
-      <div class="field">
-        <label>Anzahl Kochabende</label>
-        <div class="chips" id="nights-chips" style="margin-top:4px">
-          <div class="chip" onclick="setNights(2)">2 Abende</div>
-          <div class="chip on" onclick="setNights(3)">3 Abende</div>
-          <div class="chip" onclick="setNights(4)">4 Abende</div>
-        </div>
+<!-- HOME -->
+<div class="scr on" id="sh">
+  <div class="hero"><h1>🥦 Menüplan</h1><p>Deine Wochenplanung</p></div>
+  <div class="card"><div class="cp">
+    <div class="clbl">Diese Woche</div>
+    <div class="fld"><label>Kochabende</label>
+      <div class="chips" id="nchips">
+        <div class="chip" onclick="setN(2)">2 Abende</div>
+        <div class="chip on" onclick="setN(3)">3 Abende</div>
+        <div class="chip" onclick="setN(4)">4 Abende</div>
       </div>
-      <div class="field" style="margin-top:12px"><label>Thema / Wunsch (optional)</label><input type="text" id="theme-input" placeholder="z.B. mediterran, asiatisch…"></div>
-      <div class="field"><label>Vorhandene Zutaten (optional)</label><input type="text" id="existing-input" placeholder="z.B. Kartoffeln 2kg, Kichererbsen"></div>
     </div>
+    <div class="fld" style="margin-top:10px"><label>Thema (optional)</label><input id="theme" placeholder="mediterran, asiatisch…"></div>
+    <div class="fld"><label>Vorhandenes (optional)</label><input id="exist" placeholder="z.B. Kartoffeln 2kg"></div>
+  </div></div>
+  <div style="padding:10px 10px 0">
+    <button class="btn btn-red" onclick="goSuggest()">Menüvorschläge generieren →</button>
+    <button class="btn btn-out" style="margin-top:8px;font-size:13px" onclick="loadTest()">🧪 Testdaten laden</button>
   </div>
-
-  <div style="padding:12px 12px 0">
-    <button class="btn btn-red" onclick="goSuggest()">
-      <span>Menüvorschläge generieren</span>
-      <span>→</span>
-    </button>
-    <button class="btn btn-outline" style="margin-top:8px;font-size:13px" onclick="loadTestData()">
-      🧪 Testdaten laden (ohne API)
-    </button>
-  </div>
-
-  <div id="home-status"></div>
+  <div id="herr"></div>
 </div>
 
-<!-- ===== VORSCHLÄGE ===== -->
-<div class="screen" id="s-suggest">
-  <div class="topbar">
-    <div class="topbar-back" onclick="show('s-home')">←</div>
-    <div>
-      <h1 class="topbar">Menüvorschläge</h1>
-      <div class="topbar-sub">Wähle eine Abfolge</div>
-    </div>
+<!-- VORSCHLÄGE -->
+<div class="scr" id="ss">
+  <div class="tbar">
+    <div class="tbar-bk" onclick="go('sh')">←</div>
+    <div><h1>Menüvorschläge</h1><div class="tbar-sub">Wähle eine Abfolge</div></div>
   </div>
-
-  <div id="suggest-loading" style="text-align:center;padding:48px 16px;display:none">
-    <div class="spin" style="width:28px;height:28px;margin:0 auto 14px"></div>
-    <div style="font-size:14px;color:var(--gray3)">Claude generiert Vorschläge…</div>
+  <div id="sload" style="text-align:center;padding:40px 16px;display:none">
+    <div class="spin" style="width:26px;height:26px;margin:0 auto 12px;border-width:2.5px"></div>
+    <div style="font-size:13px;color:var(--gr3)">Claude generiert Vorschläge…</div>
   </div>
-
-  <div id="suggest-err" style="display:none"></div>
-  <div id="suggest-list"></div>
-
-  <div style="padding:16px 12px 0;display:none" id="suggest-cta">
+  <div id="serr"></div>
+  <div id="slist"></div>
+  <div id="scta" style="display:none;padding:10px 10px 0">
     <button class="btn btn-red" onclick="goWeek()">Diese Woche planen →</button>
-    <button class="btn btn-outline" style="margin-top:8px" onclick="goSuggest()">Neue Vorschläge</button>
+    <button class="btn btn-out" style="margin-top:8px" onclick="goSuggest()">Neue Vorschläge</button>
   </div>
 </div>
 
-<!-- ===== WOCHE ===== -->
-<div class="screen" id="s-week">
-  <div class="topbar">
-    <div class="topbar-back" onclick="show('s-suggest')">←</div>
-    <div>
-      <h1 id="week-title" style="font-size:16px;font-weight:700;color:#fff"></h1>
-      <div class="topbar-sub" id="week-sub"></div>
-    </div>
+<!-- WOCHE -->
+<div class="scr" id="sw">
+  <div class="tbar">
+    <div class="tbar-bk" onclick="go('ss')">←</div>
+    <div><h1 id="wtit" style="font-size:15px"></h1><div class="tbar-sub" id="wsub"></div></div>
   </div>
-
   <div class="tabs">
-    <div class="tab on" onclick="weekTab('einkauf')">🛒 Einkauf</div>
-    <div class="tab" onclick="weekTab('rezepte')">👨‍🍳 Rezepte</div>
+    <div class="tab on" onclick="wtab('e')">🛒 Einkauf</div>
+    <div class="tab" onclick="wtab('r')">👨‍🍳 Rezepte</div>
   </div>
-
-  <!-- Einkauf -->
-  <div id="tab-einkauf">
-    <div class="card">
-      <div class="card-pad">
-        <div class="card-title">In Bring! importieren</div>
-        <div id="bring-import-area">
-          <div id="bring-not-logged" style="display:none"></div>
-          <div id="bring-import-form">
-            <div class="field"><label>Bring! E-Mail</label><input type="email" id="bring-email" placeholder="deine@email.com" autocomplete="email"></div>
-            <div class="field"><label>Passwort</label><input type="password" id="bring-pw" placeholder="••••••••" autocomplete="current-password"></div>
-            <div id="bring-list-wrap" style="display:none">
-              <div class="field"><label>Welche Liste?</label><select id="bring-list-sel"></select></div>
-              <label style="display:flex;align-items:center;gap:8px;margin-bottom:12px;cursor:pointer;font-size:13px;color:var(--text2)" onclick="document.getElementById('clear-list').click()">
-                <input type="checkbox" id="clear-list" checked style="width:18px;height:18px;accent-color:var(--red)">
-                Liste vor Import leeren
-              </label>
-            </div>
-            <button class="btn btn-red" id="import-btn" onclick="doImportOrLogin()">In Bring! importieren</button>
-          </div>
-        </div>
-        <div class="import-prog" id="import-prog" style="display:none"><div class="import-prog-bar" id="import-prog-bar"></div></div>
+  <div id="te">
+    <div class="card"><div class="cp">
+      <div class="clbl">In Bring! importieren</div>
+      <div class="fld"><label>Bring! E-Mail</label><input type="email" id="bemail" autocomplete="email"></div>
+      <div class="fld"><label>Passwort</label><input type="password" id="bpw" autocomplete="current-password"></div>
+      <div id="blistwrap" style="display:none">
+        <div class="fld"><label>Welche Liste?</label><select id="blist"></select></div>
+        <label style="display:flex;align-items:center;gap:8px;margin-bottom:12px;cursor:pointer;font-size:13px;color:var(--txt2)" onclick="document.getElementById('bclr').click()">
+          <input type="checkbox" id="bclr" checked style="width:18px;height:18px;accent-color:var(--red)">
+          Liste vor Import leeren
+        </label>
       </div>
-    </div>
-    <div id="import-status"></div>
-    <div class="card">
-      <div class="card-pad">
-        <div class="card-title">Einkaufsliste</div>
-        <div id="einkauf-list"></div>
-      </div>
-    </div>
+      <button class="btn btn-red" id="ibtn" onclick="doImport()">In Bring! importieren</button>
+      <div class="prog" id="iprog" style="display:none"><div class="progb" id="iprogb"></div></div>
+      <div id="idbg" class="dbg"></div>
+    </div></div>
+    <div id="ist"></div>
+    <div class="card"><div class="cp">
+      <div class="clbl">Einkaufsliste</div>
+      <div id="elist"></div>
+    </div></div>
   </div>
-
-  <!-- Rezepte -->
-  <div id="tab-rezepte" style="display:none">
-    <div id="rezepte-list"></div>
-  </div>
+  <div id="tr" style="display:none"><div id="rlist"></div></div>
 </div>
 
-<!-- ===== KOCHEN ===== -->
-<div class="screen" id="s-cook">
-  <div class="cook-topbar">
-    <div class="cook-topbar-top">
-      <div class="cook-back" onclick="show('s-week')">←</div>
-      <div style="flex:1">
-        <div class="cook-title" id="cook-title"></div>
-        <div class="cook-step-label" id="cook-step-label"></div>
-      </div>
-      <div id="cook-jump-btn" onclick="jumpToCurrent()" style="background:rgba(255,255,255,.2);border-radius:6px;padding:5px 10px;font-size:11px;font-weight:700;color:#fff;cursor:pointer;display:none">Aktuell</div>
+<!-- KOCHEN -->
+<div class="scr" id="sc">
+  <div class="ctbar">
+    <div class="ctop">
+      <div class="cback" onclick="go('sw')">←</div>
+      <div style="flex:1"><div class="ctit" id="ctit"></div><div class="cstep" id="csteplbl"></div></div>
+      <div class="cjump" id="cjump" onclick="jumpCur()">↑ Aktuell</div>
     </div>
-    <div class="cook-segments" id="cook-segs"></div>
+    <div class="csegs" id="csegs"></div>
   </div>
-  <div style="height:4px;background:rgba(0,0,0,.08)"><div class="prog-top-bar" id="cook-prog-bar"></div></div>
-
-  <div class="cook-body" id="cook-body"></div>
+  <div class="cprog"><div class="cprogb" id="cprogb"></div></div>
+  <div class="cbody" id="cbody"></div>
 </div>
 
-<!-- ===== PRINT ===== -->
-<div class="screen" id="s-print">
-  <div class="no-print" style="padding:12px">
-    <button class="btn btn-outline" onclick="show('s-week')" style="margin-bottom:8px">← Zurück</button>
+<!-- PRINT -->
+<div class="scr" id="sp">
+  <div style="padding:10px">
+    <button class="btn btn-out" onclick="go('sw')" style="margin-bottom:8px">← Zurück</button>
     <button class="btn btn-red" onclick="window.print()">📄 Als PDF speichern</button>
   </div>
-  <div id="print-content" style="padding:16px;background:#fff;min-height:100vh"></div>
+  <div id="pcon" style="padding:14px;background:#fff;min-height:300px"></div>
 </div>
 
 <script>
 const PROXY='https://menuplan-proxy.shop-242.workers.dev';
-const SYSTEM = `Du bist ein Kochassistent für 2 Personen in Zürich.
-REGELN:
-- 1 Person vegetarisch (kein Fisch/Meeresfrüchte), 1 Person vegi + optional Fleisch als Beilage
-- Basis IMMER vegetarisch; Fleisch optional und separat
-- Mittags NUR Mikrowelle oder kalt – kein Herd, kein Toaster, keine frischen Eier
-- Je 6 Portionen: 2 Abend + 2 Mittag nächster Tag + 2 Einfrieren
-- Reste müssen sich klar vom Abend unterscheiden
-- Keine 2 schweren KH-Quellen kombinieren
-- Mediterran oder thematisch kohärent; Zutaten sollen sich überschneiden
-- Proteinreich für beide
-- Empfindliche Zutaten früh in der Woche planen
-
-ANTWORT: Nur valides JSON, kein Text davor/danach:
-{"vorschlaege":[{"id":1,"thema":"Kurzes Thema","kochabende":["Montag","Mittwoch","Freitag"],"gerichte":[{"tag":"Montag","abend":"Gerichtsname","mittag_naechster_tag":"Mittagsname","mittag_tag":"Dienstag","zutaten":[{"name":"Karotten","menge":"2 Stk"},{"name":"Parmesan","menge":"80g"}],"schritte_vegi":[{"text":"Schritt 1","timer_min":0},{"text":"20 Min. köcheln","timer_min":20}],"schritte_fleisch":[{"text":"Fleisch-Option: Hähnchen separat anbraten","timer_min":6}],"prep_next":["Reste in Tupperdose","Mittags 3 Min. Mikrowelle"],"einfrieren":["2 Portionen einfrieren","Beschriften + einfrieren"],"tipp":"Kochtipp"}]}]}`;
-
-const API_B=PROXY+'/bring';
+const BAPI=PROXY+'/bring';
 const BH={'X-BRING-API-KEY':'cof4Nc6D8saplXjE3h3HXqHH8m7VU2i1Gs0g85Sp','X-BRING-CLIENT':'android','X-BRING-APPLICATION':'bring','X-BRING-COUNTRY':'CH','Content-Type':'application/x-www-form-urlencoded'};
 
-let G={nights:3,bringToken:null,bringUUID:null,bringLists:[],suggestions:[],selectedSug:null,cookSteps:[],currentStep:0,activeStep:0,completedSteps:new Set(),timerInterval:null,timerLeft:0,timerTotal:0};
+const SYS=`Du bist Kochassistent für 2 Personen in Zürich. 1 Person vegi (kein Fisch), 1 Person vegi + optional Fleisch separat. Basis immer vegi. Mittags nur Mikrowelle oder kalt. Je 6 Portionen (2 Abend + 2 Mittag + 2 Einfrieren). Reste klar anders als Abend. Keine 2 schweren KH kombinieren. Mediterran/thematisch kohärent. Proteinreich. Empfindliche Zutaten früh in der Woche.
+Antworte NUR mit validem JSON:
+{"vorschlaege":[{"id":1,"thema":"Thema","kochabende":["Mo","Mi","Fr"],"gerichte":[{"tag":"Montag","abend":"Name","mittag_naechster_tag":"Mittagname","mittag_tag":"Dienstag","zutaten":[{"name":"Karotten","menge":"2 Stk"}],"schritte_vegi":[{"text":"Schritt","timer_min":0}],"schritte_fleisch":[{"text":"Fleisch optional","timer_min":5}],"prep_next":["Reste abfüllen","3 Min. Mikro"],"einfrieren":["2 Port. einfrieren","Beschriften"],"tipp":"Tipp"}]}]}`;
 
+let G={n:3,sugs:[],sel:null,steps:[],cur:0,act:0,done:new Set(),tiv:null,tl:0,tt:0,bToken:null,bUUID:null,bLists:[]};
 const $=id=>document.getElementById(id);
-const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+const sl=ms=>new Promise(r=>setTimeout(r,ms));
 
-function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));$(id).classList.add('active');window.scrollTo(0,0)}
-function setNights(n){G.nights=n;document.querySelectorAll('#nights-chips .chip').forEach(c=>c.classList.toggle('on',c.textContent.startsWith(n)))}
+function go(id){document.querySelectorAll('.scr').forEach(s=>s.classList.remove('on'));$(id).classList.add('on')}
+function setN(n){G.n=n;document.querySelectorAll('#nchips .chip').forEach(c=>c.classList.toggle('on',c.textContent.startsWith(n)))}
+function wtab(t){
+  document.querySelectorAll('.tabs .tab').forEach((el,i)=>el.classList.toggle('on',(i===0&&t==='e')||(i===1&&t==='r')));
+  $('te').style.display=t==='e'?'block':'none';
+  $('tr').style.display=t==='r'?'block':'none';
+}
+function showSt(id,msg,type){const el=$(id);el.className='st '+type;el.textContent=msg;el.style.display='block';}
 
+// Restore session
 window.addEventListener('DOMContentLoaded',()=>{
-  const s=localStorage.getItem('bring_s');
-  if(s){try{const d=JSON.parse(s);G.bringToken=d.t;G.bringUUID=d.u;
-    if($('bring-email'))$('bring-email').value=d.e||'';
-    loadBringListsAndShow();
-  }catch(e){localStorage.removeItem('bring_s')}}
+  const s=localStorage.getItem('bs');
+  if(s){try{const d=JSON.parse(s);G.bToken=d.t;G.bUUID=d.u;if($('bemail'))$('bemail').value=d.e||'';loadLists();}catch(e){localStorage.removeItem('bs');}}
 });
 
-async function bringLogin(){
-  const email=$('bring-email').value.trim(),pw=$('bring-pw').value;
-  if(!email||!pw)return;
-  const btn=$('bring-login-btn');
-  btn.innerHTML='<span class="spin white"></span> Anmelden…';btn.disabled=true;
+async function loadLists(){
+  if(!G.bToken)return;
   try{
-    const r=await fetch(`${API_B}/v2/bringauth`,{method:'POST',headers:BH,body:new URLSearchParams({email,password:pw}).toString()});
-    if(!r.ok)throw new Error(r.status===401?'Falsche Zugangsdaten':`Fehler ${r.status}`);
-    const d=await r.json();
-    G.bringToken=`${d.token_type} ${d.access_token}`;G.bringUUID=d.uuid;
-    if($('save-creds').checked)localStorage.setItem('bring_s',JSON.stringify({t:G.bringToken,u:G.bringUUID,e:email}));
-    showBringIn(email);await loadBringLists();
-  }catch(e){
-    const s=$('home-status');s.className='status err';s.textContent=`Anmeldung fehlgeschlagen: ${e.message}`;s.style.display='block';
-  }finally{btn.innerHTML='Anmelden';btn.disabled=false}
-}
-
-function showBringIn(email){
-  $('bring-form').style.display='none';$('bring-badge').style.display='block';$('bring-email-show').textContent=email;
-  $('home-sub').textContent='🟢 Bring! verbunden';
-}
-function bringLogout(){
-  G.bringToken=null;G.bringUUID=null;G.bringLists=[];
-  localStorage.removeItem('bring_s');
-  $('bring-form').style.display='block';$('bring-badge').style.display='none';$('home-sub').textContent='Deine Wochenplanung';
-}
-async function loadBringLists(){
-  if(!G.bringToken)return;
-  try{
-    const h={...BH,Authorization:G.bringToken,'X-BRING-USER-UUID':G.bringUUID};
-    const r=await fetch(`${API_B}/bringusers/${G.bringUUID}/lists`,{headers:h});
+    const h={...BH,'Authorization':G.bToken,'X-BRING-USER-UUID':G.bUUID,'Content-Type':'application/json'};
+    const r=await fetch(`${BAPI}/bringusers/${G.bUUID}/lists`,{headers:h});
     if(!r.ok)return;
     const d=await r.json();
-    G.bringLists=Array.isArray(d.lists)?d.lists:Array.isArray(d)?d:[];
-    $('bring-list-sel').innerHTML=G.bringLists.map(l=>`<option value="${l.listUuid}">${l.name}</option>`).join('');
-    $('bring-import-form').style.display='block';$('bring-not-logged').style.display='none';
-  }catch(e){}
-}
-
-async function goSuggest(){
-  show('s-suggest');
-  $('suggest-loading').style.display='block';
-  $('suggest-list').innerHTML='';$('suggest-cta').style.display='none';
-  $('suggest-err').style.display='none';
-  G.selectedSug=null;
-
-  const theme=$('theme-input').value.trim();
-  const existing=$('existing-input').value.trim();
-  const msg=`Generiere genau 3 Menüvorschläge mit je ${G.nights} Kochabenden für diese Woche.${theme?` Thema: ${theme}.`:''}${existing?` Vorhandene Zutaten: ${existing}.`:''}`;
-
-  try{
-    const r=await fetch(PROXY+'/anthropic',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:5000,system:SYSTEM,messages:[{role:'user',content:msg}]})});
-    if(!r.ok)throw new Error(`API ${r.status}`);
-    const d=await r.json();
-    const raw=d.content?.[0]?.text||'';
-    const match=raw.match(/\{[\s\S]*\}/);
-    G.suggestions=JSON.parse(match?match[0]:raw).vorschlaege||[];
-    $('suggest-loading').style.display='none';
-    renderSuggestions();
-    $('suggest-cta').style.display='block';
-  }catch(e){
-    $('suggest-loading').style.display='none';
-    const el=$('suggest-err');
-    el.className='status err';el.textContent=`Fehler: ${e.message}. Bitte nochmals versuchen.`;el.style.display='block';
-    $('suggest-cta').style.display='block';
-  }
-}
-
-function renderSuggestions(){
-  $('suggest-list').innerHTML=G.suggestions.map((s,i)=>`
-    <div class="sug-card" id="sug-${i}" onclick="selectSug(${i})">
-      <div class="sug-header">
-        <div class="sug-num">
-          <span>Option ${i+1}</span>
-          <div class="check"><svg width="10" height="10" viewBox="0 0 10 10"><path d="M2 5l2.5 2.5L8 3" stroke="#fff" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg></div>
-        </div>
-        <div class="sug-title">${s.thema}</div>
-      </div>
-      <div class="sug-body">
-        ${s.gerichte.map(g=>`
-          <div class="sug-day"><span class="sug-day-name">${g.tag.slice(0,2)}</span><span class="sug-day-dish">${g.abend}</span></div>
-          <div class="sug-next">↳ ${g.mittag_tag}: ${g.mittag_naechster_tag}</div>
-        `).join('')}
-      </div>
-    </div>`).join('');
-}
-
-function selectSug(i){
-  G.selectedSug=i;
-  document.querySelectorAll('.sug-card').forEach((el,j)=>el.classList.toggle('selected',j===i));
-}
-
-function goWeek(){
-  if(G.selectedSug===null)return;
-  const sug=G.suggestions[G.selectedSug];
-  $('week-title').textContent=sug.thema;
-  $('week-sub').textContent=sug.kochabende?.join(' · ')||'';
-  if(G.bringToken&&G.bringLists.length){$('bring-import-form').style.display='block';$('bring-not-logged').style.display='none';}
-  renderEinkaufsliste(sug);renderRezepte(sug);
-  weekTab('einkauf');show('s-week');
-}
-
-function weekTab(tab){
-  document.querySelectorAll('.tabs .tab').forEach((t,i)=>t.classList.toggle('on',(i===0&&tab==='einkauf')||(i===1&&tab==='rezepte')));
-  $('tab-einkauf').style.display=tab==='einkauf'?'block':'none';
-  $('tab-rezepte').style.display=tab==='rezepte'?'block':'none';
-}
-
-function getAllItems(sug){
-  const items=[];const seen=new Map();
-  sug.gerichte.forEach(g=>(g.zutaten||[]).forEach(z=>{
-    const k=z.name.toLowerCase();
-    if(seen.has(k)){const ex=items[seen.get(k)];ex.menge+=` + ${z.menge}`;}
-    else{seen.set(k,items.length);items.push({name:z.name,menge:z.menge});}
-  }));
-  return items;
-}
-
-function renderEinkaufsliste(sug){
-  const items=getAllItems(sug);
-  $('einkauf-list').innerHTML=items.map((item,i)=>`
-    <div class="item-row" id="ir-${i}" onclick="toggleItem(${i},event)">
-      <div class="item-check" id="ic-${i}"></div>
-      <div><div class="item-name">${item.name}</div><div class="item-spec">${item.menge}</div></div>
-    </div>`).join('');
-}
-
-function toggleItem(i,e){
-  e.stopPropagation();
-  const check=$(`ic-${i}`),row=$(`ir-${i}`);
-  const done=check.classList.toggle('done');
-  check.innerHTML=done?'<svg width="12" height="12" viewBox="0 0 12 12"><path d="M2 6l3 3 5-5" stroke="#fff" stroke-width="1.8" fill="none" stroke-linecap="round"/></svg>':'';
-  row.classList.toggle('done-row',done);
-}
-
-function renderRezepte(sug){
-  $('rezepte-list').innerHTML=sug.gerichte.map((g,ri)=>`
-    <div class="recipe-card">
-      <div class="recipe-header">
-        <div class="recipe-day">${g.tag}</div>
-        <div class="recipe-name">${g.abend}</div>
-        <div class="recipe-next">→ ${g.mittag_tag}: ${g.mittag_naechster_tag}</div>
-      </div>
-      <div class="recipe-actions">
-        <button class="btn btn-red" onclick="startCook(${ri})">👨‍🍳 Jetzt kochen</button>
-        <button class="btn btn-outline" onclick="showPrint(${ri})">📄 Als PDF</button>
-      </div>
-    </div>`).join('');
+    G.bLists=Array.isArray(d.lists)?d.lists:[];
+    $('blist').innerHTML=G.bLists.map(l=>`<option value="${l.listUuid}">${l.name}</option>`).join('');
+    $('blistwrap').style.display='block';
+    $('bemail').closest('.fld').style.display='none';
+    $('bpw').closest('.fld').style.display='none';
+    $('ibtn').textContent='In Bring! importieren';
+  }catch(e){console.warn('Listen laden:',e);}
 }
 
 async function doImport(){
-  if(!G.bringToken||G.selectedSug===null)return;
-  const sug=G.suggestions[G.selectedSug];
-  const listUuid=$('bring-list-sel').value;
-  if(!listUuid)return;
-  const items=getAllItems(sug);
-  const clearFirst=$('clear-list').checked;
-  const btn=$('import-btn');
-  btn.innerHTML='<span class="spin white"></span> Importiere…';btn.disabled=true;
-  $('import-prog').style.display='block';
-  const h={...BH,Authorization:G.bringToken,'X-BRING-USER-UUID':G.bringUUID};
-  const hj={...h,'Content-Type':'application/json'};
+  const btn=$('ibtn');
+  const dbg=$('idbg');
+  dbg.style.display='none';
+
+  // Login if needed
+  if(!G.bToken){
+    const email=$('bemail').value.trim();
+    const pw=$('bpw').value;
+    if(!email||!pw){showSt('ist','Bitte E-Mail und Passwort eingeben.','er');return;}
+    btn.innerHTML='<span class="spin w"></span> Anmelden…';btn.disabled=true;
+    try{
+      const r=await fetch(`${BAPI}/v2/bringauth`,{method:'POST',headers:BH,body:new URLSearchParams({email,password:pw}).toString()});
+      const d=await r.json();
+      if(!r.ok)throw new Error(d.message||`Fehler ${r.status}`);
+      G.bToken=`${d.token_type} ${d.access_token}`;
+      G.bUUID=d.uuid;
+      localStorage.setItem('bs',JSON.stringify({t:G.bToken,u:G.bUUID,e:email}));
+      await loadLists();
+    }catch(e){
+      showSt('ist',`Login fehlgeschlagen: ${e.message}`,'er');
+      btn.innerHTML='In Bring! importieren';btn.disabled=false;return;
+    }
+  }
+
+  if(!G.sel&&G.sel!==0){showSt('ist','Bitte zuerst eine Menüwoche auswählen.','er');return;}
+  const sug=G.sugs[G.sel];
+  const listUuid=$('blist').value;
+  if(!listUuid){showSt('ist','Bitte eine Bring!-Liste auswählen.','er');return;}
+
+  const items=getItems(sug);
+  const clearFirst=$('bclr').checked;
+  btn.innerHTML='<span class="spin w"></span> Importiere…';btn.disabled=true;
+  $('iprog').style.display='block';
+
+  const h={...BH,'Authorization':G.bToken,'X-BRING-USER-UUID':G.bUUID};
+  const hj={...BH,'Authorization':G.bToken,'X-BRING-USER-UUID':G.bUUID,'Content-Type':'application/json'};
+
   try{
+    // Leeren
     if(clearFirst){
       try{
-        const r=await fetch(`${API_B}/v2/bringlists/${listUuid}`,{headers:hj});
+        const r=await fetch(`${BAPI}/v2/bringlists/${listUuid}`,{headers:hj});
         if(r.ok){
           const d=await r.json();
-          const purchaseList=d.purchase||d.items||[];
-          const arr=Array.isArray(purchaseList)?purchaseList:[];
+          const arr=Array.isArray(d.purchase)?d.purchase:Array.isArray(d.items)?d.items:[];
           for(const it of arr){
-            const name=it.itemId||it.name||it;
-            if(name){await fetch(`${API_B}/v2/bringlists/${listUuid}`,{method:'POST',headers:h,body:new URLSearchParams({purchase:name,remove:'true'}).toString()});await sleep(80);}
+            const name=typeof it==='string'?it:(it.itemId||it.name||'');
+            if(name){
+              await fetch(`${BAPI}/v2/bringlists/${listUuid}`,{method:'POST',headers:h,
+                body:new URLSearchParams({purchase:name,remove:'true'}).toString()});
+              await sl(80);
+            }
           }
         }
-      }catch(ex){console.warn('Liste leeren fehlgeschlagen:',ex);}
+      }catch(ex){console.warn('Leeren fehlgeschlagen:',ex);}
     }
+
+    // Artikel hinzufügen – mit Debug
+    let lastResp='';
     for(let i=0;i<items.length;i++){
-      $('import-prog-bar').style.width=`${Math.round((i/items.length)*100)}%`;
+      $('iprogb').style.width=`${Math.round((i/items.length)*100)}%`;
       const {name,menge}=items[i];
-      await fetch(`${API_B}/v2/bringlists/${listUuid}`,{method:'POST',headers:h,body:new URLSearchParams({purchase:name,specification:menge}).toString()});
-      await sleep(120);
+      const body=new URLSearchParams({purchase:name,recently:'',specification:menge});
+      const r=await fetch(`${BAPI}/v2/bringlists/${listUuid}`,{method:'POST',headers:h,body:body.toString()});
+      lastResp=`Status ${r.status} | ${name}`;
+      await sl(150);
     }
-    $('import-prog-bar').style.width='100%';
-    const st=$('import-status');st.className='status ok';st.textContent=`✓ ${items.length} Artikel in Bring! importiert!`;st.style.display='block';
+
+    $('iprogb').style.width='100%';
+
+    // Debug anzeigen
+    dbg.textContent=`Letzter Request: ${lastResp}`;
+    dbg.style.display='block';
+
+    showSt('ist',`✓ ${items.length} Artikel gesendet (Status siehe Debug unten)${lastResp.includes('400')||lastResp.includes('401')||lastResp.includes('500')?' – Fehler aufgetreten!':' – prüfe Bring! App'}` ,'ok');
     btn.innerHTML='✓ Importiert';
+
   }catch(e){
-    const st=$('import-status');st.className='status err';st.textContent=`Import fehlgeschlagen: ${e.message}`;st.style.display='block';
+    showSt('ist',`Import fehlgeschlagen: ${e.message}`,'er');
     btn.innerHTML='Nochmals versuchen';btn.disabled=false;
   }
 }
 
-// ===== COOK =====
-function startCook(ri){
-  const sug=G.suggestions[G.selectedSug];
-  const g=sug.gerichte[ri];
-  G.cookSteps=buildSteps(g);
-  G.currentStep=0;G.activeStep=0;
-  G.completedSteps=new Set();
-  clearInterval(G.timerInterval);
-  $('cook-title').textContent=g.abend;
-  renderCookSegments();renderCookStep();
-  show('s-cook');
-}
-
-function buildSteps(g){
-  const steps=[];
-  (g.schritte_vegi||[]).forEach(s=>steps.push({...s,type:'vegi'}));
-  (g.schritte_fleisch||[]).forEach(s=>steps.push({...s,type:'fleisch'}));
-  if(g.prep_next?.length)steps.push({text:g.prep_next.join('\n'),type:'prep',timer_min:0,isMultiline:true});
-  if(g.einfrieren?.length)steps.push({text:g.einfrieren.join('\n'),type:'freeze',timer_min:0,isMultiline:true});
-  if(g.tipp)steps.push({text:g.tipp,type:'tipp',timer_min:0});
-  return steps;
-}
-
-function renderCookSegments(){
-  const n=G.cookSteps.length;
-  $('cook-segs').innerHTML=Array.from({length:n},(_,i)=>`<div class="seg ${i<G.activeStep?'done':i===G.activeStep?'active':''}" id="seg-${i}"></div>`).join('');
-}
-
-function updateSegments(){
-  G.cookSteps.forEach((_,i)=>{
-    const el=$(`seg-${i}`);
-    if(!el)return;
-    el.className='seg '+(i<G.activeStep?'done':i===G.activeStep?'active':'');
-  });
-  const pct=Math.round((G.activeStep/Math.max(1,G.cookSteps.length-1))*100);
-  $('cook-prog-bar').style.width=`${pct}%`;
-  $('cook-step-label').textContent=`Schritt ${G.currentStep+1} von ${G.cookSteps.length}`;
-  const isViewing=G.currentStep!==G.activeStep;
-  $('cook-jump-btn').style.display=isViewing?'block':'none';
-}
-
-function renderCookStep(){
-  clearInterval(G.timerInterval);
-  const step=G.cookSteps[G.currentStep];
-  const isDone=G.completedSteps.has(G.currentStep);
-  const isActive=G.currentStep===G.activeStep;
-  const isLast=G.currentStep===G.cookSteps.length-1;
-
-  const badges={vegi:`<div class="cook-type-badge badge-vegi">🌿 Basis – beide</div>`,fleisch:`<div class="cook-type-badge badge-fleisch">🍖 Fleisch-Beilage</div>`,prep:`<div class="cook-type-badge badge-prep">📦 Für morgen</div>`,freeze:`<div class="cook-type-badge badge-freeze">🧊 Einfrieren</div>`,tipp:`<div class="cook-type-badge badge-vegi">💡 Tipp</div>`};
-
-  const lines=(step.text||'').split('\n').filter(Boolean);
-  const textHtml=step.isMultiline
-    ?`<div class="cook-step-lines">${lines.map((l,i)=>`<div style="display:flex;gap:10px;margin-bottom:4px"><span style="font-size:13px;font-weight:700;color:var(--red);min-width:18px">${i+1}.</span><span>${l}</span></div>`).join('')}</div>`
-    :`<div class="cook-step-text">${step.text}</div>`;
-
-  let timerHtml='';
-  if(step.timer_min>0){
-    G.timerLeft=step.timer_min*60;G.timerTotal=G.timerLeft;
-    timerHtml=`<div class="timer-box">
-      <div class="timer-display" id="t-disp">${fmt(G.timerLeft)}</div>
-      <div class="timer-sub">${step.timer_min} Minuten</div>
-      <div class="timer-prog"><div class="timer-prog-bar" id="t-bar" style="width:100%"></div></div>
-      <button class="btn btn-red" id="t-btn" onclick="startTimer()" style="padding:10px;font-size:13px">▶ Timer starten</button>
-    </div>`;
+async function goSuggest(){
+  go('ss');$('sload').style.display='block';$('slist').innerHTML='';$('scta').style.display='none';$('serr').innerHTML='';
+  G.sel=null;
+  const theme=$('theme').value.trim();const exist=$('exist').value.trim();
+  const msg=`Generiere genau 3 Menüvorschläge mit je ${G.n} Kochabenden.${theme?' Thema: '+theme+'.':''}${exist?' Vorhanden: '+exist+'.':''}`;
+  try{
+    const r=await fetch(PROXY+'/anthropic',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:5000,system:SYS,messages:[{role:'user',content:msg}]})});
+    if(!r.ok)throw new Error(`API ${r.status}`);
+    const d=await r.json();
+    const raw=d.content?.[0]?.text||'';
+    const m=raw.match(/\{[\s\S]*\}/);
+    G.sugs=JSON.parse(m?m[0]:raw).vorschlaege||[];
+    $('sload').style.display='none';renderSugs();$('scta').style.display='block';
+  }catch(e){
+    $('sload').style.display='none';
+    const el=$('serr');el.className='st er';el.textContent=`Fehler: ${e.message}`;
+    $('scta').style.display='block';
   }
+}
 
-  const alreadyDoneHtml=`<div class="already-done" onclick="toggleAlreadyDone()">
-    <div class="already-done-check ${isDone?'on':''}" id="already-check">
-      ${isDone?'<svg width="11" height="11" viewBox="0 0 11 11"><path d="M2 5.5l2.5 2.5L9 3" stroke="#fff" stroke-width="1.8" fill="none" stroke-linecap="round"/></svg>':''}
-    </div>
-    <span>Schritt wurde bereits vorbereitet</span>
-  </div>`;
-
-  const mainBtnHtml=isDone
-    ?`<button class="btn btn-outline" style="border-color:var(--green);color:var(--green)" onclick="uncompleteStep()">↩ Als unerledigt markieren</button>`
-    :`<button class="btn btn-red" onclick="completeStep()">${isLast?'✓ Rezept fertig':'✓ Schritt abschliessen'}</button>`;
-
-  $('cook-body').innerHTML=`
-    ${badges[step.type]||''}
-    ${textHtml}
-    ${timerHtml}
-    ${alreadyDoneHtml}
-    <div class="cook-actions">
-      ${mainBtnHtml}
-      <div class="cook-nav">
-        <button class="btn btn-outline" onclick="cookNav(-1)" ${G.currentStep===0?'disabled':''}>← Zurück</button>
-        <button class="btn btn-outline" onclick="cookNav(1)" ${G.currentStep===G.cookSteps.length-1?'disabled':''}>Weiter →</button>
+function renderSugs(){
+  $('slist').innerHTML=G.sugs.map((s,i)=>`
+    <div class="sug${i===G.sel?' sel':''}" id="sg${i}" onclick="selSug(${i})">
+      <div class="sug-h">
+        <div class="sug-n"><span>Option ${i+1}</span>${i===G.sel?'<span style="background:var(--red);border-radius:50%;width:16px;height:16px;display:flex;align-items:center;justify-content:center;font-size:10px;color:#fff">✓</span>':''}</div>
+        <div class="sug-t">${s.thema}</div>
       </div>
-    </div>`;
+      <div class="sug-b">${s.gerichte.map(g=>`<div class="sug-d"><b style="color:var(--txt);min-width:22px;display:inline-block">${g.tag.slice(0,2)}</b> ${g.abend}</div><div class="sug-nx">↳ ${g.mittag_tag}: ${g.mittag_naechster_tag}</div>`).join('')}</div>
+    </div>`).join('');
+}
+function selSug(i){G.sel=i;renderSugs();}
 
-  updateSegments();
+function goWeek(){
+  if(G.sel===null)return;
+  const s=G.sugs[G.sel];
+  $('wtit').textContent=s.thema;$('wsub').textContent=s.kochabende?.join(' · ')||'';
+  renderEink(s);renderRez(s);wtab('e');go('sw');
 }
 
-function cookNav(dir){
-  clearInterval(G.timerInterval);
-  const next=G.currentStep+dir;
-  if(next<0||next>=G.cookSteps.length)return;
-  G.currentStep=next;
-  renderCookStep();
+function getItems(sug){
+  const items=[];const seen=new Map();
+  sug.gerichte.forEach(g=>(g.zutaten||[]).forEach(z=>{
+    const k=z.name.toLowerCase();
+    if(seen.has(k)){items[seen.get(k)].menge+=` + ${z.menge}`;}
+    else{seen.set(k,items.length);items.push({name:z.name,menge:z.menge});}
+  }));return items;
 }
 
-function jumpToCurrent(){
-  G.currentStep=G.activeStep;
-  renderCookStep();
+function renderEink(sug){
+  const items=getItems(sug);
+  $('elist').innerHTML=items.map((it,i)=>`
+    <div class="irow" id="ir${i}" onclick="togItem(${i})">
+      <div class="ichk" id="ic${i}"></div>
+      <div><div class="iname">${it.name}</div><div class="ispec">${it.menge}</div></div>
+    </div>`).join('');
+}
+function togItem(i){
+  const c=$(`ic${i}`),r=$(`ir${i}`);
+  const on=c.classList.toggle('on');
+  c.innerHTML=on?'<svg width="11" height="11" viewBox="0 0 11 11"><path d="M2 5.5l2.5 2.5L9 3" stroke="#fff" stroke-width="1.8" fill="none" stroke-linecap="round"/></svg>':'';
+  r.classList.toggle('done',on);
 }
 
-function completeStep(){
-  G.completedSteps.add(G.currentStep);
-  clearInterval(G.timerInterval);
-  if(G.currentStep===G.cookSteps.length-1){show('s-week');return;}
-  if(G.currentStep===G.activeStep){G.activeStep=Math.min(G.activeStep+1,G.cookSteps.length-1);}
-  G.currentStep=G.activeStep;
-  renderCookStep();
+function renderRez(sug){
+  $('rlist').innerHTML=sug.gerichte.map((g,ri)=>`
+    <div class="rcard">
+      <div class="rh"><div class="rday">${g.tag}</div><div class="rname">${g.abend}</div><div class="rnext">→ ${g.mittag_tag}: ${g.mittag_naechster_tag}</div></div>
+      <div class="ract">
+        <button class="btn btn-red" onclick="startCook(${ri})">👨‍🍳 Jetzt kochen</button>
+        <button class="btn btn-out" onclick="showPrint(${ri})">📄 Als PDF</button>
+      </div>
+    </div>`).join('');
 }
 
-function uncompleteStep(){
-  G.completedSteps.delete(G.currentStep);
-  renderCookStep();
+// COOK
+function buildSteps(g){
+  const st=[];
+  (g.schritte_vegi||[]).forEach(s=>st.push({...s,type:'v'}));
+  (g.schritte_fleisch||[]).forEach(s=>st.push({...s,type:'f'}));
+  if(g.prep_next?.length)st.push({text:g.prep_next.join('\n'),type:'p',timer_min:0,ml:true});
+  if(g.einfrieren?.length)st.push({text:g.einfrieren.join('\n'),type:'fr',timer_min:0,ml:true});
+  if(g.tipp)st.push({text:g.tipp,type:'t',timer_min:0});
+  return st;
 }
-
-function toggleAlreadyDone(){
-  if(G.completedSteps.has(G.currentStep)){uncompleteStep();}else{completeStep();}
+function startCook(ri){
+  const g=G.sugs[G.sel].gerichte[ri];
+  G.steps=buildSteps(g);G.cur=0;G.act=0;G.done=new Set();clearInterval(G.tiv);
+  $('ctit').textContent=g.abend;renderSegs();renderStep();go('sc');
 }
-
-function startTimer(){
-  const btn=$('t-btn');if(!btn)return;
-  btn.textContent='⏸ Läuft…';btn.disabled=true;
-  $('t-disp').classList.add('running');
-  G.timerInterval=setInterval(()=>{
-    G.timerLeft--;
-    if(G.timerLeft<=0){
-      clearInterval(G.timerInterval);
-      $('t-disp').textContent='✓ Fertig!';$('t-disp').classList.remove('running');$('t-disp').classList.add('done');
-      $('t-bar').style.width='0%';btn.textContent='✓ Fertig';return;
-    }
-    $('t-disp').textContent=fmt(G.timerLeft);
-    $('t-bar').style.width=`${Math.round((G.timerLeft/G.timerTotal)*100)}%`;
-    if(G.timerLeft<=60)$('t-disp').style.color='#c62828';
+function renderSegs(){
+  $('csegs').innerHTML=G.steps.map((_,i)=>`<div class="cseg ${i<G.act?'done':i===G.act?'act':''}" id="sg_${i}"></div>`).join('');
+}
+function updSegs(){
+  G.steps.forEach((_,i)=>{const el=$(`sg_${i}`);if(el)el.className=`cseg ${i<G.act?'done':i===G.act?'act':''}`;});
+  $('cprogb').style.width=`${Math.round((G.act/Math.max(1,G.steps.length-1))*100)}%`;
+  $('csteplbl').textContent=`Schritt ${G.cur+1} von ${G.steps.length}`;
+  $('cjump').style.display=G.cur!==G.act?'block':'none';
+}
+const badges={v:'<div class="badge bv">🌿 Basis – beide</div>',f:'<div class="badge bf">🍖 Fleisch-Beilage</div>',p:'<div class="badge bp">📦 Für morgen</div>',fr:'<div class="badge bfr">🧊 Einfrieren</div>',t:'<div class="badge bv">💡 Tipp</div>'};
+function renderStep(){
+  clearInterval(G.tiv);
+  const s=G.steps[G.cur];const isDone=G.done.has(G.cur);const isLast=G.cur===G.steps.length-1;
+  const lines=(s.text||'').split('\n').filter(Boolean);
+  const txt=s.ml?`<div class="csml">${lines.map((l,i)=>`<div style="display:flex;gap:8px;margin-bottom:4px"><span style="font-size:12px;font-weight:700;color:var(--red);min-width:16px">${i+1}.</span><span>${l}</span></div>`).join('')}</div>`:`<div class="cstxt">${s.text}</div>`;
+  let th='';
+  if(s.timer_min>0){G.tl=s.timer_min*60;G.tt=G.tl;th=`<div class="tbox"><div class="tdisp" id="td">${fmt(G.tl)}</div><div class="tsub">${s.timer_min} Minuten</div><div class="tprog"><div class="tprogb" id="tb" style="width:100%"></div></div><button class="btn btn-red" id="tbtn" onclick="startT()" style="padding:9px;font-size:13px">▶ Timer starten</button></div>`;}
+  const adHTML=`<div class="adone" onclick="togDone()"><div class="adchk ${isDone?'on':''}" id="adchk">${isDone?'<svg width="10" height="10" viewBox="0 0 10 10"><path d="M2 5l2.5 2.5L8 2.5" stroke="#fff" stroke-width="1.6" fill="none" stroke-linecap="round"/></svg>':''}</div><span style="font-size:13px;color:var(--txt2)">Schritt bereits vorbereitet</span></div>`;
+  const mainBtn=isDone?`<button class="btn btn-grn" onclick="unDone()">↩ Als unerledigt markieren</button>`:`<button class="btn btn-red" onclick="doComplete()">${isLast?'✓ Rezept fertig':'✓ Schritt abschliessen'}</button>`;
+  $('cbody').innerHTML=`${badges[s.type]||''}${txt}${th}${adHTML}<div style="display:flex;flex-direction:column;gap:8px">${mainBtn}<div class="cnav"><button class="btn btn-out" onclick="cnav(-1)" ${G.cur===0?'disabled':''}>← Zurück</button><button class="btn btn-out" onclick="cnav(1)" ${G.cur===G.steps.length-1?'disabled':''}>Weiter →</button></div></div>`;
+  updSegs();
+}
+function cnav(d){clearInterval(G.tiv);const n=G.cur+d;if(n<0||n>=G.steps.length)return;G.cur=n;renderStep();}
+function jumpCur(){G.cur=G.act;renderStep();}
+function doComplete(){G.done.add(G.cur);clearInterval(G.tiv);if(G.cur===G.steps.length-1){go('sw');return;}if(G.cur===G.act)G.act=Math.min(G.act+1,G.steps.length-1);G.cur=G.act;renderStep();}
+function unDone(){G.done.delete(G.cur);renderStep();}
+function togDone(){G.done.has(G.cur)?unDone():doComplete();}
+function startT(){
+  const btn=$('tbtn');if(!btn)return;
+  btn.textContent='⏸ Läuft…';btn.disabled=true;$('td').classList.add('run');
+  G.tiv=setInterval(()=>{
+    G.tl--;
+    if(G.tl<=0){clearInterval(G.tiv);$('td').textContent='✓ Fertig!';$('td').classList.remove('run');$('td').classList.add('fin');$('tb').style.width='0%';btn.textContent='✓ Fertig';return;}
+    $('td').textContent=fmt(G.tl);$('tb').style.width=`${Math.round((G.tl/G.tt)*100)}%`;
+    if(G.tl<=30)$('td').style.color='#b71c1c';
   },1000);
 }
-
-function fmt(s){const m=Math.floor(s/60),sec=s%60;return`${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}`}
+function fmt(s){return`${String(Math.floor(s/60)).padStart(2,'0')}:${String(s%60).padStart(2,'0')}`}
 
 function showPrint(ri){
-  const sug=G.suggestions[G.selectedSug];
-  const g=sug.gerichte[ri];
-  const items=getAllItems(sug);
-  $('print-content').innerHTML=`
-    <h1 style="font-size:22px;font-weight:800;margin-bottom:4px">${g.abend}</h1>
-    <p style="color:#888;margin-bottom:20px">${g.tag} → ${g.mittag_tag}: ${g.mittag_naechster_tag}</p>
-    <h2 style="font-size:15px;font-weight:700;margin-bottom:10px;color:#e8390e">Zutaten</h2>
-    <table style="width:100%;border-collapse:collapse;margin-bottom:20px;font-size:14px">
-      ${(g.zutaten||[]).map(z=>`<tr><td style="padding:6px 0;border-bottom:1px solid #f0f0f0;font-weight:500">☐ ${z.name}</td><td style="padding:6px 0;border-bottom:1px solid #f0f0f0;color:#888;text-align:right">${z.menge}</td></tr>`).join('')}
-    </table>
-    <h2 style="font-size:15px;font-weight:700;margin-bottom:10px;color:#2e7d32">🌿 Zubereitung – Basis</h2>
-    ${(g.schritte_vegi||[]).map((s,i)=>`<div style="margin-bottom:10px;font-size:14px"><strong style="color:#e8390e">${i+1}.</strong> ${s.text}${s.timer_min?` <span style="color:#888">[${s.timer_min} Min.]</span>`:''}</div>`).join('')}
-    ${g.schritte_fleisch?.length?`<h2 style="font-size:15px;font-weight:700;margin:16px 0 10px;color:#e65100">🍖 Fleisch-Beilage</h2>${g.schritte_fleisch.map((s,i)=>`<div style="margin-bottom:10px;font-size:14px"><strong>${i+1}.</strong> ${s.text}</div>`).join('')}`:''}
-    <h2 style="font-size:15px;font-weight:700;margin:16px 0 10px;color:#1565c0">📦 Für morgen</h2>
-    ${(g.prep_next||[]).map((s,i)=>`<div style="margin-bottom:8px;font-size:14px"><strong>${i+1}.</strong> ${s}</div>`).join('')}
-    <h2 style="font-size:15px;font-weight:700;margin:16px 0 10px;color:#0277bd">🧊 Einfrieren</h2>
-    ${(g.einfrieren||[]).map((s,i)=>`<div style="margin-bottom:8px;font-size:14px"><strong>${i+1}.</strong> ${s}</div>`).join('')}
-    ${g.tipp?`<div style="background:#fff9c4;border-left:4px solid #f9a825;padding:12px;margin-top:16px;border-radius:4px;font-size:14px"><strong>💡 Tipp:</strong> ${g.tipp}</div>`:''}
-    <h2 style="font-size:15px;font-weight:700;margin:24px 0 10px;color:#e8390e">🛒 Vollständige Einkaufsliste</h2>
-    <table style="width:100%;border-collapse:collapse;font-size:14px">
-      ${items.map(z=>`<tr><td style="padding:6px 0;border-bottom:1px solid #f0f0f0">☐ ${z.name}</td><td style="padding:6px 0;border-bottom:1px solid #f0f0f0;color:#888;text-align:right">${z.menge}</td></tr>`).join('')}
-    </table>`;
-  show('s-print');
+  const sug=G.sugs[G.sel];const g=sug.gerichte[ri];const items=getItems(sug);
+  $('pcon').innerHTML=`<h1 style="font-size:20px;font-weight:800;margin-bottom:4px">${g.abend}</h1><p style="color:#888;margin-bottom:16px;font-size:13px">${g.tag} → ${g.mittag_tag}: ${g.mittag_naechster_tag}</p><h2 style="font-size:14px;font-weight:700;margin-bottom:8px;color:#e8390e">Zutaten</h2><table style="width:100%;border-collapse:collapse;margin-bottom:16px;font-size:13px">${(g.zutaten||[]).map(z=>`<tr><td style="padding:5px 0;border-bottom:1px solid #f0f0f0;font-weight:500">☐ ${z.name}</td><td style="padding:5px 0;border-bottom:1px solid #f0f0f0;color:#888;text-align:right">${z.menge}</td></tr>`).join('')}</table><h2 style="font-size:14px;font-weight:700;margin-bottom:8px;color:#2e7d32">🌿 Zubereitung</h2>${(g.schritte_vegi||[]).map((s,i)=>`<div style="margin-bottom:8px;font-size:13px"><strong style="color:#e8390e">${i+1}.</strong> ${s.text}${s.timer_min?` <span style="color:#888">[${s.timer_min} Min.]</span>`:''}</div>`).join('')}${g.schritte_fleisch?.length?`<h2 style="font-size:14px;font-weight:700;margin:12px 0 8px;color:#e65100">🍖 Fleisch-Beilage</h2>${g.schritte_fleisch.map((s,i)=>`<div style="margin-bottom:8px;font-size:13px"><strong>${i+1}.</strong> ${s.text}</div>`).join('')}`:''}<h2 style="font-size:14px;font-weight:700;margin:12px 0 8px;color:#1565c0">📦 Für morgen</h2>${(g.prep_next||[]).map((s,i)=>`<div style="margin-bottom:6px;font-size:13px"><strong>${i+1}.</strong> ${s}</div>`).join('')}<h2 style="font-size:14px;font-weight:700;margin:12px 0 8px;color:#0277bd">🧊 Einfrieren</h2>${(g.einfrieren||[]).map((s,i)=>`<div style="margin-bottom:6px;font-size:13px"><strong>${i+1}.</strong> ${s}</div>`).join('')}${g.tipp?`<div style="background:#fff9c4;border-left:3px solid #f9a825;padding:10px;margin-top:12px;border-radius:4px;font-size:13px"><strong>💡</strong> ${g.tipp}</div>`:''}<h2 style="font-size:14px;font-weight:700;margin:16px 0 8px;color:#e8390e">🛒 Einkaufsliste</h2><table style="width:100%;border-collapse:collapse;font-size:13px">${items.map(z=>`<tr><td style="padding:5px 0;border-bottom:1px solid #f0f0f0">☐ ${z.name}</td><td style="padding:5px 0;border-bottom:1px solid #f0f0f0;color:#888;text-align:right">${z.menge}</td></tr>`).join('')}</table>`;
+  go('sp');
 }
 
-async function doImportOrLogin(){
-  // If already have token and lists, do import
-  if(G.bringToken && G.bringLists.length){
-    doImport(); return;
-  }
-  // Otherwise try to login first
-  const email=$('bring-email')?.value?.trim();
-  const pw=$('bring-pw')?.value;
-  if(!email||!pw){
-    const st=$('import-status');
-    st.className='status err';
-    st.textContent='Bitte E-Mail und Passwort eingeben.';
-    st.style.display='block';
-    return;
-  }
-  const btn=$('import-btn');
-  btn.innerHTML='<span class="spin white"></span> Anmelden…';btn.disabled=true;
-  try{
-    const r=await fetch(`${API_B}/v2/bringauth`,{method:'POST',headers:BH,body:new URLSearchParams({email,password:pw}).toString()});
-    if(!r.ok)throw new Error(r.status===401?'Falsche Zugangsdaten':`Fehler ${r.status}`);
-    const d=await r.json();
-    G.bringToken=`${d.token_type} ${d.access_token}`;G.bringUUID=d.uuid;
-    localStorage.setItem('bring_s',JSON.stringify({t:G.bringToken,u:G.bringUUID,e:email}));
-    await loadBringListsAndShow();
-    doImport();
-  }catch(e){
-    const st=$('import-status');
-    if(e.message.includes('fetch')){
-      st.className='status err';
-      st.textContent='Bring! ist über den Browser leider nicht erreichbar (CORS). Import muss manuell erfolgen.';
-    } else {
-      st.className='status err';st.textContent=`Fehler: ${e.message}`;
-    }
-    st.style.display='block';
-    btn.innerHTML='In Bring! importieren';btn.disabled=false;
-  }
-}
-
-async function loadBringListsAndShow(){
-  await loadBringLists();
-  if(G.bringLists.length && $('bring-list-wrap')){
-    $('bring-list-wrap').style.display='block';
-    // Hide email/pw fields
-    const emailF=document.querySelector('#bring-import-form .field:nth-child(1)');
-    const pwF=document.querySelector('#bring-import-form .field:nth-child(2)');
-    if(emailF)emailF.style.display='none';
-    if(pwF)pwF.style.display='none';
-    $('import-btn').textContent='In Bring! importieren';
-  }
-}
-
-function loadTestData(){
-  G.suggestions=[{
-    id:1, thema:"Test – Mediterran", kochabende:["Montag","Mittwoch","Freitag"],
-    gerichte:[
-      {tag:"Montag",abend:"Saag Paneer mit Basmatireis",mittag_naechster_tag:"Saag Paneer aufgewärmt",mittag_tag:"Dienstag",
-       zutaten:[{name:"Paneer",menge:"450g"},{name:"Spinat TK",menge:"500g"},{name:"Zwiebel",menge:"1 Stk"},{name:"Basmatireis",menge:"400g"}],
-       schritte_vegi:[{text:"Ghee erhitzen, Paneer goldbraun anbraten, beiseite stellen.",timer_min:0},{text:"Zwiebel, Knoblauch, Ingwer anschwitzen. Gewürze rösten.",timer_min:0},{text:"Spinat zugeben, 10 Min. köcheln lassen.",timer_min:10},{text:"Paneer zurück, mit Zitrone abschmecken.",timer_min:0}],
-       schritte_fleisch:[{text:"Hähnchen separat mit Gewürzen anbraten – neben Saag Paneer servieren.",timer_min:6}],
-       prep_next:["Saag Paneer in Tupperdose abfüllen","Reis separat abfüllen","Mittags: 3 Min. Mikrowelle"],
-       einfrieren:["2 Portionen Saag Paneer einfrieren","Beschriften und einfrieren"],
-       tipp:"Spinat gut ausdrücken damit die Sauce nicht wässrig wird."},
-      {tag:"Mittwoch",abend:"Zucchini-Ricotta-Pasta",mittag_naechster_tag:"Kalter Pastasalat",mittag_tag:"Donnerstag",
-       zutaten:[{name:"Pasta",menge:"600g"},{name:"Zucchini",menge:"3 Stk"},{name:"Ricotta",menge:"250g"},{name:"Parmesan",menge:"80g"},{name:"Cherrytomaten",menge:"200g"}],
-       schritte_vegi:[{text:"Pasta kochen – 200g für Do beiseite stellen.",timer_min:0},{text:"Zucchini goldbraun braten, Knoblauch zugeben.",timer_min:0},{text:"Ricotta und Parmesan einrühren, Kochwasser zugeben.",timer_min:0},{text:"Pasta unterheben, abschmecken.",timer_min:0}],
-       schritte_fleisch:[{text:"Pancetta separat knusprig ausbraten und über die Pasta streuen.",timer_min:4}],
-       prep_next:["200g Pasta mit Öl in Tupperdose","Cherrytomaten halbiert dazu","Olivenöl, Zitrone, Parmesan drüber","Mittags kalt essen – kein Aufwärmen nötig"],
-       einfrieren:["2 Portionen Pasta + Sauce einfrieren","Auftauen: über Nacht, 3 Min. Mikrowelle"],
-       tipp:"Ricotta erst am Schluss einrühren – nicht zu lange kochen."},
-      {tag:"Freitag",abend:"Ratatouille mit weissen Bohnen",mittag_naechster_tag:"Ratatouille-Suppe",mittag_tag:"Samstag",
-       zutaten:[{name:"Zucchini",menge:"2 Stk"},{name:"Aubergine",menge:"1 Stk"},{name:"Peperoni",menge:"2 Stk"},{name:"Weisse Bohnen",menge:"2 Dosen"},{name:"Feta",menge:"200g"}],
-       schritte_vegi:[{text:"Aubergine salzen, 10 Min. ziehen lassen, trocken tupfen.",timer_min:10},{text:"Gemüse anbraten, Tomaten und Bohnen zugeben.",timer_min:0},{text:"25 Min. köcheln lassen.",timer_min:25},{text:"Feta und Basilikum darüber.",timer_min:0}],
-       schritte_fleisch:[{text:"Merguez separat anbraten – neben Ratatouille servieren.",timer_min:8}],
-       prep_next:["Ratatouille in Topf, 500ml Bouillon dazu, pürieren","In Tupperdosen abfüllen","Mittags: 4 Min. Mikrowelle, Feta drüber"],
-       einfrieren:["2 Portionen Ratatouille einfrieren","Auftauen: über Nacht, 4 Min. Mikrowelle"],
-       tipp:"Ratatouille schmeckt am nächsten Tag noch besser."}
-    ]
-  }];
-  G.selectedSug=0;
-  goWeek();
+function loadTest(){
+  G.sugs=[{id:1,thema:"Test – Mediterran",kochabende:["Montag","Mittwoch","Freitag"],gerichte:[
+    {tag:"Montag",abend:"Saag Paneer mit Basmatireis",mittag_naechster_tag:"Saag Paneer aufgewärmt",mittag_tag:"Dienstag",
+     zutaten:[{name:"Paneer",menge:"450g"},{name:"Spinat TK",menge:"500g"},{name:"Zwiebel",menge:"1 Stk"},{name:"Basmatireis",menge:"400g"},{name:"Ghee",menge:"2 EL"},{name:"Knoblauch",menge:"3 Zehen"}],
+     schritte_vegi:[{text:"Ghee erhitzen, Paneer goldbraun anbraten.",timer_min:0},{text:"Zwiebel, Knoblauch, Ingwer anschwitzen. 10 Min. köcheln.",timer_min:10}],
+     schritte_fleisch:[{text:"Hähnchen separat anbraten – neben Saag Paneer servieren.",timer_min:6}],
+     prep_next:["Saag Paneer in Tupperdose","Reis separat","Mittags: 3 Min. Mikrowelle"],
+     einfrieren:["2 Portionen einfrieren","Beschriften"],tipp:"Spinat gut ausdrücken."},
+    {tag:"Mittwoch",abend:"Zucchini-Ricotta-Pasta",mittag_naechster_tag:"Kalter Pastasalat",mittag_tag:"Donnerstag",
+     zutaten:[{name:"Pasta",menge:"600g"},{name:"Zucchini",menge:"3 Stk"},{name:"Ricotta",menge:"250g"},{name:"Parmesan",menge:"80g"}],
+     schritte_vegi:[{text:"Pasta kochen.",timer_min:0},{text:"Zucchini braten, Ricotta einrühren.",timer_min:0}],
+     schritte_fleisch:[{text:"Pancetta knusprig braten.",timer_min:4}],
+     prep_next:["Pasta kalt abfüllen"],einfrieren:["2 Portionen einfrieren"],tipp:"Ricotta am Schluss."}
+  ]}];
+  G.sel=0;goWeek();
 }
 </script>
 </body>
