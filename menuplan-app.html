@@ -288,14 +288,14 @@ async function doImport(){
     // Leeren
     if(clearFirst){
       try{
-        const r=await fetch(`${BAPI}/v2/bringlists/${listUuid}`,{headers:hj});
+        const r=await fetch(`${BAPI}/bringlists/${listUuid}`,{headers:hj});
         if(r.ok){
           const d=await r.json();
           const arr=Array.isArray(d.purchase)?d.purchase:Array.isArray(d.items)?d.items:[];
           for(const it of arr){
             const name=typeof it==='string'?it:(it.itemId||it.name||'');
             if(name){
-              await fetch(`${BAPI}/v2/bringlists/${listUuid}`,{method:'POST',headers:h,
+              await fetch(`${BAPI}/bringlists/${listUuid}`,{method:'POST',headers:h,
                 body:new URLSearchParams({purchase:name,remove:'true'}).toString()});
               await sl(80);
             }
@@ -310,7 +310,7 @@ async function doImport(){
       $('iprogb').style.width=`${Math.round((i/items.length)*100)}%`;
       const {name,menge}=items[i];
       const body=new URLSearchParams({purchase:name,recently:'',specification:menge});
-      const r=await fetch(`${BAPI}/v2/bringlists/${listUuid}`,{method:'POST',headers:h,body:body.toString()});
+      const r=await fetch(`${BAPI}/bringlists/${listUuid}`,{method:'POST',headers:h,body:body.toString()});
       lastResp=`Status ${r.status} | ${name}`;
       await sl(150);
     }
