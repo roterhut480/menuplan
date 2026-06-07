@@ -107,6 +107,36 @@ input:focus,select:focus{border-color:var(--red)}
 <!-- HOME -->
 <div class="scr on" id="sh">
   <div class="hero"><h1>🥦 Menüplan</h1><p>Deine Wochenplanung</p></div>
+  <div id="saved-week-banner" style="display:none;margin:10px 10px 0;background:#fff;border-radius:12px;border:.5px solid #e0e0e0;overflow:hidden">
+    <div style="padding:12px 14px">
+      <div style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#888;margin-bottom:6px">Letzte Woche gespeichert</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:8px">
+        <div>
+          <div style="font-size:13px;color:#555">Einkauf vom <span class="sw-date" style="font-weight:600;color:#111"></span></div>
+          <div style="font-size:12px;color:#888;margin-top:2px">Menüplan noch verfügbar</div>
+        </div>
+        <button class="btn btn-red" onclick="loadSavedWeek()" style="width:auto;padding:9px 16px;font-size:13px;flex-shrink:0">Öffnen →</button>
+      </div>
+    </div>
+  </div>
+  <div class="card"><div class="cp">
+    <div class="clbl">GitHub Sync (optional)</div>
+    <div id="gh-setup">
+      <div class="fld"><label>GitHub Token (public_repo)</label>
+        <input type="password" id="gh-token" placeholder="ghp_..." autocomplete="off">
+      </div>
+      <div style="font-size:11px;color:var(--gr3);margin-bottom:10px">Wird nur lokal gespeichert. Ermöglicht Speichern/Laden des Menüplans auf GitHub – auch auf anderen Geräten.</div>
+      <button class="btn btn-out" style="padding:10px;font-size:13px" onclick="saveGhToken()">Token speichern</button>
+    </div>
+    <div id="gh-connected" style="display:none">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
+        <div style="width:9px;height:9px;border-radius:50%;background:var(--grn);flex-shrink:0"></div>
+        <span style="font-size:13px;color:var(--txt2)">GitHub verbunden – roterhut480/menuplan</span>
+      </div>
+      <button class="btn btn-out" style="padding:9px;font-size:12px" onclick="disconnectGh()">Verbindung trennen</button>
+    </div>
+  </div></div>
+
   <div class="card"><div class="cp">
     <div class="clbl">Diese Woche</div>
     <div class="fld"><label>Kochabende</label>
@@ -231,7 +261,7 @@ function buildSYS(){
 
   const json='{"vorschlaege":[{"id":1,"thema":"Thema","kochabende":["Mo","Mi","Fr"],"gerichte":[{"tag":"Montag","abend":"Name",'+mittagField+'"zutaten":[{"name":"Karotten","menge":"2 Stk"}],"schritte_vegi":[{"text":"Detaillierter Schritt mit Mengen z.B. 2 Zwiebeln in 2 EL Olivenoel 5 Min. duensten","timer_min":5,"zutaten_schritt":["2 Zwiebeln","2 EL Olivenoel"]}],"schritte_fleisch":[{"text":"Fleisch-Schritt","timer_min":5,"zutaten_schritt":["300g Haehnchen"]}]'+prepField+freezeField+',"tipp":"Kochtipp"}]}]}';
 
-  return 'Du bist Kochassistent fuer 2 Personen in Zuerich. 1 Person vegi (kein Fisch), 1 Person vegi + optional Fleisch separat. Basis immer vegi. Mittags nur Mikrowelle oder kalt. Portionen pro Rezept: '+portionen+'. Keine 2 schweren KH kombinieren. Mediterran/thematisch kohaerent. Proteinreich. Empfindliche Zutaten frueh in der Woche. '+resteRule+' '+freezeRule+' Wichtig fuer Schritte: Schreibe DETAILLIERTE Anleitungen mit genauen Mengen, Temperaturen, Zeiten und Techniken. Erwaehne bei jedem Schritt welche Zutaten (mit Menge) verwendet werden. Antworte NUR mit validem JSON: '+json;
+  return 'WICHTIG: Antworte ausschliesslich mit validem JSON. Keine Apostrophe oder Anfuehrungszeichen in Texten – verwende stattdessen Umschreibungen. Kein Text vor oder nach dem JSON. Du bist Kochassistent fuer 2 Personen in Zuerich. 1 Person vegi (kein Fisch), 1 Person vegi + optional Fleisch separat. Basis immer vegi. Mittags nur Mikrowelle oder kalt. Portionen pro Rezept: '+portionen+'. Keine 2 schweren KH kombinieren. Mediterran/thematisch kohaerent. Proteinreich. Empfindliche Zutaten frueh in der Woche. '+resteRule+' '+freezeRule+' Wichtig fuer Schritte: Schreibe DETAILLIERTE Anleitungen mit genauen Mengen, Temperaturen, Zeiten und Techniken. Erwaehne bei jedem Schritt welche Zutaten (mit Menge) verwendet werden. Antworte NUR mit validem JSON: '+json;
 }
 
 const $=id=>document.getElementById(id);
@@ -250,8 +280,31 @@ function showSt(id,msg,type){const el=$(id);el.className='st '+type;el.textConte
 
 // Restore session
 window.addEventListener('DOMContentLoaded',()=>{
+  // Bring session wiederherstellen
   const s=localStorage.getItem('bs');
   if(s){try{const d=JSON.parse(s);G.bToken=d.t;G.bUUID=d.u;if($('bemail'))$('bemail').value=d.e||'';loadLists();}catch(e){localStorage.removeItem('bs');}}
+
+  // GitHub-Status anzeigen
+  showGhConnected();
+
+  // Gespeicherte Woche laden – GitHub hat Priorität
+  (async()=>{
+    let d=null;
+    const ghData=await loadWeekFromGH();
+    if(ghData&&ghData.sugs){
+      d=ghData;
+      // Auch lokal aktualisieren
+      localStorage.setItem('saved_week',JSON.stringify(d));
+    } else {
+      const w=localStorage.getItem('saved_week');
+      if(w){try{d=JSON.parse(w);}catch(e){}}
+    }
+    if(d){
+      const el=$('saved-week-banner');
+      if(el){el.style.display='block';el.querySelector('.sw-date').textContent=d.saved||'';}
+      G._savedWeek=d;
+    }
+  })();
 });
 
 async function loadLists(){
@@ -380,8 +433,35 @@ async function goSuggest(){
     if(!r.ok)throw new Error(`API ${r.status}`);
     const d=await r.json();
     const raw=d.content?.[0]?.text||'';
+    // Robuster JSON-Parser mit Fehlerkorrektur
+    let parsed=null;
     const m=raw.match(/\{[\s\S]*\}/);
-    G.sugs=JSON.parse(m?m[0]:raw).vorschlaege||[];
+    const jsonStr=m?m[0]:raw;
+    try{
+      parsed=JSON.parse(jsonStr);
+    }catch(e1){
+      // Versuche häufige Fehler zu korrigieren
+      try{
+        const fixed=jsonStr
+          .replace(/,\s*([\]}])/g,'$1')   // trailing commas
+          .replace(/([\[{,])\s*,/g,'$1')  // leading commas
+          .replace(/
+/g,'\n')            // unescaped newlines in strings
+          .replace(/	/g,'\t');           // unescaped tabs
+        parsed=JSON.parse(fixed);
+      }catch(e2){
+        // Letzter Versuch: Claude nochmals bitten
+        throw new Error('JSON ungültig – bitte nochmals generieren');
+      }
+    }
+    G.sugs=parsed.vorschlaege||[];
+    // Woche in localStorage speichern
+    const weekData={sugs:G.sugs,n:G.n,reste:G.reste,freeze:G.freeze,saved:new Date().toLocaleDateString('de-CH')};
+    localStorage.setItem('saved_week',JSON.stringify(weekData));
+    // Auch auf GitHub speichern falls verbunden
+    saveWeekToGH(weekData).then(ok=>{
+      if(ok)console.log('Auf GitHub gespeichert');
+    });
     $('sload').style.display='none';renderSugs();$('scta').style.display='block';
   }catch(e){
     $('sload').style.display='none';
@@ -544,6 +624,86 @@ function showPrint(ri){
   const sug=G.sugs[G.sel];const g=sug.gerichte[ri];const items=getItems(sug);
   $('pcon').innerHTML=`<h1 style="font-size:20px;font-weight:800;margin-bottom:4px">${g.abend}</h1><p style="color:#888;margin-bottom:16px;font-size:13px">${g.tag} → ${g.mittag_tag}: ${g.mittag_naechster_tag}</p><h2 style="font-size:14px;font-weight:700;margin-bottom:8px;color:#e8390e">Zutaten</h2><table style="width:100%;border-collapse:collapse;margin-bottom:16px;font-size:13px">${(g.zutaten||[]).map(z=>`<tr><td style="padding:5px 0;border-bottom:1px solid #f0f0f0;font-weight:500">☐ ${z.name}</td><td style="padding:5px 0;border-bottom:1px solid #f0f0f0;color:#888;text-align:right">${z.menge}</td></tr>`).join('')}</table><h2 style="font-size:14px;font-weight:700;margin-bottom:8px;color:#2e7d32">🌿 Zubereitung</h2>${(g.schritte_vegi||[]).map((s,i)=>`<div style="margin-bottom:8px;font-size:13px"><strong style="color:#e8390e">${i+1}.</strong> ${s.text}${s.timer_min?` <span style="color:#888">[${s.timer_min} Min.]</span>`:''}</div>`).join('')}${g.schritte_fleisch?.length?`<h2 style="font-size:14px;font-weight:700;margin:12px 0 8px;color:#e65100">🍖 Fleisch-Beilage</h2>${g.schritte_fleisch.map((s,i)=>`<div style="margin-bottom:8px;font-size:13px"><strong>${i+1}.</strong> ${s.text}</div>`).join('')}`:''}<h2 style="font-size:14px;font-weight:700;margin:12px 0 8px;color:#1565c0">📦 Für morgen</h2>${(g.prep_next||[]).map((s,i)=>`<div style="margin-bottom:6px;font-size:13px"><strong>${i+1}.</strong> ${s}</div>`).join('')}<h2 style="font-size:14px;font-weight:700;margin:12px 0 8px;color:#0277bd">🧊 Einfrieren</h2>${(g.einfrieren||[]).map((s,i)=>`<div style="margin-bottom:6px;font-size:13px"><strong>${i+1}.</strong> ${s}</div>`).join('')}${g.tipp?`<div style="background:#fff9c4;border-left:3px solid #f9a825;padding:10px;margin-top:12px;border-radius:4px;font-size:13px"><strong>💡</strong> ${g.tipp}</div>`:''}<h2 style="font-size:14px;font-weight:700;margin:16px 0 8px;color:#e8390e">🛒 Einkaufsliste</h2><table style="width:100%;border-collapse:collapse;font-size:13px">${items.map(z=>`<tr><td style="padding:5px 0;border-bottom:1px solid #f0f0f0">☐ ${z.name}</td><td style="padding:5px 0;border-bottom:1px solid #f0f0f0;color:#888;text-align:right">${z.menge}</td></tr>`).join('')}</table>`;
   go('sp');
+}
+
+// GitHub Sync
+const GH_REPO='roterhut480/menuplan';
+const GH_FILE='saved-week.json';
+
+function saveGhToken(){
+  const token=$('gh-token').value.trim();
+  if(!token){return;}
+  localStorage.setItem('gh_token',token);
+  $('gh-token').value='';
+  showGhConnected();
+}
+
+function showGhConnected(){
+  const token=localStorage.getItem('gh_token');
+  if(token){
+    $('gh-setup').style.display='none';
+    $('gh-connected').style.display='block';
+  } else {
+    $('gh-setup').style.display='block';
+    $('gh-connected').style.display='none';
+  }
+}
+
+function disconnectGh(){
+  localStorage.removeItem('gh_token');
+  showGhConnected();
+}
+
+async function saveWeekToGH(data){
+  const token=localStorage.getItem('gh_token');
+  if(!token)return false;
+  try{
+    // Get current SHA if file exists
+    let sha='';
+    const get=await fetch(`https://api.github.com/repos/${GH_REPO}/contents/${GH_FILE}`,{
+      headers:{'Authorization':'token '+token,'Accept':'application/vnd.github.v3+json'}
+    });
+    if(get.ok){const d=await get.json();sha=d.sha;}
+
+    // Save file
+    const body={message:'Menüplan gespeichert',content:btoa(unescape(encodeURIComponent(JSON.stringify(data,null,2)))),};
+    if(sha)body.sha=sha;
+    const put=await fetch(`https://api.github.com/repos/${GH_REPO}/contents/${GH_FILE}`,{
+      method:'PUT',
+      headers:{'Authorization':'token '+token,'Content-Type':'application/json','Accept':'application/vnd.github.v3+json'},
+      body:JSON.stringify(body)
+    });
+    return put.ok;
+  }catch(e){console.warn('GitHub save:',e);return false;}
+}
+
+async function loadWeekFromGH(){
+  try{
+    const token=localStorage.getItem('gh_token');
+    const headers=token?{'Authorization':'token '+token}:{};
+    const r=await fetch(`https://raw.githubusercontent.com/${GH_REPO}/main/${GH_FILE}?t=${Date.now()}`,{headers});
+    if(!r.ok)return null;
+    return await r.json();
+  }catch(e){return null;}
+}
+
+function loadSavedWeek(){
+  if(!G._savedWeek)return;
+  G.sugs=G._savedWeek.sugs||[];
+  G.n=G._savedWeek.n||3;
+  G.reste=G._savedWeek.reste!==undefined?G._savedWeek.reste:true;
+  G.freeze=G._savedWeek.freeze!==undefined?G._savedWeek.freeze:true;
+  G.sel=0;
+  // Update chips
+  document.querySelectorAll('#nchips .chip').forEach(c=>c.classList.toggle('on',c.textContent.startsWith(G.n)));
+  document.querySelectorAll('#rchips .chip').forEach((c,i)=>c.classList.toggle('on',(i===0&&G.reste)||(i===1&&!G.reste)));
+  document.querySelectorAll('#fchips .chip').forEach((c,i)=>c.classList.toggle('on',(i===0&&G.freeze)||(i===1&&!G.freeze)));
+  // Go to suggestions screen
+  renderSugs();
+  $('scta').style.display='block';
+  $('sload').style.display='none';
+  $('serr').innerHTML='';
+  go('ss');
 }
 
 function loadTest(){
