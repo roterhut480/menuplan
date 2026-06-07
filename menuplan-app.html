@@ -208,8 +208,11 @@ const BAPI=PROXY+'/bring';
 const BH={'X-BRING-API-KEY':'cof4Nc6D8saplXjE3h3HXqHH8m7VU2i1Gs0g85Sp','X-BRING-CLIENT':'android','X-BRING-APPLICATION':'bring','X-BRING-COUNTRY':'CH','Content-Type':'application/x-www-form-urlencoded'};
 
 const SYS=`Du bist Kochassistent für 2 Personen in Zürich. 1 Person vegi (kein Fisch), 1 Person vegi + optional Fleisch separat. Basis immer vegi. Mittags nur Mikrowelle oder kalt. Je 6 Portionen (2 Abend + 2 Mittag + 2 Einfrieren). Reste klar anders als Abend. Keine 2 schweren KH kombinieren. Mediterran/thematisch kohärent. Proteinreich. Empfindliche Zutaten früh in der Woche.
+
+Wichtig für Schritte: Schreibe DETAILLIERTE Anleitungen mit genauen Mengen, Temperaturen, Zeiten und Techniken. Erwähne bei jedem Schritt welche Zutaten (mit Menge) verwendet werden.
+
 Antworte NUR mit validem JSON:
-{"vorschlaege":[{"id":1,"thema":"Thema","kochabende":["Mo","Mi","Fr"],"gerichte":[{"tag":"Montag","abend":"Name","mittag_naechster_tag":"Mittagname","mittag_tag":"Dienstag","zutaten":[{"name":"Karotten","menge":"2 Stk"}],"schritte_vegi":[{"text":"Schritt","timer_min":0}],"schritte_fleisch":[{"text":"Fleisch optional","timer_min":5}],"prep_next":["Reste abfüllen","3 Min. Mikro"],"einfrieren":["2 Port. einfrieren","Beschriften"],"tipp":"Tipp"}]}]}`;
+{"vorschlaege":[{"id":1,"thema":"Thema","kochabende":["Mo","Mi","Fr"],"gerichte":[{"tag":"Montag","abend":"Name","mittag_naechster_tag":"Mittagname","mittag_tag":"Dienstag","zutaten":[{"name":"Karotten","menge":"2 Stk"}],"schritte_vegi":[{"text":"Detaillierter Schritt mit Mengenangaben z.B. '2 Zwiebeln fein hacken und in 2 EL Olivenöl bei mittlerer Hitze 5 Min. goldbraun dünsten'","timer_min":5,"zutaten_schritt":["2 Zwiebeln","2 EL Olivenöl"]}],"schritte_fleisch":[{"text":"Detaillierter Fleisch-Schritt","timer_min":5,"zutaten_schritt":["300g Hähnchen"]}],"prep_next":["Reste abfüllen","3 Min. Mikro"],"einfrieren":["2 Port. einfrieren","Beschriften"],"tipp":"Konkreter Kochtipp"}]}]}`;
 
 let G={n:3,sugs:[],sel:null,steps:[],cur:0,act:0,done:new Set(),tiv:null,tl:0,tt:0,bToken:null,bUUID:null,bLists:[]};
 const $=id=>document.getElementById(id);
@@ -430,8 +433,44 @@ function buildSteps(g){
 }
 function startCook(ri){
   const g=G.sugs[G.sel].gerichte[ri];
-  G.steps=buildSteps(g);G.cur=0;G.act=0;G.done=new Set();clearInterval(G.tiv);
-  $('ctit').textContent=g.abend;renderSegs();renderStep();go('sc');
+  G.steps=buildSteps(g);G.cur=-1;G.act=0;G.done=new Set();clearInterval(G.tiv);
+  $('ctit').textContent=g.abend;
+  renderIngOverview(g);
+  go('sc');
+}
+
+function renderIngOverview(g){
+  // Show ingredients overview as step -1
+  const vegi=g.zutaten||[];
+  const rows=vegi.map(z=>`
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:.5px solid #f0f0f0">
+      <span style="font-size:14px;font-weight:500;color:var(--txt)">${z.name}</span>
+      <span style="font-size:13px;color:var(--gr3);font-weight:500">${z.menge}</span>
+    </div>`).join('');
+
+  $('csteplbl').textContent='Zutatenübersicht';
+  $('csegs').innerHTML='';
+  $('cprogb').style.width='0%';
+  $('cjump').style.display='none';
+
+  $('cbody').innerHTML=`
+    <div class="badge bv">📋 Vor dem Kochen</div>
+    <div style="font-size:16px;font-weight:700;color:var(--txt);margin-bottom:4px">${g.abend}</div>
+    <div style="font-size:13px;color:var(--gr3);margin-bottom:16px">→ ${g.mittag_tag}: ${g.mittag_naechster_tag}</div>
+    <div style="background:#f9f9f9;border-radius:var(--r);padding:0 12px;margin-bottom:16px;border:.5px solid var(--bdr)">
+      <div style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--gr3);padding:10px 0 6px">Zutaten für 6 Portionen</div>
+      ${rows}
+    </div>
+    <div style="font-size:12px;color:var(--gr3);background:var(--bll);border-radius:8px;padding:10px 12px;margin-bottom:16px;border:.5px solid #90caf9">
+      💡 Alle Zutaten bereitstellen und abmessen bevor du anfängst.
+    </div>
+    <button class="btn btn-red" onclick="beginCook()">👨‍🍳 Los geht's →</button>
+  `;
+}
+
+function beginCook(){
+  G.cur=0;G.act=0;
+  renderSegs();renderStep();
 }
 function renderSegs(){
   $('csegs').innerHTML=G.steps.map((_,i)=>`<div class="cseg ${i<G.act?'done':i===G.act?'act':''}" id="sg_${i}"></div>`).join('');
@@ -447,7 +486,13 @@ function renderStep(){
   clearInterval(G.tiv);
   const s=G.steps[G.cur];const isDone=G.done.has(G.cur);const isLast=G.cur===G.steps.length-1;
   const lines=(s.text||'').split('\n').filter(Boolean);
-  const txt=s.ml?`<div class="csml">${lines.map((l,i)=>`<div style="display:flex;gap:8px;margin-bottom:4px"><span style="font-size:12px;font-weight:700;color:var(--red);min-width:16px">${i+1}.</span><span>${l}</span></div>`).join('')}</div>`:`<div class="cstxt">${s.text}</div>`;
+  // Zutaten pro Schritt
+  const zStep=(s.zutaten_schritt||[]);
+  const zStepHtml=zStep.length?`
+    <div style="background:#f5f5f5;border-radius:8px;padding:8px 12px;margin-bottom:12px;display:flex;flex-wrap:wrap;gap:6px">
+      ${zStep.map(z=>`<span style="background:#fff;border:.5px solid var(--bdr);border-radius:100px;padding:3px 10px;font-size:12px;font-weight:500;color:var(--txt2)">${z}</span>`).join('')}
+    </div>`:'';
+  const txt=s.ml?`<div class="csml">${lines.map((l,i)=>`<div style="display:flex;gap:8px;margin-bottom:4px"><span style="font-size:12px;font-weight:700;color:var(--red);min-width:16px">${i+1}.</span><span>${l}</span></div>`).join('')}</div>`:`${zStepHtml}<div class="cstxt">${s.text}</div>`;
   let th='';
   if(s.timer_min>0){G.tl=s.timer_min*60;G.tt=G.tl;th=`<div class="tbox"><div class="tdisp" id="td">${fmt(G.tl)}</div><div class="tsub">${s.timer_min} Minuten</div><div class="tprog"><div class="tprogb" id="tb" style="width:100%"></div></div><button class="btn btn-red" id="tbtn" onclick="startT()" style="padding:9px;font-size:13px">▶ Timer starten</button></div>`;}
   const adHTML=`<div class="adone" onclick="togDone()"><div class="adchk ${isDone?'on':''}" id="adchk">${isDone?'<svg width="10" height="10" viewBox="0 0 10 10"><path d="M2 5l2.5 2.5L8 2.5" stroke="#fff" stroke-width="1.6" fill="none" stroke-linecap="round"/></svg>':''}</div><span style="font-size:13px;color:var(--txt2)">Schritt bereits vorbereitet</span></div>`;
@@ -479,18 +524,20 @@ function showPrint(ri){
 }
 
 function loadTest(){
-  G.sugs=[{id:1,thema:"Test – Mediterran",kochabende:["Montag","Mittwoch","Freitag"],gerichte:[
+  G.sugs=[{id:1,thema:"Test – Mediterran",kochabende:["Montag","Mittwoch"],gerichte:[
     {tag:"Montag",abend:"Saag Paneer mit Basmatireis",mittag_naechster_tag:"Saag Paneer aufgewärmt",mittag_tag:"Dienstag",
-     zutaten:[{name:"Paneer",menge:"450g"},{name:"Spinat TK",menge:"500g"},{name:"Zwiebel",menge:"1 Stk"},{name:"Basmatireis",menge:"400g"},{name:"Ghee",menge:"2 EL"},{name:"Knoblauch",menge:"3 Zehen"}],
-     schritte_vegi:[{text:"Ghee erhitzen, Paneer goldbraun anbraten.",timer_min:0},{text:"Zwiebel, Knoblauch, Ingwer anschwitzen. 10 Min. köcheln.",timer_min:10}],
-     schritte_fleisch:[{text:"Hähnchen separat anbraten – neben Saag Paneer servieren.",timer_min:6}],
-     prep_next:["Saag Paneer in Tupperdose","Reis separat","Mittags: 3 Min. Mikrowelle"],
-     einfrieren:["2 Portionen einfrieren","Beschriften"],tipp:"Spinat gut ausdrücken."},
-    {tag:"Mittwoch",abend:"Zucchini-Ricotta-Pasta",mittag_naechster_tag:"Kalter Pastasalat",mittag_tag:"Donnerstag",
-     zutaten:[{name:"Pasta",menge:"600g"},{name:"Zucchini",menge:"3 Stk"},{name:"Ricotta",menge:"250g"},{name:"Parmesan",menge:"80g"}],
-     schritte_vegi:[{text:"Pasta kochen.",timer_min:0},{text:"Zucchini braten, Ricotta einrühren.",timer_min:0}],
-     schritte_fleisch:[{text:"Pancetta knusprig braten.",timer_min:4}],
-     prep_next:["Pasta kalt abfüllen"],einfrieren:["2 Portionen einfrieren"],tipp:"Ricotta am Schluss."}
+     zutaten:[{name:"Paneer",menge:"450g"},{name:"TK-Spinat",menge:"500g, aufgetaut"},{name:"Zwiebeln",menge:"2 grosse"},{name:"Basmatireis",menge:"600g (300g Abend + 300g Di)"},{name:"Ghee",menge:"2 EL"},{name:"Knoblauch",menge:"3 Zehen"},{name:"Ingwer",menge:"1 Daumen"},{name:"Garam Masala",menge:"1 TL"},{name:"Kurkuma",menge:"1 TL"},{name:"Chilipulver",menge:"1 TL"},{name:"Zitrone",menge:"½, Saft"}],
+     schritte_vegi:[
+       {text:"2 EL Ghee in einer grossen Pfanne erhitzen. 450g Paneer in 3cm-Würfel schneiden, mit 1 TL Kurkuma und 1 TL Chilipulver wenden und bei mittlerer Hitze 8 Min. rundherum goldbraun anbraten. Paneer herausnehmen und beiseite stellen.",timer_min:8,zutaten_schritt:["450g Paneer","2 EL Ghee","1 TL Kurkuma","1 TL Chilipulver"]},
+       {text:"2 grosse Zwiebeln fein hacken. Im verbliebenen Ghee bei mittlerer Hitze 10 Min. goldbraun karamellisieren lassen – Geduld lohnt sich! Bei Bedarf einen Schuss Wasser zugeben damit nichts anbrennt.",timer_min:10,zutaten_schritt:["2 Zwiebeln"]},
+       {text:"3 Knoblauchzehen pressen und 1 Daumen Ingwer fein reiben. Beides zu den Zwiebeln geben. 1 TL Garam Masala unterrühren und 2 Min. bei mittlerer Hitze rösten bis es duftet.",timer_min:2,zutaten_schritt:["3 Zehen Knoblauch","1 Daumen Ingwer","1 TL Garam Masala"]},
+       {text:"500g TK-Spinat (aufgetaut, gut ausgedrückt) grob hacken und in die Pfanne geben. 100ml Wasser zugeben und 3 Min. bei mittlerer Hitze unter Rühren erwärmen. Mit Salz und dem Saft einer halben Zitrone abschmecken.",timer_min:3,zutaten_schritt:["500g TK-Spinat","½ Zitrone Saft"]},
+       {text:"Paneer zurück in die Pfanne geben und 2-3 Min. warm ziehen lassen. Währenddessen 600g Basmatireis kochen – 300g für heute Abend, 300g für Dienstag separat abfüllen.",timer_min:3,zutaten_schritt:["Gebratener Paneer","600g Basmatireis"]}
+     ],
+     schritte_fleisch:[{text:"Optional: Hähnchenbrust (300g) in Streifen schneiden, mit Salz und Paprikapulver würzen und in einer separaten Pfanne mit 1 EL Öl bei hoher Hitze 6 Min. anbraten bis goldbraun. Neben dem Saag Paneer servieren.",timer_min:6,zutaten_schritt:["300g Hähnchenbrust","Salz, Paprikapulver","1 EL Öl"]}],
+     prep_next:["2 Portionen Saag Paneer in Tupperdosen abfüllen (ohne Reis)","300g Reis separat in eine Tupperdose","Mittags: Saag Paneer 3 Min. Mikrowelle, Reis 1 Min. Mikrowelle – getrennt erhitzen"],
+     einfrieren:["2 weitere Portionen Saag Paneer (ohne Reis) in 2 separate Tupperdosen","Abkühlen lassen, beschriften (Saag Paneer + Datum) und einfrieren","Auftauen: über Nacht im Kühlschrank, dann 4 Min. Mikrowelle"],
+     tipp:"TK-Spinat wirklich gut ausdrücken – sonst wird das Gericht wässrig. Der Paneer sollte rundherum goldbraun sein bevor er zurück in die Sauce kommt."}
   ]}];
   G.sel=0;goWeek();
 }
