@@ -27,7 +27,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .btn-grn{background:#fff;color:var(--grn);border:1px solid var(--grn)}
 .btn:disabled{opacity:.35;pointer-events:none}
 .btn+.btn{margin-top:8px}
-.chip{padding:7px 14px;border-radius:100px;font-size:13px;font-weight:600;cursor:pointer;border:1.5px solid var(--bdr);background:#fff;color:var(--gr3);display:inline-block;transition:all .15s}
+.chip{padding:7px 14px;border-radius:100px;font-size:13px;font-weight:600;cursor:pointer;border:1.5px solid var(--bdr);background:#fff;color:var(--gr3);display:inline-block;transition:all .15s;font-family:inherit;outline:none}
 .chip.on{background:var(--rl);border-color:var(--red);color:var(--red)}
 .chips{display:flex;gap:8px;flex-wrap:wrap}
 input,select{width:100%;background:#fff;border:1px solid var(--bdr);border-radius:7px;color:var(--txt);font-size:14px;padding:10px 12px;outline:none;font-family:inherit;transition:border-color .2s}
@@ -111,21 +111,21 @@ input:focus,select:focus{border-color:var(--red)}
     <div class="clbl">Diese Woche</div>
     <div class="fld"><label>Kochabende</label>
       <div class="chips" id="nchips">
-        <div class="chip" onclick="setN(2)">2 Abende</div>
-        <div class="chip on" onclick="setN(3)">3 Abende</div>
-        <div class="chip" onclick="setN(4)">4 Abende</div>
+        <button class="chip" onclick="setN(2)" type="button">2 Abende</button>
+        <button class="chip on" onclick="setN(3)" type="button">3 Abende</button>
+        <button class="chip" onclick="setN(4)" type="button">4 Abende</button>
       </div>
     </div>
     <div class="fld" style="margin-top:10px"><label>Resteverwertung am Folgetag?</label>
       <div class="chips" id="rchips">
-        <div class="chip on" onclick="setR(true)">✓ Ja – Mittag aus Resten</div>
-        <div class="chip" onclick="setR(false)">✗ Nein – nur Abendessen</div>
+        <button class="chip on" onclick="setR(true)" type="button">✓ Ja – Mittag aus Resten</button>
+        <button class="chip" onclick="setR(false)" type="button">✗ Nein – nur Abendessen</button>
       </div>
     </div>
     <div class="fld" style="margin-top:10px"><label>Einfrierportionen mitkochen?</label>
       <div class="chips" id="fchips">
-        <div class="chip on" onclick="setF(true)">✓ Ja – +2 Portionen einfrieren</div>
-        <div class="chip" onclick="setF(false)">✗ Nein – nur für heute</div>
+        <button class="chip on" onclick="setF(true)" type="button">✓ Ja – +2 Portionen einfrieren</button>
+        <button class="chip" onclick="setF(false)" type="button">✗ Nein – nur für heute</button>
       </div>
     </div>
     <div class="fld" style="margin-top:10px"><label>Thema (optional)</label><input id="theme" placeholder="mediterran, asiatisch…"></div>
