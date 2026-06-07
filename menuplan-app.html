@@ -219,27 +219,21 @@ const PROXY='https://menuplan-proxy.shop-242.workers.dev';
 const BAPI=PROXY+'/bring';
 const BH={'X-BRING-API-KEY':'cof4Nc6D8saplXjE3h3HXqHH8m7VU2i1Gs0g85Sp','X-BRING-CLIENT':'android','X-BRING-APPLICATION':'bring','X-BRING-COUNTRY':'CH','Content-Type':'application/x-www-form-urlencoded'};
 
+let G={n:3,reste:true,freeze:true,sugs:[],sel:null,steps:[],cur:0,act:0,done:new Set(),tiv:null,tl:0,tt:0,bToken:null,bUUID:null,bLists:[]};
+
 function buildSYS(){
-  const portionen=G.reste&&G.freeze?'6 (2 Abend + 2 Mittag nächster Tag + 2 Einfrieren)':G.reste?'4 (2 Abend + 2 Mittag nächster Tag)':G.freeze?'4 (2 Abend + 2 Einfrieren)':'2 (nur Abendessen)';
-  const resteRule=G.reste?'- Reste vom Abend werden am nächsten Mittag verwendet (Mikrowelle oder kalt, kein Herd)
-- Reste müssen sich klar vom Abend unterscheiden (andere Textur/Komponenten)
-':'- Keine Resteverwertung – nur Abendessen planen
-';
-  const freezeRule=G.freeze?'- +2 Einfrierportionen mitkochen und in 1L-Tupperdosen einfrieren
-':'- Keine Einfrierportionen
-';
-  const prepBlock=G.reste?'"prep_next":["Reste abfüllen","Mittags aufwärmen"]':'';
-  const freezeBlock=G.freeze?'"einfrieren":["2 Port. einfrieren","Beschriften"]':'';
+  const portionen=G.reste&&G.freeze?'6 (2 Abend + 2 Mittag + 2 Einfrieren)':G.reste?'4 (2 Abend + 2 Mittag)':G.freeze?'4 (2 Abend + 2 Einfrieren)':'2 (nur Abendessen)';
+  const resteRule=G.reste?'Reste vom Abend werden am naechsten Mittag verwendet (nur Mikrowelle oder kalt).':'Keine Resteverwertung – nur Abendessen planen.';
+  const freezeRule=G.freeze?'+2 Einfrierportionen mitkochen und in Tupperdosen einfrieren.':'Keine Einfrierportionen – nur fuer heute kochen.';
+  const mittagField=G.reste?'"mittag_naechster_tag":"Mittagname","mittag_tag":"Dienstag",':"";
+  const prepField=G.reste?',"prep_next":["Reste abfuellen","Mittags aufwaermen"]':"";
+  const freezeField=G.freeze?',"einfrieren":["2 Port. einfrieren","Beschriften"]':"";
 
-  return `Du bist Kochassistent für 2 Personen in Zürich. 1 Person vegi (kein Fisch), 1 Person vegi + optional Fleisch separat. Basis immer vegi. Mittags nur Mikrowelle oder kalt. Portionen pro Rezept: ${portionen}. Keine 2 schweren KH kombinieren. Mediterran/thematisch kohärent. Proteinreich. Empfindliche Zutaten früh in der Woche.
-${resteRule}${freezeRule}
-Wichtig für Schritte: Schreibe DETAILLIERTE Anleitungen mit genauen Mengen, Temperaturen, Zeiten und Techniken. Erwähne bei jedem Schritt welche Zutaten (mit Menge) verwendet werden.
+  const json='{"vorschlaege":[{"id":1,"thema":"Thema","kochabende":["Mo","Mi","Fr"],"gerichte":[{"tag":"Montag","abend":"Name",'+mittagField+'"zutaten":[{"name":"Karotten","menge":"2 Stk"}],"schritte_vegi":[{"text":"Detaillierter Schritt mit Mengen z.B. 2 Zwiebeln in 2 EL Olivenoel 5 Min. duensten","timer_min":5,"zutaten_schritt":["2 Zwiebeln","2 EL Olivenoel"]}],"schritte_fleisch":[{"text":"Fleisch-Schritt","timer_min":5,"zutaten_schritt":["300g Haehnchen"]}]'+prepField+freezeField+',"tipp":"Kochtipp"}]}]}';
 
-Antworte NUR mit validem JSON:
-{"vorschlaege":[{"id":1,"thema":"Thema","kochabende":["Mo","Mi","Fr"],"gerichte":[{"tag":"Montag","abend":"Name",${G.reste?'"mittag_naechster_tag":"Mittagname","mittag_tag":"Dienstag",':''},"zutaten":[{"name":"Karotten","menge":"2 Stk"}],"schritte_vegi":[{"text":"Detaillierter Schritt z.B. 2 Zwiebeln fein hacken in 2 EL Olivenöl 5 Min. dünsten","timer_min":5,"zutaten_schritt":["2 Zwiebeln","2 EL Olivenöl"]}],"schritte_fleisch":[{"text":"Detaillierter Fleisch-Schritt","timer_min":5,"zutaten_schritt":["300g Hähnchen"]}]${G.reste?',"prep_next":["Reste abfüllen","Mittags aufwärmen"]':''}${G.freeze?',"einfrieren":["2 Port. einfrieren","Beschriften"]':''},"tipp":"Konkreter Kochtipp"}]}]}`;
+  return 'Du bist Kochassistent fuer 2 Personen in Zuerich. 1 Person vegi (kein Fisch), 1 Person vegi + optional Fleisch separat. Basis immer vegi. Mittags nur Mikrowelle oder kalt. Portionen pro Rezept: '+portionen+'. Keine 2 schweren KH kombinieren. Mediterran/thematisch kohaerent. Proteinreich. Empfindliche Zutaten frueh in der Woche. '+resteRule+' '+freezeRule+' Wichtig fuer Schritte: Schreibe DETAILLIERTE Anleitungen mit genauen Mengen, Temperaturen, Zeiten und Techniken. Erwaehne bei jedem Schritt welche Zutaten (mit Menge) verwendet werden. Antworte NUR mit validem JSON: '+json;
 }
 
-let G={n:3,reste:true,freeze:true,sugs:[],sel:null,steps:[],cur:0,act:0,done:new Set(),tiv:null,tl:0,tt:0,bToken:null,bUUID:null,bLists:[]};
 const $=id=>document.getElementById(id);
 const sl=ms=>new Promise(r=>setTimeout(r,ms));
 
