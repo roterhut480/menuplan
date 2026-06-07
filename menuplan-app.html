@@ -115,7 +115,10 @@ input:focus,select:focus{border-color:var(--red)}
           <div style="font-size:13px;color:#555">Einkauf vom <span class="sw-date" style="font-weight:600;color:#111"></span></div>
           <div style="font-size:12px;color:#888;margin-top:2px">Menüplan noch verfügbar</div>
         </div>
-        <button class="btn btn-red" onclick="loadSavedWeek()" style="width:auto;padding:9px 16px;font-size:13px;flex-shrink:0">Öffnen →</button>
+        <div style="display:flex;gap:6px">
+          <button class="btn btn-out" onclick="syncFromGH()" style="width:auto;padding:9px 12px;font-size:12px;flex-shrink:0" title="Von GitHub laden">🔄</button>
+          <button class="btn btn-red" onclick="loadSavedWeek()" style="width:auto;padding:9px 16px;font-size:13px;flex-shrink:0">Öffnen →</button>
+        </div>
       </div>
     </div>
   </div>
@@ -287,24 +290,14 @@ window.addEventListener('DOMContentLoaded',()=>{
   // GitHub-Status anzeigen
   showGhConnected();
 
-  // Gespeicherte Woche laden – GitHub hat Priorität
-  (async()=>{
-    let d=null;
-    const ghData=await loadWeekFromGH();
-    if(ghData&&ghData.sugs){
-      d=ghData;
-      // Auch lokal aktualisieren
-      localStorage.setItem('saved_week',JSON.stringify(d));
-    } else {
-      const w=localStorage.getItem('saved_week');
-      if(w){try{d=JSON.parse(w);}catch(e){}}
-    }
-    if(d){
-      const el=$('saved-week-banner');
-      if(el){el.style.display='block';el.querySelector('.sw-date').textContent=d.saved||'';}
-      G._savedWeek=d;
-    }
-  })();
+  // Lokalen Speicher laden
+  const w=localStorage.getItem('saved_week');
+  if(w){try{
+    const d=JSON.parse(w);
+    const el=$('saved-week-banner');
+    if(el){el.style.display='block';el.querySelector('.sw-date').textContent=d.saved||'';}
+    G._savedWeek=d;
+  }catch(e){}}
 });
 
 async function loadLists(){
@@ -646,6 +639,23 @@ function showGhConnected(){
   } else {
     $('gh-setup').style.display='block';
     $('gh-connected').style.display='none';
+  }
+}
+
+async function syncFromGH(){
+  const btn=event.target;
+  btn.textContent='⏳';btn.disabled=true;
+  const d=await loadWeekFromGH();
+  if(d&&d.sugs){
+    localStorage.setItem('saved_week',JSON.stringify(d));
+    G._savedWeek=d;
+    const el=$('saved-week-banner');
+    if(el){el.querySelector('.sw-date').textContent=d.saved||'';}
+    btn.textContent='✓';
+    setTimeout(()=>{btn.textContent='🔄';btn.disabled=false;},1500);
+  } else {
+    btn.textContent='✗';
+    setTimeout(()=>{btn.textContent='🔄';btn.disabled=false;},1500);
   }
 }
 
