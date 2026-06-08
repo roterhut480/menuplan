@@ -2,72 +2,89 @@
 <html lang="de">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
 <title>Menüplan</title>
 <style>
-:root{--red:#e8390e;--rl:#fff2ef;--grn:#2e7d32;--grl:#f0faf4;--blu:#1565c0;--bll:#e8f0fe;--orn:#e65100;--orl:#fff3e0;--gr:#f5f5f5;--gr2:#e0e0e0;--gr3:#888;--txt:#111;--txt2:#555;--bdr:#e0e0e0;--r:10px;--rlg:14px}
+:root{
+  --red:#e8390e;--rl:#fff2ef;--grn:#2e7d32;--grl:#f0faf4;
+  --blu:#1565c0;--bll:#e8f0fe;--orn:#e65100;--orl:#fff3e0;
+  --gr:#f5f5f5;--gr2:#e0e0e0;--gr3:#888;--txt:#111;--txt2:#555;
+  --bdr:#e0e0e0;--r:10px;--rlg:14px;
+}
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f3f3f3;color:var(--txt);min-height:100vh}
 .scr{display:none;min-height:100vh;background:#f3f3f3;padding-bottom:32px}
 .scr.on{display:block}
+/* topbar */
 .tbar{background:var(--red);padding:14px 16px 12px;display:flex;align-items:center;gap:12px}
-.tbar-bk{color:#fff;font-size:22px;cursor:pointer;padding-right:6px;opacity:.9}
+.tbar-bk{color:#fff;font-size:22px;cursor:pointer;padding-right:6px;line-height:1}
 .tbar h1{font-size:17px;font-weight:700;color:#fff;flex:1}
 .tbar-sub{font-size:11px;color:rgba(255,255,255,.7);margin-top:1px}
 .hero{background:var(--red);padding:24px 16px 20px;text-align:center}
 .hero h1{font-size:24px;font-weight:800;color:#fff;letter-spacing:-.3px}
 .hero p{font-size:13px;color:rgba(255,255,255,.75);margin-top:4px}
+/* cards */
 .card{background:#fff;border-radius:var(--rlg);margin:10px 10px 0;border:.5px solid var(--bdr);overflow:hidden}
 .cp{padding:14px 16px}
 .clbl{font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--gr3);margin-bottom:10px}
-.btn{width:100%;padding:13px;border:none;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:transform .1s,opacity .15s}
+/* buttons */
+.btn{width:100%;padding:13px;border:none;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:transform .1s,opacity .15s;font-family:inherit}
 .btn:active{transform:scale(.97);opacity:.9}
 .btn-red{background:var(--red);color:#fff}
 .btn-out{background:#fff;color:var(--txt2);border:.5px solid var(--bdr)}
-.btn-grn{background:#fff;color:var(--grn);border:1px solid var(--grn)}
+.btn-grn{background:#fff;color:var(--grn);border:1.5px solid var(--grn)}
 .btn:disabled{opacity:.35;pointer-events:none}
 .btn+.btn{margin-top:8px}
-.chip{padding:7px 14px;border-radius:100px;font-size:13px;font-weight:600;cursor:pointer;border:1.5px solid var(--bdr);background:#fff;color:var(--gr3);display:inline-block;transition:all .15s;font-family:inherit;outline:none}
-.chip.on{background:var(--rl);border-color:var(--red);color:var(--red)}
+/* chips - always buttons for reliable mobile click */
 .chips{display:flex;gap:8px;flex-wrap:wrap}
+.chip{padding:7px 14px;border-radius:100px;font-size:13px;font-weight:600;cursor:pointer;border:1.5px solid var(--bdr);background:#fff;color:var(--gr3);font-family:inherit;outline:none;transition:all .15s}
+.chip.on{background:var(--rl);border-color:var(--red);color:var(--red)}
+/* inputs */
 input,select{width:100%;background:#fff;border:1px solid var(--bdr);border-radius:7px;color:var(--txt);font-size:14px;padding:10px 12px;outline:none;font-family:inherit;transition:border-color .2s}
 input:focus,select:focus{border-color:var(--red)}
+input[type=password]{letter-spacing:2px}
 .fld{margin-bottom:10px}
 .fld label{display:block;font-size:12px;color:var(--txt2);margin-bottom:5px;font-weight:500}
+/* tabs */
 .tabs{display:flex;background:#ebebeb;border-radius:8px;padding:3px;margin:10px 10px 0}
 .tab{flex:1;padding:7px;border-radius:6px;font-size:13px;font-weight:600;text-align:center;cursor:pointer;color:var(--gr3);transition:all .15s}
 .tab.on{background:#fff;color:var(--txt);box-shadow:0 1px 3px rgba(0,0,0,.1)}
+/* status */
 .st{padding:10px 12px;border-radius:8px;font-size:13px;line-height:1.5;margin:10px 10px 0}
 .st.ok{background:#e8f5e9;border:.5px solid #a5d6a7;color:#1b5e20}
 .st.er{background:#ffebee;border:.5px solid #ef9a9a;color:#b71c1c}
 .st.inf{background:var(--bll);border:.5px solid #90caf9;color:var(--blu)}
+/* suggestions */
 .sug{background:#fff;border-radius:var(--rlg);margin:8px 10px 0;border:1.5px solid var(--bdr);cursor:pointer;overflow:hidden}
 .sug.sel{border-color:var(--red);border-width:2px}
 .sug-h{padding:10px 12px 8px;border-bottom:.5px solid #f5f5f5}
-.sug-n{font-size:10px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;color:var(--gr3);margin-bottom:3px;display:flex;align-items:center;gap:6px}
+.sug-n{font-size:10px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;color:var(--gr3);margin-bottom:3px}
 .sug.sel .sug-n{color:var(--red)}
 .sug-t{font-size:14px;font-weight:700;color:var(--txt)}
 .sug-b{padding:8px 12px}
 .sug-d{font-size:12px;color:var(--txt2);margin-bottom:2px}
 .sug-nx{font-size:11px;color:#bbb;margin-bottom:5px;padding-left:28px}
-.irow{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:.5px solid #f5f5f5}
+/* einkauf */
+.irow{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:.5px solid #f5f5f5;cursor:pointer}
 .irow:last-child{border-bottom:none}
-.ichk{width:20px;height:20px;border-radius:50%;border:1.5px solid var(--bdr);flex-shrink:0;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s}
+.ichk{width:20px;height:20px;border-radius:50%;border:1.5px solid var(--bdr);flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .15s}
 .ichk.on{background:var(--red);border-color:var(--red)}
 .iname{font-size:13px;font-weight:500;flex:1}
 .ispec{font-size:11px;color:var(--gr3)}
 .irow.done .iname,.irow.done .ispec{text-decoration:line-through;opacity:.4}
+/* recipe cards */
 .rcard{background:#fff;border-radius:var(--rlg);margin:8px 10px 0;border:.5px solid var(--bdr);overflow:hidden}
 .rh{background:#f9f9f9;padding:10px 14px;border-bottom:.5px solid var(--bdr)}
 .rday{font-size:10px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;color:var(--gr3);margin-bottom:2px}
 .rname{font-size:15px;font-weight:700;color:var(--txt)}
 .rnext{font-size:11px;color:#bbb;margin-top:2px}
 .ract{padding:10px 14px;display:flex;flex-direction:column;gap:7px}
+/* cook screen */
 .ctbar{background:var(--red);padding:14px 16px 0}
 .ctop{display:flex;align-items:center;gap:10px;margin-bottom:10px}
 .cback{color:rgba(255,255,255,.8);font-size:20px;cursor:pointer;padding-right:4px}
 .ctit{font-size:16px;font-weight:700;color:#fff;flex:1}
-.cstep{font-size:12px;color:rgba(255,255,255,.75)}
+.csteplbl{font-size:12px;color:rgba(255,255,255,.75)}
 .cjump{background:rgba(255,255,255,.2);border-radius:6px;padding:4px 10px;font-size:11px;font-weight:700;color:#fff;cursor:pointer;display:none;white-space:nowrap}
 .csegs{display:flex;gap:3px;padding-bottom:0}
 .cseg{height:4px;border-radius:2px;flex:1;background:rgba(255,255,255,.25)}
@@ -81,139 +98,163 @@ input:focus,select:focus{border-color:var(--red)}
 .bf{background:var(--orl);color:var(--orn);border:.5px solid #ffcc80}
 .bp{background:var(--bll);color:var(--blu);border:.5px solid #90caf9}
 .bfr{background:#e3f2fd;color:#0277bd;border:.5px solid #90caf9}
+.bt{background:var(--grl);color:var(--grn);border:.5px solid #a5d6a7}
 .cstxt{font-size:16px;font-weight:500;color:var(--txt);line-height:1.6;margin-bottom:14px}
 .csml{font-size:13px;color:var(--txt2);line-height:1.8;margin-bottom:14px}
+/* zutaten pills per step */
+.zpills{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:10px}
+.zpill{background:#f5f5f5;border:.5px solid var(--bdr);border-radius:100px;padding:3px 10px;font-size:12px;font-weight:500;color:var(--txt2)}
+/* timer */
 .tbox{background:#f9f9f9;border-radius:8px;padding:12px;margin-bottom:14px;text-align:center;border:.5px solid var(--bdr)}
 .tdisp{font-size:38px;font-weight:700;color:var(--txt);font-variant-numeric:tabular-nums;letter-spacing:-1px}
 .tdisp.run{color:var(--red)}.tdisp.fin{color:var(--grn)}
 .tsub{font-size:11px;color:var(--gr3);margin-bottom:8px}
 .tprog{background:var(--gr2);border-radius:100px;height:3px;margin-bottom:8px;overflow:hidden}
 .tprogb{height:100%;background:var(--red);border-radius:100px;transition:width 1s linear}
+/* already done */
 .adone{display:flex;align-items:center;gap:10px;padding:9px 12px;background:#f9f9f9;border-radius:8px;margin-bottom:12px;cursor:pointer;border:.5px solid var(--bdr)}
 .adchk{width:19px;height:19px;border-radius:50%;border:1.5px solid var(--bdr);flex-shrink:0;display:flex;align-items:center;justify-content:center}
 .adchk.on{background:var(--grn);border-color:var(--grn)}
 .cnav{display:flex;gap:8px}
 .cnav .btn{flex:1;padding:11px;font-size:13px}
+/* spinner */
 .spin{display:inline-block;width:16px;height:16px;border:2px solid rgba(232,57,14,.25);border-top-color:var(--red);border-radius:50%;animation:sp .7s linear infinite}
 .spin.w{border-color:rgba(255,255,255,.3);border-top-color:#fff}
 @keyframes sp{to{transform:rotate(360deg)}}
+/* progress */
 .prog{background:var(--gr2);border-radius:100px;height:5px;margin:6px 0;overflow:hidden}
 .progb{height:100%;background:var(--red);border-radius:100px;transition:width .3s}
-.dbg{font-family:monospace;font-size:11px;background:#f5f5f5;padding:8px;border-radius:6px;margin-top:8px;word-break:break-all;max-height:100px;overflow-y:auto;display:none}
+/* debug */
+.dbg{font-family:monospace;font-size:11px;background:#f5f5f5;padding:8px;border-radius:6px;margin-top:8px;word-break:break-all;color:#555}
+/* print */
+@media print{body{background:#fff}.noprint{display:none!important}.scr{display:block!important;background:#fff;padding:0}}
 </style>
 </head>
 <body>
 
 <!-- HOME -->
 <div class="scr on" id="sh">
-  <div class="hero"><h1>🥦 Menüplan</h1><p>Deine Wochenplanung</p></div>
-  <div id="saved-week-banner" style="display:none;margin:10px 10px 0;background:#fff;border-radius:12px;border:.5px solid #e0e0e0;overflow:hidden">
+  <div class="hero"><h1>Menuplan</h1><p id="hsub">Deine Wochenplanung</p></div>
+
+  <!-- Saved week banner -->
+  <div id="swbanner" style="display:none;margin:10px 10px 0;background:#fff;border-radius:var(--rlg);border:.5px solid var(--bdr);overflow:hidden">
     <div style="padding:12px 14px">
-      <div style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#888;margin-bottom:6px">Letzte Woche gespeichert</div>
+      <div style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--gr3);margin-bottom:6px">Letzte Woche</div>
       <div style="display:flex;align-items:center;justify-content:space-between;gap:8px">
         <div>
-          <div style="font-size:13px;color:#555">Einkauf vom <span class="sw-date" style="font-weight:600;color:#111"></span></div>
-          <div style="font-size:12px;color:#888;margin-top:2px">Menüplan noch verfügbar</div>
+          <div style="font-size:13px;color:var(--txt2)">Einkauf vom <span id="swdate" style="font-weight:600;color:var(--txt)"></span></div>
+          <div style="font-size:12px;color:var(--gr3);margin-top:2px">Tippen zum Laden</div>
         </div>
         <div style="display:flex;gap:6px">
-          <button class="btn btn-out" onclick="syncFromGH()" style="width:auto;padding:9px 12px;font-size:12px;flex-shrink:0" title="Von GitHub laden">🔄</button>
-          <button class="btn btn-red" onclick="loadSavedWeek()" style="width:auto;padding:9px 16px;font-size:13px;flex-shrink:0">Öffnen →</button>
+          <button class="btn btn-out noprint" onclick="syncGH(this)" style="width:auto;padding:9px 12px;font-size:12px;flex-shrink:0">&#x1F504;</button>
+          <button class="btn btn-red noprint" onclick="loadSaved()" style="width:auto;padding:9px 16px;font-size:13px;flex-shrink:0">Oeffnen</button>
         </div>
       </div>
     </div>
   </div>
-  <div class="card"><div class="cp">
-    <div class="clbl">GitHub Sync (optional)</div>
-    <div id="gh-setup">
-      <div class="fld"><label>GitHub Token (public_repo)</label>
-        <input type="password" id="gh-token" placeholder="ghp_..." autocomplete="off">
-      </div>
-      <div style="font-size:11px;color:var(--gr3);margin-bottom:10px">Wird nur lokal gespeichert. Ermöglicht Speichern/Laden des Menüplans auf GitHub – auch auf anderen Geräten.</div>
-      <button class="btn btn-out" style="padding:10px;font-size:13px" onclick="saveGhToken()">Token speichern</button>
-    </div>
-    <div id="gh-connected" style="display:none">
-      <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
-        <div style="width:9px;height:9px;border-radius:50%;background:var(--grn);flex-shrink:0"></div>
-        <span style="font-size:13px;color:var(--txt2)">GitHub verbunden – roterhut480/menuplan</span>
-      </div>
-      <button class="btn btn-out" style="padding:9px;font-size:12px" onclick="disconnectGh()">Verbindung trennen</button>
-    </div>
-  </div></div>
 
-  <div class="card"><div class="cp">
-    <div class="clbl">Diese Woche</div>
-    <div class="fld"><label>Kochabende</label>
-      <div class="chips" id="nchips">
-        <button class="chip" onclick="setN(2)" type="button">2 Abende</button>
-        <button class="chip on" onclick="setN(3)" type="button">3 Abende</button>
-        <button class="chip" onclick="setN(4)" type="button">4 Abende</button>
+  <!-- GitHub Sync -->
+  <div class="card">
+    <div class="cp">
+      <div class="clbl">GitHub Sync</div>
+      <div id="ghsetup">
+        <div class="fld"><label>Personal Access Token (public_repo)</label><input type="password" id="ghtoken" placeholder="ghp_..."></div>
+        <div style="font-size:11px;color:var(--gr3);margin-bottom:10px">Wird nur lokal gespeichert. Ermoeglicht geraeteuebergreifendes Laden des Menueplans.</div>
+        <button class="btn btn-out" onclick="saveGHToken()" style="padding:10px;font-size:13px">Token speichern</button>
+      </div>
+      <div id="ghconnected" style="display:none">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
+          <div style="width:9px;height:9px;border-radius:50%;background:var(--grn)"></div>
+          <span style="font-size:13px;color:var(--txt2)">GitHub verbunden</span>
+        </div>
+        <button class="btn btn-out" onclick="disconnectGH()" style="padding:9px;font-size:12px">Verbindung trennen</button>
       </div>
     </div>
-    <div class="fld" style="margin-top:10px"><label>Resteverwertung am Folgetag?</label>
-      <div class="chips" id="rchips">
-        <button class="chip on" onclick="setR(true)" type="button">✓ Ja – Mittag aus Resten</button>
-        <button class="chip" onclick="setR(false)" type="button">✗ Nein – nur Abendessen</button>
-      </div>
-    </div>
-    <div class="fld" style="margin-top:10px"><label>Einfrierportionen mitkochen?</label>
-      <div class="chips" id="fchips">
-        <button class="chip on" onclick="setF(true)" type="button">✓ Ja – +2 Portionen einfrieren</button>
-        <button class="chip" onclick="setF(false)" type="button">✗ Nein – nur für heute</button>
-      </div>
-    </div>
-    <div class="fld" style="margin-top:10px"><label>Thema (optional)</label><input id="theme" placeholder="mediterran, asiatisch…"></div>
-    <div class="fld"><label>Vorhandenes (optional)</label><input id="exist" placeholder="z.B. Kartoffeln 2kg"></div>
-  </div></div>
-  <div style="padding:10px 10px 0">
-    <button class="btn btn-red" onclick="goSuggest()">Menüvorschläge generieren →</button>
-    <button class="btn btn-out" style="margin-top:8px;font-size:13px" onclick="loadTest()">🧪 Testdaten laden</button>
   </div>
-  <div id="herr"></div>
+
+  <!-- Cook options -->
+  <div class="card">
+    <div class="cp">
+      <div class="clbl">Diese Woche</div>
+      <div class="fld">
+        <label>Kochabende</label>
+        <div class="chips">
+          <button class="chip" onclick="setN(2)">2 Abende</button>
+          <button class="chip on" onclick="setN(3)">3 Abende</button>
+          <button class="chip" onclick="setN(4)">4 Abende</button>
+        </div>
+      </div>
+      <div class="fld" style="margin-top:10px">
+        <label>Resteverwertung am Folgetag?</label>
+        <div class="chips" id="rchips">
+          <button class="chip on" onclick="setR(1)">Ja - Mittag aus Resten</button>
+          <button class="chip" onclick="setR(0)">Nein - nur Abendessen</button>
+        </div>
+      </div>
+      <div class="fld" style="margin-top:10px">
+        <label>Einfrierportionen mitkochen?</label>
+        <div class="chips" id="fchips">
+          <button class="chip on" onclick="setF(1)">Ja - +2 Portionen einfrieren</button>
+          <button class="chip" onclick="setF(0)">Nein - nur fuer heute</button>
+        </div>
+      </div>
+      <div class="fld" style="margin-top:10px"><label>Thema (optional)</label><input id="theme" placeholder="mediterran, asiatisch..."></div>
+      <div class="fld"><label>Vorhandenes (optional)</label><input id="exist" placeholder="z.B. Kartoffeln 2kg"></div>
+    </div>
+  </div>
+
+  <div style="padding:10px 10px 0">
+    <button class="btn btn-red" onclick="goSuggest()">Menuvorschlaege generieren</button>
+    <button class="btn btn-out" style="margin-top:8px;font-size:13px" onclick="loadTest()">Testdaten laden</button>
+  </div>
 </div>
 
-<!-- VORSCHLÄGE -->
+<!-- VORSCHLAEGE -->
 <div class="scr" id="ss">
   <div class="tbar">
-    <div class="tbar-bk" onclick="go('sh')">←</div>
-    <div><h1>Menüvorschläge</h1><div class="tbar-sub">Wähle eine Abfolge</div></div>
+    <div class="tbar-bk" onclick="go('sh')">&#8592;</div>
+    <div><h1>Menuvorschlaege</h1><div class="tbar-sub">Waehle eine Abfolge</div></div>
   </div>
-  <div id="sload" style="text-align:center;padding:40px 16px;display:none">
+  <div id="sload" style="display:none;text-align:center;padding:40px 16px">
     <div class="spin" style="width:26px;height:26px;margin:0 auto 12px;border-width:2.5px"></div>
-    <div style="font-size:13px;color:var(--gr3)">Claude generiert Vorschläge…</div>
+    <div style="font-size:13px;color:var(--gr3)">Claude generiert Vorschlaege...</div>
   </div>
   <div id="serr"></div>
   <div id="slist"></div>
   <div id="scta" style="display:none;padding:10px 10px 0">
-    <button class="btn btn-red" onclick="goWeek()">Diese Woche planen →</button>
-    <button class="btn btn-out" style="margin-top:8px" onclick="goSuggest()">Neue Vorschläge</button>
+    <button class="btn btn-red" onclick="goWeek()">Diese Woche planen</button>
+    <button class="btn btn-out" style="margin-top:8px" onclick="goSuggest()">Neue Vorschlaege</button>
   </div>
 </div>
 
 <!-- WOCHE -->
 <div class="scr" id="sw">
   <div class="tbar">
-    <div class="tbar-bk" onclick="go('ss')">←</div>
+    <div class="tbar-bk" onclick="go('ss')">&#8592;</div>
     <div><h1 id="wtit" style="font-size:15px"></h1><div class="tbar-sub" id="wsub"></div></div>
   </div>
   <div class="tabs">
-    <div class="tab on" onclick="wtab('e')">🛒 Einkauf</div>
-    <div class="tab" onclick="wtab('r')">👨‍🍳 Rezepte</div>
+    <div class="tab on" onclick="wtab('e')">Einkauf</div>
+    <div class="tab" onclick="wtab('r')">Rezepte</div>
   </div>
+  <!-- Einkauf -->
   <div id="te">
     <div class="card"><div class="cp">
       <div class="clbl">In Bring! importieren</div>
-      <div class="fld"><label>Bring! E-Mail</label><input type="email" id="bemail" autocomplete="email"></div>
-      <div class="fld"><label>Passwort</label><input type="password" id="bpw" autocomplete="current-password"></div>
+      <div id="bfields">
+        <div class="fld"><label>Bring! E-Mail</label><input type="email" id="bemail" autocomplete="email"></div>
+        <div class="fld"><label>Passwort</label><input type="password" id="bpw" autocomplete="current-password"></div>
+      </div>
       <div id="blistwrap" style="display:none">
         <div class="fld"><label>Welche Liste?</label><select id="blist"></select></div>
-        <label style="display:flex;align-items:center;gap:8px;margin-bottom:12px;cursor:pointer;font-size:13px;color:var(--txt2)" onclick="document.getElementById('bclr').click()">
+        <label style="display:flex;align-items:center;gap:8px;margin-bottom:12px;cursor:pointer;font-size:13px;color:var(--txt2)">
           <input type="checkbox" id="bclr" checked style="width:18px;height:18px;accent-color:var(--red)">
           Liste vor Import leeren
         </label>
       </div>
       <button class="btn btn-red" id="ibtn" onclick="doImport()">In Bring! importieren</button>
       <div class="prog" id="iprog" style="display:none"><div class="progb" id="iprogb"></div></div>
-      <div id="idbg" class="dbg"></div>
+      <div id="idbg" style="display:none" class="dbg"></div>
     </div></div>
     <div id="ist"></div>
     <div class="card"><div class="cp">
@@ -221,6 +262,7 @@ input:focus,select:focus{border-color:var(--red)}
       <div id="elist"></div>
     </div></div>
   </div>
+  <!-- Rezepte -->
   <div id="tr" style="display:none"><div id="rlist"></div></div>
 </div>
 
@@ -228,9 +270,9 @@ input:focus,select:focus{border-color:var(--red)}
 <div class="scr" id="sc">
   <div class="ctbar">
     <div class="ctop">
-      <div class="cback" onclick="go('sw')">←</div>
-      <div style="flex:1"><div class="ctit" id="ctit"></div><div class="cstep" id="csteplbl"></div></div>
-      <div class="cjump" id="cjump" onclick="jumpCur()">↑ Aktuell</div>
+      <div class="cback" onclick="go('sw')">&#8592;</div>
+      <div style="flex:1"><div class="ctit" id="ctit"></div><div class="csteplbl" id="csteplbl"></div></div>
+      <div class="cjump" id="cjump" onclick="jumpCur()">Aktuell</div>
     </div>
     <div class="csegs" id="csegs"></div>
   </div>
@@ -240,499 +282,707 @@ input:focus,select:focus{border-color:var(--red)}
 
 <!-- PRINT -->
 <div class="scr" id="sp">
-  <div style="padding:10px">
-    <button class="btn btn-out" onclick="go('sw')" style="margin-bottom:8px">← Zurück</button>
-    <button class="btn btn-red" onclick="window.print()">📄 Als PDF speichern</button>
+  <div style="padding:10px" class="noprint">
+    <button class="btn btn-out" onclick="go('sw')" style="margin-bottom:8px">Zurueck</button>
+    <button class="btn btn-red" onclick="window.print()">Als PDF speichern</button>
   </div>
   <div id="pcon" style="padding:14px;background:#fff;min-height:300px"></div>
 </div>
 
 <script>
-const PROXY='https://menuplan-proxy.shop-242.workers.dev';
-const BAPI=PROXY+'/bring';
-const BH={'X-BRING-API-KEY':'cof4Nc6D8saplXjE3h3HXqHH8m7VU2i1Gs0g85Sp','X-BRING-CLIENT':'android','X-BRING-APPLICATION':'bring','X-BRING-COUNTRY':'CH','Content-Type':'application/x-www-form-urlencoded'};
+// ─── CONFIG ────────────────────────────────────────────────
+var PROXY = 'https://menuplan-proxy.shop-242.workers.dev';
+var BAPI  = PROXY + '/bring';
+var GH_REPO = 'roterhut480/menuplan';
+var GH_FILE = 'saved-week.json';
+var BH = {
+  'X-BRING-API-KEY': 'cof4Nc6D8saplXjE3h3HXqHH8m7VU2i1Gs0g85Sp',
+  'X-BRING-CLIENT': 'android',
+  'X-BRING-APPLICATION': 'bring',
+  'X-BRING-COUNTRY': 'CH',
+  'Content-Type': 'application/x-www-form-urlencoded'
+};
 
-let G={n:3,reste:true,freeze:true,sugs:[],sel:null,steps:[],cur:0,act:0,done:new Set(),tiv:null,tl:0,tt:0,bToken:null,bUUID:null,bLists:[]};
+// ─── STATE ─────────────────────────────────────────────────
+var G = {
+  n: 3, reste: 1, freeze: 1,
+  sugs: [], sel: null,
+  steps: [], cur: 0, act: 0, done: {},
+  tiv: null, tl: 0, tt: 0,
+  bToken: null, bUUID: null, bLists: [],
+  savedWeek: null
+};
 
-function buildSYS(){
-  const portionen=G.reste&&G.freeze?'6 (2 Abend + 2 Mittag + 2 Einfrieren)':G.reste?'4 (2 Abend + 2 Mittag)':G.freeze?'4 (2 Abend + 2 Einfrieren)':'2 (nur Abendessen)';
-  const resteRule=G.reste?'Reste vom Abend werden am naechsten Mittag verwendet (nur Mikrowelle oder kalt).':'Keine Resteverwertung – nur Abendessen planen.';
-  const freezeRule=G.freeze?'+2 Einfrierportionen mitkochen und in Tupperdosen einfrieren.':'Keine Einfrierportionen – nur fuer heute kochen.';
-  const mittagField=G.reste?'"mittag_naechster_tag":"Mittagname","mittag_tag":"Dienstag",':"";
-  const prepField=G.reste?',"prep_next":["Reste abfuellen","Mittags aufwaermen"]':"";
-  const freezeField=G.freeze?',"einfrieren":["2 Port. einfrieren","Beschriften"]':"";
+// ─── HELPERS ───────────────────────────────────────────────
+function $(id) { return document.getElementById(id); }
+function sl(ms) { return new Promise(function(r){ setTimeout(r, ms); }); }
 
-  const json='{"vorschlaege":[{"id":1,"thema":"Thema","kochabende":["Mo","Mi","Fr"],"gerichte":[{"tag":"Montag","abend":"Name",'+mittagField+'"zutaten":[{"name":"Karotten","menge":"2 Stk"}],"schritte_vegi":[{"text":"Detaillierter Schritt mit Mengen z.B. 2 Zwiebeln in 2 EL Olivenoel 5 Min. duensten","timer_min":5,"zutaten_schritt":["2 Zwiebeln","2 EL Olivenoel"]}],"schritte_fleisch":[{"text":"Fleisch-Schritt","timer_min":5,"zutaten_schritt":["300g Haehnchen"]}]'+prepField+freezeField+',"tipp":"Kochtipp"}]}]}';
-
-  return 'WICHTIG: Antworte ausschliesslich mit validem JSON. Keine Apostrophe oder Anfuehrungszeichen in Texten – verwende stattdessen Umschreibungen. Kein Text vor oder nach dem JSON. Du bist Kochassistent fuer 2 Personen in Zuerich. 1 Person vegi (kein Fisch), 1 Person vegi + optional Fleisch separat. Basis immer vegi. Mittags nur Mikrowelle oder kalt. Portionen pro Rezept: '+portionen+'. Keine 2 schweren KH kombinieren. Mediterran/thematisch kohaerent. Proteinreich. Empfindliche Zutaten frueh in der Woche. '+resteRule+' '+freezeRule+' Wichtig fuer Schritte: Schreibe DETAILLIERTE Anleitungen mit genauen Mengen, Temperaturen, Zeiten und Techniken. Erwaehne bei jedem Schritt welche Zutaten (mit Menge) verwendet werden. Antworte NUR mit validem JSON: '+json;
+function go(id) {
+  var screens = document.querySelectorAll('.scr');
+  for (var i = 0; i < screens.length; i++) screens[i].classList.remove('on');
+  $(id).classList.add('on');
+  window.scrollTo(0, 0);
 }
 
-const $=id=>document.getElementById(id);
-const sl=ms=>new Promise(r=>setTimeout(r,ms));
-
-function go(id){document.querySelectorAll('.scr').forEach(s=>s.classList.remove('on'));$(id).classList.add('on')}
-function setN(n){G.n=n;document.querySelectorAll('#nchips .chip').forEach(c=>c.classList.toggle('on',c.textContent.startsWith(n)))}
-function setR(v){G.reste=v;document.querySelectorAll('#rchips .chip').forEach((c,i)=>c.classList.toggle('on',(i===0&&v)||(i===1&&!v)))}
-function setF(v){G.freeze=v;document.querySelectorAll('#fchips .chip').forEach((c,i)=>c.classList.toggle('on',(i===0&&v)||(i===1&&!v)))}
-function wtab(t){
-  document.querySelectorAll('.tabs .tab').forEach((el,i)=>el.classList.toggle('on',(i===0&&t==='e')||(i===1&&t==='r')));
-  $('te').style.display=t==='e'?'block':'none';
-  $('tr').style.display=t==='r'?'block':'none';
+function showSt(id, msg, type) {
+  var el = $(id);
+  el.className = 'st ' + type;
+  el.textContent = msg;
+  el.style.display = 'block';
 }
-function showSt(id,msg,type){const el=$(id);el.className='st '+type;el.textContent=msg;el.style.display='block';}
 
-// Restore session
-window.addEventListener('DOMContentLoaded',()=>{
-  // Bring session wiederherstellen
-  const s=localStorage.getItem('bs');
-  if(s){try{const d=JSON.parse(s);G.bToken=d.t;G.bUUID=d.u;if($('bemail'))$('bemail').value=d.e||'';loadLists();}catch(e){localStorage.removeItem('bs');}}
+// ─── OPTION SETTERS ────────────────────────────────────────
+function setN(n) {
+  G.n = n;
+  var chips = document.querySelectorAll('.chips')[0].querySelectorAll('.chip');
+  for (var i = 0; i < chips.length; i++) {
+    chips[i].classList.toggle('on', chips[i].textContent.indexOf(n) === 0);
+  }
+}
+function setR(v) {
+  G.reste = v;
+  var chips = $('rchips').querySelectorAll('.chip');
+  chips[0].classList.toggle('on', v === 1);
+  chips[1].classList.toggle('on', v === 0);
+}
+function setF(v) {
+  G.freeze = v;
+  var chips = $('fchips').querySelectorAll('.chip');
+  chips[0].classList.toggle('on', v === 1);
+  chips[1].classList.toggle('on', v === 0);
+}
 
-  // GitHub-Status anzeigen
-  showGhConnected();
+// ─── SYSTEM PROMPT BUILDER ─────────────────────────────────
+function buildSYS() {
+  var port = '';
+  if (G.reste && G.freeze) port = '6 (2 Abend + 2 Mittag naechster Tag + 2 Einfrieren)';
+  else if (G.reste)        port = '4 (2 Abend + 2 Mittag naechster Tag)';
+  else if (G.freeze)       port = '4 (2 Abend + 2 Einfrieren)';
+  else                     port = '2 (nur Abendessen)';
 
-  // Lokalen Speicher laden
-  const w=localStorage.getItem('saved_week');
-  if(w){try{
-    const d=JSON.parse(w);
-    const el=$('saved-week-banner');
-    if(el){el.style.display='block';el.querySelector('.sw-date').textContent=d.saved||'';}
-    G._savedWeek=d;
-  }catch(e){}}
+  var resteRule = G.reste
+    ? 'Reste vom Abend werden am naechsten Mittag verwendet (nur Mikrowelle oder kalt).'
+    : 'Keine Resteverwertung - nur Abendessen planen.';
+  var freezeRule = G.freeze
+    ? '+2 Einfrierportionen mitkochen und in Tupperdosen einfrieren.'
+    : 'Keine Einfrierportionen - nur fuer heute kochen.';
+
+  var mittag = G.reste ? '"mittag_naechster_tag":"Name","mittag_tag":"Dienstag",' : '';
+  var prep   = G.reste ? ',"prep_next":["Reste abfuellen","Mittags aufwaermen"]' : '';
+  var frz    = G.freeze? ',"einfrieren":["2 Port. einfrieren","Beschriften"]' : '';
+
+  var json = '{"vorschlaege":[{"id":1,"thema":"Thema","kochabende":["Mo","Mi","Fr"],"gerichte":[{"tag":"Montag","abend":"Name",' + mittag + '"zutaten":[{"name":"Karotten","menge":"2 Stk"}],"schritte_vegi":[{"text":"Detaillierter Schritt mit Mengen","timer_min":5,"zutaten_schritt":["2 Zwiebeln","2 EL Olivenoel"]}],"schritte_fleisch":[{"text":"Fleisch-Schritt","timer_min":5,"zutaten_schritt":["300g Haehnchen"]}]' + prep + frz + ',"tipp":"Kochtipp"}]}]}';
+
+  return 'WICHTIG: Antworte ausschliesslich mit validem JSON ohne Text davor oder danach. Keine Apostrophe oder Anfuehrungszeichen in Texten - verwende Umschreibungen. ' +
+    'Du bist Kochassistent fuer 2 Personen in Zuerich. 1 Person vegi (kein Fisch), 1 Person vegi + optional Fleisch separat. ' +
+    'Basis immer vegi. Mittags nur Mikrowelle oder kalt. Portionen pro Rezept: ' + port + '. ' +
+    resteRule + ' ' + freezeRule + ' ' +
+    'Keine 2 schweren KH kombinieren. Mediterran oder thematisch kohaerent. Proteinreich. Empfindliche Zutaten frueh in der Woche. ' +
+    'Schritte: DETAILLIERT mit genauen Mengen und Techniken. Bei jedem Schritt Zutaten (mit Menge) in zutaten_schritt angeben. ' +
+    'JSON-Format: ' + json;
+}
+
+// ─── INIT ──────────────────────────────────────────────────
+window.addEventListener('DOMContentLoaded', function() {
+  // Bring session
+  var bs = localStorage.getItem('bs');
+  if (bs) {
+    try {
+      var d = JSON.parse(bs);
+      G.bToken = d.t; G.bUUID = d.u;
+      if ($('bemail')) $('bemail').value = d.e || '';
+      loadBringLists();
+    } catch(e) { localStorage.removeItem('bs'); }
+  }
+  // GitHub
+  updateGHUI();
+  // Saved week
+  var sw = localStorage.getItem('sw');
+  if (sw) {
+    try {
+      G.savedWeek = JSON.parse(sw);
+      $('swbanner').style.display = 'block';
+      $('swdate').textContent = G.savedWeek.saved || '';
+    } catch(e) {}
+  }
 });
 
-async function loadLists(){
-  if(!G.bToken)return;
-  try{
-    const h={...BH,'Authorization':G.bToken,'X-BRING-USER-UUID':G.bUUID,'Content-Type':'application/json'};
-    const r=await fetch(`${BAPI}/bringusers/${G.bUUID}/lists`,{headers:h});
-    if(!r.ok)return;
-    const d=await r.json();
-    G.bLists=Array.isArray(d.lists)?d.lists:[];
-    $('blist').innerHTML=G.bLists.map(l=>`<option value="${l.listUuid}">${l.name}</option>`).join('');
-    $('blistwrap').style.display='block';
-    $('bemail').closest('.fld').style.display='none';
-    $('bpw').closest('.fld').style.display='none';
-    $('ibtn').textContent='In Bring! importieren';
-  }catch(e){console.warn('Listen laden:',e);}
+// ─── GITHUB ────────────────────────────────────────────────
+function updateGHUI() {
+  var tok = localStorage.getItem('ght');
+  $('ghsetup').style.display = tok ? 'none' : 'block';
+  $('ghconnected').style.display = tok ? 'block' : 'none';
 }
-
-async function doImport(){
-  const btn=$('ibtn');
-  const dbg=$('idbg');
-  dbg.style.display='none';
-
-  // Login if needed
-  if(!G.bToken){
-    const email=$('bemail').value.trim();
-    const pw=$('bpw').value;
-    if(!email||!pw){showSt('ist','Bitte E-Mail und Passwort eingeben.','er');return;}
-    btn.innerHTML='<span class="spin w"></span> Anmelden…';btn.disabled=true;
-    try{
-      const r=await fetch(`${BAPI}/v2/bringauth`,{method:'POST',headers:BH,body:new URLSearchParams({email,password:pw}).toString()});
-      const d=await r.json();
-      if(!r.ok)throw new Error(d.message||`Fehler ${r.status}`);
-      G.bToken=`${d.token_type} ${d.access_token}`;
-      G.bUUID=d.uuid;
-      localStorage.setItem('bs',JSON.stringify({t:G.bToken,u:G.bUUID,e:email}));
-      await loadLists();
-    }catch(e){
-      showSt('ist',`Login fehlgeschlagen: ${e.message}`,'er');
-      btn.innerHTML='In Bring! importieren';btn.disabled=false;return;
-    }
-  }
-
-  if(!G.sel&&G.sel!==0){showSt('ist','Bitte zuerst eine Menüwoche auswählen.','er');return;}
-  const sug=G.sugs[G.sel];
-  const listUuid=$('blist').value;
-  if(!listUuid){showSt('ist','Bitte eine Bring!-Liste auswählen.','er');return;}
-
-  const items=getItems(sug);
-  const clearFirst=$('bclr').checked;
-  btn.innerHTML='<span class="spin w"></span> Importiere…';btn.disabled=true;
-  $('iprog').style.display='block';
-
-  const h={...BH,'Authorization':G.bToken,'X-BRING-USER-UUID':G.bUUID};
-  const hj={...BH,'Authorization':G.bToken,'X-BRING-USER-UUID':G.bUUID,'Content-Type':'application/json'};
-
-  try{
-    // Leeren
-    if(clearFirst){
-      try{
-        // Liste leeren via v2 GET dann DELETE
-        const hjson2={...BH,'Authorization':G.bToken,'X-BRING-USER-UUID':G.bUUID,'Content-Type':'application/json'};
-        const r=await fetch(`${BAPI}/v2/bringlists/${listUuid}`,{headers:hjson2});
-        if(r.ok){
-          const d=await r.json();
-          const arr=Array.isArray(d.items?.purchase)?d.items.purchase:Array.isArray(d.purchase)?d.purchase:[];
-          if(arr.length>0){
-            const removeChanges=arr.map(it=>({
-              accuracy:'0.0',altitude:'0.0',latitude:'0.0',longitude:'0.0',
-              itemId:typeof it==='string'?it:(it.itemId||it.name||''),
-              spec:'',operation:'REMOVE'
-            })).filter(x=>x.itemId);
-            if(removeChanges.length>0){
-              await fetch(`${BAPI}/v2/bringlists/${listUuid}/items`,{
-                method:'PUT',headers:hjson2,
-                body:JSON.stringify({changes:removeChanges,sender:''})
-              });
-              await sl(300);
-            }
-          }
-        }
-      }catch(ex){console.warn('Leeren fehlgeschlagen:',ex);}
-    }
-
-    // Artikel hinzufügen – v2 PUT JSON batch
-    const baseParams={accuracy:'0.0',altitude:'0.0',latitude:'0.0',longitude:'0.0'};
-    const changes=items.map(({name,menge})=>({
-      ...baseParams,
-      itemId:name,
-      spec:menge,
-      operation:'TO_PURCHASE'
-    }));
-    const hjson={...BH,'Authorization':G.bToken,'X-BRING-USER-UUID':G.bUUID,'Content-Type':'application/json'};
-    const r=await fetch(`${BAPI}/v2/bringlists/${listUuid}/items`,{
-      method:'PUT',
-      headers:hjson,
-      body:JSON.stringify({changes,sender:''})
-    });
-    const lastResp=`Status ${r.status}`;
-    $('iprogb').style.width='100%';
-
-    $('iprogb').style.width='100%';
-
-    // Debug anzeigen
-    dbg.textContent=`Letzter Request: ${lastResp}`;
-    dbg.style.display='block';
-
-    showSt('ist',`✓ ${items.length} Artikel gesendet (Status siehe Debug unten)${lastResp.includes('400')||lastResp.includes('401')||lastResp.includes('500')?' – Fehler aufgetreten!':' – prüfe Bring! App'}` ,'ok');
-    btn.innerHTML='✓ Importiert';
-
-  }catch(e){
-    showSt('ist',`Import fehlgeschlagen: ${e.message}`,'er');
-    btn.innerHTML='Nochmals versuchen';btn.disabled=false;
-  }
+function saveGHToken() {
+  var tok = $('ghtoken').value.trim();
+  if (!tok) return;
+  localStorage.setItem('ght', tok);
+  $('ghtoken').value = '';
+  updateGHUI();
 }
-
-async function goSuggest(){
-  go('ss');$('sload').style.display='block';$('slist').innerHTML='';$('scta').style.display='none';$('serr').innerHTML='';
-  G.sel=null;
-  const theme=$('theme').value.trim();const exist=$('exist').value.trim();
-  const resteInfo=G.reste?'MIT Resteverwertung am Folgetag':'OHNE Resteverwertung';
-  const freezeInfo=G.freeze?'MIT Einfrierportionen (+2 pro Gericht)':'OHNE Einfrierportionen';
-  const msg=`Generiere genau 3 Menüvorschläge mit je ${G.n} Kochabenden. ${resteInfo}. ${freezeInfo}.${theme?' Thema: '+theme+'.':''}${exist?' Vorhanden: '+exist+'.':''}`;
-  try{
-    const r=await fetch(PROXY+'/anthropic',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:5000,system:buildSYS(),messages:[{role:'user',content:msg}]})});
-    if(!r.ok)throw new Error(`API ${r.status}`);
-    const d=await r.json();
-    const raw=d.content?.[0]?.text||'';
-    // Robuster JSON-Parser mit Fehlerkorrektur
-    let parsed=null;
-    const m=raw.match(/\{[\s\S]*\}/);
-    const jsonStr=m?m[0]:raw;
-    try{
-      parsed=JSON.parse(jsonStr);
-    }catch(e1){
-      // Versuche häufige Fehler zu korrigieren
-      try{
-        const fixed=jsonStr
-          .replace(/,\s*([\]}])/g,'$1')   // trailing commas
-          .replace(/([\[{,])\s*,/g,'$1')  // leading commas
-          .replace(/
-/g,'\n')            // unescaped newlines in strings
-          .replace(/	/g,'\t');           // unescaped tabs
-        parsed=JSON.parse(fixed);
-      }catch(e2){
-        // Letzter Versuch: Claude nochmals bitten
-        throw new Error('JSON ungültig – bitte nochmals generieren');
+function disconnectGH() {
+  localStorage.removeItem('ght');
+  updateGHUI();
+}
+function saveToGH(data) {
+  var tok = localStorage.getItem('ght');
+  if (!tok) return;
+  var url = 'https://api.github.com/repos/' + GH_REPO + '/contents/' + GH_FILE;
+  var headers = { 'Authorization': 'token ' + tok, 'Content-Type': 'application/json', 'Accept': 'application/vnd.github.v3+json' };
+  fetch(url, { headers: headers })
+    .then(function(r) { return r.ok ? r.json() : null; })
+    .then(function(existing) {
+      var body = { message: 'Menueplan gespeichert', content: btoa(unescape(encodeURIComponent(JSON.stringify(data, null, 2)))) };
+      if (existing && existing.sha) body.sha = existing.sha;
+      return fetch(url, { method: 'PUT', headers: headers, body: JSON.stringify(body) });
+    })
+    .then(function(r) { if (r && r.ok) console.log('GitHub gespeichert'); })
+    .catch(function(e) { console.warn('GitHub save:', e); });
+}
+function syncGH(btn) {
+  var tok = localStorage.getItem('ght');
+  if (!tok) { alert('Bitte zuerst GitHub Token eingeben'); return; }
+  btn.textContent = '...';
+  btn.disabled = true;
+  fetch('https://raw.githubusercontent.com/' + GH_REPO + '/main/' + GH_FILE + '?t=' + Date.now())
+    .then(function(r) { return r.ok ? r.json() : null; })
+    .then(function(d) {
+      if (d && d.sugs) {
+        G.savedWeek = d;
+        localStorage.setItem('sw', JSON.stringify(d));
+        $('swbanner').style.display = 'block';
+        $('swdate').textContent = d.saved || '';
+        btn.textContent = 'OK';
+      } else {
+        btn.textContent = 'Leer';
       }
-    }
-    G.sugs=parsed.vorschlaege||[];
-    // Woche in localStorage speichern
-    const weekData={sugs:G.sugs,n:G.n,reste:G.reste,freeze:G.freeze,saved:new Date().toLocaleDateString('de-CH')};
-    localStorage.setItem('saved_week',JSON.stringify(weekData));
-    // Auch auf GitHub speichern falls verbunden
-    saveWeekToGH(weekData).then(ok=>{
-      if(ok)console.log('Auf GitHub gespeichert');
-    });
-    $('sload').style.display='none';renderSugs();$('scta').style.display='block';
-  }catch(e){
-    $('sload').style.display='none';
-    const el=$('serr');el.className='st er';el.textContent=`Fehler: ${e.message}`;
-    $('scta').style.display='block';
-  }
+      setTimeout(function() { btn.textContent = '\uD83D\uDD04'; btn.disabled = false; }, 1500);
+    })
+    .catch(function() { btn.textContent = 'Err'; setTimeout(function() { btn.textContent = '\uD83D\uDD04'; btn.disabled = false; }, 1500); });
 }
-
-function renderSugs(){
-  $('slist').innerHTML=G.sugs.map((s,i)=>`
-    <div class="sug${i===G.sel?' sel':''}" id="sg${i}" onclick="selSug(${i})">
-      <div class="sug-h">
-        <div class="sug-n"><span>Option ${i+1}</span>${i===G.sel?'<span style="background:var(--red);border-radius:50%;width:16px;height:16px;display:flex;align-items:center;justify-content:center;font-size:10px;color:#fff">✓</span>':''}</div>
-        <div class="sug-t">${s.thema}</div>
-      </div>
-      <div class="sug-b">${s.gerichte.map(g=>`<div class="sug-d"><b style="color:var(--txt);min-width:22px;display:inline-block">${g.tag.slice(0,2)}</b> ${g.abend}</div><div class="sug-nx">↳ ${g.mittag_tag}: ${g.mittag_naechster_tag}</div>`).join('')}</div>
-    </div>`).join('');
-}
-function selSug(i){G.sel=i;renderSugs();}
-
-function goWeek(){
-  if(G.sel===null)return;
-  const s=G.sugs[G.sel];
-  $('wtit').textContent=s.thema;$('wsub').textContent=s.kochabende?.join(' · ')||'';
-  renderEink(s);renderRez(s);wtab('e');go('sw');
-}
-
-function getItems(sug){
-  const items=[];const seen=new Map();
-  sug.gerichte.forEach(g=>(g.zutaten||[]).forEach(z=>{
-    const k=z.name.toLowerCase();
-    if(seen.has(k)){items[seen.get(k)].menge+=` + ${z.menge}`;}
-    else{seen.set(k,items.length);items.push({name:z.name,menge:z.menge});}
-  }));return items;
-}
-
-function renderEink(sug){
-  const items=getItems(sug);
-  $('elist').innerHTML=items.map((it,i)=>`
-    <div class="irow" id="ir${i}" onclick="togItem(${i})">
-      <div class="ichk" id="ic${i}"></div>
-      <div><div class="iname">${it.name}</div><div class="ispec">${it.menge}</div></div>
-    </div>`).join('');
-}
-function togItem(i){
-  const c=$(`ic${i}`),r=$(`ir${i}`);
-  const on=c.classList.toggle('on');
-  c.innerHTML=on?'<svg width="11" height="11" viewBox="0 0 11 11"><path d="M2 5.5l2.5 2.5L9 3" stroke="#fff" stroke-width="1.8" fill="none" stroke-linecap="round"/></svg>':'';
-  r.classList.toggle('done',on);
-}
-
-function renderRez(sug){
-  $('rlist').innerHTML=sug.gerichte.map((g,ri)=>`
-    <div class="rcard">
-      <div class="rh"><div class="rday">${g.tag}</div><div class="rname">${g.abend}</div><div class="rnext">→ ${g.mittag_tag}: ${g.mittag_naechster_tag}</div></div>
-      <div class="ract">
-        <button class="btn btn-red" onclick="startCook(${ri})">👨‍🍳 Jetzt kochen</button>
-        <button class="btn btn-out" onclick="showPrint(${ri})">📄 Als PDF</button>
-      </div>
-    </div>`).join('');
-}
-
-// COOK
-function buildSteps(g){
-  const st=[];
-  (g.schritte_vegi||[]).forEach(s=>st.push({...s,type:'v'}));
-  (g.schritte_fleisch||[]).forEach(s=>st.push({...s,type:'f'}));
-  if(G.reste&&g.prep_next?.length)st.push({text:g.prep_next.join('\n'),type:'p',timer_min:0,ml:true});
-  if(G.freeze&&g.einfrieren?.length)st.push({text:g.einfrieren.join('\n'),type:'fr',timer_min:0,ml:true});
-  if(g.tipp)st.push({text:g.tipp,type:'t',timer_min:0});
-  return st;
-}
-function startCook(ri){
-  const g=G.sugs[G.sel].gerichte[ri];
-  G.steps=buildSteps(g);G.cur=-1;G.act=0;G.done=new Set();clearInterval(G.tiv);
-  $('ctit').textContent=g.abend;
-  renderIngOverview(g);
-  go('sc');
-}
-
-function renderIngOverview(g){
-  // Show ingredients overview as step -1
-  const vegi=g.zutaten||[];
-  const rows=vegi.map(z=>`
-    <div style="display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:.5px solid #f0f0f0">
-      <span style="font-size:14px;font-weight:500;color:var(--txt)">${z.name}</span>
-      <span style="font-size:13px;color:var(--gr3);font-weight:500">${z.menge}</span>
-    </div>`).join('');
-
-  $('csteplbl').textContent='Zutatenübersicht';
-  $('csegs').innerHTML='';
-  $('cprogb').style.width='0%';
-  $('cjump').style.display='none';
-
-  $('cbody').innerHTML=`
-    <div class="badge bv">📋 Vor dem Kochen</div>
-    <div style="font-size:16px;font-weight:700;color:var(--txt);margin-bottom:4px">${g.abend}</div>
-    <div style="font-size:13px;color:var(--gr3);margin-bottom:16px">→ ${g.mittag_tag}: ${g.mittag_naechster_tag}</div>
-    <div style="background:#f9f9f9;border-radius:var(--r);padding:0 12px;margin-bottom:16px;border:.5px solid var(--bdr)">
-      <div style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--gr3);padding:10px 0 6px">Zutaten</div>
-      ${rows}
-    </div>
-    <div style="font-size:12px;color:var(--gr3);background:var(--bll);border-radius:8px;padding:10px 12px;margin-bottom:16px;border:.5px solid #90caf9">
-      💡 Alle Zutaten bereitstellen und abmessen bevor du anfängst.
-    </div>
-    <button class="btn btn-red" onclick="beginCook()">👨‍🍳 Los geht's →</button>
-  `;
-}
-
-function beginCook(){
-  G.cur=0;G.act=0;
-  renderSegs();renderStep();
-}
-function renderSegs(){
-  $('csegs').innerHTML=G.steps.map((_,i)=>`<div class="cseg ${i<G.act?'done':i===G.act?'act':''}" id="sg_${i}"></div>`).join('');
-}
-function updSegs(){
-  G.steps.forEach((_,i)=>{const el=$(`sg_${i}`);if(el)el.className=`cseg ${i<G.act?'done':i===G.act?'act':''}`;});
-  $('cprogb').style.width=`${Math.round((G.act/Math.max(1,G.steps.length-1))*100)}%`;
-  $('csteplbl').textContent=`Schritt ${G.cur+1} von ${G.steps.length}`;
-  $('cjump').style.display=G.cur!==G.act?'block':'none';
-}
-const badges={v:'<div class="badge bv">🌿 Basis – beide</div>',f:'<div class="badge bf">🍖 Fleisch-Beilage</div>',p:'<div class="badge bp">📦 Für morgen</div>',fr:'<div class="badge bfr">🧊 Einfrieren</div>',t:'<div class="badge bv">💡 Tipp</div>'};
-function renderStep(){
-  clearInterval(G.tiv);
-  const s=G.steps[G.cur];const isDone=G.done.has(G.cur);const isLast=G.cur===G.steps.length-1;
-  const lines=(s.text||'').split('\n').filter(Boolean);
-  // Zutaten pro Schritt
-  const zStep=(s.zutaten_schritt||[]);
-  const zStepHtml=zStep.length?`
-    <div style="background:#f5f5f5;border-radius:8px;padding:8px 12px;margin-bottom:12px;display:flex;flex-wrap:wrap;gap:6px">
-      ${zStep.map(z=>`<span style="background:#fff;border:.5px solid var(--bdr);border-radius:100px;padding:3px 10px;font-size:12px;font-weight:500;color:var(--txt2)">${z}</span>`).join('')}
-    </div>`:'';
-  const txt=s.ml?`<div class="csml">${lines.map((l,i)=>`<div style="display:flex;gap:8px;margin-bottom:4px"><span style="font-size:12px;font-weight:700;color:var(--red);min-width:16px">${i+1}.</span><span>${l}</span></div>`).join('')}</div>`:`${zStepHtml}<div class="cstxt">${s.text}</div>`;
-  let th='';
-  if(s.timer_min>0){G.tl=s.timer_min*60;G.tt=G.tl;th=`<div class="tbox"><div class="tdisp" id="td">${fmt(G.tl)}</div><div class="tsub">${s.timer_min} Minuten</div><div class="tprog"><div class="tprogb" id="tb" style="width:100%"></div></div><button class="btn btn-red" id="tbtn" onclick="startT()" style="padding:9px;font-size:13px">▶ Timer starten</button></div>`;}
-  const adHTML=`<div class="adone" onclick="togDone()"><div class="adchk ${isDone?'on':''}" id="adchk">${isDone?'<svg width="10" height="10" viewBox="0 0 10 10"><path d="M2 5l2.5 2.5L8 2.5" stroke="#fff" stroke-width="1.6" fill="none" stroke-linecap="round"/></svg>':''}</div><span style="font-size:13px;color:var(--txt2)">Schritt bereits vorbereitet</span></div>`;
-  const mainBtn=isDone?`<button class="btn btn-grn" onclick="unDone()">↩ Als unerledigt markieren</button>`:`<button class="btn btn-red" onclick="doComplete()">${isLast?'✓ Rezept fertig':'✓ Schritt abschliessen'}</button>`;
-  $('cbody').innerHTML=`${badges[s.type]||''}${txt}${th}${adHTML}<div style="display:flex;flex-direction:column;gap:8px">${mainBtn}<div class="cnav"><button class="btn btn-out" onclick="cnav(-1)" ${G.cur===0?'disabled':''}>← Zurück</button><button class="btn btn-out" onclick="cnav(1)" ${G.cur===G.steps.length-1?'disabled':''}>Weiter →</button></div></div>`;
-  updSegs();
-}
-function cnav(d){clearInterval(G.tiv);const n=G.cur+d;if(n<0||n>=G.steps.length)return;G.cur=n;renderStep();}
-function jumpCur(){G.cur=G.act;renderStep();}
-function doComplete(){G.done.add(G.cur);clearInterval(G.tiv);if(G.cur===G.steps.length-1){go('sw');return;}if(G.cur===G.act)G.act=Math.min(G.act+1,G.steps.length-1);G.cur=G.act;renderStep();}
-function unDone(){G.done.delete(G.cur);renderStep();}
-function togDone(){G.done.has(G.cur)?unDone():doComplete();}
-function startT(){
-  const btn=$('tbtn');if(!btn)return;
-  btn.textContent='⏸ Läuft…';btn.disabled=true;$('td').classList.add('run');
-  G.tiv=setInterval(()=>{
-    G.tl--;
-    if(G.tl<=0){clearInterval(G.tiv);$('td').textContent='✓ Fertig!';$('td').classList.remove('run');$('td').classList.add('fin');$('tb').style.width='0%';btn.textContent='✓ Fertig';return;}
-    $('td').textContent=fmt(G.tl);$('tb').style.width=`${Math.round((G.tl/G.tt)*100)}%`;
-    if(G.tl<=30)$('td').style.color='#b71c1c';
-  },1000);
-}
-function fmt(s){return`${String(Math.floor(s/60)).padStart(2,'0')}:${String(s%60).padStart(2,'0')}`}
-
-function showPrint(ri){
-  const sug=G.sugs[G.sel];const g=sug.gerichte[ri];const items=getItems(sug);
-  $('pcon').innerHTML=`<h1 style="font-size:20px;font-weight:800;margin-bottom:4px">${g.abend}</h1><p style="color:#888;margin-bottom:16px;font-size:13px">${g.tag} → ${g.mittag_tag}: ${g.mittag_naechster_tag}</p><h2 style="font-size:14px;font-weight:700;margin-bottom:8px;color:#e8390e">Zutaten</h2><table style="width:100%;border-collapse:collapse;margin-bottom:16px;font-size:13px">${(g.zutaten||[]).map(z=>`<tr><td style="padding:5px 0;border-bottom:1px solid #f0f0f0;font-weight:500">☐ ${z.name}</td><td style="padding:5px 0;border-bottom:1px solid #f0f0f0;color:#888;text-align:right">${z.menge}</td></tr>`).join('')}</table><h2 style="font-size:14px;font-weight:700;margin-bottom:8px;color:#2e7d32">🌿 Zubereitung</h2>${(g.schritte_vegi||[]).map((s,i)=>`<div style="margin-bottom:8px;font-size:13px"><strong style="color:#e8390e">${i+1}.</strong> ${s.text}${s.timer_min?` <span style="color:#888">[${s.timer_min} Min.]</span>`:''}</div>`).join('')}${g.schritte_fleisch?.length?`<h2 style="font-size:14px;font-weight:700;margin:12px 0 8px;color:#e65100">🍖 Fleisch-Beilage</h2>${g.schritte_fleisch.map((s,i)=>`<div style="margin-bottom:8px;font-size:13px"><strong>${i+1}.</strong> ${s.text}</div>`).join('')}`:''}<h2 style="font-size:14px;font-weight:700;margin:12px 0 8px;color:#1565c0">📦 Für morgen</h2>${(g.prep_next||[]).map((s,i)=>`<div style="margin-bottom:6px;font-size:13px"><strong>${i+1}.</strong> ${s}</div>`).join('')}<h2 style="font-size:14px;font-weight:700;margin:12px 0 8px;color:#0277bd">🧊 Einfrieren</h2>${(g.einfrieren||[]).map((s,i)=>`<div style="margin-bottom:6px;font-size:13px"><strong>${i+1}.</strong> ${s}</div>`).join('')}${g.tipp?`<div style="background:#fff9c4;border-left:3px solid #f9a825;padding:10px;margin-top:12px;border-radius:4px;font-size:13px"><strong>💡</strong> ${g.tipp}</div>`:''}<h2 style="font-size:14px;font-weight:700;margin:16px 0 8px;color:#e8390e">🛒 Einkaufsliste</h2><table style="width:100%;border-collapse:collapse;font-size:13px">${items.map(z=>`<tr><td style="padding:5px 0;border-bottom:1px solid #f0f0f0">☐ ${z.name}</td><td style="padding:5px 0;border-bottom:1px solid #f0f0f0;color:#888;text-align:right">${z.menge}</td></tr>`).join('')}</table>`;
-  go('sp');
-}
-
-// GitHub Sync
-const GH_REPO='roterhut480/menuplan';
-const GH_FILE='saved-week.json';
-
-function saveGhToken(){
-  const token=$('gh-token').value.trim();
-  if(!token){return;}
-  localStorage.setItem('gh_token',token);
-  $('gh-token').value='';
-  showGhConnected();
-}
-
-function showGhConnected(){
-  const token=localStorage.getItem('gh_token');
-  if(token){
-    $('gh-setup').style.display='none';
-    $('gh-connected').style.display='block';
-  } else {
-    $('gh-setup').style.display='block';
-    $('gh-connected').style.display='none';
-  }
-}
-
-async function syncFromGH(){
-  const btn=event.target;
-  btn.textContent='⏳';btn.disabled=true;
-  const d=await loadWeekFromGH();
-  if(d&&d.sugs){
-    localStorage.setItem('saved_week',JSON.stringify(d));
-    G._savedWeek=d;
-    const el=$('saved-week-banner');
-    if(el){el.querySelector('.sw-date').textContent=d.saved||'';}
-    btn.textContent='✓';
-    setTimeout(()=>{btn.textContent='🔄';btn.disabled=false;},1500);
-  } else {
-    btn.textContent='✗';
-    setTimeout(()=>{btn.textContent='🔄';btn.disabled=false;},1500);
-  }
-}
-
-function disconnectGh(){
-  localStorage.removeItem('gh_token');
-  showGhConnected();
-}
-
-async function saveWeekToGH(data){
-  const token=localStorage.getItem('gh_token');
-  if(!token)return false;
-  try{
-    // Get current SHA if file exists
-    let sha='';
-    const get=await fetch(`https://api.github.com/repos/${GH_REPO}/contents/${GH_FILE}`,{
-      headers:{'Authorization':'token '+token,'Accept':'application/vnd.github.v3+json'}
-    });
-    if(get.ok){const d=await get.json();sha=d.sha;}
-
-    // Save file
-    const body={message:'Menüplan gespeichert',content:btoa(unescape(encodeURIComponent(JSON.stringify(data,null,2)))),};
-    if(sha)body.sha=sha;
-    const put=await fetch(`https://api.github.com/repos/${GH_REPO}/contents/${GH_FILE}`,{
-      method:'PUT',
-      headers:{'Authorization':'token '+token,'Content-Type':'application/json','Accept':'application/vnd.github.v3+json'},
-      body:JSON.stringify(body)
-    });
-    return put.ok;
-  }catch(e){console.warn('GitHub save:',e);return false;}
-}
-
-async function loadWeekFromGH(){
-  try{
-    const token=localStorage.getItem('gh_token');
-    const headers=token?{'Authorization':'token '+token}:{};
-    const r=await fetch(`https://raw.githubusercontent.com/${GH_REPO}/main/${GH_FILE}?t=${Date.now()}`,{headers});
-    if(!r.ok)return null;
-    return await r.json();
-  }catch(e){return null;}
-}
-
-function loadSavedWeek(){
-  if(!G._savedWeek)return;
-  G.sugs=G._savedWeek.sugs||[];
-  G.n=G._savedWeek.n||3;
-  G.reste=G._savedWeek.reste!==undefined?G._savedWeek.reste:true;
-  G.freeze=G._savedWeek.freeze!==undefined?G._savedWeek.freeze:true;
-  G.sel=0;
-  // Update chips
-  document.querySelectorAll('#nchips .chip').forEach(c=>c.classList.toggle('on',c.textContent.startsWith(G.n)));
-  document.querySelectorAll('#rchips .chip').forEach((c,i)=>c.classList.toggle('on',(i===0&&G.reste)||(i===1&&!G.reste)));
-  document.querySelectorAll('#fchips .chip').forEach((c,i)=>c.classList.toggle('on',(i===0&&G.freeze)||(i===1&&!G.freeze)));
-  // Go to suggestions screen
+function loadSaved() {
+  if (!G.savedWeek || !G.savedWeek.sugs) return;
+  G.sugs = G.savedWeek.sugs;
+  G.n = G.savedWeek.n || 3;
+  G.reste = G.savedWeek.reste !== undefined ? G.savedWeek.reste : 1;
+  G.freeze = G.savedWeek.freeze !== undefined ? G.savedWeek.freeze : 1;
+  G.sel = 0;
   renderSugs();
-  $('scta').style.display='block';
-  $('sload').style.display='none';
-  $('serr').innerHTML='';
+  $('scta').style.display = 'block';
+  $('sload').style.display = 'none';
+  $('serr').innerHTML = '';
   go('ss');
 }
 
-function loadTest(){
-  G.sugs=[{id:1,thema:"Test – Mediterran",kochabende:["Montag","Mittwoch"],gerichte:[
-    {tag:"Montag",abend:"Saag Paneer mit Basmatireis",mittag_naechster_tag:"Saag Paneer aufgewärmt",mittag_tag:"Dienstag",
-     zutaten:[{name:"Paneer",menge:"450g"},{name:"TK-Spinat",menge:"500g, aufgetaut"},{name:"Zwiebeln",menge:"2 grosse"},{name:"Basmatireis",menge:"600g (300g Abend + 300g Di)"},{name:"Ghee",menge:"2 EL"},{name:"Knoblauch",menge:"3 Zehen"},{name:"Ingwer",menge:"1 Daumen"},{name:"Garam Masala",menge:"1 TL"},{name:"Kurkuma",menge:"1 TL"},{name:"Chilipulver",menge:"1 TL"},{name:"Zitrone",menge:"½, Saft"}],
-     schritte_vegi:[
-       {text:"2 EL Ghee in einer grossen Pfanne erhitzen. 450g Paneer in 3cm-Würfel schneiden, mit 1 TL Kurkuma und 1 TL Chilipulver wenden und bei mittlerer Hitze 8 Min. rundherum goldbraun anbraten. Paneer herausnehmen und beiseite stellen.",timer_min:8,zutaten_schritt:["450g Paneer","2 EL Ghee","1 TL Kurkuma","1 TL Chilipulver"]},
-       {text:"2 grosse Zwiebeln fein hacken. Im verbliebenen Ghee bei mittlerer Hitze 10 Min. goldbraun karamellisieren lassen – Geduld lohnt sich! Bei Bedarf einen Schuss Wasser zugeben damit nichts anbrennt.",timer_min:10,zutaten_schritt:["2 Zwiebeln"]},
-       {text:"3 Knoblauchzehen pressen und 1 Daumen Ingwer fein reiben. Beides zu den Zwiebeln geben. 1 TL Garam Masala unterrühren und 2 Min. bei mittlerer Hitze rösten bis es duftet.",timer_min:2,zutaten_schritt:["3 Zehen Knoblauch","1 Daumen Ingwer","1 TL Garam Masala"]},
-       {text:"500g TK-Spinat (aufgetaut, gut ausgedrückt) grob hacken und in die Pfanne geben. 100ml Wasser zugeben und 3 Min. bei mittlerer Hitze unter Rühren erwärmen. Mit Salz und dem Saft einer halben Zitrone abschmecken.",timer_min:3,zutaten_schritt:["500g TK-Spinat","½ Zitrone Saft"]},
-       {text:"Paneer zurück in die Pfanne geben und 2-3 Min. warm ziehen lassen. Währenddessen 600g Basmatireis kochen – 300g für heute Abend, 300g für Dienstag separat abfüllen.",timer_min:3,zutaten_schritt:["Gebratener Paneer","600g Basmatireis"]}
-     ],
-     schritte_fleisch:[{text:"Optional: Hähnchenbrust (300g) in Streifen schneiden, mit Salz und Paprikapulver würzen und in einer separaten Pfanne mit 1 EL Öl bei hoher Hitze 6 Min. anbraten bis goldbraun. Neben dem Saag Paneer servieren.",timer_min:6,zutaten_schritt:["300g Hähnchenbrust","Salz, Paprikapulver","1 EL Öl"]}],
-     prep_next:["2 Portionen Saag Paneer in Tupperdosen abfüllen (ohne Reis)","300g Reis separat in eine Tupperdose","Mittags: Saag Paneer 3 Min. Mikrowelle, Reis 1 Min. Mikrowelle – getrennt erhitzen"],
-     einfrieren:["2 weitere Portionen Saag Paneer (ohne Reis) in 2 separate Tupperdosen","Abkühlen lassen, beschriften (Saag Paneer + Datum) und einfrieren","Auftauen: über Nacht im Kühlschrank, dann 4 Min. Mikrowelle"],
-     tipp:"TK-Spinat wirklich gut ausdrücken – sonst wird das Gericht wässrig. Der Paneer sollte rundherum goldbraun sein bevor er zurück in die Sauce kommt."}
-  ]}];
-  G.sel=0;goWeek();
+// ─── BRING! ────────────────────────────────────────────────
+function loadBringLists() {
+  if (!G.bToken) return;
+  var headers = {};
+  for (var k in BH) headers[k] = BH[k];
+  headers['Authorization'] = G.bToken;
+  headers['X-BRING-USER-UUID'] = G.bUUID;
+  headers['Content-Type'] = 'application/json';
+  fetch(BAPI + '/bringusers/' + G.bUUID + '/lists', { headers: headers })
+    .then(function(r) { return r.ok ? r.json() : null; })
+    .then(function(d) {
+      if (!d) return;
+      G.bLists = Array.isArray(d.lists) ? d.lists : [];
+      $('blist').innerHTML = G.bLists.map(function(l) { return '<option value="' + l.listUuid + '">' + l.name + '</option>'; }).join('');
+      $('blistwrap').style.display = 'block';
+      $('bfields').style.display = 'none';
+    })
+    .catch(function() {});
+}
+
+function doImport() {
+  var btn = $('ibtn');
+  var dbg = $('idbg');
+  dbg.style.display = 'none';
+  if ($('ist')) $('ist').style.display = 'none';
+
+  // Login if needed
+  if (!G.bToken) {
+    var email = $('bemail').value.trim();
+    var pw = $('bpw').value;
+    if (!email || !pw) { showSt('ist', 'Bitte E-Mail und Passwort eingeben.', 'er'); return; }
+    btn.innerHTML = '<span class="spin w"></span> Anmelden...';
+    btn.disabled = true;
+    fetch(BAPI + '/v2/bringauth', { method: 'POST', headers: BH, body: new URLSearchParams({ email: email, password: pw }).toString() })
+      .then(function(r) { return r.json().then(function(d) { return { ok: r.ok, d: d }; }); })
+      .then(function(res) {
+        if (!res.ok) throw new Error(res.d.message || 'Fehler ' + res.d.errorcode);
+        G.bToken = res.d.token_type + ' ' + res.d.access_token;
+        G.bUUID = res.d.uuid;
+        localStorage.setItem('bs', JSON.stringify({ t: G.bToken, u: G.bUUID, e: email }));
+        loadBringLists();
+        doImportItems();
+      })
+      .catch(function(e) {
+        showSt('ist', 'Login fehlgeschlagen: ' + e.message, 'er');
+        btn.innerHTML = 'In Bring! importieren'; btn.disabled = false;
+      });
+    return;
+  }
+  doImportItems();
+}
+
+function doImportItems() {
+  if (G.sel === null) { showSt('ist', 'Bitte zuerst eine Menuewoche auswaehlen.', 'er'); return; }
+  var sug = G.sugs[G.sel];
+  var listUuid = $('blist').value;
+  if (!listUuid) { showSt('ist', 'Bitte eine Bring!-Liste auswaehlen.', 'er'); return; }
+
+  var items = getItems(sug);
+  var clearFirst = $('bclr').checked;
+  var btn = $('ibtn');
+  btn.innerHTML = '<span class="spin w"></span> Importiere...';
+  btn.disabled = true;
+  $('iprog').style.display = 'block';
+
+  var hJson = {};
+  for (var k in BH) hJson[k] = BH[k];
+  hJson['Authorization'] = G.bToken;
+  hJson['X-BRING-USER-UUID'] = G.bUUID;
+  hJson['Content-Type'] = 'application/json';
+
+  var hForm = {};
+  for (var k in BH) hForm[k] = BH[k];
+  hForm['Authorization'] = G.bToken;
+  hForm['X-BRING-USER-UUID'] = G.bUUID;
+
+  var promise = Promise.resolve();
+
+  // Clear if needed
+  if (clearFirst) {
+    promise = fetch(BAPI + '/v2/bringlists/' + listUuid, { headers: hJson })
+      .then(function(r) { return r.ok ? r.json() : null; })
+      .then(function(d) {
+        if (!d) return;
+        var arr = Array.isArray(d.purchase) ? d.purchase : Array.isArray(d.items) ? d.items : [];
+        if (arr.length === 0) return;
+        var removes = arr.map(function(it) {
+          return { itemId: typeof it === 'string' ? it : (it.itemId || it.name || ''), spec: '', operation: 'REMOVE', accuracy: '0.0', altitude: '0.0', latitude: '0.0', longitude: '0.0' };
+        }).filter(function(x) { return x.itemId; });
+        if (removes.length === 0) return;
+        return fetch(BAPI + '/v2/bringlists/' + listUuid + '/items', {
+          method: 'PUT', headers: hJson,
+          body: JSON.stringify({ changes: removes, sender: '' })
+        }).then(function() { return sl(300); });
+      })
+      .catch(function() {});
+  }
+
+  // Add items
+  promise.then(function() {
+    $('iprogb').style.width = '0%';
+    var changes = items.map(function(it) {
+      return { itemId: it.name, spec: it.menge, operation: 'TO_PURCHASE', accuracy: '0.0', altitude: '0.0', latitude: '0.0', longitude: '0.0' };
+    });
+    return fetch(BAPI + '/v2/bringlists/' + listUuid + '/items', {
+      method: 'PUT', headers: hJson,
+      body: JSON.stringify({ changes: changes, sender: '' })
+    });
+  })
+  .then(function(r) {
+    $('iprogb').style.width = '100%';
+    var dbg = $('idbg');
+    dbg.textContent = 'Status: ' + (r ? r.status : 'unbekannt');
+    dbg.style.display = 'block';
+    if (r && r.ok) {
+      showSt('ist', items.length + ' Artikel in Bring! importiert!', 'ok');
+      btn.innerHTML = 'Importiert';
+    } else {
+      showSt('ist', 'Import fehlgeschlagen - Status ' + (r ? r.status : '?'), 'er');
+      btn.innerHTML = 'Nochmals versuchen'; btn.disabled = false;
+    }
+  })
+  .catch(function(e) {
+    showSt('ist', 'Import fehlgeschlagen: ' + e.message, 'er');
+    btn.innerHTML = 'Nochmals versuchen'; btn.disabled = false;
+  });
+}
+
+// ─── SUGGESTIONS ───────────────────────────────────────────
+function goSuggest() {
+  go('ss');
+  $('sload').style.display = 'block';
+  $('slist').innerHTML = '';
+  $('scta').style.display = 'none';
+  $('serr').innerHTML = '';
+  G.sel = null;
+
+  var theme = $('theme').value.trim();
+  var exist = $('exist').value.trim();
+  var resteInfo = G.reste ? 'MIT Resteverwertung am Folgetag' : 'OHNE Resteverwertung';
+  var freezeInfo = G.freeze ? 'MIT Einfrierportionen (+2 pro Gericht)' : 'OHNE Einfrierportionen';
+  var msg = 'Generiere genau 3 Menuvorschlaege mit je ' + G.n + ' Kochabenden. ' + resteInfo + '. ' + freezeInfo + '.' + (theme ? ' Thema: ' + theme + '.' : '') + (exist ? ' Vorhanden: ' + exist + '.' : '');
+
+  fetch(PROXY + '/anthropic', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ model: 'claude-sonnet-4-20250514', max_tokens: 5000, system: buildSYS(), messages: [{ role: 'user', content: msg }] })
+  })
+  .then(function(r) { return r.json(); })
+  .then(function(d) {
+    var raw = (d.content && d.content[0] && d.content[0].text) ? d.content[0].text : '';
+    var m = raw.match(/\{[\s\S]*\}/);
+    var jsonStr = m ? m[0] : raw;
+    var parsed;
+    try {
+      parsed = JSON.parse(jsonStr);
+    } catch(e1) {
+      // Try fixing trailing commas
+      try {
+        parsed = JSON.parse(jsonStr.replace(/,(\s*[}\]])/g, '$1'));
+      } catch(e2) {
+        throw new Error('JSON ungueltig - bitte nochmals generieren');
+      }
+    }
+    G.sugs = parsed.vorschlaege || [];
+    // Save
+    var weekData = { sugs: G.sugs, n: G.n, reste: G.reste, freeze: G.freeze, saved: new Date().toLocaleDateString('de-CH') };
+    localStorage.setItem('sw', JSON.stringify(weekData));
+    G.savedWeek = weekData;
+    $('swbanner').style.display = 'block';
+    $('swdate').textContent = weekData.saved;
+    saveToGH(weekData);
+    $('sload').style.display = 'none';
+    renderSugs();
+    $('scta').style.display = 'block';
+  })
+  .catch(function(e) {
+    $('sload').style.display = 'none';
+    var el = $('serr');
+    el.className = 'st er';
+    el.textContent = 'Fehler: ' + e.message;
+    $('scta').style.display = 'block';
+  });
+}
+
+function renderSugs() {
+  var html = '';
+  for (var i = 0; i < G.sugs.length; i++) {
+    var s = G.sugs[i];
+    var sel = (i === G.sel) ? ' sel' : '';
+    var days = '';
+    for (var j = 0; j < s.gerichte.length; j++) {
+      var g = s.gerichte[j];
+      days += '<div class="sug-d"><b style="color:var(--txt);min-width:22px;display:inline-block">' + g.tag.slice(0,2) + '</b> ' + g.abend + '</div>';
+      if (g.mittag_naechster_tag) days += '<div class="sug-nx">&#8627; ' + (g.mittag_tag||'') + ': ' + g.mittag_naechster_tag + '</div>';
+    }
+    html += '<div class="sug' + sel + '" onclick="selSug(' + i + ')">' +
+      '<div class="sug-h"><div class="sug-n">Option ' + (i+1) + (sel?' &#10003;':'') + '</div><div class="sug-t">' + s.thema + '</div></div>' +
+      '<div class="sug-b">' + days + '</div></div>';
+  }
+  $('slist').innerHTML = html;
+}
+
+function selSug(i) {
+  G.sel = i;
+  renderSugs();
+}
+
+function goWeek() {
+  if (G.sel === null) return;
+  var sug = G.sugs[G.sel];
+  $('wtit').textContent = sug.thema;
+  $('wsub').textContent = sug.kochabende ? sug.kochabende.join(' - ') : '';
+  if (G.bToken && G.bLists.length) { $('blistwrap').style.display = 'block'; $('bfields').style.display = 'none'; }
+  renderEink(sug);
+  renderRez(sug);
+  wtab('e');
+  go('sw');
+}
+
+function wtab(t) {
+  var tabs = document.querySelectorAll('.tabs .tab');
+  tabs[0].classList.toggle('on', t === 'e');
+  tabs[1].classList.toggle('on', t === 'r');
+  $('te').style.display = t === 'e' ? 'block' : 'none';
+  $('tr').style.display = t === 'r' ? 'block' : 'none';
+}
+
+function getItems(sug) {
+  var items = [], seen = {};
+  for (var i = 0; i < sug.gerichte.length; i++) {
+    var zutaten = sug.gerichte[i].zutaten || [];
+    for (var j = 0; j < zutaten.length; j++) {
+      var z = zutaten[j];
+      var k = z.name.toLowerCase();
+      if (seen[k] !== undefined) {
+        items[seen[k]].menge += ' + ' + z.menge;
+      } else {
+        seen[k] = items.length;
+        items.push({ name: z.name, menge: z.menge });
+      }
+    }
+  }
+  return items;
+}
+
+function renderEink(sug) {
+  var items = getItems(sug);
+  var html = '';
+  for (var i = 0; i < items.length; i++) {
+    html += '<div class="irow" id="ir' + i + '" onclick="togItem(' + i + ')">' +
+      '<div class="ichk" id="ic' + i + '"></div>' +
+      '<div><div class="iname">' + items[i].name + '</div><div class="ispec">' + items[i].menge + '</div></div></div>';
+  }
+  $('elist').innerHTML = html;
+}
+
+function togItem(i) {
+  var c = $('ic' + i), r = $('ir' + i);
+  var on = c.classList.toggle('on');
+  c.innerHTML = on ? '&#10003;' : '';
+  c.style.color = '#fff';
+  r.classList.toggle('done', on);
+}
+
+function renderRez(sug) {
+  var html = '';
+  for (var i = 0; i < sug.gerichte.length; i++) {
+    var g = sug.gerichte[i];
+    var next = g.mittag_naechster_tag ? ('&#8594; ' + g.mittag_tag + ': ' + g.mittag_naechster_tag) : '';
+    html += '<div class="rcard"><div class="rh"><div class="rday">' + g.tag + '</div><div class="rname">' + g.abend + '</div>' +
+      (next ? '<div class="rnext">' + next + '</div>' : '') + '</div>' +
+      '<div class="ract">' +
+      '<button class="btn btn-red" onclick="startCook(' + i + ')">Jetzt kochen</button>' +
+      '<button class="btn btn-out" onclick="showPrint(' + i + ')">Als PDF</button>' +
+      '</div></div>';
+  }
+  $('rlist').innerHTML = html;
+}
+
+// ─── COOKING ───────────────────────────────────────────────
+function buildSteps(g) {
+  var st = [];
+  var vegi = g.schritte_vegi || [];
+  var fleisch = g.schritte_fleisch || [];
+  for (var i = 0; i < vegi.length; i++) st.push({ type: 'v', text: vegi[i].text, timer_min: vegi[i].timer_min || 0, zs: vegi[i].zutaten_schritt || [] });
+  for (var i = 0; i < fleisch.length; i++) st.push({ type: 'f', text: fleisch[i].text, timer_min: fleisch[i].timer_min || 0, zs: fleisch[i].zutaten_schritt || [] });
+  if (G.reste && g.prep_next && g.prep_next.length) st.push({ type: 'p', text: g.prep_next.join('\n'), timer_min: 0, zs: [], ml: true });
+  if (G.freeze && g.einfrieren && g.einfrieren.length) st.push({ type: 'fr', text: g.einfrieren.join('\n'), timer_min: 0, zs: [], ml: true });
+  if (g.tipp) st.push({ type: 't', text: g.tipp, timer_min: 0, zs: [] });
+  return st;
+}
+
+function startCook(ri) {
+  var g = G.sugs[G.sel].gerichte[ri];
+  G.steps = buildSteps(g);
+  G.cur = -1; G.act = 0; G.done = {};
+  clearInterval(G.tiv);
+  $('ctit').textContent = g.abend;
+  showIngOverview(g);
+  go('sc');
+}
+
+function showIngOverview(g) {
+  $('csteplbl').textContent = 'Zutatenubersicht';
+  $('csegs').innerHTML = '';
+  $('cprogb').style.width = '0%';
+  $('cjump').style.display = 'none';
+
+  var rows = '';
+  var zutaten = g.zutaten || [];
+  for (var i = 0; i < zutaten.length; i++) {
+    rows += '<div style="display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:.5px solid #f0f0f0">' +
+      '<span style="font-size:14px;font-weight:500">' + zutaten[i].name + '</span>' +
+      '<span style="font-size:13px;color:var(--gr3);font-weight:500">' + zutaten[i].menge + '</span></div>';
+  }
+
+  var html = '<div class="badge bv">Vor dem Kochen</div>' +
+    '<div style="font-size:16px;font-weight:700;margin-bottom:4px">' + g.abend + '</div>' +
+    (g.mittag_naechster_tag ? '<div style="font-size:13px;color:var(--gr3);margin-bottom:16px">Morgen: ' + g.mittag_naechster_tag + '</div>' : '<div style="margin-bottom:16px"></div>') +
+    '<div style="background:#f9f9f9;border-radius:var(--r);padding:0 12px;margin-bottom:16px;border:.5px solid var(--bdr)">' +
+    '<div style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--gr3);padding:10px 0 6px">Zutaten</div>' +
+    rows + '</div>' +
+    '<div style="font-size:12px;color:var(--blu);background:var(--bll);border-radius:8px;padding:10px 12px;margin-bottom:16px;border:.5px solid #90caf9">Alle Zutaten bereitstellen und abmessen bevor du anfaengst.</div>' +
+    '<button class="btn btn-red" onclick="beginCook()">Los geht\'s</button>';
+
+  $('cbody').innerHTML = html;
+}
+
+function beginCook() {
+  G.cur = 0; G.act = 0;
+  renderSegs();
+  renderStep();
+}
+
+function renderSegs() {
+  var html = '';
+  for (var i = 0; i < G.steps.length; i++) {
+    var cls = i < G.act ? 'done' : i === G.act ? 'act' : '';
+    html += '<div class="cseg ' + cls + '" id="sg_' + i + '"></div>';
+  }
+  $('csegs').innerHTML = html;
+}
+
+function updSegs() {
+  for (var i = 0; i < G.steps.length; i++) {
+    var el = $('sg_' + i);
+    if (el) el.className = 'cseg ' + (i < G.act ? 'done' : i === G.act ? 'act' : '');
+  }
+  var pct = G.steps.length > 1 ? Math.round((G.act / (G.steps.length - 1)) * 100) : 0;
+  $('cprogb').style.width = pct + '%';
+  $('csteplbl').textContent = 'Schritt ' + (G.cur + 1) + ' von ' + G.steps.length;
+  $('cjump').style.display = G.cur !== G.act ? 'block' : 'none';
+}
+
+var BADGES = { v: '<div class="badge bv">Basis - beide</div>', f: '<div class="badge bf">Fleisch-Beilage</div>', p: '<div class="badge bp">Fuer morgen</div>', fr: '<div class="badge bfr">Einfrieren</div>', t: '<div class="badge bt">Tipp</div>' };
+
+function renderStep() {
+  clearInterval(G.tiv);
+  var s = G.steps[G.cur];
+  var isDone = !!G.done[G.cur];
+  var isLast = G.cur === G.steps.length - 1;
+
+  // Zutaten pills
+  var pills = '';
+  if (s.zs && s.zs.length) {
+    pills = '<div class="zpills">';
+    for (var i = 0; i < s.zs.length; i++) pills += '<div class="zpill">' + s.zs[i] + '</div>';
+    pills += '</div>';
+  }
+
+  // Step text
+  var txt = '';
+  if (s.ml) {
+    var lines = s.text.split('\n');
+    txt = '<div class="csml">';
+    for (var i = 0; i < lines.length; i++) {
+      if (lines[i].trim()) txt += '<div style="display:flex;gap:8px;margin-bottom:4px"><span style="font-size:12px;font-weight:700;color:var(--red);min-width:16px">' + (i+1) + '.</span><span>' + lines[i] + '</span></div>';
+    }
+    txt += '</div>';
+  } else {
+    txt = pills + '<div class="cstxt">' + s.text + '</div>';
+  }
+
+  // Timer
+  var timerHtml = '';
+  if (s.timer_min > 0) {
+    G.tl = s.timer_min * 60; G.tt = G.tl;
+    timerHtml = '<div class="tbox"><div class="tdisp" id="td">' + fmt(G.tl) + '</div>' +
+      '<div class="tsub">' + s.timer_min + ' Minuten</div>' +
+      '<div class="tprog"><div class="tprogb" id="tb" style="width:100%"></div></div>' +
+      '<button class="btn btn-red" id="tbtn" onclick="startT()" style="padding:9px;font-size:13px">Timer starten</button></div>';
+  }
+
+  // Already done checkbox
+  var adHtml = '<div class="adone" onclick="togDone()"><div class="adchk ' + (isDone ? 'on' : '') + '" id="adchk">' +
+    (isDone ? '&#10003;' : '') + '</div><span style="font-size:13px;color:var(--txt2)">Schritt bereits vorbereitet</span></div>';
+
+  // Main button
+  var mainBtn = isDone
+    ? '<button class="btn btn-grn" onclick="unDone()">Als unerledigt markieren</button>'
+    : '<button class="btn btn-red" onclick="doComplete()">' + (isLast ? 'Rezept fertig' : 'Schritt abschliessen') + '</button>';
+
+  $('cbody').innerHTML = (BADGES[s.type] || '') + txt + timerHtml + adHtml +
+    '<div style="display:flex;flex-direction:column;gap:8px">' + mainBtn +
+    '<div class="cnav">' +
+    '<button class="btn btn-out" onclick="cnav(-1)"' + (G.cur === 0 ? ' disabled' : '') + '>Zurueck</button>' +
+    '<button class="btn btn-out" onclick="cnav(1)"' + (G.cur === G.steps.length-1 ? ' disabled' : '') + '>Weiter</button>' +
+    '</div></div>';
+
+  updSegs();
+}
+
+function cnav(d) { clearInterval(G.tiv); var n = G.cur + d; if (n < 0 || n >= G.steps.length) return; G.cur = n; renderStep(); }
+function jumpCur() { G.cur = G.act; renderStep(); }
+function doComplete() {
+  G.done[G.cur] = true; clearInterval(G.tiv);
+  if (G.cur === G.steps.length - 1) { go('sw'); return; }
+  if (G.cur === G.act) G.act = Math.min(G.act + 1, G.steps.length - 1);
+  G.cur = G.act; renderStep();
+}
+function unDone() { delete G.done[G.cur]; renderStep(); }
+function togDone() { if (G.done[G.cur]) unDone(); else doComplete(); }
+
+function startT() {
+  var btn = $('tbtn'); if (!btn) return;
+  btn.textContent = 'Laeuft...'; btn.disabled = true;
+  $('td').classList.add('run');
+  G.tiv = setInterval(function() {
+    G.tl--;
+    if (G.tl <= 0) {
+      clearInterval(G.tiv);
+      $('td').textContent = 'Fertig!'; $('td').classList.remove('run'); $('td').classList.add('fin');
+      $('tb').style.width = '0%'; btn.textContent = 'Fertig';
+      return;
+    }
+    $('td').textContent = fmt(G.tl);
+    $('tb').style.width = Math.round((G.tl / G.tt) * 100) + '%';
+    if (G.tl <= 30) $('td').style.color = '#b71c1c';
+  }, 1000);
+}
+function fmt(s) { return (Math.floor(s/60) < 10 ? '0' : '') + Math.floor(s/60) + ':' + (s%60 < 10 ? '0' : '') + (s%60); }
+
+// ─── PRINT ─────────────────────────────────────────────────
+function showPrint(ri) {
+  var sug = G.sugs[G.sel], g = sug.gerichte[ri], items = getItems(sug);
+  var vRows = '', fRows = '', prepRows = '', frzRows = '', itRows = '';
+
+  var sv = g.schritte_vegi || [];
+  for (var i = 0; i < sv.length; i++) vRows += '<div style="margin-bottom:8px;font-size:13px"><strong style="color:#e8390e">' + (i+1) + '.</strong> ' + sv[i].text + (sv[i].timer_min ? ' [' + sv[i].timer_min + ' Min.]' : '') + '</div>';
+
+  var sf = g.schritte_fleisch || [];
+  for (var i = 0; i < sf.length; i++) fRows += '<div style="margin-bottom:8px;font-size:13px"><strong>' + (i+1) + '.</strong> ' + sf[i].text + '</div>';
+
+  var pr = g.prep_next || [];
+  for (var i = 0; i < pr.length; i++) prepRows += '<div style="margin-bottom:6px;font-size:13px"><strong>' + (i+1) + '.</strong> ' + pr[i] + '</div>';
+
+  var fr = g.einfrieren || [];
+  for (var i = 0; i < fr.length; i++) frzRows += '<div style="margin-bottom:6px;font-size:13px"><strong>' + (i+1) + '.</strong> ' + fr[i] + '</div>';
+
+  var gz = g.zutaten || [];
+  for (var i = 0; i < gz.length; i++) itRows += '<tr><td style="padding:5px 0;border-bottom:1px solid #f0f0f0;font-weight:500">&#9744; ' + gz[i].name + '</td><td style="padding:5px 0;border-bottom:1px solid #f0f0f0;color:#888;text-align:right">' + gz[i].menge + '</td></tr>';
+
+  var allRows = '';
+  for (var i = 0; i < items.length; i++) allRows += '<tr><td style="padding:5px 0;border-bottom:1px solid #f0f0f0">&#9744; ' + items[i].name + '</td><td style="padding:5px 0;border-bottom:1px solid #f0f0f0;color:#888;text-align:right">' + items[i].menge + '</td></tr>';
+
+  $('pcon').innerHTML =
+    '<h1 style="font-size:20px;font-weight:800;margin-bottom:4px">' + g.abend + '</h1>' +
+    '<p style="color:#888;margin-bottom:16px;font-size:13px">' + g.tag + (g.mittag_tag ? ' &#8594; ' + g.mittag_tag + ': ' + g.mittag_naechster_tag : '') + '</p>' +
+    '<h2 style="font-size:14px;font-weight:700;margin-bottom:8px;color:#e8390e">Zutaten</h2>' +
+    '<table style="width:100%;border-collapse:collapse;margin-bottom:16px">' + itRows + '</table>' +
+    '<h2 style="font-size:14px;font-weight:700;margin-bottom:8px;color:#2e7d32">Zubereitung - Basis</h2>' + vRows +
+    (fRows ? '<h2 style="font-size:14px;font-weight:700;margin:12px 0 8px;color:#e65100">Fleisch-Beilage</h2>' + fRows : '') +
+    (prepRows ? '<h2 style="font-size:14px;font-weight:700;margin:12px 0 8px;color:#1565c0">Fuer morgen</h2>' + prepRows : '') +
+    (frzRows ? '<h2 style="font-size:14px;font-weight:700;margin:12px 0 8px;color:#0277bd">Einfrieren</h2>' + frzRows : '') +
+    (g.tipp ? '<div style="background:#fff9c4;border-left:3px solid #f9a825;padding:10px;margin-top:12px;border-radius:4px;font-size:13px"><strong>Tipp:</strong> ' + g.tipp + '</div>' : '') +
+    '<h2 style="font-size:14px;font-weight:700;margin:16px 0 8px;color:#e8390e">Einkaufsliste</h2>' +
+    '<table style="width:100%;border-collapse:collapse;font-size:13px">' + allRows + '</table>';
+  go('sp');
+}
+
+// ─── TEST DATA ─────────────────────────────────────────────
+function loadTest() {
+  G.sugs = [{
+    id: 1, thema: 'Test - Mediterran', kochabende: ['Montag', 'Mittwoch'],
+    gerichte: [{
+      tag: 'Montag', abend: 'Saag Paneer mit Basmatireis',
+      mittag_naechster_tag: 'Saag Paneer aufgewaermt', mittag_tag: 'Dienstag',
+      zutaten: [
+        { name: 'Paneer', menge: '450g' }, { name: 'TK-Spinat', menge: '500g aufgetaut' },
+        { name: 'Zwiebeln', menge: '2 grosse' }, { name: 'Basmatireis', menge: '600g' },
+        { name: 'Ghee', menge: '2 EL' }, { name: 'Knoblauch', menge: '3 Zehen' },
+        { name: 'Garam Masala', menge: '1 TL' }, { name: 'Zitrone', menge: '1/2' }
+      ],
+      schritte_vegi: [
+        { text: '2 EL Ghee in einer grossen Pfanne erhitzen. 450g Paneer in 3cm-Wuerfel schneiden, mit 1 TL Kurkuma wenden und bei mittlerer Hitze 8 Min. rundherum goldbraun anbraten. Paneer herausnehmen und beiseite stellen.', timer_min: 8, zutaten_schritt: ['450g Paneer', '2 EL Ghee', '1 TL Kurkuma'] },
+        { text: '2 grosse Zwiebeln fein hacken. Im verbliebenen Ghee bei mittlerer Hitze 10 Min. goldbraun karamellisieren lassen. 3 Knoblauchzehen und Ingwer dazugeben, 2 Min. weiterbraten.', timer_min: 10, zutaten_schritt: ['2 Zwiebeln', '3 Zehen Knoblauch'] },
+        { text: '1 TL Garam Masala einruehren, 2 Min. roesten. 500g Spinat (gut ausgedrueckt) zugeben, 100ml Wasser dazu, 3 Min. erwaermen. Mit Salz und Zitronensaft abschmecken.', timer_min: 3, zutaten_schritt: ['1 TL Garam Masala', '500g TK-Spinat', '1/2 Zitrone'] },
+        { text: 'Paneer zurueck in die Pfanne, 2-3 Min. warm ziehen lassen. 600g Basmatireis kochen - 300g fuer heute Abend, 300g fuer Dienstag separat abfuellen.', timer_min: 3, zutaten_schritt: ['Gebratener Paneer', '600g Basmatireis'] }
+      ],
+      schritte_fleisch: [
+        { text: 'Haehnchenbrust 300g in Streifen schneiden, mit Salz und Paprikapulver wuerzen. In separater Pfanne mit 1 EL Oel bei hoher Hitze 6 Min. goldbraun anbraten. Neben Saag Paneer servieren.', timer_min: 6, zutaten_schritt: ['300g Haehnchenbrust', 'Salz', 'Paprikapulver'] }
+      ],
+      prep_next: ['2 Portionen Saag Paneer in Tupperdosen abfuellen', '300g Reis separat in eine Tupperdose', 'Mittags: Saag Paneer 3 Min. Mikrowelle, Reis 1 Min. - getrennt erwaermen'],
+      einfrieren: ['2 weitere Portionen Saag Paneer in 2 Tupperdosen', 'Abkuehlen lassen, beschriften und einfrieren', 'Auftauen: ueber Nacht im Kuehlschrank, 4 Min. Mikrowelle'],
+      tipp: 'TK-Spinat wirklich gut ausdrucken - sonst wird das Gericht waessrig.'
+    }]
+  }];
+  G.sel = 0; goWeek();
 }
 </script>
 </body>
