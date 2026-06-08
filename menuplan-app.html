@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
-<title>Menuplan v1.2</title>
+<title>Menuplan v1.3</title>
 <style>
 :root{
   --red:#e8390e;--rl:#fff2ef;--grn:#2e7d32;--grl:#f0faf4;
@@ -134,7 +134,7 @@ input[type=password]{letter-spacing:2px}
 
 <!-- HOME -->
 <div class="scr on" id="sh">
-  <div class="hero"><h1>Menuplan</h1><p id="hsub">v1.2 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
+  <div class="hero"><h1>Menuplan</h1><p id="hsub">v1.3 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
 
   <!-- Saved week banner -->
   <div id="swbanner" style="display:none;margin:10px 10px 0;background:#fff;border-radius:var(--rlg);border:.5px solid var(--bdr);overflow:hidden">
@@ -378,6 +378,9 @@ function buildSYS() {
     'Portionen: ' + port + '. ' + resteRule + ' ' + freezeRule + ' ' +
     'Keine 2 schwere KH. Mediterran/kohaerent. Proteinreich. Empfindliches frueh. ' +
     'Schritte mit Mengen und zutaten_schritt pro Schritt. ' +
+    'Jeden Schritt mit kurzem Kontext beginnen wohin die Zutaten kommen, z.B. ' +
+    '"In eine grosse Schuessel: Gurken und Tomaten schneiden" oder "In die Pfanne: Zwiebeln anbraten". ' +
+    'So weiss man beim schrittweisen Kochen immer wohin alles gehoert. ' +
     'timer_min NUR setzen wenn aktiv gewartet werden muss (kochen, braten, backen, marinieren, ruhen). ' +
     'Bei Vorbereitungsschritten (schneiden, hacken, abwiegen, mischen) IMMER timer_min:0. ' +
     'Format exakt: ' + json;
@@ -879,9 +882,8 @@ function renderStep() {
       '<button class="btn btn-red" id="tbtn" onclick="startT()" style="padding:9px;font-size:13px">Timer starten</button></div>';
   }
 
-  // Already done checkbox
-  var adHtml = '<div class="adone" onclick="togDone()"><div class="adchk ' + (isDone ? 'on' : '') + '" id="adchk">' +
-    (isDone ? '&#10003;' : '') + '</div><span style="font-size:13px;color:var(--txt2)">Schritt bereits vorbereitet</span></div>';
+  // Already done checkbox removed - use "Schritt abschliessen" button instead
+  var adHtml = '';
 
   // Main button
   var mainBtn = isDone
