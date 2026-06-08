@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
-<title>Menüplan</title>
+<title>Menuplan v1.0</title>
 <style>
 :root{
   --red:#e8390e;--rl:#fff2ef;--grn:#2e7d32;--grl:#f0faf4;
@@ -134,7 +134,7 @@ input[type=password]{letter-spacing:2px}
 
 <!-- HOME -->
 <div class="scr on" id="sh">
-  <div class="hero"><h1>Menuplan</h1><p id="hsub">Deine Wochenplanung</p></div>
+  <div class="hero"><h1>Menuplan</h1><p id="hsub">v1.0 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
 
   <!-- Saved week banner -->
   <div id="swbanner" style="display:none;margin:10px 10px 0;background:#fff;border-radius:var(--rlg);border:.5px solid var(--bdr);overflow:hidden">
@@ -631,11 +631,19 @@ function goSuggest() {
     try {
       parsed = JSON.parse(jsonStr);
     } catch(e1) {
-      // Try fixing trailing commas
       try {
-        parsed = JSON.parse(jsonStr.replace(/,(\s*[}\]])/g, '$1'));
+        var fixed = jsonStr.replace(/,(\s*[}\]])/g, '$1');
+        parsed = JSON.parse(fixed);
       } catch(e2) {
-        throw new Error('JSON ungueltig - bitte nochmals generieren');
+        try {
+          var fixed2 = jsonStr
+            .replace(/,(\s*[}\]])/g, '$1')
+            .replace(/([^\\])\n/g, '$1\\n')
+            .replace(/([^\\])\t/g, '$1\\t');
+          parsed = JSON.parse(fixed2);
+        } catch(e3) {
+          throw new Error('JSON ungueltig: ' + jsonStr.slice(0, 150));
+        }
       }
     }
     G.sugs = parsed.vorschlaege || [];
