@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
-<title>Menuplan v1.1</title>
+<title>Menuplan v1.2</title>
 <style>
 :root{
   --red:#e8390e;--rl:#fff2ef;--grn:#2e7d32;--grl:#f0faf4;
@@ -134,7 +134,7 @@ input[type=password]{letter-spacing:2px}
 
 <!-- HOME -->
 <div class="scr on" id="sh">
-  <div class="hero"><h1>Menuplan</h1><p id="hsub">v1.1 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
+  <div class="hero"><h1>Menuplan</h1><p id="hsub">v1.2 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
 
   <!-- Saved week banner -->
   <div id="swbanner" style="display:none;margin:10px 10px 0;background:#fff;border-radius:var(--rlg);border:.5px solid var(--bdr);overflow:hidden">
@@ -377,7 +377,9 @@ function buildSYS() {
     '2 Personen Zuerich. 1 vegi, 1 vegi+Fleisch optional separat. Basis vegi. Mittags Mikrowelle/kalt. ' +
     'Portionen: ' + port + '. ' + resteRule + ' ' + freezeRule + ' ' +
     'Keine 2 schwere KH. Mediterran/kohaerent. Proteinreich. Empfindliches frueh. ' +
-    'Schritte mit Mengen, timer_min und zutaten_schritt pro Schritt. ' +
+    'Schritte mit Mengen und zutaten_schritt pro Schritt. ' +
+    'timer_min NUR setzen wenn aktiv gewartet werden muss (kochen, braten, backen, marinieren, ruhen). ' +
+    'Bei Vorbereitungsschritten (schneiden, hacken, abwiegen, mischen) IMMER timer_min:0. ' +
     'Format exakt: ' + json;
 }
 
@@ -474,7 +476,7 @@ function loadSaved() {
 }
 
 // ─── BRING! ────────────────────────────────────────────────
-function loadBringLists() {
+function loadBringLists(callback) {
   if (!G.bToken) return;
   var headers = {};
   for (var k in BH) headers[k] = BH[k];
@@ -484,13 +486,14 @@ function loadBringLists() {
   fetch(BAPI + '/bringusers/' + G.bUUID + '/lists', { headers: headers })
     .then(function(r) { return r.ok ? r.json() : null; })
     .then(function(d) {
-      if (!d) return;
+      if (!d) { if (callback) callback(); return; }
       G.bLists = Array.isArray(d.lists) ? d.lists : [];
       $('blist').innerHTML = G.bLists.map(function(l) { return '<option value="' + l.listUuid + '">' + l.name + '</option>'; }).join('');
       $('blistwrap').style.display = 'block';
       $('bfields').style.display = 'none';
+      if (callback) callback();
     })
-    .catch(function() {});
+    .catch(function() { if (callback) callback(); });
 }
 
 function doImport() {
@@ -513,8 +516,9 @@ function doImport() {
         G.bToken = res.d.token_type + ' ' + res.d.access_token;
         G.bUUID = res.d.uuid;
         localStorage.setItem('bs', JSON.stringify({ t: G.bToken, u: G.bUUID, e: email }));
-        loadBringLists();
-        doImportItems();
+        loadBringLists(function() {
+          doImportItems();
+        });
       })
       .catch(function(e) {
         showSt('ist', 'Login fehlgeschlagen: ' + e.message, 'er');
