@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
-<title>Menuplan v1.0</title>
+<title>Menuplan v1.1</title>
 <style>
 :root{
   --red:#e8390e;--rl:#fff2ef;--grn:#2e7d32;--grl:#f0faf4;
@@ -371,15 +371,14 @@ function buildSYS() {
   var prep   = G.reste ? ',"prep_next":["Reste abfuellen","Mittags aufwaermen"]' : '';
   var frz    = G.freeze? ',"einfrieren":["2 Port. einfrieren","Beschriften"]' : '';
 
-  var json = '{"vorschlaege":[{"id":1,"thema":"Thema","kochabende":["Mo","Mi","Fr"],"gerichte":[{"tag":"Montag","abend":"Name",' + mittag + '"zutaten":[{"name":"Karotten","menge":"2 Stk"}],"schritte_vegi":[{"text":"Detaillierter Schritt mit Mengen","timer_min":5,"zutaten_schritt":["2 Zwiebeln","2 EL Olivenoel"]}],"schritte_fleisch":[{"text":"Fleisch-Schritt","timer_min":5,"zutaten_schritt":["300g Haehnchen"]}]' + prep + frz + ',"tipp":"Kochtipp"}]}]}';
+  var json = '{"vorschlaege":[{"id":1,"thema":"Thema","kochabende":["Mo","Mi"],"gerichte":[{"tag":"Montag","abend":"Name",' + mittag + '"zutaten":[{"name":"Karotten","menge":"2 Stk"},{"name":"Oel","menge":"2 EL"}],"schritte_vegi":[{"text":"Schritt mit Mengenangaben","timer_min":5,"zutaten_schritt":["2 Zwiebeln"]}],"schritte_fleisch":[{"text":"Fleisch separat","timer_min":5,"zutaten_schritt":["300g Haehnchen"]}]' + prep + frz + ',"tipp":"Tipp"}]}]}';
 
-  return 'WICHTIG: Antworte ausschliesslich mit validem JSON ohne Text davor oder danach. Keine Apostrophe oder Anfuehrungszeichen in Texten - verwende Umschreibungen. ' +
-    'Du bist Kochassistent fuer 2 Personen in Zuerich. 1 Person vegi (kein Fisch), 1 Person vegi + optional Fleisch separat. ' +
-    'Basis immer vegi. Mittags nur Mikrowelle oder kalt. Portionen pro Rezept: ' + port + '. ' +
-    resteRule + ' ' + freezeRule + ' ' +
-    'Keine 2 schweren KH kombinieren. Mediterran oder thematisch kohaerent. Proteinreich. Empfindliche Zutaten frueh in der Woche. ' +
-    'Schritte: DETAILLIERT mit genauen Mengen und Techniken. Bei jedem Schritt Zutaten (mit Menge) in zutaten_schritt angeben. ' +
-    'JSON-Format: ' + json;
+  return 'NUR valides JSON, kein Text davor/danach. Keine Apostrophe in Strings. ' +
+    '2 Personen Zuerich. 1 vegi, 1 vegi+Fleisch optional separat. Basis vegi. Mittags Mikrowelle/kalt. ' +
+    'Portionen: ' + port + '. ' + resteRule + ' ' + freezeRule + ' ' +
+    'Keine 2 schwere KH. Mediterran/kohaerent. Proteinreich. Empfindliches frueh. ' +
+    'Schritte mit Mengen, timer_min und zutaten_schritt pro Schritt. ' +
+    'Format exakt: ' + json;
 }
 
 // ─── INIT ──────────────────────────────────────────────────
@@ -620,7 +619,7 @@ function goSuggest() {
   fetch(PROXY + '/anthropic', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ model: 'claude-sonnet-4-20250514', max_tokens: 5000, system: buildSYS(), messages: [{ role: 'user', content: msg }] })
+    body: JSON.stringify({ model: 'claude-sonnet-4-20250514', max_tokens: 8000, system: buildSYS(), messages: [{ role: 'user', content: msg }] })
   })
   .then(function(r) { return r.json(); })
   .then(function(d) {
