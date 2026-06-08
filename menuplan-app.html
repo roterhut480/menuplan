@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
-<title>Menuplan v1.3</title>
+<title>Menuplan v1.4</title>
 <style>
 :root{
   --red:#e8390e;--rl:#fff2ef;--grn:#2e7d32;--grl:#f0faf4;
@@ -134,7 +134,7 @@ input[type=password]{letter-spacing:2px}
 
 <!-- HOME -->
 <div class="scr on" id="sh">
-  <div class="hero"><h1>Menuplan</h1><p id="hsub">v1.3 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
+  <div class="hero"><h1>Menuplan</h1><p id="hsub">v1.4 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
 
   <!-- Saved week banner -->
   <div id="swbanner" style="display:none;margin:10px 10px 0;background:#fff;border-radius:var(--rlg);border:.5px solid var(--bdr);overflow:hidden">
@@ -371,12 +371,13 @@ function buildSYS() {
   var prep   = G.reste ? ',"prep_next":["Reste abfuellen","Mittags aufwaermen"]' : '';
   var frz    = G.freeze? ',"einfrieren":["2 Port. einfrieren","Beschriften"]' : '';
 
-  var json = '{"vorschlaege":[{"id":1,"thema":"Thema","kochabende":["Mo","Mi"],"gerichte":[{"tag":"Montag","abend":"Name",' + mittag + '"zutaten":[{"name":"Karotten","menge":"2 Stk"},{"name":"Oel","menge":"2 EL"}],"schritte_vegi":[{"text":"Schritt mit Mengenangaben","timer_min":5,"zutaten_schritt":["2 Zwiebeln"]}],"schritte_fleisch":[{"text":"Fleisch separat","timer_min":5,"zutaten_schritt":["300g Haehnchen"]}]' + prep + frz + ',"tipp":"Tipp"}]}]}';
+  var json = '{"vorschlaege":[{"id":1,"thema":"Thema","kochabende":["Mo","Mi"],"gerichte":[{"tag":"Montag","abend":"Name","zeit_aktiv":"15 Min.","zeit_total":"45 Min.",' + mittag + '"zutaten":[{"name":"Karotten","menge":"2 Stk"},{"name":"Oel","menge":"2 EL"}],"schritte_vegi":[{"text":"Schritt mit Mengenangaben","timer_min":5,"zutaten_schritt":["2 Zwiebeln"]}],"schritte_fleisch":[{"text":"Fleisch separat","timer_min":5,"zutaten_schritt":["300g Haehnchen"]}]' + prep + frz + ',"tipp":"Tipp"}]}]}';
 
   return 'NUR valides JSON, kein Text davor/danach. Keine Apostrophe in Strings. ' +
     '2 Personen Zuerich. 1 vegi, 1 vegi+Fleisch optional separat. Basis vegi. Mittags Mikrowelle/kalt. ' +
     'Portionen: ' + port + '. ' + resteRule + ' ' + freezeRule + ' ' +
     'Keine 2 schwere KH. Mediterran/kohaerent. Proteinreich. Empfindliches frueh. ' +
+    'Jedes Gericht hat zeit_aktiv (nur haendische Arbeit) und zeit_total (inkl. warten/kochen/backen). ' +
     'Schritte mit Mengen und zutaten_schritt pro Schritt. ' +
     'Jeden Schritt mit kurzem Kontext beginnen wohin die Zutaten kommen, z.B. ' +
     '"In eine grosse Schuessel: Gurken und Tomaten schneiden" oder "In die Pfanne: Zwiebeln anbraten". ' +
@@ -758,7 +759,13 @@ function renderRez(sug) {
   for (var i = 0; i < sug.gerichte.length; i++) {
     var g = sug.gerichte[i];
     var next = g.mittag_naechster_tag ? ('&#8594; ' + g.mittag_tag + ': ' + g.mittag_naechster_tag) : '';
+    var zeitHtml = (g.zeit_aktiv || g.zeit_total) ?
+      '<div style="display:flex;gap:12px;margin-top:5px">' +
+      (g.zeit_aktiv ? '<span style="font-size:11px;color:var(--gr3)">&#9998; Aktiv: <b style="color:var(--txt2)">' + g.zeit_aktiv + '</b></span>' : '') +
+      (g.zeit_total ? '<span style="font-size:11px;color:var(--gr3)">&#9200; Total: <b style="color:var(--txt2)">' + g.zeit_total + '</b></span>' : '') +
+      '</div>' : '';
     html += '<div class="rcard"><div class="rh"><div class="rday">' + g.tag + '</div><div class="rname">' + g.abend + '</div>' +
+      zeitHtml +
       (next ? '<div class="rnext">' + next + '</div>' : '') + '</div>' +
       '<div class="ract">' +
       '<button class="btn btn-red" onclick="startCook(' + i + ')">Jetzt kochen</button>' +
@@ -807,7 +814,11 @@ function showIngOverview(g) {
 
   var html = '<div class="badge bv">Vor dem Kochen</div>' +
     '<div style="font-size:16px;font-weight:700;margin-bottom:4px">' + g.abend + '</div>' +
-    (g.mittag_naechster_tag ? '<div style="font-size:13px;color:var(--gr3);margin-bottom:16px">Morgen: ' + g.mittag_naechster_tag + '</div>' : '<div style="margin-bottom:16px"></div>') +
+    (g.mittag_naechster_tag ? '<div style="font-size:13px;color:var(--gr3);margin-bottom:8px">Morgen: ' + g.mittag_naechster_tag + '</div>' : '') +
+    ((g.zeit_aktiv || g.zeit_total) ? '<div style="display:flex;gap:12px;margin-bottom:16px">' +
+      (g.zeit_aktiv ? '<span style="font-size:12px;color:var(--gr3)">&#9998; Aktiv: <b style="color:var(--txt2)">' + g.zeit_aktiv + '</b></span>' : '') +
+      (g.zeit_total ? '<span style="font-size:12px;color:var(--gr3)">&#9200; Total: <b style="color:var(--txt2)">' + g.zeit_total + '</b></span>' : '') +
+      '</div>' : '<div style="margin-bottom:16px"></div>') +
     '<div style="background:#f9f9f9;border-radius:var(--r);padding:0 12px;margin-bottom:16px;border:.5px solid var(--bdr)">' +
     '<div style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--gr3);padding:10px 0 6px">Zutaten</div>' +
     rows + '</div>' +
