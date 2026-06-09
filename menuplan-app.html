@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
-<title>Menuplan v1.6</title>
+<title>Menuplan v1.8</title>
 <style>
 :root{
   --red:#e8390e;--rl:#fff2ef;--grn:#2e7d32;--grl:#f0faf4;
@@ -145,7 +145,7 @@ input[type=password]{letter-spacing:2px}
 
 <!-- HOME -->
 <div class="scr on" id="sh">
-  <div class="hero"><h1>Menuplan</h1><p id="hsub">v1.6 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
+  <div class="hero"><h1>Menuplan</h1><p id="hsub">v1.8 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
 
   <!-- Saved week banner -->
   <div id="swbanner" style="display:none;margin:10px 10px 0;background:#fff;border-radius:var(--rlg);border:.5px solid var(--bdr);overflow:hidden">
@@ -243,7 +243,11 @@ input[type=password]{letter-spacing:2px}
   <div id="slist"></div>
   <div id="scta" style="display:none;padding:10px 10px 0">
     <button class="btn btn-red" onclick="goWeek()">Diese Woche planen</button>
-    <button class="btn btn-out" style="margin-top:8px" onclick="goSuggest()">Neue Vorschlaege</button>
+    <div style="margin-top:16px;padding-top:16px;border-top:.5px solid var(--bdr)">
+      <div style="font-size:12px;color:var(--gr3);margin-bottom:6px;font-weight:500">Nicht zufrieden? Sag Claude warum:</div>
+      <textarea id="feedback" placeholder="z.B. zu wenig Proteine, kein Pasta-Gericht, zu aufwaendig..." style="width:100%;background:#fff;border:1px solid var(--bdr);border-radius:7px;color:var(--txt);font-size:14px;padding:10px 12px;font-family:inherit;resize:none;height:72px;outline:none;transition:border-color .2s" onfocus="this.style.borderColor='var(--red)'" onblur="this.style.borderColor='var(--bdr)'"></textarea>
+      <button class="btn btn-out" style="margin-top:8px" onclick="goSuggest()">Neue Vorschlaege generieren</button>
+    </div>
   </div>
 </div>
 
@@ -414,6 +418,11 @@ function buildSYS() {
     'Portionen pro Rezept: ' + port + '. Alle Zutatenmengen auf ' + portTotal + ' Portionen berechnen. ' +
     resteRule + ' ' + freezeRule + ' ' +
     'Keine 2 schwere KH. Mediterran/kohaerent. Proteinreich. Empfindliches frueh. ' +
+    'EINKAUFSEFFIZIENZ - sehr wichtig: ' +
+    '1. Zutaten-Ueberschneidung maximieren: Verwende ueber alle Kochabende hinweg moeglichst die gleichen Grundzutaten (z.B. Kichererbsen, Feta, Zucchini, Karotten, Zwiebeln, Knoblauch) damit keine Reste weggeworfen werden. ' +
+    '2. Saisonale und guenstige Zutaten bevorzugen: Huelsenfruechte (Linsen, Kichererbsen, Bohnen aus Dose), Eier, TK-Gemuese, Karotten, Zucchini, Zwiebeln, Kartoffeln sind guenstig und nahrhaft. Teure Einzelzutaten vermeiden die nur fuer ein Gericht gekauft werden. ' +
+    '3. Groesse beachten: z.B. 1 Dose Kichererbsen wird nicht fuer 1 EL verwendet - plane ganze Packungsgroessen ein. ' +
+    '4. Frische Kraeuter sparsam einsetzen: wenn Petersilie gekauft wird, soll sie in mindestens 2 Gerichten vorkommen. ' +
     'Jedes Gericht hat zeit_aktiv (nur haendische Arbeit) und zeit_total (inkl. warten/kochen/backen). ' +
     'Schritte mit Mengen und zutaten_schritt pro Schritt. ' +
     'Jeden Schritt mit kurzem Kontext beginnen wohin die Zutaten kommen, z.B. ' +
@@ -662,7 +671,11 @@ function goSuggest() {
   var freezeInfo = G.freeze ? 'MIT Einfrierportionen (+2 pro Gericht)' : 'OHNE Einfrierportionen';
   var p = G.personen || 2;
   var portTotal = p + (G.reste ? p : 0) + (G.freeze ? 2 : 0);
-  var msg = 'Generiere genau 3 Menuvorschlaege mit je ' + G.n + ' Kochabenden fuer ' + p + ' Personen (Total ' + portTotal + ' Portionen pro Gericht). ' + resteInfo + '. ' + freezeInfo + '.' + (theme ? ' Thema: ' + theme + '.' : '') + (exist ? ' Vorhanden: ' + exist + '.' : '');
+  var feedback = $('feedback') ? $('feedback').value.trim() : '';
+  var msg = 'Generiere genau 3 Menuvorschlaege mit je ' + G.n + ' Kochabenden fuer ' + p + ' Personen (Total ' + portTotal + ' Portionen pro Gericht). ' + resteInfo + '. ' + freezeInfo + '.' +
+    (theme ? ' Thema: ' + theme + '.' : '') +
+    (exist ? ' Vorhanden: ' + exist + '.' : '') +
+    (feedback ? ' WICHTIG - vorherige Vorschlaege wurden abgelehnt weil: ' + feedback + '. Bitte deutlich andere Gerichte vorschlagen die diesen Kritikpunkt beruecksichtigen.' : '');
 
   fetch(PROXY + '/anthropic', {
     method: 'POST',
@@ -694,6 +707,8 @@ function goSuggest() {
       }
     }
     G.sugs = parsed.vorschlaege || [];
+    // Clear feedback after successful generation
+    if ($('feedback')) $('feedback').value = '';
     // Save
     var weekData = { sugs: G.sugs, n: G.n, personen: G.personen, reste: G.reste, freeze: G.freeze, saved: new Date().toLocaleDateString('de-CH') };
     localStorage.setItem('sw', JSON.stringify(weekData));
