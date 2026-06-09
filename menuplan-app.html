@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
-<title>Menuplan v1.8</title>
+<title>Menuplan v1.9</title>
 <style>
 :root{
   --red:#e8390e;--rl:#fff2ef;--grn:#2e7d32;--grl:#f0faf4;
@@ -145,7 +145,7 @@ input[type=password]{letter-spacing:2px}
 
 <!-- HOME -->
 <div class="scr on" id="sh">
-  <div class="hero"><h1>Menuplan</h1><p id="hsub">v1.8 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
+  <div class="hero"><h1>Menuplan</h1><p id="hsub">v1.9 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
 
   <!-- Saved week banner -->
   <div id="swbanner" style="display:none;margin:10px 10px 0;background:#fff;border-radius:var(--rlg);border:.5px solid var(--bdr);overflow:hidden">
@@ -329,7 +329,7 @@ var BH = {
 
 // ─── STATE ─────────────────────────────────────────────────
 var G = {
-  n: 3, personen: 2, reste: 1, freeze: 1,
+  n: 3, personen: 2, reste: 1, freeze: 1, sugsPartial: false,
   sugs: [], sel: null,
   steps: [], cur: 0, act: 0, done: {},
   tiv: null, tl: 0, tt: 0,
@@ -657,65 +657,94 @@ function doImportItems() {
 }
 
 // ─── SUGGESTIONS ───────────────────────────────────────────
+// Quick overview system prompt - no steps, just dishes and ingredients
+function buildSYS_overview() {
+  var p = G.personen || 2;
+  var portAbend = p;
+  var portMittag = G.reste ? p : 0;
+  var portFreeze = G.freeze ? 2 : 0;
+  var portTotal = portAbend + portMittag + portFreeze;
+  var mittag = G.reste ? '"mittag_naechster_tag":"Name","mittag_tag":"Dienstag",' : '';
+  var json = '{"vorschlaege":[{"id":1,"thema":"Thema","kochabende":["Mo","Mi"],"gerichte":[{"tag":"Montag","abend":"Name","zeit_aktiv":"15 Min.","zeit_total":"45 Min.",' + mittag + '"zutaten":[{"name":"Karotten","menge":"2 Stk"},{"name":"Oel","menge":"2 EL"}],"tipp":"Tipp"}]}]}';
+  return 'NUR valides JSON, kein Text. Keine Apostrophe. Generiere 3 Menuvorschlaege - NUR Gerichtsname, Zutaten mit Mengen, Zeiten und Tipp. KEINE Schritte. Format: ' + json;
+}
+
+// Full recipe system prompt for one selected option
+function buildSYS_full(sug) {
+  var p = G.personen || 2;
+  var portAbend = p;
+  var portMittag = G.reste ? p : 0;
+  var portFreeze = G.freeze ? 2 : 0;
+  var portTotal = portAbend + portMittag + portFreeze;
+  var mittag = G.reste ? '"mittag_naechster_tag":"Name","mittag_tag":"Dienstag",' : '';
+  var prep = G.reste ? ',"prep_next":["Reste abfuellen","Mittags aufwaermen"]' : '';
+  var frz = G.freeze ? ',"einfrieren":["2 Port. einfrieren","Beschriften"]' : '';
+  var json = '{"gerichte":[{"tag":"Montag","abend":"Name",' + mittag + '"zutaten":[{"name":"X","menge":"Y"}],"schritte_vegi":[{"text":"Schritt","timer_min":0,"zutaten_schritt":["X"]}],"schritte_fleisch":[{"text":"Fleisch","timer_min":0,"zutaten_schritt":["X"]}]' + prep + frz + ',"tipp":"Tipp","zeit_aktiv":"X","zeit_total":"Y"}]}';
+  var dishes = sug.gerichte.map(function(g) { return g.tag + ': ' + g.abend; }).join(', ');
+  return 'NUR valides JSON, kein Text. Keine Apostrophe. ' +
+    'Generiere vollstaendige Kochschritte fuer diese Gerichte: ' + dishes + '. ' +
+    'Fuer ' + portTotal + ' Portionen (' + portAbend + ' Abend' + (portMittag?' + '+portMittag+' Mittag':'') + (portFreeze?' + 2 Einfrieren':'') + '). ' +
+    (G.reste ? 'Reste vom Abend werden am naechsten Mittag verwendet.' : 'Keine Reste.') + ' ' +
+    (G.freeze ? '+2 Einfrierportionen mitkochen.' : 'Keine Einfrierportionen.') + ' ' +
+    'Jeden Schritt mit Kontext beginnen wohin Zutaten kommen. ' +
+    'timer_min NUR bei aktivem Warten (kochen/braten/backen). ' +
+    'Format: ' + json;
+}
+
+function parseJSON(raw) {
+  var m = raw.match(/\{[\s\S]*\}/);
+  var jsonStr = m ? m[0] : raw;
+  try { return JSON.parse(jsonStr); } catch(e1) {
+    try { return JSON.parse(jsonStr.replace(/,(\s*[}\]])/g, '$1')); } catch(e2) {
+      try {
+        return JSON.parse(jsonStr.replace(/,(\s*[}\]])/g, '$1').replace(/([^\\])\n/g, '$1\\n'));
+      } catch(e3) { throw new Error('JSON ungueltig: ' + jsonStr.slice(0, 150)); }
+    }
+  }
+}
+
+function callClaude(sys, msg, maxTokens) {
+  return fetch(PROXY + '/anthropic', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ model: 'claude-sonnet-4-20250514', max_tokens: maxTokens, system: sys, messages: [{ role: 'user', content: msg }] })
+  })
+  .then(function(r) { return r.json(); })
+  .then(function(d) {
+    return (d.content && d.content[0] && d.content[0].text) ? d.content[0].text : '';
+  });
+}
+
 function goSuggest() {
   go('ss');
   $('sload').style.display = 'block';
+  $('sload').querySelector('div:last-child').textContent = 'Claude generiert Vorschlaege...';
   $('slist').innerHTML = '';
   $('scta').style.display = 'none';
   $('serr').innerHTML = '';
   G.sel = null;
+  G.sugsPartial = true; // flag: steps not yet loaded
 
   var theme = $('theme').value.trim();
   var exist = $('exist').value.trim();
-  var resteInfo = G.reste ? 'MIT Resteverwertung am Folgetag' : 'OHNE Resteverwertung';
-  var freezeInfo = G.freeze ? 'MIT Einfrierportionen (+2 pro Gericht)' : 'OHNE Einfrierportionen';
   var p = G.personen || 2;
   var portTotal = p + (G.reste ? p : 0) + (G.freeze ? 2 : 0);
+  var resteInfo = G.reste ? 'MIT Resteverwertung' : 'OHNE Resteverwertung';
+  var freezeInfo = G.freeze ? 'MIT Einfrierportionen' : 'OHNE Einfrierportionen';
   var feedback = $('feedback') ? $('feedback').value.trim() : '';
-  var msg = 'Generiere genau 3 Menuvorschlaege mit je ' + G.n + ' Kochabenden fuer ' + p + ' Personen (Total ' + portTotal + ' Portionen pro Gericht). ' + resteInfo + '. ' + freezeInfo + '.' +
+
+  var msg = 'Generiere genau 3 Menuvorschlaege mit je ' + G.n + ' Kochabenden fuer ' + p + ' Personen (' + portTotal + ' Portionen). ' +
+    resteInfo + '. ' + freezeInfo + '.' +
     (theme ? ' Thema: ' + theme + '.' : '') +
     (exist ? ' Vorhanden: ' + exist + '.' : '') +
-    (feedback ? ' WICHTIG - vorherige Vorschlaege wurden abgelehnt weil: ' + feedback + '. Bitte deutlich andere Gerichte vorschlagen die diesen Kritikpunkt beruecksichtigen.' : '');
+    (feedback ? ' Vorherige abgelehnt weil: ' + feedback + '. Andere Gerichte vorschlagen.' : '') +
+    ' Zutaten-Ueberschneidung maximieren. Guenstige Zutaten bevorzugen.';
 
-  fetch(PROXY + '/anthropic', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ model: 'claude-sonnet-4-20250514', max_tokens: 8000, system: buildSYS(), messages: [{ role: 'user', content: msg }] })
-  })
-  .then(function(r) { return r.json(); })
-  .then(function(d) {
-    var raw = (d.content && d.content[0] && d.content[0].text) ? d.content[0].text : '';
-    var m = raw.match(/\{[\s\S]*\}/);
-    var jsonStr = m ? m[0] : raw;
-    var parsed;
-    try {
-      parsed = JSON.parse(jsonStr);
-    } catch(e1) {
-      try {
-        var fixed = jsonStr.replace(/,(\s*[}\]])/g, '$1');
-        parsed = JSON.parse(fixed);
-      } catch(e2) {
-        try {
-          var fixed2 = jsonStr
-            .replace(/,(\s*[}\]])/g, '$1')
-            .replace(/([^\\])\n/g, '$1\\n')
-            .replace(/([^\\])\t/g, '$1\\t');
-          parsed = JSON.parse(fixed2);
-        } catch(e3) {
-          throw new Error('JSON ungueltig: ' + jsonStr.slice(0, 150));
-        }
-      }
-    }
+  callClaude(buildSYS_overview(), msg, 2500)
+  .then(function(raw) {
+    var parsed = parseJSON(raw);
     G.sugs = parsed.vorschlaege || [];
-    // Clear feedback after successful generation
     if ($('feedback')) $('feedback').value = '';
-    // Save
-    var weekData = { sugs: G.sugs, n: G.n, personen: G.personen, reste: G.reste, freeze: G.freeze, saved: new Date().toLocaleDateString('de-CH') };
-    localStorage.setItem('sw', JSON.stringify(weekData));
-    G.savedWeek = weekData;
-    $('swbanner').style.display = 'block';
-    $('swdate').textContent = weekData.saved;
-    saveToGH(weekData);
     $('sload').style.display = 'none';
     renderSugs();
     $('scta').style.display = 'block';
@@ -755,6 +784,55 @@ function selSug(i) {
 function goWeek() {
   if (G.sel === null) return;
   var sug = G.sugs[G.sel];
+
+  // If steps already loaded (second click or test data), go directly
+  if (!G.sugsPartial || (sug.gerichte[0] && sug.gerichte[0].schritte_vegi && sug.gerichte[0].schritte_vegi.length > 0)) {
+    goWeekRender(sug); return;
+  }
+
+  // Load full recipe for selected suggestion
+  var btn = document.querySelector('#scta .btn-red');
+  if (btn) { btn.innerHTML = '<span class="spin w"></span> Rezepte laden...'; btn.disabled = true; }
+
+  var p = G.personen || 2;
+  var portTotal = p + (G.reste ? p : 0) + (G.freeze ? 2 : 0);
+  var msg = 'Generiere vollstaendige Kochschritte fuer folgende Gerichte mit allen Zutatenmengen fuer ' + portTotal + ' Portionen: ' +
+    sug.gerichte.map(function(g) { return g.tag + ' - ' + g.abend + ' (Zutaten: ' + (g.zutaten||[]).map(function(z){return z.name+' '+z.menge;}).join(', ') + ')'; }).join(' | ');
+
+  callClaude(buildSYS_full(sug), msg, 4000)
+  .then(function(raw) {
+    var parsed = parseJSON(raw);
+    var fullGerichte = parsed.gerichte || [];
+    // Merge steps into existing suggestions
+    for (var i = 0; i < fullGerichte.length && i < sug.gerichte.length; i++) {
+      sug.gerichte[i].schritte_vegi   = fullGerichte[i].schritte_vegi   || [];
+      sug.gerichte[i].schritte_fleisch= fullGerichte[i].schritte_fleisch || [];
+      sug.gerichte[i].prep_next       = fullGerichte[i].prep_next        || [];
+      sug.gerichte[i].einfrieren      = fullGerichte[i].einfrieren       || [];
+      if (fullGerichte[i].tipp) sug.gerichte[i].tipp = fullGerichte[i].tipp;
+      if (fullGerichte[i].mittag_naechster_tag) sug.gerichte[i].mittag_naechster_tag = fullGerichte[i].mittag_naechster_tag;
+      if (fullGerichte[i].mittag_tag) sug.gerichte[i].mittag_tag = fullGerichte[i].mittag_tag;
+    }
+    G.sugsPartial = false;
+    // Save complete week
+    var weekData = { sugs: G.sugs, n: G.n, personen: G.personen, reste: G.reste, freeze: G.freeze, saved: new Date().toLocaleDateString('de-CH') };
+    localStorage.setItem('sw', JSON.stringify(weekData));
+    G.savedWeek = weekData;
+    $('swbanner').style.display = 'block';
+    $('swdate').textContent = weekData.saved;
+    saveToGH(weekData);
+    if (btn) { btn.innerHTML = 'Diese Woche planen'; btn.disabled = false; }
+    goWeekRender(sug);
+  })
+  .catch(function(e) {
+    if (btn) { btn.innerHTML = 'Diese Woche planen'; btn.disabled = false; }
+    var el = $('serr');
+    el.className = 'st er';
+    el.textContent = 'Fehler beim Laden der Rezepte: ' + e.message;
+  });
+}
+
+function goWeekRender(sug) {
   $('wtit').textContent = sug.thema;
   $('wsub').textContent = sug.kochabende ? sug.kochabende.join(' - ') : '';
   if (G.bToken && G.bLists.length) { $('blistwrap').style.display = 'block'; $('bfields').style.display = 'none'; }
