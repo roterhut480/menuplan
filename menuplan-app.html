@@ -126,6 +126,17 @@ input[type=password]{letter-spacing:2px}
 .progb{height:100%;background:var(--red);border-radius:100px;transition:width .3s}
 /* debug */
 .dbg{font-family:monospace;font-size:11px;background:#f5f5f5;padding:8px;border-radius:6px;margin-top:8px;word-break:break-all;color:#555}
+.cstep-card{background:#fff;border-radius:var(--rlg);border:.5px solid var(--bdr);margin-bottom:10px;overflow:hidden;transition:all .3s}
+.cstep-card.active{border-color:var(--red);border-width:1.5px}
+.cstep-card.done-card{opacity:.5}
+.cstep-card.done-card .cstep-body{display:none}
+.cstep-head{display:flex;align-items:center;gap:10px;padding:12px 14px;cursor:pointer}
+.cstep-num{width:26px;height:26px;border-radius:50%;background:var(--gr2);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--gr3);flex-shrink:0}
+.cstep-card.active .cstep-num{background:var(--red);color:#fff}
+.cstep-card.done-card .cstep-num{background:var(--grn);color:#fff}
+.cstep-head-txt{flex:1;font-size:13px;font-weight:600;color:var(--txt);line-height:1.4}
+.cstep-card.done-card .cstep-head-txt{text-decoration:line-through;color:var(--gr3)}
+.cstep-body{padding:0 14px 14px}
 /* print */
 @media print{body{background:#fff}.noprint{display:none!important}.scr{display:block!important;background:#fff;padding:0}}
 </style>
@@ -268,16 +279,16 @@ input[type=password]{letter-spacing:2px}
 
 <!-- KOCHEN -->
 <div class="scr" id="sc">
-  <div class="ctbar">
+  <div class="ctbar" style="position:sticky;top:0;z-index:10">
     <div class="ctop">
       <div class="cback" onclick="go('sw')">&#8592;</div>
       <div style="flex:1"><div class="ctit" id="ctit"></div><div class="csteplbl" id="csteplbl"></div></div>
-      <div class="cjump" id="cjump" onclick="jumpCur()">Aktuell</div>
+      <div class="cjump" id="cjump" onclick="jumpCur()">&#8595; Aktuell</div>
     </div>
     <div class="csegs" id="csegs"></div>
   </div>
   <div class="cprog"><div class="cprogb" id="cprogb"></div></div>
-  <div class="cbody" id="cbody"></div>
+  <div id="cbody" style="padding:10px 10px 40px"></div>
 </div>
 
 <!-- PRINT -->
@@ -831,8 +842,15 @@ function showIngOverview(g) {
 function beginCook() {
   G.cur = 0; G.act = 0;
   renderSegs();
-  renderStep();
+  renderAllSteps();
+  // Scroll to top of steps
+  setTimeout(function() {
+    var el = $('csc_0');
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, 100);
 }
+
+var BADGES = { v: '<div class="badge bv">Basis - beide</div>', f: '<div class="badge bf">Fleisch-Beilage</div>', p: '<div class="badge bp">Fuer morgen</div>', fr: '<div class="badge bfr">Einfrieren</div>', t: '<div class="badge bt">Tipp</div>' };
 
 function renderSegs() {
   var html = '';
@@ -843,40 +861,40 @@ function renderSegs() {
   $('csegs').innerHTML = html;
 }
 
-function updSegs() {
+function updHeader() {
   for (var i = 0; i < G.steps.length; i++) {
     var el = $('sg_' + i);
     if (el) el.className = 'cseg ' + (i < G.act ? 'done' : i === G.act ? 'act' : '');
   }
-  var pct = G.steps.length > 1 ? Math.round((G.act / (G.steps.length - 1)) * 100) : 0;
+  var done = Object.keys(G.done).length;
+  var pct = G.steps.length > 0 ? Math.round((done / G.steps.length) * 100) : 0;
   $('cprogb').style.width = pct + '%';
-  $('csteplbl').textContent = 'Schritt ' + (G.cur + 1) + ' von ' + G.steps.length;
-  $('cjump').style.display = G.cur !== G.act ? 'block' : 'none';
+  $('csteplbl').textContent = done + ' / ' + G.steps.length + ' Schritte';
+  // Show jump button if active step is not visible
+  var actEl = $('csc_' + G.act);
+  $('cjump').style.display = actEl ? 'block' : 'none';
 }
 
-var BADGES = { v: '<div class="badge bv">Basis - beide</div>', f: '<div class="badge bf">Fleisch-Beilage</div>', p: '<div class="badge bp">Fuer morgen</div>', fr: '<div class="badge bfr">Einfrieren</div>', t: '<div class="badge bt">Tipp</div>' };
+function stepBody(i) {
+  var s = G.steps[i];
+  var isDone = !!G.done[i];
+  var isLast = i === G.steps.length - 1;
 
-function renderStep() {
-  clearInterval(G.tiv);
-  var s = G.steps[G.cur];
-  var isDone = !!G.done[G.cur];
-  var isLast = G.cur === G.steps.length - 1;
-
-  // Zutaten pills
+  // Pills
   var pills = '';
   if (s.zs && s.zs.length) {
     pills = '<div class="zpills">';
-    for (var i = 0; i < s.zs.length; i++) pills += '<div class="zpill">' + s.zs[i] + '</div>';
+    for (var j = 0; j < s.zs.length; j++) pills += '<div class="zpill">' + s.zs[j] + '</div>';
     pills += '</div>';
   }
 
-  // Step text
+  // Text
   var txt = '';
   if (s.ml) {
     var lines = s.text.split('\n');
     txt = '<div class="csml">';
-    for (var i = 0; i < lines.length; i++) {
-      if (lines[i].trim()) txt += '<div style="display:flex;gap:8px;margin-bottom:4px"><span style="font-size:12px;font-weight:700;color:var(--red);min-width:16px">' + (i+1) + '.</span><span>' + lines[i] + '</span></div>';
+    for (var j = 0; j < lines.length; j++) {
+      if (lines[j].trim()) txt += '<div style="display:flex;gap:8px;margin-bottom:4px"><span style="font-size:12px;font-weight:700;color:var(--red);min-width:16px">' + (j+1) + '.</span><span>' + lines[j] + '</span></div>';
     }
     txt += '</div>';
   } else {
@@ -886,57 +904,98 @@ function renderStep() {
   // Timer
   var timerHtml = '';
   if (s.timer_min > 0) {
-    G.tl = s.timer_min * 60; G.tt = G.tl;
-    timerHtml = '<div class="tbox"><div class="tdisp" id="td">' + fmt(G.tl) + '</div>' +
+    timerHtml = '<div class="tbox"><div class="tdisp" id="td_' + i + '">' + fmt(s.timer_min * 60) + '</div>' +
       '<div class="tsub">' + s.timer_min + ' Minuten</div>' +
-      '<div class="tprog"><div class="tprogb" id="tb" style="width:100%"></div></div>' +
-      '<button class="btn btn-red" id="tbtn" onclick="startT()" style="padding:9px;font-size:13px">Timer starten</button></div>';
+      '<div class="tprog"><div class="tprogb" id="tb_' + i + '" style="width:100%"></div></div>' +
+      '<button class="btn btn-red" id="tbtn_' + i + '" onclick="startT(' + i + ')" style="padding:9px;font-size:13px">Timer starten</button></div>';
   }
 
-  // Already done checkbox removed - use "Schritt abschliessen" button instead
-  var adHtml = '';
-
-  // Main button
+  // Button
   var mainBtn = isDone
-    ? '<button class="btn btn-grn" onclick="unDone()">Als unerledigt markieren</button>'
-    : '<button class="btn btn-red" onclick="doComplete()">' + (isLast ? 'Rezept fertig' : 'Schritt abschliessen') + '</button>';
+    ? '<button class="btn btn-grn" onclick="unDone(' + i + ')">Als unerledigt markieren</button>'
+    : '<button class="btn btn-red" onclick="doComplete(' + i + ')">' + (isLast ? 'Rezept fertig' : 'Schritt abschliessen') + '</button>';
 
-  $('cbody').innerHTML = (BADGES[s.type] || '') + txt + timerHtml + adHtml +
-    '<div style="display:flex;flex-direction:column;gap:8px">' + mainBtn +
-    '<div class="cnav">' +
-    '<button class="btn btn-out" onclick="cnav(-1)"' + (G.cur === 0 ? ' disabled' : '') + '>Zurueck</button>' +
-    '<button class="btn btn-out" onclick="cnav(1)"' + (G.cur === G.steps.length-1 ? ' disabled' : '') + '>Weiter</button>' +
-    '</div></div>';
-
-  updSegs();
+  return (BADGES[s.type] || '') + txt + timerHtml + '<div style="margin-top:4px">' + mainBtn + '</div>';
 }
 
-function cnav(d) { clearInterval(G.tiv); var n = G.cur + d; if (n < 0 || n >= G.steps.length) return; G.cur = n; renderStep(); }
-function jumpCur() { G.cur = G.act; renderStep(); }
-function doComplete() {
-  G.done[G.cur] = true; clearInterval(G.tiv);
-  if (G.cur === G.steps.length - 1) { go('sw'); return; }
-  if (G.cur === G.act) G.act = Math.min(G.act + 1, G.steps.length - 1);
-  G.cur = G.act; renderStep();
+function renderAllSteps() {
+  var html = '';
+  for (var i = 0; i < G.steps.length; i++) {
+    var s = G.steps[i];
+    var isDone = !!G.done[i];
+    var isAct = i === G.act;
+    var cardCls = 'cstep-card' + (isAct ? ' active' : '') + (isDone ? ' done-card' : '');
+    // Short title: first 60 chars of step text
+    var title = s.text ? s.text.slice(0, 60) + (s.text.length > 60 ? '...' : '') : '';
+    html += '<div class="' + cardCls + '" id="csc_' + i + '">' +
+      '<div class="cstep-head" onclick="toggleStepCard(' + i + ')">' +
+        '<div class="cstep-num">' + (isDone ? '&#10003;' : (i+1)) + '</div>' +
+        '<div class="cstep-head-txt">' + title + '</div>' +
+        (!isDone && !isAct ? '<span style="font-size:18px;color:var(--gr3)">&#8250;</span>' : '') +
+      '</div>' +
+      '<div class="cstep-body"' + (!isAct && !isDone ? ' style="display:none"' : '') + '>' +
+        stepBody(i) +
+      '</div>' +
+    '</div>';
+  }
+  $('cbody').innerHTML = html;
+  updHeader();
 }
-function unDone() { delete G.done[G.cur]; renderStep(); }
-function togDone() { if (G.done[G.cur]) unDone(); else doComplete(); }
 
-function startT() {
-  var btn = $('tbtn'); if (!btn) return;
+function toggleStepCard(i) {
+  var body = $('csc_' + i).querySelector('.cstep-body');
+  if (body) body.style.display = body.style.display === 'none' ? 'block' : 'none';
+}
+
+function jumpCur() {
+  var el = $('csc_' + G.act);
+  if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function doComplete(i) {
+  clearInterval(G.tiv);
+  G.done[i] = true;
+  if (i === G.act) G.act = Math.min(G.act + 1, G.steps.length - 1);
+  if (Object.keys(G.done).length === G.steps.length) { go('sw'); return; }
+  renderAllSteps();
+  // Scroll to next active
+  setTimeout(function() {
+    var el = $('csc_' + G.act);
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, 100);
+}
+
+function unDone(i) {
+  delete G.done[i];
+  if (i < G.act) G.act = i;
+  renderAllSteps();
+}
+
+function cnav(d) {}  // kept for compatibility
+function updSegs() { updHeader(); }
+function renderStep() { renderAllSteps(); }
+
+function startT(i) {
+  var btn = $('tbtn_' + i);
+  var td = $('td_' + i);
+  var tb = $('tb_' + i);
+  if (!btn || !td) return;
   btn.textContent = 'Laeuft...'; btn.disabled = true;
-  $('td').classList.add('run');
+  td.classList.add('run');
+  var s = G.steps[i];
+  G.tl = s.timer_min * 60; G.tt = G.tl;
+  clearInterval(G.tiv);
   G.tiv = setInterval(function() {
     G.tl--;
     if (G.tl <= 0) {
       clearInterval(G.tiv);
-      $('td').textContent = 'Fertig!'; $('td').classList.remove('run'); $('td').classList.add('fin');
-      $('tb').style.width = '0%'; btn.textContent = 'Fertig';
+      td.textContent = 'Fertig!'; td.classList.remove('run'); td.classList.add('fin');
+      if (tb) tb.style.width = '0%'; btn.textContent = 'Fertig';
       return;
     }
-    $('td').textContent = fmt(G.tl);
-    $('tb').style.width = Math.round((G.tl / G.tt) * 100) + '%';
-    if (G.tl <= 30) $('td').style.color = '#b71c1c';
+    td.textContent = fmt(G.tl);
+    if (tb) tb.style.width = Math.round((G.tl / G.tt) * 100) + '%';
+    if (G.tl <= 30) td.style.color = '#b71c1c';
   }, 1000);
 }
 function fmt(s) { return (Math.floor(s/60) < 10 ? '0' : '') + Math.floor(s/60) + ':' + (s%60 < 10 ? '0' : '') + (s%60); }
