@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
-<title>Menuplan v1.4</title>
+<title>Menuplan v1.6</title>
 <style>
 :root{
   --red:#e8390e;--rl:#fff2ef;--grn:#2e7d32;--grl:#f0faf4;
@@ -145,7 +145,7 @@ input[type=password]{letter-spacing:2px}
 
 <!-- HOME -->
 <div class="scr on" id="sh">
-  <div class="hero"><h1>Menuplan</h1><p id="hsub">v1.4 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
+  <div class="hero"><h1>Menuplan</h1><p id="hsub">v1.6 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
 
   <!-- Saved week banner -->
   <div id="swbanner" style="display:none;margin:10px 10px 0;background:#fff;border-radius:var(--rlg);border:.5px solid var(--bdr);overflow:hidden">
@@ -188,6 +188,15 @@ input[type=password]{letter-spacing:2px}
     <div class="cp">
       <div class="clbl">Diese Woche</div>
       <div class="fld">
+        <label>Personen (Abendessen)</label>
+        <div class="chips" id="pchips">
+          <button class="chip" onclick="setP(1)">1 Person</button>
+          <button class="chip on" onclick="setP(2)">2 Personen</button>
+          <button class="chip" onclick="setP(3)">3 Personen</button>
+          <button class="chip" onclick="setP(4)">4 Personen</button>
+        </div>
+      </div>
+      <div class="fld" style="margin-top:10px">
         <label>Kochabende</label>
         <div class="chips">
           <button class="chip" onclick="setN(2)">2 Abende</button>
@@ -316,7 +325,7 @@ var BH = {
 
 // ─── STATE ─────────────────────────────────────────────────
 var G = {
-  n: 3, reste: 1, freeze: 1,
+  n: 3, personen: 2, reste: 1, freeze: 1,
   sugs: [], sel: null,
   steps: [], cur: 0, act: 0, done: {},
   tiv: null, tl: 0, tt: 0,
@@ -345,10 +354,19 @@ function showSt(id, msg, type) {
 // ─── OPTION SETTERS ────────────────────────────────────────
 function setN(n) {
   G.n = n;
-  var chips = document.querySelectorAll('.chips')[0].querySelectorAll('.chip');
-  for (var i = 0; i < chips.length; i++) {
-    chips[i].classList.toggle('on', chips[i].textContent.indexOf(n) === 0);
+  // Find the Kochabende chips specifically
+  var allChips = document.querySelectorAll('.chips');
+  for (var c = 0; c < allChips.length; c++) {
+    var chips = allChips[c].querySelectorAll('.chip');
+    if (chips.length === 3 && chips[0].textContent.indexOf('Abende') > -1) {
+      for (var i = 0; i < chips.length; i++) chips[i].classList.toggle('on', chips[i].textContent.indexOf(n) === 0);
+    }
   }
+}
+function setP(p) {
+  G.personen = p;
+  var chips = $('pchips').querySelectorAll('.chip');
+  for (var i = 0; i < chips.length; i++) chips[i].classList.toggle('on', i === p - 1);
 }
 function setR(v) {
   G.reste = v;
@@ -365,18 +383,21 @@ function setF(v) {
 
 // ─── SYSTEM PROMPT BUILDER ─────────────────────────────────
 function buildSYS() {
-  var port = '';
-  if (G.reste && G.freeze) port = '6 (2 Abend + 2 Mittag naechster Tag + 2 Einfrieren)';
-  else if (G.reste)        port = '4 (2 Abend + 2 Mittag naechster Tag)';
-  else if (G.freeze)       port = '4 (2 Abend + 2 Einfrieren)';
-  else                     port = '2 (nur Abendessen)';
+  var p = G.personen || 2;
+  var portAbend  = p;
+  var portMittag = G.reste  ? p : 0;
+  var portFreeze = G.freeze ? 2 : 0;
+  var portTotal  = portAbend + portMittag + portFreeze;
+  var port = portTotal + ' total (' + portAbend + ' Abend' +
+    (portMittag ? ' + ' + portMittag + ' Mittag naechster Tag' : '') +
+    (portFreeze ? ' + 2 Einfrieren' : '') + ')';
 
   var resteRule = G.reste
-    ? 'Reste vom Abend werden am naechsten Mittag verwendet (nur Mikrowelle oder kalt).'
-    : 'Keine Resteverwertung - nur Abendessen planen.';
+    ? 'Reste vom Abend werden am naechsten Mittag verwendet (nur Mikrowelle oder kalt, kein Herd). Plane Gerichte die sich als Reste eignen: aufwaermbare Saucen, Eintöpfe, Currys. Reste muessen sich klar vom Abend unterscheiden z.B. Abend: Pasta mit Sauce, Mittag: kalter Pastasalat.'
+    : 'Keine Resteverwertung - nur Abendessen planen, keine Mittage. Koche nur 2 Portionen pro Abend (eine pro Person). Keine Erwaehnung von Resten oder Mittag in den Schritten.';
   var freezeRule = G.freeze
-    ? '+2 Einfrierportionen mitkochen und in Tupperdosen einfrieren.'
-    : 'Keine Einfrierportionen - nur fuer heute kochen.';
+    ? '+2 Einfrierportionen mitkochen und in Tupperdosen einfrieren. Waehle Gerichte die sich gut einfrieren lassen: Saucen, Eintöpfe, Currys, Suppen, Bolognese. Keine Gerichte die beim Einfrieren leiden: Pasta (nur Sauce einfrieren), frische Salate, Gerichte mit rohem Avocado oder Gurke.'
+    : 'KEINE Einfrierportionen - koche exakt die benoetigte Menge. Waehle Gerichte die nicht eingefroren werden muessen und plane Portionen entsprechend kleiner. Keine Erwaehnung von Einfrieren in den Schritten.';
 
   var mittag = G.reste ? '"mittag_naechster_tag":"Name","mittag_tag":"Dienstag",' : '';
   var prep   = G.reste ? ',"prep_next":["Reste abfuellen","Mittags aufwaermen"]' : '';
@@ -384,9 +405,14 @@ function buildSYS() {
 
   var json = '{"vorschlaege":[{"id":1,"thema":"Thema","kochabende":["Mo","Mi"],"gerichte":[{"tag":"Montag","abend":"Name","zeit_aktiv":"15 Min.","zeit_total":"45 Min.",' + mittag + '"zutaten":[{"name":"Karotten","menge":"2 Stk"},{"name":"Oel","menge":"2 EL"}],"schritte_vegi":[{"text":"Schritt mit Mengenangaben","timer_min":5,"zutaten_schritt":["2 Zwiebeln"]}],"schritte_fleisch":[{"text":"Fleisch separat","timer_min":5,"zutaten_schritt":["300g Haehnchen"]}]' + prep + frz + ',"tipp":"Tipp"}]}]}';
 
+  var personenHinweis = p === 1
+    ? '1 Person (vegi). Alle Mengen fuer 1 Person berechnen.'
+    : p + ' Personen (davon 1 vegi, ' + (p-1) + ' vegi+Fleisch optional). Alle Mengen fuer ' + p + ' Personen berechnen.';
+
   return 'NUR valides JSON, kein Text davor/danach. Keine Apostrophe in Strings. ' +
-    '2 Personen Zuerich. 1 vegi, 1 vegi+Fleisch optional separat. Basis vegi. Mittags Mikrowelle/kalt. ' +
-    'Portionen: ' + port + '. ' + resteRule + ' ' + freezeRule + ' ' +
+    personenHinweis + ' Zuerich. Basis immer vegi. Mittags Mikrowelle/kalt. ' +
+    'Portionen pro Rezept: ' + port + '. Alle Zutatenmengen auf ' + portTotal + ' Portionen berechnen. ' +
+    resteRule + ' ' + freezeRule + ' ' +
     'Keine 2 schwere KH. Mediterran/kohaerent. Proteinreich. Empfindliches frueh. ' +
     'Jedes Gericht hat zeit_aktiv (nur haendische Arbeit) und zeit_total (inkl. warten/kochen/backen). ' +
     'Schritte mit Mengen und zutaten_schritt pro Schritt. ' +
@@ -480,6 +506,7 @@ function loadSaved() {
   if (!G.savedWeek || !G.savedWeek.sugs) return;
   G.sugs = G.savedWeek.sugs;
   G.n = G.savedWeek.n || 3;
+  G.personen = G.savedWeek.personen || 2;
   G.reste = G.savedWeek.reste !== undefined ? G.savedWeek.reste : 1;
   G.freeze = G.savedWeek.freeze !== undefined ? G.savedWeek.freeze : 1;
   G.sel = 0;
@@ -633,7 +660,9 @@ function goSuggest() {
   var exist = $('exist').value.trim();
   var resteInfo = G.reste ? 'MIT Resteverwertung am Folgetag' : 'OHNE Resteverwertung';
   var freezeInfo = G.freeze ? 'MIT Einfrierportionen (+2 pro Gericht)' : 'OHNE Einfrierportionen';
-  var msg = 'Generiere genau 3 Menuvorschlaege mit je ' + G.n + ' Kochabenden. ' + resteInfo + '. ' + freezeInfo + '.' + (theme ? ' Thema: ' + theme + '.' : '') + (exist ? ' Vorhanden: ' + exist + '.' : '');
+  var p = G.personen || 2;
+  var portTotal = p + (G.reste ? p : 0) + (G.freeze ? 2 : 0);
+  var msg = 'Generiere genau 3 Menuvorschlaege mit je ' + G.n + ' Kochabenden fuer ' + p + ' Personen (Total ' + portTotal + ' Portionen pro Gericht). ' + resteInfo + '. ' + freezeInfo + '.' + (theme ? ' Thema: ' + theme + '.' : '') + (exist ? ' Vorhanden: ' + exist + '.' : '');
 
   fetch(PROXY + '/anthropic', {
     method: 'POST',
@@ -666,7 +695,7 @@ function goSuggest() {
     }
     G.sugs = parsed.vorschlaege || [];
     // Save
-    var weekData = { sugs: G.sugs, n: G.n, reste: G.reste, freeze: G.freeze, saved: new Date().toLocaleDateString('de-CH') };
+    var weekData = { sugs: G.sugs, n: G.n, personen: G.personen, reste: G.reste, freeze: G.freeze, saved: new Date().toLocaleDateString('de-CH') };
     localStorage.setItem('sw', JSON.stringify(weekData));
     G.savedWeek = weekData;
     $('swbanner').style.display = 'block';
