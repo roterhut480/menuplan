@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
-<title>Menuplan v1.9</title>
+<title>Menuplan v2.0</title>
 <style>
 :root{
   --red:#e8390e;--rl:#fff2ef;--grn:#2e7d32;--grl:#f0faf4;
@@ -145,21 +145,44 @@ input[type=password]{letter-spacing:2px}
 
 <!-- HOME -->
 <div class="scr on" id="sh">
-  <div class="hero"><h1>Menuplan</h1><p id="hsub">v1.9 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
+  <div class="hero"><h1>Menuplan</h1><p id="hsub">v2.0 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
 
-  <!-- Saved week banner -->
-  <div id="swbanner" style="display:none;margin:10px 10px 0;background:#fff;border-radius:var(--rlg);border:.5px solid var(--bdr);overflow:hidden">
-    <div style="padding:12px 14px">
-      <div style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--gr3);margin-bottom:6px">Letzte Woche</div>
-      <div style="display:flex;align-items:center;justify-content:space-between;gap:8px">
-        <div>
-          <div style="font-size:13px;color:var(--txt2)">Einkauf vom <span id="swdate" style="font-weight:600;color:var(--txt)"></span></div>
-          <div style="font-size:12px;color:var(--gr3);margin-top:2px">Tippen zum Laden</div>
+  <!-- Active plan card -->
+  <div id="active-plan" style="display:none;margin:10px 10px 0">
+    <div style="background:var(--red);border-radius:var(--rlg);padding:14px 16px;color:#fff;margin-bottom:1px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+        <div style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;opacity:.75">Aktiver Menuplan</div>
+        <div style="display:flex;gap:6px;align-items:center">
+          <button onclick="syncGH(this)" style="background:rgba(255,255,255,.2);border:none;border-radius:6px;padding:4px 8px;font-size:11px;color:#fff;cursor:pointer;font-family:inherit">&#x1F504;</button>
+          <button onclick="clearActivePlan()" style="background:rgba(255,255,255,.15);border:none;border-radius:6px;padding:4px 8px;font-size:11px;color:#fff;cursor:pointer;font-family:inherit">&#x2715; Beenden</button>
         </div>
-        <div style="display:flex;gap:6px">
-          <button class="btn btn-out noprint" onclick="syncGH(this)" style="width:auto;padding:9px 12px;font-size:12px;flex-shrink:0">&#x1F504;</button>
-          <button class="btn btn-red noprint" onclick="loadSaved()" style="width:auto;padding:9px 16px;font-size:13px;flex-shrink:0">Oeffnen</button>
+      </div>
+      <div id="ap-title" style="font-size:18px;font-weight:700;margin-bottom:2px"></div>
+      <div id="ap-sub" style="font-size:12px;opacity:.8"></div>
+    </div>
+    <div style="background:#fff;border-radius:0 0 var(--rlg) var(--rlg);border:.5px solid var(--bdr);border-top:none">
+      <!-- Status row -->
+      <div style="display:flex;border-bottom:.5px solid var(--gr)">
+        <div id="ap-einkauf-status" style="flex:1;padding:10px 14px;display:flex;align-items:center;gap:8px;cursor:pointer" onclick="openActivePlan('e')">
+          <div id="ap-einkauf-dot" style="width:10px;height:10px;border-radius:50%;background:var(--gr2);flex-shrink:0"></div>
+          <div>
+            <div style="font-size:12px;font-weight:600;color:var(--txt)">Einkauf</div>
+            <div id="ap-einkauf-lbl" style="font-size:11px;color:var(--gr3)">Noch nicht importiert</div>
+          </div>
         </div>
+        <div style="width:.5px;background:var(--gr)"></div>
+        <div style="flex:1;padding:10px 14px;display:flex;align-items:center;gap:8px;cursor:pointer" onclick="openActivePlan('r')">
+          <div style="width:10px;height:10px;border-radius:50%;background:var(--gr2);flex-shrink:0"></div>
+          <div>
+            <div style="font-size:12px;font-weight:600;color:var(--txt)">Rezepte</div>
+            <div style="font-size:11px;color:var(--gr3)">Tippen zum Kochen</div>
+          </div>
+        </div>
+      </div>
+      <!-- Dish list -->
+      <div id="ap-dishes" style="padding:10px 14px"></div>
+      <div style="padding:0 14px 12px">
+        <button class="btn btn-out" onclick="openActivePlan('e')" style="font-size:13px;padding:10px">Plan oeffnen</button>
       </div>
     </div>
   </div>
@@ -242,7 +265,7 @@ input[type=password]{letter-spacing:2px}
   <div id="serr"></div>
   <div id="slist"></div>
   <div id="scta" style="display:none;padding:10px 10px 0">
-    <button class="btn btn-red" onclick="goWeek()">Diese Woche planen</button>
+    <button class="btn btn-red" onclick="setActivePlanAndGo()">Als aktiven Plan setzen</button>
     <div style="margin-top:16px;padding-top:16px;border-top:.5px solid var(--bdr)">
       <div style="font-size:12px;color:var(--gr3);margin-bottom:6px;font-weight:500">Nicht zufrieden? Sag Claude warum:</div>
       <textarea id="feedback" placeholder="z.B. zu wenig Proteine, kein Pasta-Gericht, zu aufwaendig..." style="width:100%;background:#fff;border:1px solid var(--bdr);border-radius:7px;color:var(--txt);font-size:14px;padding:10px 12px;font-family:inherit;resize:none;height:72px;outline:none;transition:border-color .2s" onfocus="this.style.borderColor='var(--red)'" onblur="this.style.borderColor='var(--bdr)'"></textarea>
@@ -447,14 +470,13 @@ window.addEventListener('DOMContentLoaded', function() {
   }
   // GitHub
   updateGHUI();
-  // Saved week
-  var sw = localStorage.getItem('sw');
-  if (sw) {
+  // Active plan
+  var ap = localStorage.getItem('active_plan');
+  if (ap) {
     try {
-      G.savedWeek = JSON.parse(sw);
-      $('swbanner').style.display = 'block';
-      $('swdate').textContent = G.savedWeek.saved || '';
-    } catch(e) {}
+      G.activePlan = JSON.parse(ap);
+      renderActivePlan();
+    } catch(e) { localStorage.removeItem('active_plan'); }
   }
 });
 
@@ -483,7 +505,7 @@ function saveToGH(data) {
   fetch(url, { headers: headers })
     .then(function(r) { return r.ok ? r.json() : null; })
     .then(function(existing) {
-      var body = { message: 'Menueplan gespeichert', content: btoa(unescape(encodeURIComponent(JSON.stringify(data, null, 2)))) };
+      var body = { message: 'Aktiver Plan gespeichert', content: btoa(unescape(encodeURIComponent(JSON.stringify(data, null, 2)))) };
       if (existing && existing.sha) body.sha = existing.sha;
       return fetch(url, { method: 'PUT', headers: headers, body: JSON.stringify(body) });
     })
@@ -493,23 +515,26 @@ function saveToGH(data) {
 function syncGH(btn) {
   var tok = localStorage.getItem('ght');
   if (!tok) { alert('Bitte zuerst GitHub Token eingeben'); return; }
+  var origText = btn.textContent;
   btn.textContent = '...';
   btn.disabled = true;
   fetch('https://raw.githubusercontent.com/' + GH_REPO + '/main/' + GH_FILE + '?t=' + Date.now())
     .then(function(r) { return r.ok ? r.json() : null; })
     .then(function(d) {
-      if (d && d.sugs) {
-        G.savedWeek = d;
-        localStorage.setItem('sw', JSON.stringify(d));
-        $('swbanner').style.display = 'block';
-        $('swdate').textContent = d.saved || '';
+      if (d && d.sug) {
+        G.activePlan = d;
+        localStorage.setItem('active_plan', JSON.stringify(d));
+        renderActivePlan();
+        btn.textContent = 'OK';
+      } else if (d && d.sugs) {
+        // Legacy format
         btn.textContent = 'OK';
       } else {
         btn.textContent = 'Leer';
       }
-      setTimeout(function() { btn.textContent = '\uD83D\uDD04'; btn.disabled = false; }, 1500);
+      setTimeout(function() { btn.textContent = origText; btn.disabled = false; }, 1500);
     })
-    .catch(function() { btn.textContent = 'Err'; setTimeout(function() { btn.textContent = '\uD83D\uDD04'; btn.disabled = false; }, 1500); });
+    .catch(function() { btn.textContent = 'Err'; setTimeout(function() { btn.textContent = origText; btn.disabled = false; }, 1500); });
 }
 function loadSaved() {
   if (!G.savedWeek || !G.savedWeek.sugs) return;
@@ -645,6 +670,7 @@ function doImportItems() {
     if (r && r.ok) {
       showSt('ist', items.length + ' Artikel in Bring! importiert!', 'ok');
       btn.innerHTML = 'Importiert';
+      markEinkaufDone();
     } else {
       showSt('ist', 'Import fehlgeschlagen - Status ' + (r ? r.status : '?'), 'er');
       btn.innerHTML = 'Nochmals versuchen'; btn.disabled = false;
@@ -1161,6 +1187,99 @@ function showPrint(ri) {
 }
 
 // ─── TEST DATA ─────────────────────────────────────────────
+// ─── ACTIVE PLAN ───────────────────────────────────────────
+function setActivePlanAndGo() {
+  if (G.sel === null) return;
+  // Set as active plan first
+  var sug = G.sugs[G.sel];
+  var planData = {
+    sug: sug,
+    sel: G.sel,
+    n: G.n, personen: G.personen, reste: G.reste, freeze: G.freeze,
+    saved: new Date().toLocaleDateString('de-CH'),
+    einkaufDone: false,
+    sugsAll: G.sugs,
+    sugsPartial: G.sugsPartial
+  };
+  G.activePlan = planData;
+  localStorage.setItem('active_plan', JSON.stringify(planData));
+  // Also save to GH
+  saveToGH(planData);
+  // Also save full week for recovery
+  var weekData = { sugs: G.sugs, n: G.n, personen: G.personen, reste: G.reste, freeze: G.freeze, saved: new Date().toLocaleDateString('de-CH') };
+  localStorage.setItem('sw', JSON.stringify(weekData));
+  // Render and go to week
+  renderActivePlan();
+  goWeek();
+}
+
+function renderActivePlan() {
+  var ap = G.activePlan;
+  if (!ap || !ap.sug) return;
+  $('active-plan').style.display = 'block';
+  $('ap-title').textContent = ap.sug.thema;
+  $('ap-sub').textContent = 'Gesetzt am ' + (ap.saved||'') + ' · ' + (ap.personen||2) + ' Personen';
+
+  // Dish list
+  var dishes = '';
+  var gerichte = ap.sug.gerichte || [];
+  for (var i = 0; i < gerichte.length; i++) {
+    var g = gerichte[i];
+    dishes += '<div style="display:flex;align-items:center;gap:8px;padding:4px 0">' +
+      '<span style="font-size:11px;font-weight:700;color:var(--red);min-width:24px">' + g.tag.slice(0,2) + '</span>' +
+      '<span style="font-size:13px;color:var(--txt)">' + g.abend + '</span></div>';
+  }
+  $('ap-dishes').innerHTML = dishes;
+
+  // Einkauf status
+  var dot = $('ap-einkauf-dot');
+  var lbl = $('ap-einkauf-lbl');
+  if (ap.einkaufDone) {
+    dot.style.background = 'var(--grn)';
+    lbl.textContent = 'In Bring! importiert';
+  } else {
+    dot.style.background = 'var(--gr2)';
+    lbl.textContent = 'Noch nicht importiert';
+  }
+}
+
+function openActivePlan(tab) {
+  if (!G.activePlan || !G.activePlan.sug) return;
+  // Restore state from active plan
+  G.sugs = G.activePlan.sugsAll || [G.activePlan.sug];
+  G.sel = G.activePlan.sel || 0;
+  G.n = G.activePlan.n || 3;
+  G.personen = G.activePlan.personen || 2;
+  G.reste = G.activePlan.reste !== undefined ? G.activePlan.reste : 1;
+  G.freeze = G.activePlan.freeze !== undefined ? G.activePlan.freeze : 1;
+  G.sugsPartial = G.activePlan.sugsPartial || false;
+  goWeekRender(G.sugs[G.sel]);
+  // Switch to correct tab
+  setTimeout(function() { wtab(tab); }, 50);
+}
+
+function markEinkaufDone() {
+  if (!G.activePlan) return;
+  G.activePlan.einkaufDone = true;
+  localStorage.setItem('active_plan', JSON.stringify(G.activePlan));
+  renderActivePlan();
+  saveToGH(G.activePlan);
+}
+
+function clearActivePlan() {
+  if (!confirm('Aktiven Plan beenden?')) return;
+  G.activePlan = null;
+  localStorage.removeItem('active_plan');
+  $('active-plan').style.display = 'none';
+}
+
+function loadSaved() {
+  // Legacy: check active plan first
+  if (G.activePlan) { openActivePlan('e'); return; }
+  var ap = localStorage.getItem('active_plan');
+  if (ap) { try { G.activePlan = JSON.parse(ap); openActivePlan('e'); return; } catch(e){} }
+}
+
 function loadTest() {
   G.sugs = [{
     id: 1, thema: 'Test - Mediterran', kochabende: ['Montag', 'Mittwoch'],
