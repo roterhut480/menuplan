@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
-<title>Menuplan v2.4</title>
+<title>Menuplan v2.5</title>
 <style>
 :root{
   --red:#e8390e;--rl:#fff2ef;--grn:#2e7d32;--grl:#f0faf4;
@@ -145,7 +145,7 @@ input[type=password]{letter-spacing:2px}
 
 <!-- HOME -->
 <div class="scr on" id="sh">
-  <div class="hero"><h1>Menuplan</h1><p id="hsub">v2.4 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
+  <div class="hero"><h1>Menuplan</h1><p id="hsub">v2.5 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
 
   <!-- Active plan card -->
   <div id="active-plan" style="display:none;margin:10px 10px 0">
@@ -690,63 +690,20 @@ function buildSYS_overview() {
   var portMittag = G.reste ? p : 0;
   var portFreeze = G.freeze ? 2 : 0;
   var portTotal = portAbend + portMittag + portFreeze;
-  var mittag = G.reste ? '"mittag_naechster_tag":"Name","mittag_tag":"Dienstag",' : '';
-  var json = '{"vorschlaege":[{"id":1,"thema":"Thema","kochabende":["Mo","Mi"],"gerichte":[{"tag":"Montag","abend":"Name","zeit_aktiv":"15 Min.","zeit_total":"45 Min.",' + mittag + '"zutaten":[{"name":"Karotten","menge":"2 Stk"},{"name":"Oel","menge":"2 EL"}],"tipp":"Tipp"}]}]}';
+  var mittag = G.reste ? '"mittag_naechster_tag":"ResteName","mittag_tag":"Tag",' : '';
+  var json = '{"vorschlaege":[{"id":1,"thema":"Thema","kochabende":["Mo","Mi","Fr"],"gerichte":[{"tag":"Montag","abend":"Gerichtsname","zeit_aktiv":"15 Min.","zeit_total":"40 Min.",' + mittag + '"zutaten":[{"name":"Karotten","menge":"300g"},{"name":"Kichererbsen","menge":"1 Dose 400g"}],"tipp":"Kurzer Tipp"}]}]}';
 
-  return 'NUR valides JSON, kein Text davor/danach. Keine Apostrophe in Strings.' +
-
-    ' HAUSHALT: ' + p + ' Person(en) in Zuerich. 1x pro Woche einkaufen (montags).' +
-    ' 1 Person strikt vegetarisch (KEIN Fisch, keine Meeresfruechte).' +
-    (p > 1 ? ' ' + (p-1) + ' Person(en) vegetarisch + optional Fleisch als separate Beilage - nie als Hauptzutat.' : '') +
-    ' Basis-Rezept IMMER vegetarisch. Fleisch immer separat zubereitet (zweite Pfanne/Blech), nie in der Hauptsauce.' +
-    ' Beide Versionen proteinreich: Linsen, Kichererbsen, Tofu, Tempeh, Eier, Kaese, Paneer.' +
-
-    ' MITTAG: Mittags NUR Mikrowelle oder kalt - KEIN Herd, KEIN Toaster, KEINE frischen Eier braten.' +
-    ' Avocado nie aufwaermen - wird bitter. Immer separat kalt dazugeben.' +
-
-    ' RESTE-KETTE: ' + (G.reste ?
-      'Jedes Abendessen produziert Reste fuer naechsten Mittag (Tupperware). ' +
-      'Reste-Kette: Kochtag-Abend -> naechster Tag Mittag. ' +
-      'Reste muessen sich klar vom Abend unterscheiden (andere Textur, andere Komponenten). ' +
-      'Beispiele: Abend Curry mit Reis -> Mittag Curry-Wrap; Abend Pasta -> Mittag kalter Pastasalat; Abend Eintopf -> Mittag aufgewaermte Suppe.' :
-      'Keine Resteverwertung - koche exakt die benoetigt Menge.') +
-
-    ' EINFRIEREN: ' + (G.freeze ?
-      '+2 Portionen mitkochen, in 1-Liter-Tupperdosen einfrieren (30 Stueck vorhanden). ' +
-      'Nur Saucen/Eintoepfe ohne Beilage einfrieren (KEIN Reis, KEINE Pasta - werden matschig). ' +
-      'Einfriergeeignet: Currys, Linsensauce, Bohnen-Eintoepfe, Gemuesesuppen, Tomatensaucen. ' +
-      'NICHT einfrieren: Salate, Guacamole/Avocado, Pasta-Gerichte komplett.' :
-      'Keine Einfrierportionen - koche exakt die benoetigt Menge.') +
-
-    ' PORTIONEN: Alle Zutatenmengen exakt fuer ' + portTotal + ' Portionen berechnen (' +
-    portAbend + ' Abend' + (portMittag ? ' + ' + portMittag + ' Mittag' : '') +
-    (portFreeze ? ' + 2 Einfrieren' : '') + '). ' +
-    'Bei Doppelportionen IMMER doppelte Menge in Einkaufsliste. Nie raten - immer durchrechnen.' +
-
-    ' EINKAUF EFFIZIENZ (sehr wichtig): ' +
-    'Zutaten-Ueberschneidungen maximieren: gleiche Grundzutaten (Zwiebeln, Knoblauch, Karotten, Kichererbsen, Feta, Parmesan) in mehreren Gerichten. ' +
-    'Keine doppelten Fleischsorten: nicht gleichzeitig Haehnchenbrust UND Pouletschenkel UND Rindshack - eine Sorte pro Woche reicht. ' +
-    'Ganze Packungsgroessen nutzen: 400g-Dose Kichererbsen vollstaendig verwenden, nicht 200g kaufen und Rest wegwerfen. ' +
-    'Frische Kraeuter (Petersilie, Koriander, Basilikum) nur kaufen wenn in mind. 2 Gerichten verwendet. ' +
-    'Guenstige Saisonzutaten bevorzugen: Huelsenfruechte aus Dose, TK-Gemuese, Wurzelgemuese, Eier, Kaese. ' +
-    'Mengen angemessen fuer ' + p + ' Personen: keine 1kg Zwiebeln oder 10 Eier wenn Rezepte das nicht benoetigen.' +
-
-    ' HALTBARKEIT (1x/Woche einkaufen): ' +
-    'FRUEH in der Woche (Mo/Di) verwenden: frisches Fleisch, frischer Spinat, Avocado (max. 2-3 Tage). ' +
-    'SPAET verwenden: Karotten, Kartoffeln, Kichererbsen, TK-Produkte, Konserven. ' +
-    'Avocado NIE fuer spaetere Wochentage einplanen.' +
-
-    ' KOHLENHYRATE: Nie 2 schwere KH-Quellen kombinieren (z.B. Bohnen + Kartoffeln, oder Reis + Brot als Hauptbeilage).' +
-
-    ' VARIANZ & QUALITAET: ' +
-    'Abwechslung bei Kuechen: nicht immer mediterran, auch indisch, asiatisch, mexikanisch, orientalisch, nordisch. ' +
-    'Mix aus herzhaft/sattmachend und leichteren Gerichten. ' +
-    'Zutaten und Schnittangaben konsistent: wenn "Karotte fein gewuerfelt" in Zutaten, dann auch so in Schritten.' +
-
-    ' KEINE Mittage eintragen wenn keine vorgekochten Reste vorhanden sind (leer lassen).' +
-
-    ' Generiere 3 verschiedene Vorschlaege - NUR Gerichtsname, Zutaten mit exakten Mengen, Zeiten und Tipp. KEINE Kochschritte.' +
-    ' Format: ' + json;
+  return 'Antworte NUR mit JSON, kein Text. Keine Apostrophe in Strings. ' +
+    p + ' Personen Zuerich, 1 Person vegi (kein Fisch), ' + (p>1 ? (p-1) + ' Person vegi+Fleisch separat. ' : '') +
+    'Basis vegi, Fleisch immer separat. Mittags nur Mikrowelle/kalt. ' +
+    'Portionen: ' + portTotal + ' (' + portAbend + ' Abend' + (portMittag?'+'+portMittag+' Mittag':'') + (portFreeze?'+2 Einfrieren':'') + '). ' +
+    (G.reste ? 'Reste-Kette: Abend->naechster Mittag (unterschiedlich serviert). ' : 'Keine Reste. ') +
+    (G.freeze ? 'Einfrieren: nur Saucen/Eintoepfe ohne Beilage. ' : '') +
+    'Regeln: 1 Fleischsorte/Woche. Ganze Packungen. Max 1 Kraeuterbund wenn in 2+ Gerichten. ' +
+    'Avocado nur frueh (Mo/Di). Frisches Fleisch/Spinat frueh. Keine 2 schweren KH. ' +
+    'Kueche variieren (nicht immer mediterran). Zutaten ueberschneiden. Mengen korrekt fuer ' + portTotal + ' Portionen. ' +
+    'KURZ: max 8 Zutaten pro Gericht, keine langen Erklaerungen. ' +
+    'Format exakt: ' + json;
 }
 
 // Full recipe system prompt for one selected option
@@ -842,7 +799,7 @@ function goSuggest() {
     (feedback ? ' Vorherige abgelehnt weil: ' + feedback + '. Andere Gerichte vorschlagen.' : '') +
     ' Zutaten-Ueberschneidung maximieren. Guenstige Zutaten bevorzugen.';
 
-  callClaude(buildSYS_overview(), msg, 4000)
+  callClaude(buildSYS_overview(), msg, 6000)
   .then(function(raw) {
     var parsed = parseJSON(raw);
     G.sugs = parsed.vorschlaege || [];
