@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
-<title>Menuplan v2.1</title>
+<title>Menuplan v2.2</title>
 <style>
 :root{
   --red:#e8390e;--rl:#fff2ef;--grn:#2e7d32;--grl:#f0faf4;
@@ -145,7 +145,7 @@ input[type=password]{letter-spacing:2px}
 
 <!-- HOME -->
 <div class="scr on" id="sh">
-  <div class="hero"><h1>Menuplan</h1><p id="hsub">v2.1 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
+  <div class="hero"><h1>Menuplan</h1><p id="hsub">v2.2 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
 
   <!-- Active plan card -->
   <div id="active-plan" style="display:none;margin:10px 10px 0">
@@ -265,7 +265,7 @@ input[type=password]{letter-spacing:2px}
   <div id="serr"></div>
   <div id="slist"></div>
   <div id="scta" style="display:none;padding:10px 10px 0">
-    <button class="btn btn-red" onclick="setActivePlanAndGo()">Als aktiven Plan setzen</button>
+    <button class="btn btn-red" id="set-plan-btn" onclick="setActivePlanAndGo()" disabled style="opacity:.35;cursor:not-allowed">Als aktiven Plan setzen</button>
     <div style="margin-top:16px;padding-top:16px;border-top:.5px solid var(--bdr)">
       <div style="font-size:12px;color:var(--gr3);margin-bottom:6px;font-weight:500">Nicht zufrieden? Sag Claude warum:</div>
       <textarea id="feedback" placeholder="z.B. zu wenig Proteine, kein Pasta-Gericht, zu aufwaendig..." style="width:100%;background:#fff;border:1px solid var(--bdr);border-radius:7px;color:var(--txt);font-size:14px;padding:10px 12px;font-family:inherit;resize:none;height:72px;outline:none;transition:border-color .2s" onfocus="this.style.borderColor='var(--red)'" onblur="this.style.borderColor='var(--bdr)'"></textarea>
@@ -718,15 +718,37 @@ function buildSYS_full(sug) {
 }
 
 function parseJSON(raw) {
+  // Extract JSON block
   var m = raw.match(/\{[\s\S]*\}/);
   var jsonStr = m ? m[0] : raw;
-  try { return JSON.parse(jsonStr); } catch(e1) {
-    try { return JSON.parse(jsonStr.replace(/,(\s*[}\]])/g, '$1')); } catch(e2) {
-      try {
-        return JSON.parse(jsonStr.replace(/,(\s*[}\]])/g, '$1').replace(/([^\\])\n/g, '$1\\n'));
-      } catch(e3) { throw new Error('JSON ungueltig: ' + jsonStr.slice(0, 150)); }
-    }
-  }
+
+  // Try parsing as-is
+  try { return JSON.parse(jsonStr); } catch(e1) {}
+
+  // Fix trailing commas
+  try { return JSON.parse(jsonStr.replace(/,(\s*[}\]])/g, '$1')); } catch(e2) {}
+
+  // Fix unescaped newlines
+  try {
+    return JSON.parse(jsonStr
+      .replace(/,(\s*[}\]])/g, '$1')
+      .replace(/([^\\])\n/g, '$1\\n')
+      .replace(/([^\\])\t/g, '$1\\t'));
+  } catch(e3) {}
+
+  // Try to close truncated JSON by adding missing brackets
+  try {
+    var open = (jsonStr.match(/\[/g)||[]).length - (jsonStr.match(/\]/g)||[]).length;
+    var openB = (jsonStr.match(/\{/g)||[]).length - (jsonStr.match(/\}/g)||[]).length;
+    var fixed = jsonStr.replace(/,\s*$/, ''); // remove trailing comma
+    for (var i = 0; i < open; i++) fixed += ']';
+    for (var i = 0; i < openB; i++) fixed += '}';
+    var result = JSON.parse(fixed);
+    console.warn('JSON was truncated and auto-fixed');
+    return result;
+  } catch(e4) {}
+
+  throw new Error('JSON ungueltig: ' + jsonStr.slice(0, 150));
 }
 
 function callClaude(sys, msg, maxTokens) {
@@ -766,7 +788,7 @@ function goSuggest() {
     (feedback ? ' Vorherige abgelehnt weil: ' + feedback + '. Andere Gerichte vorschlagen.' : '') +
     ' Zutaten-Ueberschneidung maximieren. Guenstige Zutaten bevorzugen.';
 
-  callClaude(buildSYS_overview(), msg, 2500)
+  callClaude(buildSYS_overview(), msg, 4000)
   .then(function(raw) {
     var parsed = parseJSON(raw);
     G.sugs = parsed.vorschlaege || [];
@@ -774,6 +796,9 @@ function goSuggest() {
     $('sload').style.display = 'none';
     renderSugs();
     $('scta').style.display = 'block';
+    // Enable button only after successful load
+    var spb = $('set-plan-btn');
+    if (spb) { spb.disabled = false; spb.style.opacity = '1'; spb.style.cursor = 'pointer'; }
   })
   .catch(function(e) {
     $('sload').style.display = 'none';
@@ -805,6 +830,8 @@ function renderSugs() {
 function selSug(i) {
   G.sel = i;
   renderSugs();
+  var spb = $('set-plan-btn');
+  if (spb) { spb.disabled = false; spb.style.opacity = '1'; spb.style.cursor = 'pointer'; }
 }
 
 function goWeek() {
