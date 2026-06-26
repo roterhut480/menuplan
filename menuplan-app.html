@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
-<title>Menuplan v2.6</title>
+<title>Menuplan v2.7</title>
 <style>
 :root{
   --red:#e8390e;--rl:#fff2ef;--grn:#2e7d32;--grl:#f0faf4;
@@ -145,7 +145,7 @@ input[type=password]{letter-spacing:2px}
 
 <!-- HOME -->
 <div class="scr on" id="sh">
-  <div class="hero"><h1>Menuplan</h1><p id="hsub">v2.6 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
+  <div class="hero"><h1>Menuplan</h1><p id="hsub">v2.7 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
 
   <!-- Active plan card -->
   <div id="active-plan" style="display:none;margin:10px 10px 0">
@@ -185,6 +185,11 @@ input[type=password]{letter-spacing:2px}
         <button class="btn btn-out" onclick="openActivePlan('e')" style="font-size:13px;padding:10px">Plan oeffnen</button>
       </div>
     </div>
+  </div>
+
+  <!-- History button -->
+  <div style="padding:10px 10px 0;display:flex;gap:8px">
+    <button class="btn btn-out" onclick="openHistory()" style="flex:1;font-size:13px;padding:10px">&#128218; Verlauf</button>
   </div>
 
   <!-- GitHub Sync -->
@@ -325,6 +330,23 @@ input[type=password]{letter-spacing:2px}
   </div>
   <div class="cprog"><div class="cprogb" id="cprogb"></div></div>
   <div id="cbody" style="padding:10px 10px 40px"></div>
+</div>
+
+<!-- HISTORY -->
+<div class="scr" id="sh2">
+  <div class="tbar">
+    <div class="tbar-bk" onclick="go('sh')">&#8592;</div>
+    <div><h1>Verlauf</h1><div class="tbar-sub">Bisherige Menuplaene</div></div>
+    <button onclick="syncHistory()" style="background:rgba(255,255,255,.2);border:none;border-radius:6px;padding:6px 10px;font-size:12px;color:#fff;cursor:pointer;font-family:inherit;margin-left:auto">&#x1F504; Sync</button>
+  </div>
+  <div id="hload" style="text-align:center;padding:40px 16px;display:none">
+    <div class="spin" style="width:22px;height:22px;margin:0 auto 10px;border-width:2px"></div>
+    <div style="font-size:13px;color:var(--gr3)">Lade Verlauf...</div>
+  </div>
+  <div id="hlist" style="padding:10px 10px 0"></div>
+  <div style="padding:10px">
+    <button class="btn btn-out" onclick="go('sh')" style="font-size:13px;padding:10px">Zurueck zur Startseite</button>
+  </div>
 </div>
 
 <!-- PRINT -->
@@ -970,7 +992,10 @@ function renderRez(sug) {
       (next ? '<div class="rnext">' + next + '</div>' : '') + '</div>' +
       '<div class="ract">' +
       '<button class="btn btn-red" onclick="startCook(' + i + ')">Jetzt kochen</button>' +
-      '<button class="btn btn-out" onclick="showPrint(' + i + ')">Als PDF</button>' +
+      '<div style="display:flex;gap:6px">' +
+      '<button class="btn btn-out" onclick="showPrint(' + i + ')" style="flex:1">Als PDF</button>' +
+      '<button class="btn btn-out" onclick="exportPDFToGH(' + i + ')" style="flex:1;font-size:12px">&#128190; GitHub</button>' +
+      '</div>' +
       '</div></div>';
   }
   $('rlist').innerHTML = html;
@@ -1191,6 +1216,40 @@ function startT(i) {
 function fmt(s) { return (Math.floor(s/60) < 10 ? '0' : '') + Math.floor(s/60) + ':' + (s%60 < 10 ? '0' : '') + (s%60); }
 
 // ─── PRINT ─────────────────────────────────────────────────
+function exportPDFToGH(ri) {
+  var tok = localStorage.getItem('ght');
+  if (!tok) { alert('Bitte zuerst GitHub Token einrichten'); return; }
+  var sug = G.sugs[G.sel];
+  var g = sug.gerichte[ri];
+  var date = new Date().toISOString().slice(0,10);
+  var filename = date + '_' + (sug.thema||'menuplan').replace(/[^a-zA-Z0-9]/g,'_') + '.html';
+
+  // Generate HTML content of recipe
+  showPrint(ri);
+  var html = '<html><head><meta charset="UTF-8"><title>' + g.abend + '</title>' +
+    '<style>body{font-family:sans-serif;padding:20px;max-width:800px}h1{color:#e8390e}h2{color:#2e7d32;margin-top:16px}table{width:100%;border-collapse:collapse}td{padding:6px;border-bottom:1px solid #eee}.tipp{background:#fffde7;padding:10px;border-left:3px solid #f9a825;margin-top:12px}</style></head><body>' +
+    document.getElementById('pcon').innerHTML + '</body></html>';
+
+  var url = 'https://api.github.com/repos/' + GH_REPO + '/contents/pdfs/' + filename;
+  var headers = { 'Authorization': 'token ' + tok, 'Content-Type': 'application/json', 'Accept': 'application/vnd.github.v3+json' };
+
+  // Check if exists
+  fetch(url, { headers: headers })
+    .then(function(r) { return r.ok ? r.json() : null; })
+    .then(function(existing) {
+      var body = { message: 'Rezept ' + g.abend, content: btoa(unescape(encodeURIComponent(html))) };
+      if (existing && existing.sha) body.sha = existing.sha;
+      return fetch(url, { method: 'PUT', headers: headers, body: JSON.stringify(body) });
+    })
+    .then(function(r) {
+      if (r && r.ok) {
+        var ghUrl = 'https://github.com/' + GH_REPO + '/blob/main/pdfs/' + filename;
+        alert('Rezept gespeichert: ' + ghUrl);
+      }
+    })
+    .catch(function(e) { console.warn('PDF save:', e); });
+}
+
 function showPrint(ri) {
   var sug = G.sugs[G.sel], g = sug.gerichte[ri], items = getItems(sug);
   var vRows = '', fRows = '', prepRows = '', frzRows = '', itRows = '';
@@ -1228,6 +1287,127 @@ function showPrint(ri) {
   go('sp');
 }
 
+// ─── HISTORY ───────────────────────────────────────────────
+var GH_HISTORY = 'history.json';
+
+function saveToHistory(planData) {
+  var tok = localStorage.getItem('ght');
+  if (!tok) return;
+  var entry = {
+    date: new Date().toISOString().slice(0, 10),
+    saved: new Date().toLocaleDateString('de-CH'),
+    thema: planData.sug ? planData.sug.thema : (planData.sugs && planData.sugs[planData.sel||0] ? planData.sugs[planData.sel||0].thema : 'Menuplan'),
+    personen: planData.personen || 2,
+    kochabende: planData.n || 3,
+    reste: planData.reste,
+    freeze: planData.freeze,
+    gerichte: planData.sug ? planData.sug.gerichte.map(function(g){return {tag:g.tag, abend:g.abend};}) : [],
+    plan: planData
+  };
+  var url = 'https://api.github.com/repos/' + GH_REPO + '/contents/' + GH_HISTORY;
+  var headers = { 'Authorization': 'token ' + tok, 'Content-Type': 'application/json', 'Accept': 'application/vnd.github.v3+json' };
+  // Load existing history first
+  fetch(url, { headers: headers })
+    .then(function(r) { return r.ok ? r.json() : null; })
+    .then(function(existing) {
+      var history = [];
+      var sha = '';
+      if (existing && existing.content) {
+      try { history = JSON.parse(atob(existing.content.split('\n').join(''))); } catch(e) { history = []; }
+        sha = existing.sha;
+      }
+      // Add new entry at beginning
+      history.unshift(entry);
+      // Keep last 52 entries (1 year)
+      if (history.length > 52) history = history.slice(0, 52);
+      var body = { message: 'Menuplan ' + entry.date, content: btoa(unescape(encodeURIComponent(JSON.stringify(history, null, 2)))) };
+      if (sha) body.sha = sha;
+      return fetch(url, { method: 'PUT', headers: headers, body: JSON.stringify(body) });
+    })
+    .then(function(r) { if (r && r.ok) console.log('History gespeichert'); })
+    .catch(function(e) { console.warn('History save:', e); });
+}
+
+function openHistory() {
+  go('sh2');
+  loadHistory();
+}
+
+function syncHistory() {
+  loadHistory();
+}
+
+function loadHistory() {
+  $('hload').style.display = 'block';
+  $('hlist').innerHTML = '';
+  var tok = localStorage.getItem('ght');
+  var url = 'https://raw.githubusercontent.com/' + GH_REPO + '/main/' + GH_HISTORY + '?t=' + Date.now();
+  fetch(url)
+    .then(function(r) { return r.ok ? r.json() : []; })
+    .then(function(history) {
+      $('hload').style.display = 'none';
+      if (!history || !history.length) {
+        $('hlist').innerHTML = '<div style="text-align:center;padding:40px;color:var(--gr3);font-size:13px">Noch keine gespeicherten Plaene.</div>';
+        return;
+      }
+      var html = '';
+      for (var i = 0; i < history.length; i++) {
+        var e = history[i];
+        var dishes = (e.gerichte||[]).map(function(g){ return '<span style="font-size:11px;color:var(--gr3)">' + g.tag.slice(0,2) + '</span> ' + g.abend; }).join('<br>');
+        html += '<div style="background:#fff;border-radius:var(--rlg);border:.5px solid var(--bdr);margin-bottom:8px;overflow:hidden">' +
+          '<div style="padding:10px 14px;border-bottom:.5px solid var(--gr)">' +
+            '<div style="display:flex;justify-content:space-between;align-items:center">' +
+              '<div style="font-size:15px;font-weight:700;color:var(--txt)">' + (e.thema||'Menuplan') + '</div>' +
+              '<div style="font-size:11px;color:var(--gr3)">' + (e.saved||e.date) + '</div>' +
+            '</div>' +
+            '<div style="font-size:11px;color:var(--gr3);margin-top:2px">' + (e.personen||2) + ' Personen · ' + (e.kochabende||3) + ' Abende' + (e.reste?' · Reste':'') + (e.freeze?' · Einfrieren':'') + '</div>' +
+          '</div>' +
+          '<div style="padding:8px 14px;font-size:13px;color:var(--txt2);line-height:1.8">' + dishes + '</div>' +
+          '<div style="padding:0 14px 10px;display:flex;gap:6px">' +
+            '<button class="btn btn-red" onclick="loadHistoryEntry(' + i + ')" style="flex:1;padding:9px;font-size:12px">Plan laden</button>' +
+            (e.pdfUrl ? '<a href="' + e.pdfUrl + '" target="_blank" class="btn btn-out" style="flex:1;padding:9px;font-size:12px;text-decoration:none;display:flex;align-items:center;justify-content:center">PDF</a>' : '') +
+          '</div>' +
+        '</div>';
+      }
+      $('hlist').innerHTML = html;
+      // Store for loadHistoryEntry
+      window._history = history;
+    })
+    .catch(function() {
+      $('hload').style.display = 'none';
+      $('hlist').innerHTML = '<div style="text-align:center;padding:40px;color:var(--gr3);font-size:13px">Verlauf nicht verfuegbar.<br>Bitte GitHub Token einrichten.</div>';
+    });
+}
+
+function loadHistoryEntry(i) {
+  var e = window._history[i];
+  if (!e || !e.plan) return;
+  var plan = e.plan;
+  G.activePlan = plan;
+  localStorage.setItem('active_plan', JSON.stringify(plan));
+  if (plan.sugs) {
+    G.sugs = plan.sugs;
+    G.sel = plan.sel || 0;
+    G.n = plan.n || 3;
+    G.personen = plan.personen || 2;
+    G.reste = plan.reste !== undefined ? plan.reste : 1;
+    G.freeze = plan.freeze !== undefined ? plan.freeze : 1;
+    G.sugsPartial = plan.sugsPartial || false;
+    renderActivePlan();
+    goWeekRender(G.sugs[G.sel]);
+  } else if (plan.sug) {
+    G.sugs = [plan.sug];
+    G.sel = 0;
+    G.n = plan.n || 3;
+    G.personen = plan.personen || 2;
+    G.reste = plan.reste !== undefined ? plan.reste : 1;
+    G.freeze = plan.freeze !== undefined ? plan.freeze : 1;
+    G.sugsPartial = false;
+    renderActivePlan();
+    goWeekRender(plan.sug);
+  }
+}
+
 // ─── TEST DATA ─────────────────────────────────────────────
 // ─── ACTIVE PLAN ───────────────────────────────────────────
 function setActivePlanAndGo() {
@@ -1245,8 +1425,9 @@ function setActivePlanAndGo() {
   };
   G.activePlan = planData;
   localStorage.setItem('active_plan', JSON.stringify(planData));
-  // Also save to GH
+  // Save to GH (active plan + history)
   saveToGH(planData);
+  saveToHistory(planData);
   // Also save full week for recovery
   var weekData = { sugs: G.sugs, n: G.n, personen: G.personen, reste: G.reste, freeze: G.freeze, saved: new Date().toLocaleDateString('de-CH') };
   localStorage.setItem('sw', JSON.stringify(weekData));
