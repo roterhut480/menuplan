@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
-<title>Menuplan v2.0</title>
+<title>Menuplan v2.1</title>
 <style>
 :root{
   --red:#e8390e;--rl:#fff2ef;--grn:#2e7d32;--grl:#f0faf4;
@@ -145,7 +145,7 @@ input[type=password]{letter-spacing:2px}
 
 <!-- HOME -->
 <div class="scr on" id="sh">
-  <div class="hero"><h1>Menuplan</h1><p id="hsub">v2.0 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
+  <div class="hero"><h1>Menuplan</h1><p id="hsub">v2.1 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
 
   <!-- Active plan card -->
   <div id="active-plan" style="display:none;margin:10px 10px 0">
@@ -733,7 +733,7 @@ function callClaude(sys, msg, maxTokens) {
   return fetch(PROXY + '/anthropic', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ model: 'claude-sonnet-4-20250514', max_tokens: maxTokens, system: sys, messages: [{ role: 'user', content: msg }] })
+    body: JSON.stringify({ model: 'claude-sonnet-4-5', max_tokens: maxTokens, system: sys, messages: [{ role: 'user', content: msg }] })
   })
   .then(function(r) { return r.json(); })
   .then(function(d) {
