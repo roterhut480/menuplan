@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
-<title>Menuplan v2.5</title>
+<title>Menuplan v2.6</title>
 <style>
 :root{
   --red:#e8390e;--rl:#fff2ef;--grn:#2e7d32;--grl:#f0faf4;
@@ -145,7 +145,7 @@ input[type=password]{letter-spacing:2px}
 
 <!-- HOME -->
 <div class="scr on" id="sh">
-  <div class="hero"><h1>Menuplan</h1><p id="hsub">v2.5 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
+  <div class="hero"><h1>Menuplan</h1><p id="hsub">v2.6 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
 
   <!-- Active plan card -->
   <div id="active-plan" style="display:none;margin:10px 10px 0">
@@ -855,7 +855,7 @@ function goWeek() {
   }
 
   // Load full recipe for selected suggestion
-  var btn = document.querySelector('#scta .btn-red');
+  var btn = $('set-plan-btn');
   if (btn) { btn.innerHTML = '<span class="spin w"></span> Rezepte laden...'; btn.disabled = true; }
 
   var p = G.personen || 2;
@@ -889,7 +889,8 @@ function goWeek() {
     goWeekRender(sug);
   })
   .catch(function(e) {
-    if (btn) { btn.innerHTML = 'Diese Woche planen'; btn.disabled = false; }
+    var btn2 = $('set-plan-btn');
+    if (btn2) { btn2.innerHTML = 'Als aktiven Plan setzen'; btn2.disabled = false; }
     var el = $('serr');
     el.className = 'st er';
     el.textContent = 'Fehler beim Laden der Rezepte: ' + e.message;
@@ -897,9 +898,12 @@ function goWeek() {
 }
 
 function goWeekRender(sug) {
-  $('wtit').textContent = sug.thema;
-  $('wsub').textContent = sug.kochabende ? sug.kochabende.join(' - ') : '';
-  if (G.bToken && G.bLists.length) { $('blistwrap').style.display = 'block'; $('bfields').style.display = 'none'; }
+  if ($('wtit')) $('wtit').textContent = sug.thema;
+  if ($('wsub')) $('wsub').textContent = sug.kochabende ? sug.kochabende.join(' - ') : '';
+  if (G.bToken && G.bLists.length) {
+    if ($('blistwrap')) $('blistwrap').style.display = 'block';
+    if ($('bfields')) $('bfields').style.display = 'none';
+  }
   renderEink(sug);
   renderRez(sug);
   wtab('e');
