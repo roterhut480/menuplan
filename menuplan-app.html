@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
-<title>Menuplan v2.9</title>
+<title>Menuplan v3.0</title>
 <style>
 :root{
   --red:#e8390e;--rl:#fff2ef;--grn:#2e7d32;--grl:#f0faf4;
@@ -145,7 +145,7 @@ input[type=password]{letter-spacing:2px}
 
 <!-- HOME -->
 <div class="scr on" id="sh">
-  <div class="hero"><h1>Menuplan</h1><p id="hsub">v2.9 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
+  <div class="hero"><h1>Menuplan</h1><p id="hsub">v3.0 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
 
   <!-- Active plan card -->
   <div id="active-plan" style="display:none;margin:10px 10px 0">
@@ -772,9 +772,11 @@ function buildSYS_full(sug) {
 }
 
 function parseJSON(raw) {
+  // Strip markdown code blocks if present
+  var cleaned = raw.replace(/^```[a-z]*\n?/,'').replace(/\n?```$/,'').trim();
   // Extract JSON block
-  var m = raw.match(/\{[\s\S]*\}/);
-  var jsonStr = m ? m[0] : raw;
+  var m = cleaned.match(/\{[\s\S]*\}/);
+  var jsonStr = m ? m[0] : cleaned;
 
   // Try parsing as-is
   try { return JSON.parse(jsonStr); } catch(e1) {}
@@ -891,61 +893,48 @@ function selSug(i) {
 function goWeek() {
   if (G.sel === null) return;
   var sug = G.sugs[G.sel];
-
-  // If steps already loaded (second click or test data), go directly
-  if (!G.sugsPartial || (sug.gerichte[0] && sug.gerichte[0].schritte_vegi && sug.gerichte[0].schritte_vegi.length > 0)) {
+  // Steps already loaded - go directly
+  if (sug.gerichte[0] && sug.gerichte[0].schritte_vegi && sug.gerichte[0].schritte_vegi.length > 0) {
     goWeekRender(sug); return;
   }
-
-  // Show loading state - go to week screen first so user sees something
+  // Need to load full recipes
   go('sw');
   if ($('wtit')) $('wtit').textContent = sug.thema;
   if ($('wsub')) $('wsub').textContent = 'Rezepte werden geladen...';
-  if ($('rlist')) $('rlist').innerHTML = '<div style="text-align:center;padding:40px"><div class="spin" style="width:22px;height:22px;margin:0 auto 10px;border-width:2px"></div><div style="font-size:13px;color:var(--gr3)">Vollstaendige Rezepte laden...</div></div>';
+  if ($('rlist')) $('rlist').innerHTML = '<div style="text-align:center;padding:40px"><div class="spin" style="width:22px;height:22px;margin:0 auto 10px;border-width:2px"></div><div style="font-size:13px;color:var(--gr3)">Kochschritte laden...</div></div>';
   wtab('r');
-
-  var btn = $('set-plan-btn');
-  if (btn) { btn.innerHTML = '<span class="spin w"></span> Rezepte laden...'; btn.disabled = true; }
 
   var p = G.personen || 2;
   var portTotal = p + (G.reste ? p : 0) + (G.freeze ? 2 : 0);
-  var msg = 'Generiere vollstaendige Kochschritte fuer folgende Gerichte mit allen Zutatenmengen fuer ' + portTotal + ' Portionen: ' +
-    sug.gerichte.map(function(g) { return g.tag + ' - ' + g.abend + ' (Zutaten: ' + (g.zutaten||[]).map(function(z){return z.name+' '+z.menge;}).join(', ') + ')'; }).join(' | ');
+  var dishList = sug.gerichte.map(function(g) {
+    var z = (g.zutaten||[]).map(function(z){ return z.name + ' ' + z.menge; }).join(', ');
+    return g.tag + ': ' + g.abend + ' (' + z + ')';
+  }).join(' | ');
 
-  callClaude(buildSYS_full(sug), msg, 4000)
+  var sys = buildSYS_full(sug);
+  var msg = 'Vollstaendige Kochschritte fuer: ' + dishList + '. Fuer ' + portTotal + ' Portionen.';
+
+  callClaude(sys, msg, 5000)
   .then(function(raw) {
     var parsed = parseJSON(raw);
-    var fullGerichte = parsed.gerichte || [];
-    // Merge steps into existing suggestions
-    for (var i = 0; i < fullGerichte.length && i < sug.gerichte.length; i++) {
-      sug.gerichte[i].schritte_vegi   = fullGerichte[i].schritte_vegi   || [];
-      sug.gerichte[i].schritte_fleisch= fullGerichte[i].schritte_fleisch || [];
-      sug.gerichte[i].prep_next       = fullGerichte[i].prep_next        || [];
-      sug.gerichte[i].einfrieren      = fullGerichte[i].einfrieren       || [];
-      if (fullGerichte[i].tipp) sug.gerichte[i].tipp = fullGerichte[i].tipp;
-      if (fullGerichte[i].mittag_naechster_tag) sug.gerichte[i].mittag_naechster_tag = fullGerichte[i].mittag_naechster_tag;
-      if (fullGerichte[i].mittag_tag) sug.gerichte[i].mittag_tag = fullGerichte[i].mittag_tag;
+    var fg = parsed.gerichte || [];
+    for (var i = 0; i < fg.length && i < sug.gerichte.length; i++) {
+      if (fg[i].schritte_vegi)    sug.gerichte[i].schritte_vegi    = fg[i].schritte_vegi;
+      if (fg[i].schritte_fleisch) sug.gerichte[i].schritte_fleisch = fg[i].schritte_fleisch;
+      if (fg[i].prep_next)        sug.gerichte[i].prep_next        = fg[i].prep_next;
+      if (fg[i].einfrieren)       sug.gerichte[i].einfrieren       = fg[i].einfrieren;
+      if (fg[i].mittag_naechster_tag) sug.gerichte[i].mittag_naechster_tag = fg[i].mittag_naechster_tag;
+      if (fg[i].mittag_tag)       sug.gerichte[i].mittag_tag       = fg[i].mittag_tag;
     }
     G.sugsPartial = false;
-    // Save complete week
-    var weekData = { sugs: G.sugs, n: G.n, personen: G.personen, reste: G.reste, freeze: G.freeze, saved: new Date().toLocaleDateString('de-CH') };
-    localStorage.setItem('sw', JSON.stringify(weekData));
-    G.savedWeek = weekData;
-    $('swbanner').style.display = 'block';
-    $('swdate').textContent = weekData.saved;
-    saveToGH(weekData);
-    if (btn) { btn.innerHTML = 'Diese Woche planen'; btn.disabled = false; }
     goWeekRender(sug);
   })
   .catch(function(e) {
-    var btn2 = $('set-plan-btn');
-    if (btn2) { btn2.innerHTML = 'Als aktiven Plan setzen'; btn2.disabled = false; }
-    if ($('rlist')) $('rlist').innerHTML = '<div style="padding:20px;color:var(--red);font-size:13px">Fehler beim Laden der Rezepte. Bitte nochmals versuchen.</div>';
-    var el = $('serr');
-    el.className = 'st er';
-    el.textContent = 'Fehler beim Laden der Rezepte: ' + e.message;
+    if ($('rlist')) $('rlist').innerHTML = '<div style="padding:14px;color:var(--red);font-size:13px">Fehler: ' + e.message + '<br><br><button class="btn btn-out" onclick="goWeek()" style="font-size:13px;padding:10px">Nochmals versuchen</button></div>';
+    if ($('wsub')) $('wsub').textContent = sug.thema;
   });
 }
+
 
 function goWeekRender(sug) {
   if ($('wtit')) $('wtit').textContent = sug.thema;
