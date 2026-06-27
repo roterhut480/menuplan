@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
-<title>Menuplan v2.8</title>
+<title>Menuplan v2.9</title>
 <style>
 :root{
   --red:#e8390e;--rl:#fff2ef;--grn:#2e7d32;--grl:#f0faf4;
@@ -145,7 +145,7 @@ input[type=password]{letter-spacing:2px}
 
 <!-- HOME -->
 <div class="scr on" id="sh">
-  <div class="hero"><h1>Menuplan</h1><p id="hsub">v2.8 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
+  <div class="hero"><h1>Menuplan</h1><p id="hsub">v2.9 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
 
   <!-- Active plan card -->
   <div id="active-plan" style="display:none;margin:10px 10px 0">
@@ -897,7 +897,13 @@ function goWeek() {
     goWeekRender(sug); return;
   }
 
-  // Load full recipe for selected suggestion
+  // Show loading state - go to week screen first so user sees something
+  go('sw');
+  if ($('wtit')) $('wtit').textContent = sug.thema;
+  if ($('wsub')) $('wsub').textContent = 'Rezepte werden geladen...';
+  if ($('rlist')) $('rlist').innerHTML = '<div style="text-align:center;padding:40px"><div class="spin" style="width:22px;height:22px;margin:0 auto 10px;border-width:2px"></div><div style="font-size:13px;color:var(--gr3)">Vollstaendige Rezepte laden...</div></div>';
+  wtab('r');
+
   var btn = $('set-plan-btn');
   if (btn) { btn.innerHTML = '<span class="spin w"></span> Rezepte laden...'; btn.disabled = true; }
 
@@ -934,6 +940,7 @@ function goWeek() {
   .catch(function(e) {
     var btn2 = $('set-plan-btn');
     if (btn2) { btn2.innerHTML = 'Als aktiven Plan setzen'; btn2.disabled = false; }
+    if ($('rlist')) $('rlist').innerHTML = '<div style="padding:20px;color:var(--red);font-size:13px">Fehler beim Laden der Rezepte. Bitte nochmals versuchen.</div>';
     var el = $('serr');
     el.className = 'st er';
     el.textContent = 'Fehler beim Laden der Rezepte: ' + e.message;
