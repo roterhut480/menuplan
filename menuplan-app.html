@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
-<title>Menuplan v2.7</title>
+<title>Menuplan v2.8</title>
 <style>
 :root{
   --red:#e8390e;--rl:#fff2ef;--grn:#2e7d32;--grl:#f0faf4;
@@ -145,7 +145,7 @@ input[type=password]{letter-spacing:2px}
 
 <!-- HOME -->
 <div class="scr on" id="sh">
-  <div class="hero"><h1>Menuplan</h1><p id="hsub">v2.7 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
+  <div class="hero"><h1>Menuplan</h1><p id="hsub">v2.8 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
 
   <!-- Active plan card -->
   <div id="active-plan" style="display:none;margin:10px 10px 0">
@@ -668,9 +668,22 @@ function doImportItems() {
         return fetch(BAPI + '/v2/bringlists/' + listUuid + '/items', {
           method: 'PUT', headers: hJson,
           body: JSON.stringify({ changes: removes, sender: '' })
-        }).then(function() { return sl(300); });
+        }).then(function(r) {
+          if (r && r.status === 401) throw new Error('SESSION_EXPIRED');
+          return sl(300);
+        });
       })
-      .catch(function() {});
+      .catch(function(e) {
+        if (e.message === 'SESSION_EXPIRED') {
+          G.bToken = null; G.bUUID = null; localStorage.removeItem('bs');
+          if ($('bfields')) $('bfields').style.display = 'block';
+          if ($('blistwrap')) $('blistwrap').style.display = 'none';
+          var btn2 = $('ibtn');
+          if (btn2) { btn2.innerHTML = 'In Bring! importieren'; btn2.disabled = false; }
+          showSt('ist', 'Bring! Session abgelaufen - bitte erneut anmelden.', 'er');
+          throw e;
+        }
+      });
   }
 
   // Add items
@@ -693,6 +706,14 @@ function doImportItems() {
       showSt('ist', items.length + ' Artikel in Bring! importiert!', 'ok');
       btn.innerHTML = 'Importiert';
       markEinkaufDone();
+    } else if (r && r.status === 401) {
+      // Session abgelaufen - neu einloggen
+      G.bToken = null; G.bUUID = null;
+      localStorage.removeItem('bs');
+      if ($('bfields')) $('bfields').style.display = 'block';
+      if ($('blistwrap')) $('blistwrap').style.display = 'none';
+      btn.innerHTML = 'In Bring! importieren'; btn.disabled = false;
+      showSt('ist', 'Bring! Session abgelaufen - bitte erneut anmelden.', 'er');
     } else {
       showSt('ist', 'Import fehlgeschlagen - Status ' + (r ? r.status : '?'), 'er');
       btn.innerHTML = 'Nochmals versuchen'; btn.disabled = false;
