@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
-<title>Menuplan v3.3</title>
+<title>Menuplan v3.5</title>
 <style>
 :root{
   --red:#e8390e;--rl:#fff2ef;--grn:#2e7d32;--grl:#f0faf4;
@@ -145,7 +145,7 @@ input[type=password]{letter-spacing:2px}
 
 <!-- HOME -->
 <div class="scr on" id="sh">
-  <div class="hero"><h1>Menuplan</h1><p id="hsub">v3.3 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
+  <div class="hero"><h1>Menuplan</h1><p id="hsub">v3.5 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
 
   <!-- Active plan card -->
   <div id="active-plan" style="display:none;margin:10px 10px 0">
@@ -744,7 +744,17 @@ function buildSYS_overview() {
     (G.freeze ? 'Einfrieren: nur Saucen/Eintoepfe ohne Beilage. ' : '') +
     'Regeln: 1 Fleischsorte/Woche. Ganze Packungen. Max 1 Kraeuterbund wenn in 2+ Gerichten. ' +
     'Avocado nur frueh (Mo/Di). Frisches Fleisch/Spinat frueh. Keine 2 schweren KH. ' +
-    'Kueche variieren (nicht immer mediterran). Zutaten ueberschneiden. Mengen korrekt fuer ' + portTotal + ' Portionen. ' +
+    'TK-REGEL (sehr wichtig): Zutaten die in 2+ Gerichten benoetigt werden und nicht ganze Woche halten -> TK-Version angeben. ' +
+    'Spinat in 2+ Gerichten = TK-Spinat. Erbsen = TK-Erbsen. Mais = Dose. Bohnen = Dose. ' +
+    'Frischer Spinat NUR wenn einmaliges Gericht am Mo/Di. Sonst immer TK. ' +
+    'Kueche variieren (nicht immer mediterran). Mengen korrekt fuer ' + portTotal + ' Portionen. ' +
+    'ZUTATEN-UEBERSCHNEIDUNG (Kernziel fuer guenstigen Einkauf): ' +
+    'Plane die ' + G.n + ' Kochabende so, dass mindestens 3-4 Grundzutaten in mehreren Gerichten vorkommen. ' +
+    'Beispiele guter Ueberschneidung: Kichererbsen Mo im Curry + Mi im Salat. Feta Mo im Salat + Fr auf Pizza. ' +
+    'Kokosmilch Mi im Curry + Fr in der Suppe. Tomaten passiert Mo in Sauce + Mi in Eintopf. ' +
+    'Zucchini Mo gebraten + Mi gefuellt. Linsen Mo als Dal + Mi in Suppe. ' +
+    'Schlechte Planung (vermeiden): jedes Gericht hat voellig andere Zutaten -> teurer Einkauf, Reste vergammeln. ' +
+    'Wocheneinkauf soll mit 15-20 Zutaten auskommen, nicht 30+. ' +
     'KURZ: max 8 Zutaten pro Gericht, keine langen Erklaerungen. ' +
     'Format exakt: ' + json;
 }
@@ -768,6 +778,8 @@ function buildSYS_full(sug) {
     (G.freeze ? '+2 Einfrierportionen mitkochen.' : 'Keine Einfrierportionen.') + ' ' +
     'WICHTIG: Das Zutaten-Array (zutaten) muss EXAKT die Zutaten enthalten die im Rezept verwendet werden - nicht mehr, nicht weniger. ' +
     'Keine Zutaten in der Liste die nicht explizit in einem Kochschritt vorkommen. ' +
+    'Haltbarkeit beachten: wenn Spinat, Erbsen, Mais oder Beeren in Zutaten - TK-Version bevorzugen wenn das Gericht nicht am ersten Kochtag (Mo) stattfindet. ' +
+    'Frischer Spinat nur bei Mo-Gerichten, sonst TK-Spinat angeben. ' +
     'Jeden Schritt mit Kontext beginnen wohin Zutaten kommen. ' +
     'timer_min NUR bei aktivem Warten (kochen/braten/backen), sonst 0. ' +
     'Format: ' + json;
