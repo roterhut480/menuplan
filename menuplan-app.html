@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
-<title>Menuplan v3.5</title>
+<title>Menuplan v3.8</title>
 <style>
 :root{
   --red:#e8390e;--rl:#fff2ef;--grn:#2e7d32;--grl:#f0faf4;
@@ -145,7 +145,7 @@ input[type=password]{letter-spacing:2px}
 
 <!-- HOME -->
 <div class="scr on" id="sh">
-  <div class="hero"><h1>Menuplan</h1><p id="hsub">v3.5 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
+  <div class="hero"><h1>Menuplan</h1><p id="hsub">v3.8 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
 
   <!-- Active plan card -->
   <div id="active-plan" style="display:none;margin:10px 10px 0">
@@ -190,6 +190,7 @@ input[type=password]{letter-spacing:2px}
   <!-- History button -->
   <div style="padding:10px 10px 0;display:flex;gap:8px">
     <button class="btn btn-out" onclick="openHistory()" style="flex:1;font-size:13px;padding:10px">&#128218; Verlauf</button>
+    <button class="btn btn-out" onclick="openFotoScreen()" style="flex:1;font-size:13px;padding:10px">&#128247; Foto-Rezept</button>
   </div>
 
   <!-- GitHub Sync -->
@@ -330,6 +331,64 @@ input[type=password]{letter-spacing:2px}
   </div>
   <div class="cprog"><div class="cprogb" id="cprogb"></div></div>
   <div id="cbody" style="padding:10px 10px 40px"></div>
+</div>
+
+<!-- FOTO REZEPT -->
+<div class="scr" id="sf">
+  <div class="tbar">
+    <div class="tbar-bk" onclick="go('sh')">&#8592;</div>
+    <div><h1>Foto-Rezept</h1><div class="tbar-sub">Rezept aus Foto ableiten</div></div>
+  </div>
+
+  <div class="card"><div class="cp">
+    <div class="clbl">Foto hochladen</div>
+    <div id="foto-upload-area" onclick="$('foto-input').click()"
+      style="border:2px dashed var(--bdr);border-radius:var(--r);padding:32px 16px;text-align:center;cursor:pointer;transition:border-color .2s;margin-bottom:10px"
+      ondragover="event.preventDefault();this.style.borderColor='var(--red)'"
+      ondragleave="this.style.borderColor='var(--bdr)'"
+      ondrop="event.preventDefault();this.style.borderColor='var(--bdr)';handleFotoFile(event.dataTransfer.files[0])">
+      <div style="font-size:36px;margin-bottom:8px">&#128247;</div>
+      <div style="font-size:14px;font-weight:600;color:var(--txt)">Foto antippen oder reinziehen</div>
+      <div style="font-size:12px;color:var(--gr3);margin-top:4px">Rezept, Menukarte, Kochbuch-Seite...</div>
+    </div>
+    <input type="file" id="foto-input" accept="image/*" style="display:none" onchange="handleFotoFile(this.files[0])">
+
+    <div id="foto-preview" style="display:none;margin-bottom:10px;text-align:center">
+      <img id="foto-img" style="max-width:100%;max-height:200px;border-radius:var(--r);border:.5px solid var(--bdr)">
+      <div style="margin-top:8px">
+        <button class="btn btn-out" onclick="clearFoto()" style="width:auto;padding:8px 16px;font-size:12px">&#x2715; Anderes Foto</button>
+      </div>
+    </div>
+
+    <div class="fld" style="margin-top:4px">
+      <label>Portionen</label>
+      <div class="chips" id="foto-pchips">
+        <button class="chip" onclick="setFotoP(1)">1</button>
+        <button class="chip on" onclick="setFotoP(2)">2</button>
+        <button class="chip" onclick="setFotoP(3)">3</button>
+        <button class="chip" onclick="setFotoP(4)">4</button>
+      </div>
+    </div>
+    <div class="fld" style="margin-top:8px">
+      <label>Hinweis (optional)</label>
+      <input id="foto-hint" placeholder="z.B. vegetarisch, ohne Nuesse, fuer 2 Personen...">
+    </div>
+
+    <button class="btn btn-red" id="foto-btn" onclick="analyzeFoto()" disabled style="margin-top:4px">Rezept ableiten</button>
+  </div></div>
+
+  <!-- Saved foto recipes -->
+  <div id="foto-saved-section" style="display:none;margin:10px 10px 0">
+    <div style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--gr3);margin-bottom:8px;padding:0 4px">Gespeicherte Rezepte</div>
+    <div id="foto-saved-list"></div>
+  </div>
+
+  <div id="foto-load" style="display:none;text-align:center;padding:32px">
+    <div class="spin" style="width:26px;height:26px;margin:0 auto 12px;border-width:2.5px"></div>
+    <div style="font-size:13px;color:var(--gr3)">Claude analysiert das Foto...</div>
+  </div>
+  <div id="foto-err" style="display:none" class="st er"></div>
+  <div id="foto-result" style="display:none"></div>
 </div>
 
 <!-- HISTORY -->
@@ -896,12 +955,25 @@ function goSuggest() {
     if (good.length) ratingsHint += ' Aehnliches wie diese gut bewerteten Gerichte: ' + good.join(', ') + '.';
     if (bad.length)  ratingsHint += ' Diese Gerichte vermeiden: ' + bad.join(', ') + '.';
   } catch(e) {}
+  // Add recent dishes to avoid repetition
+  var recentHint = '';
+  try {
+    var lh = JSON.parse(localStorage.getItem('local_history') || '[]');
+    var recentDishes = [];
+    for (var hi = 0; hi < Math.min(lh.length, 4); hi++) {
+      var ge = lh[hi].gerichte || [];
+      for (var gi = 0; gi < ge.length; gi++) recentDishes.push(ge[gi].abend);
+    }
+    if (recentDishes.length > 0) {
+      recentHint = ' WICHTIG - Diese Gerichte wurden kuerzlich gekocht und sollen NICHT wiederholt werden: ' + recentDishes.join(', ') + '. Voellig andere Gerichte vorschlagen.';
+    }
+  } catch(e) {}
   var msg = 'Generiere genau 3 Menuvorschlaege mit je ' + G.n + ' Kochabenden fuer ' + p + ' Personen (' + portTotal + ' Portionen). ' +
     resteInfo + '. ' + freezeInfo + '.' +
     (theme ? ' Thema: ' + theme + '.' : '') +
     (exist ? ' Vorhanden: ' + exist + '.' : '') +
     (feedback ? ' Vorherige abgelehnt weil: ' + feedback + '. Andere Gerichte vorschlagen.' : '') +
-    ratingsHint +
+    ratingsHint + recentHint +
     ' Zutaten-Ueberschneidung maximieren. Guenstige Zutaten bevorzugen.';
 
   callClaude(buildSYS_overview(), msg, 6000)
@@ -1383,7 +1455,6 @@ var GH_HISTORY = 'history.json';
 
 function saveToHistory(planData) {
   var tok = localStorage.getItem('ght');
-  if (!tok) return;
   var entry = {
     date: new Date().toISOString().slice(0, 10),
     saved: new Date().toLocaleDateString('de-CH'),
@@ -1419,6 +1490,50 @@ function saveToHistory(planData) {
     .catch(function(e) { console.warn('History save:', e); });
 }
 
+function openFotoScreen() {
+  go('sf');
+  loadSavedFotoRezepte();
+}
+
+function loadSavedFotoRezepte() {
+  var saved = JSON.parse(localStorage.getItem('foto_rezepte') || '[]');
+  var sec = $('foto-saved-section');
+  if (!saved.length) { sec.style.display = 'none'; return; }
+  sec.style.display = 'block';
+  var html = saved.map(function(r, i) {
+    return '<div style="background:#fff;border-radius:var(--r);border:.5px solid var(--bdr);padding:10px 14px;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between;gap:8px">' +
+      '<div style="flex:1;min-width:0">' +
+        '<div style="font-size:14px;font-weight:600;color:var(--txt);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + r.name + '</div>' +
+        '<div style="font-size:11px;color:var(--gr3);margin-top:2px">' + r.saved + ' · ' + r.portionen + ' Personen' + (r.zeit_total ? ' · ' + r.zeit_total : '') + '</div>' +
+      '</div>' +
+      '<div style="display:flex;gap:6px;flex-shrink:0">' +
+        '<button onclick="loadSavedFotoRezeptDetail(' + i + ')" class="btn btn-out" style="width:auto;padding:7px 12px;font-size:12px">Oeffnen</button>' +
+        '<button onclick="deleteSavedFotoRezept(' + i + ')" style="background:none;border:none;color:var(--gr3);font-size:18px;cursor:pointer;padding:0 4px">&#x2715;</button>' +
+      '</div>' +
+    '</div>';
+  }).join('');
+  $('foto-saved-list').innerHTML = html;
+  window._savedFotoRezepte = saved;
+}
+
+function loadSavedFotoRezeptDetail(i) {
+  var r = window._savedFotoRezepte[i];
+  if (!r) return;
+  window._fotoRezept = r;
+  G_foto.portionen = r.portionen || 2;
+  $('foto-result').style.display = 'none';
+  renderFotoRezept(r);
+  // Scroll to result
+  setTimeout(function(){ $('foto-result').scrollIntoView({behavior:'smooth'}); }, 100);
+}
+
+function deleteSavedFotoRezept(i) {
+  var saved = JSON.parse(localStorage.getItem('foto_rezepte') || '[]');
+  saved.splice(i, 1);
+  localStorage.setItem('foto_rezepte', JSON.stringify(saved));
+  loadSavedFotoRezepte();
+}
+
 function openHistory() {
   go('sh2');
   loadHistory();
@@ -1441,33 +1556,47 @@ function loadHistory() {
         $('hlist').innerHTML = '<div style="text-align:center;padding:40px;color:var(--gr3);font-size:13px">Noch keine gespeicherten Plaene.</div>';
         return;
       }
-      var html = '';
-      for (var i = 0; i < history.length; i++) {
-        var e = history[i];
-        var dishes = (e.gerichte||[]).map(function(g){ return '<span style="font-size:11px;color:var(--gr3)">' + g.tag.slice(0,2) + '</span> ' + g.abend; }).join('<br>');
-        html += '<div style="background:#fff;border-radius:var(--rlg);border:.5px solid var(--bdr);margin-bottom:8px;overflow:hidden">' +
-          '<div style="padding:10px 14px;border-bottom:.5px solid var(--gr)">' +
-            '<div style="display:flex;justify-content:space-between;align-items:center">' +
-              '<div style="font-size:15px;font-weight:700;color:var(--txt)">' + (e.thema||'Menuplan') + '</div>' +
-              '<div style="font-size:11px;color:var(--gr3)">' + (e.saved||e.date) + '</div>' +
-            '</div>' +
-            '<div style="font-size:11px;color:var(--gr3);margin-top:2px">' + (e.personen||2) + ' Personen · ' + (e.kochabende||3) + ' Abende' + (e.reste?' · Reste':'') + (e.freeze?' · Einfrieren':'') + '</div>' +
-          '</div>' +
-          '<div style="padding:8px 14px;font-size:13px;color:var(--txt2);line-height:1.8">' + dishes + '</div>' +
-          '<div style="padding:0 14px 10px;display:flex;gap:6px">' +
-            '<button class="btn btn-red" onclick="loadHistoryEntry(' + i + ')" style="flex:1;padding:9px;font-size:12px">Plan laden</button>' +
-            (e.pdfUrl ? '<a href="' + e.pdfUrl + '" target="_blank" class="btn btn-out" style="flex:1;padding:9px;font-size:12px;text-decoration:none;display:flex;align-items:center;justify-content:center">PDF</a>' : '') +
-          '</div>' +
-        '</div>';
-      }
-      $('hlist').innerHTML = html;
-      // Store for loadHistoryEntry
-      window._history = history;
+      renderHistoryList(history);
     })
     .catch(function() {
+      // Fallback to localStorage
+      var localHist = JSON.parse(localStorage.getItem('local_history') || '[]');
       $('hload').style.display = 'none';
-      $('hlist').innerHTML = '<div style="text-align:center;padding:40px;color:var(--gr3);font-size:13px">Verlauf nicht verfuegbar.<br>Bitte GitHub Token einrichten.</div>';
+      if (localHist.length) {
+        renderHistoryList(localHist);
+      } else {
+        $('hlist').innerHTML = '<div style="text-align:center;padding:40px;color:var(--gr3);font-size:13px">Noch keine gespeicherten Plaene.<br><small>Tipp: GitHub Token einrichten fuer geraeteuebergreifenden Zugriff.</small></div>';
+      }
     });
+}
+
+function renderHistoryList(history) {
+  var html = '';
+  for (var i = 0; i < history.length; i++) {
+    var e = history[i];
+    var dishes = (e.gerichte||[]).map(function(g){
+      return '<span style="font-size:11px;color:var(--gr3)">' + (g.tag||'').slice(0,2) + '</span> ' + (g.abend||'');
+    }).join('<br>');
+    var stars = e.stars ? ' · ' + '★'.repeat(e.stars) : '';
+    html += '<div style="background:#fff;border-radius:var(--rlg);border:.5px solid var(--bdr);margin-bottom:8px;overflow:hidden">' +
+      '<div style="padding:10px 14px;border-bottom:.5px solid var(--gr)">' +
+        '<div style="display:flex;justify-content:space-between;align-items:center">' +
+          '<div style="font-size:15px;font-weight:700;color:var(--txt)">' + (e.thema||'Menuplan') + '</div>' +
+          '<div style="font-size:11px;color:var(--gr3)">' + (e.saved||e.date||'') + '</div>' +
+        '</div>' +
+        '<div style="font-size:11px;color:var(--gr3);margin-top:2px">' +
+          (e.personen||2) + ' Personen · ' + (e.kochabende||3) + ' Abende' +
+          (e.reste ? ' · Reste' : '') + (e.freeze ? ' · Einfrieren' : '') + stars +
+        '</div>' +
+      '</div>' +
+      '<div style="padding:8px 14px;font-size:13px;color:var(--txt2);line-height:1.8">' + dishes + '</div>' +
+      '<div style="padding:0 14px 10px">' +
+        '<button class="btn btn-out" onclick="loadHistoryEntry(' + i + ')" style="padding:9px;font-size:12px">Plan laden</button>' +
+      '</div>' +
+    '</div>';
+  }
+  $('hlist').innerHTML = html || '<div style="text-align:center;padding:40px;color:var(--gr3);font-size:13px">Noch keine gespeicherten Plaene.</div>';
+  window._history = history;
 }
 
 function loadHistoryEntry(i) {
@@ -1593,6 +1722,219 @@ function saveRatingToGH(entry) {
     })
     .then(function(r) { if (r && r.ok) console.log('Bewertung auf GitHub gespeichert'); })
     .catch(function(e) { console.warn('Rating save:', e); });
+}
+
+// ─── FOTO REZEPT ───────────────────────────────────────────
+var G_foto = { base64: null, mime: null, portionen: 2 };
+
+function setFotoP(n) {
+  G_foto.portionen = n;
+  var chips = $('foto-pchips').querySelectorAll('.chip');
+  for (var i = 0; i < chips.length; i++) chips[i].classList.toggle('on', i === n - 1);
+}
+
+function handleFotoFile(file) {
+  if (!file || !file.type.startsWith('image/')) return;
+  G_foto.mime = file.type;
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    var dataUrl = e.target.result;
+    G_foto.base64 = dataUrl.split(',')[1];
+    $('foto-img').src = dataUrl;
+    $('foto-preview').style.display = 'block';
+    $('foto-upload-area').style.display = 'none';
+    $('foto-btn').disabled = false;
+    $('foto-result').style.display = 'none';
+    $('foto-err').style.display = 'none';
+  };
+  reader.readAsDataURL(file);
+}
+
+function clearFoto() {
+  G_foto.base64 = null; G_foto.mime = null;
+  $('foto-input').value = '';
+  $('foto-preview').style.display = 'none';
+  $('foto-upload-area').style.display = 'block';
+  $('foto-btn').disabled = true;
+  $('foto-result').style.display = 'none';
+  $('foto-err').style.display = 'none';
+}
+
+function analyzeFoto() {
+  if (!G_foto.base64) return;
+  $('foto-load').style.display = 'block';
+  $('foto-result').style.display = 'none';
+  $('foto-err').style.display = 'none';
+  $('foto-btn').disabled = true;
+
+  var hint = $('foto-hint').value.trim();
+  var p = G_foto.portionen;
+
+  var sys = 'Du analysierst Fotos von Rezepten, Menukarten oder Gerichten und leitest daraus ein vollstaendiges Rezept ab. ' +
+    'Antworte NUR mit validem JSON ohne Text davor oder danach. Keine Apostrophe in Strings. ' +
+    'Format: {"name":"Rezeptname","beschreibung":"Kurze Beschreibung","zeit_aktiv":"15 Min.","zeit_total":"45 Min.",' +
+    '"zutaten":[{"name":"Karotten","menge":"2 Stk"}],' +
+    '"schritte":[{"text":"Detaillierter Schritt wohin die Zutaten kommen","timer_min":0,"zutaten_schritt":["Karotten"]}],' +
+    '"tipp":"Kochtipp"}';
+
+  var msg = 'Analysiere dieses Foto und leite daraus ein vollstaendiges Rezept fuer ' + p + ' Personen ab. ' +
+    'Gib alle Zutaten mit genauen Mengen fuer ' + p + ' Personen an. ' +
+    'Schritte detailliert mit Kontext wohin Zutaten kommen. ' +
+    (hint ? 'Hinweis: ' + hint + '.' : '');
+
+  fetch(PROXY + '/anthropic', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      model: 'claude-sonnet-4-5',
+      max_tokens: 3000,
+      system: sys,
+      messages: [{
+        role: 'user',
+        content: [
+          { type: 'image', source: { type: 'base64', media_type: G_foto.mime, data: G_foto.base64 } },
+          { type: 'text', text: msg }
+        ]
+      }]
+    })
+  })
+  .then(function(r) { return r.json(); })
+  .then(function(d) {
+    $('foto-load').style.display = 'none';
+    $('foto-btn').disabled = false;
+    var raw = (d.content && d.content[0] && d.content[0].text) ? d.content[0].text : '';
+    if (!raw) throw new Error('Keine Antwort erhalten');
+    var rezept = parseJSON(raw);
+    renderFotoRezept(rezept);
+  })
+  .catch(function(e) {
+    $('foto-load').style.display = 'none';
+    $('foto-btn').disabled = false;
+    $('foto-err').textContent = 'Fehler: ' + e.message;
+    $('foto-err').style.display = 'block';
+  });
+}
+
+function renderFotoRezept(r) {
+  var zRows = (r.zutaten||[]).map(function(z) {
+    return '<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:.5px solid #f5f5f5">' +
+      '<span style="font-size:14px;font-weight:500">' + z.name + '</span>' +
+      '<span style="font-size:13px;color:var(--gr3)">' + z.menge + '</span></div>';
+  }).join('');
+
+  var sRows = (r.schritte||[]).map(function(s, i) {
+    var pills = (s.zutaten_schritt||[]).map(function(z) {
+      return '<span class="zpill">' + z + '</span>';
+    }).join('');
+    return '<div style="margin-bottom:14px">' +
+      '<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">' +
+        '<div style="width:24px;height:24px;border-radius:50%;background:var(--red);color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0">' + (i+1) + '</div>' +
+        (s.timer_min > 0 ? '<span style="font-size:11px;color:var(--gr3);background:#f5f5f5;padding:2px 8px;border-radius:100px">&#9201; ' + s.timer_min + ' Min.</span>' : '') +
+      '</div>' +
+      (pills ? '<div class="zpills" style="margin-bottom:6px">' + pills + '</div>' : '') +
+      '<div style="font-size:14px;color:var(--txt);line-height:1.6">' + s.text + '</div>' +
+    '</div>';
+  }).join('');
+
+  var html =
+    '<div class="card"><div class="cp">' +
+      '<div style="font-size:19px;font-weight:800;color:var(--txt);margin-bottom:4px">' + (r.name||'Rezept') + '</div>' +
+      (r.beschreibung ? '<div style="font-size:13px;color:var(--gr3);margin-bottom:10px">' + r.beschreibung + '</div>' : '') +
+      '<div style="display:flex;gap:12px;margin-bottom:14px">' +
+        (r.zeit_aktiv ? '<span style="font-size:12px;color:var(--gr3)">&#9998; Aktiv: <b style="color:var(--txt2)">' + r.zeit_aktiv + '</b></span>' : '') +
+        (r.zeit_total ? '<span style="font-size:12px;color:var(--gr3)">&#9200; Total: <b style="color:var(--txt2)">' + r.zeit_total + '</b></span>' : '') +
+      '</div>' +
+      '<div class="clbl">Zutaten fuer ' + G_foto.portionen + ' Personen</div>' +
+      '<div style="margin-bottom:14px">' + zRows + '</div>' +
+      (r.tipp ? '<div style="background:#fffde7;border-left:3px solid #f9a825;padding:10px 12px;border-radius:0 8px 8px 0;font-size:13px;margin-bottom:14px"><b>Tipp:</b> ' + r.tipp + '</div>' : '') +
+    '</div></div>' +
+    '<div class="card"><div class="cp">' +
+      '<div class="clbl">Zubereitung</div>' +
+      sRows +
+    '</div></div>' +
+    '<div style="padding:0 10px 10px;display:flex;flex-direction:column;gap:8px">' +
+      '<button class="btn btn-red" onclick="importFotoFromResult()" style="font-size:13px">In Bring! importieren</button>' +
+      '<div style="display:flex;gap:8px">' +
+        '<button class="btn btn-out" onclick="saveFotoRezept()" style="flex:1;font-size:13px">&#128190; Speichern</button>' +
+        '<button class="btn btn-out" onclick="showFotoPrint()" style="flex:1;font-size:13px">&#128438; PDF</button>' +
+      '</div>' +
+    '</div>';
+
+  // Store for bring import
+  window._fotoRezept = r;
+  $('foto-result').innerHTML = html;
+  $('foto-result').style.display = 'block';
+}
+
+function importFotoFromResult() {
+  if (!window._fotoRezept) return;
+  var r = window._fotoRezept;
+  var tmpSug = {
+    thema: r.name || 'Foto-Rezept',
+    kochabende: [],
+    gerichte: [{ tag: 'Foto', abend: r.name || 'Foto-Rezept', zutaten: r.zutaten || [] }]
+  };
+  G.sugs = [tmpSug]; G.sel = 0;
+  if (G.bLists.length) {
+    $('blist').innerHTML = G.bLists.map(function(l){ return '<option value="' + l.listUuid + '">' + l.name + '</option>'; }).join('');
+    $('blistwrap').style.display = 'block';
+    $('bfields').style.display = 'none';
+  }
+  $('wtit').textContent = r.name || 'Foto-Rezept';
+  $('wsub').textContent = 'Foto-Rezept';
+  renderEink(tmpSug);
+  go('sw'); wtab('e');
+}
+
+function saveFotoRezept() {
+  if (!window._fotoRezept) return;
+  var r = window._fotoRezept;
+  var entry = {
+    id: Date.now(),
+    date: new Date().toISOString().slice(0,10),
+    saved: new Date().toLocaleDateString('de-CH'),
+    name: r.name || 'Foto-Rezept',
+    beschreibung: r.beschreibung || '',
+    zeit_aktiv: r.zeit_aktiv || '',
+    zeit_total: r.zeit_total || '',
+    portionen: G_foto.portionen,
+    zutaten: r.zutaten || [],
+    schritte: r.schritte || [],
+    tipp: r.tipp || ''
+  };
+  var saved = JSON.parse(localStorage.getItem('foto_rezepte') || '[]');
+  // Check if already saved (same name)
+  var exists = saved.findIndex(function(s){ return s.name === entry.name; });
+  if (exists >= 0) saved[exists] = entry; else saved.unshift(entry);
+  if (saved.length > 100) saved = saved.slice(0, 100);
+  localStorage.setItem('foto_rezepte', JSON.stringify(saved));
+  // Show confirmation
+  var btn = event.target;
+  btn.textContent = 'Gespeichert!';
+  btn.style.color = 'var(--grn)';
+  btn.style.borderColor = 'var(--grn)';
+  setTimeout(function(){ btn.textContent = '\uD83D\uDCBE Speichern'; btn.style.color=''; btn.style.borderColor=''; }, 2000);
+}
+
+function showFotoPrint() {
+  if (!window._fotoRezept) return;
+  var r = window._fotoRezept;
+  // Build print HTML
+  var zRows = (r.zutaten||[]).map(function(z){
+    return '<tr><td style="padding:5px 0;border-bottom:1px solid #f0f0f0;font-weight:500">&#9744; ' + z.name + '</td><td style="padding:5px 0;border-bottom:1px solid #f0f0f0;color:#888;text-align:right">' + z.menge + '</td></tr>';
+  }).join('');
+  var sRows = (r.schritte||[]).map(function(s,i){
+    return '<div style="margin-bottom:10px;font-size:13px"><strong style="color:#e8390e">' + (i+1) + '.</strong> ' + s.text + (s.timer_min > 0 ? ' [' + s.timer_min + ' Min.]' : '') + '</div>';
+  }).join('');
+  $('pcon').innerHTML =
+    '<h1 style="font-size:20px;font-weight:800;margin-bottom:4px">' + (r.name||'Rezept') + '</h1>' +
+    (r.beschreibung ? '<p style="color:#888;margin-bottom:12px;font-size:13px">' + r.beschreibung + '</p>' : '') +
+    (r.zeit_total ? '<p style="font-size:12px;color:#888;margin-bottom:16px">Aktiv: ' + (r.zeit_aktiv||'?') + ' · Total: ' + r.zeit_total + ' · ' + G_foto.portionen + ' Personen</p>' : '') +
+    '<h2 style="font-size:14px;font-weight:700;margin-bottom:8px;color:#e8390e">Zutaten</h2>' +
+    '<table style="width:100%;border-collapse:collapse;margin-bottom:16px">' + zRows + '</table>' +
+    '<h2 style="font-size:14px;font-weight:700;margin-bottom:8px;color:#2e7d32">Zubereitung</h2>' + sRows +
+    (r.tipp ? '<div style="background:#fff9c4;border-left:3px solid #f9a825;padding:10px;margin-top:12px;border-radius:4px;font-size:13px"><strong>Tipp:</strong> ' + r.tipp + '</div>' : '');
+  go('sp');
 }
 
 // ─── TEST DATA ─────────────────────────────────────────────
