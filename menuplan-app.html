@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
-<title>Menuplan v4.1</title>
+<title>Menuplan v4.2</title>
 <style>
 :root{
   --red:#e8390e;--rl:#fff2ef;--grn:#2e7d32;--grl:#f0faf4;
@@ -145,7 +145,7 @@ input[type=password]{letter-spacing:2px}
 
 <!-- HOME -->
 <div class="scr on" id="sh">
-  <div class="hero"><h1>Menuplan</h1><p id="hsub">v4.1 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
+  <div class="hero"><h1>Menuplan</h1><p id="hsub">v4.2 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
 
   <!-- Active plan card -->
   <div id="active-plan" style="display:none;margin:10px 10px 0">
@@ -1759,14 +1759,24 @@ function loadSavedFotoRezepte() {
 }
 
 function loadSavedFotoRezeptDetail(i) {
-  var r = window._savedFotoRezepte[i];
+  // Always load fresh from localStorage
+  var saved = JSON.parse(localStorage.getItem('foto_rezepte') || '[]');
+  var r = saved[i];
   if (!r) return;
   window._fotoRezept = r;
+  window._savedFotoRezepte = saved; // keep in sync
   G_foto.portionen = r.portionen || 2;
+  $('foto-upload-area').style.display = 'none';
+  $('foto-preview').style.display = 'none';
   $('foto-result').style.display = 'none';
+  $('foto-err').style.display = 'none';
+  $('foto-load').style.display = 'none';
   renderFotoRezept(r);
   // Scroll to result
-  setTimeout(function(){ $('foto-result').scrollIntoView({behavior:'smooth'}); }, 100);
+  setTimeout(function(){
+    var el = $('foto-result');
+    if (el) el.scrollIntoView({behavior:'smooth', block:'start'});
+  }, 150);
 }
 
 function deleteSavedFotoRezept(i) {
@@ -2128,13 +2138,16 @@ function importFotoFromResult() {
   $('wsub').textContent = 'Foto-Rezept';
   // Add "Rezept anzeigen" button to Einkauf tab
   renderEink(tmpSug);
-  // Add back-to-recipe button
-  var backBtn = document.createElement('div');
-  backBtn.style.cssText = 'padding:10px 10px 0';
-  backBtn.innerHTML = '<button class="btn btn-out" onclick="openFotoScreen()" style="font-size:13px;padding:10px">&#8592; Zurueck zum Rezept</button>';
-  var te = $('te');
-  if (te) te.insertBefore(backBtn, te.firstChild);
   go('sw'); wtab('e');
+  // Insert back button at top of einkauf tab
+  var oldBack = document.getElementById('foto-back-btn');
+  if (oldBack) oldBack.remove();
+  var backBtn = document.createElement('div');
+  backBtn.id = 'foto-back-btn';
+  backBtn.style.cssText = 'padding:10px 10px 0';
+  backBtn.innerHTML = '<button class="btn btn-out" onclick="openFotoScreen()" style="font-size:13px;padding:10px">&#8592; Zurueck zum Foto-Rezept</button>';
+  var te = $('te');
+  if (te && te.firstChild) te.insertBefore(backBtn, te.firstChild);
 }
 
 function saveFotoRezeptSilent(r) {
