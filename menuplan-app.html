@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
-<title>Menuplan v4.6</title>
+<title>Menuplan v4.9</title>
 <style>
 :root{
   --red:#e8390e;--rl:#fff2ef;--grn:#2e7d32;--grl:#f0faf4;
@@ -145,7 +145,7 @@ input[type=password]{letter-spacing:2px}
 
 <!-- HOME -->
 <div class="scr on" id="sh">
-  <div class="hero"><h1>Menuplan</h1><p id="hsub">v4.6 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
+  <div class="hero"><h1>Menuplan</h1><p id="hsub">v4.9 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
 
   <!-- Active plan card -->
   <div id="active-plan" style="display:none;margin:10px 10px 0">
@@ -274,7 +274,7 @@ input[type=password]{letter-spacing:2px}
 
   <div style="padding:10px 10px 0">
     <button class="btn btn-red" onclick="goSuggest()">Menuvorschlaege generieren</button>
-    <button class="btn btn-out" style="margin-top:8px;font-size:13px" onclick="loadTest()">Testdaten laden</button>
+
   </div>
 </div>
 
@@ -1180,7 +1180,7 @@ function buildSYS_full(sug) {
   var mittag = G.reste ? '"mittag_naechster_tag":"Name","mittag_tag":"Dienstag",' : '';
   var prep = G.reste ? ',"prep_next":["Reste abfuellen","Mittags aufwaermen"]' : '';
   var frz = G.freeze ? ',"einfrieren":["2 Port. einfrieren","Beschriften"]' : '';
-  var json = '{"gerichte":[{"tag":"Montag","abend":"Name",' + mittag + '"zutaten":[{"name":"X","menge":"Y"}],"schritte_vegi":[{"text":"Schritt","timer_min":0,"zutaten_schritt":["X"]}],"schritte_fleisch":[{"text":"Fleisch","timer_min":0,"zutaten_schritt":["X"]}]' + prep + frz + ',"tipp":"Tipp","zeit_aktiv":"X","zeit_total":"Y"}]}';
+  var json = '{"gerichte":[{"tag":"Montag","abend":"Name",' + mittag + '"zutaten":[{"name":"X","menge":"Y"}],"schritte_vegi":[{"titel":"Sauce","text":"Detaillierter Schritt","timer_min":0,"zutaten_schritt":["X"]}],"schritte_fleisch":[{"titel":"Fleisch anbraten","text":"Detaillierter Schritt","timer_min":0,"zutaten_schritt":["X"]}]' + prep + frz + ',"tipp":"Tipp","zeit_aktiv":"X","zeit_total":"Y"}]}';
   var dishes = sug.gerichte.map(function(g) { return g.tag + ': ' + g.abend; }).join(', ');
   return 'NUR valides JSON, kein Text. Keine Apostrophe. ' +
     'Generiere vollstaendige Kochschritte fuer diese Gerichte: ' + dishes + '. ' +
@@ -1191,6 +1191,7 @@ function buildSYS_full(sug) {
     'Keine Zutaten in der Liste die nicht explizit in einem Kochschritt vorkommen. ' +
     'Haltbarkeit beachten: wenn Spinat, Erbsen, Mais oder Beeren in Zutaten - TK-Version bevorzugen wenn das Gericht nicht am ersten Kochtag (Mo) stattfindet. ' +
     'Frischer Spinat nur bei Mo-Gerichten, sonst TK-Spinat angeben. ' +
+    'Jeden Schritt hat ein "titel" Feld (2-3 Woerter, Substantiv): z.B. "Sauce kochen", "Gemuese schneiden", "Dressing mixen", "Pasta kochen", "Anbraten", "Backen", "Umfuellen". ' +
     'Jeden Schritt mit Kontext beginnen wohin Zutaten kommen. ' +
     'timer_min NUR bei aktivem Warten (kochen/braten/backen), sonst 0. ' +
     'Format: ' + json;
@@ -1512,8 +1513,8 @@ function buildSteps(g) {
   var st = [];
   var vegi = g.schritte_vegi || [];
   var fleisch = g.schritte_fleisch || [];
-  for (var i = 0; i < vegi.length; i++) st.push({ type: 'v', text: vegi[i].text, timer_min: vegi[i].timer_min || 0, zs: vegi[i].zutaten_schritt || [] });
-  for (var i = 0; i < fleisch.length; i++) st.push({ type: 'f', text: fleisch[i].text, timer_min: fleisch[i].timer_min || 0, zs: fleisch[i].zutaten_schritt || [] });
+  for (var i = 0; i < vegi.length; i++) st.push({ type: 'v', titel: vegi[i].titel || '', text: vegi[i].text, timer_min: vegi[i].timer_min || 0, zs: vegi[i].zutaten_schritt || [] });
+  for (var i = 0; i < fleisch.length; i++) st.push({ type: 'f', titel: fleisch[i].titel || '', text: fleisch[i].text, timer_min: fleisch[i].timer_min || 0, zs: fleisch[i].zutaten_schritt || [] });
   if (G.reste && g.prep_next && g.prep_next.length) st.push({ type: 'p', text: g.prep_next.join('\n'), timer_min: 0, zs: [], ml: true });
   if (G.freeze && g.einfrieren && g.einfrieren.length) st.push({ type: 'fr', text: g.einfrieren.join('\n'), timer_min: 0, zs: [], ml: true });
   if (g.tipp) st.push({ type: 't', text: g.tipp, timer_min: 0, zs: [] });
@@ -1647,12 +1648,12 @@ function renderAllSteps() {
     var isDone = !!G.done[i];
     var isAct = i === G.act;
     var cardCls = 'cstep-card' + (isAct ? ' active' : '') + (isDone ? ' done-card' : '');
-    // Short title: first 60 chars of step text
-    var title = s.text ? s.text.slice(0, 60) + (s.text.length > 60 ? '...' : '') : '';
+    // Title: use explicit titel field, fallback to first words of text
+    var title = s.titel || (s.text ? s.text.slice(0, 45) + (s.text.length > 45 ? '...' : '') : '');
     html += '<div class="' + cardCls + '" id="csc_' + i + '">' +
       '<div class="cstep-head" onclick="toggleStepCard(' + i + ')">' +
         '<div class="cstep-num">' + (isDone ? '&#10003;' : (i+1)) + '</div>' +
-        '<div class="cstep-head-txt">' + title + '</div>' +
+        '<div class="cstep-head-txt">' + (s.titel || title) + '</div>' +
         (!isDone && !isAct ? '<span style="font-size:18px;color:var(--gr3)">&#8250;</span>' : '') +
       '</div>' +
       '<div class="cstep-body"' + (!isAct && !isDone ? ' style="display:none"' : '') + '>' +
@@ -1944,7 +1945,10 @@ function loadHistoryRecipes() {
         '</div>' +
       '</div>' +
       '<div style="padding:8px 14px;display:flex;gap:6px;flex-wrap:wrap">' +
-        '<div style="width:100%;margin-bottom:4px">' + statusBadge(r.status||'geplant') + '</div>' +
+        '<div style="width:100%;margin-bottom:4px;display:flex;align-items:center;justify-content:space-between">' +
+          statusBadge(r.status||'geplant') +
+          (r.status && r.status !== 'geplant' ? '<button onclick="resetFotoRezeptStatus(' + i + ')" style="background:none;border:none;font-size:11px;color:var(--gr3);cursor:pointer;font-family:inherit;padding:2px 6px">&#x2715; Zuruecksetzen</button>' : '') +
+        '</div>' +
         '<button class="btn btn-red" onclick="openHistoryRecipe(' + i + ')" style="flex:1;padding:9px;font-size:12px">Rezept oeffnen</button>' +
         '<button class="btn btn-out" onclick="importHistoryRecipeToBring(' + i + ')" style="flex:1;padding:9px;font-size:12px">In Bring!</button>' +
         (r.status !== 'gekocht' ? '<button class="btn btn-out" onclick="markFotoRezeptGekocht(' + i + ')" style="flex:1;padding:9px;font-size:11px">&#127859; Gekocht</button>' : '') +
@@ -1982,6 +1986,16 @@ function importHistoryRecipeToBring(i) {
   window._fotoRezept = r;
   G_foto.portionen = r.portionen || 2;
   importFotoFromResult();
+}
+
+function resetFotoRezeptStatus(i) {
+  var saved = JSON.parse(localStorage.getItem('foto_rezepte') || '[]');
+  if (!saved[i]) return;
+  saved[i].status = 'geplant';
+  localStorage.setItem('foto_rezepte', JSON.stringify(saved));
+  saveFotoRezepteToGH(saved);
+  loadHistoryRecipes();
+  loadSavedFotoRezepte();
 }
 
 function markFotoRezeptGekocht(i) {
@@ -2063,11 +2077,21 @@ function renderHistoryList(history) {
       '<div style="padding:0 14px 10px;display:flex;gap:6px">' +
         '<button class="btn btn-out" onclick="loadHistoryEntry(' + i + ')" style="flex:1;padding:9px;font-size:12px">Plan laden</button>' +
         (status !== 'gekocht' ? '<button class="btn btn-out" onclick="markHistoryKekocht(' + i + ')" style="flex:1;padding:9px;font-size:12px">Als gekocht markieren</button>' : '') +
+        (status !== 'geplant' ? '<button class="btn btn-out" onclick="resetHistoryStatus(' + i + ')" style="padding:9px;font-size:12px">&#x2715; Reset</button>' : '') +
       '</div>' +
     '</div>';
   }
   $('hlist').innerHTML = html || '<div style="text-align:center;padding:40px;color:var(--gr3);font-size:13px">Noch keine gespeicherten Plaene.</div>';
   window._history = history;
+}
+
+function resetHistoryStatus(i) {
+  var hist = window._history;
+  if (!hist || !hist[i]) return;
+  hist[i].status = 'geplant';
+  localStorage.setItem('local_history', JSON.stringify(hist));
+  saveHistoryToGH(hist);
+  renderHistoryList(hist);
 }
 
 function markHistoryKekocht(i) {
@@ -2471,159 +2495,7 @@ function showFotoPrint() {
   go('sp');
 }
 
-// ─── TEST DATA ─────────────────────────────────────────────
-// ─── ACTIVE PLAN ───────────────────────────────────────────
-function setActivePlanAndGo() {
-  if (G.sel === null) return;
-  // Set as active plan first
-  var sug = G.sugs[G.sel];
-  var planData = {
-    sug: sug,
-    sel: G.sel,
-    n: G.n, personen: G.personen, reste: G.reste, freeze: G.freeze,
-    saved: new Date().toLocaleDateString('de-CH'),
-    einkaufDone: false,
-    sugsAll: G.sugs,
-    sugsPartial: G.sugsPartial
-  };
-  G.activePlan = planData;
-  localStorage.setItem('active_plan', JSON.stringify(planData));
-  // Save to GH (active plan + history)
-  saveToGH(planData);
-  saveToHistory(planData);
-  // Also save full week for recovery
-  var weekData = { sugs: G.sugs, n: G.n, personen: G.personen, reste: G.reste, freeze: G.freeze, saved: new Date().toLocaleDateString('de-CH') };
-  localStorage.setItem('sw', JSON.stringify(weekData));
-  // Render and go to week
-  renderActivePlan();
-  goWeek();
-}
 
-function renderActivePlan() {
-  var ap = G.activePlan;
-  if (!ap || !ap.sug) return;
-  $('active-plan').style.display = 'block';
-  $('ap-title').textContent = ap.sug.thema;
-  $('ap-sub').textContent = 'Gesetzt am ' + (ap.saved||'') + ' · ' + (ap.personen||2) + ' Personen';
-
-  // Dish list
-  var dishes = '';
-  var gerichte = ap.sug.gerichte || [];
-  for (var i = 0; i < gerichte.length; i++) {
-    var g = gerichte[i];
-    dishes += '<div style="display:flex;align-items:center;gap:8px;padding:4px 0">' +
-      '<span style="font-size:11px;font-weight:700;color:var(--red);min-width:24px">' + g.tag.slice(0,2) + '</span>' +
-      '<span style="font-size:13px;color:var(--txt)">' + g.abend + '</span></div>';
-  }
-  $('ap-dishes').innerHTML = dishes;
-
-  // Einkauf status
-  var dot = $('ap-einkauf-dot');
-  var lbl = $('ap-einkauf-lbl');
-  if (ap.einkaufDone) {
-    dot.style.background = 'var(--grn)';
-    lbl.textContent = 'In Bring! importiert';
-  } else {
-    dot.style.background = 'var(--gr2)';
-    lbl.textContent = 'Noch nicht importiert';
-  }
-}
-
-function openActivePlan(tab) {
-  if (!G.activePlan || !G.activePlan.sug) return;
-  // Restore state from active plan
-  G.sugs = G.activePlan.sugsAll || [G.activePlan.sug];
-  G.sel = G.activePlan.sel || 0;
-  G.n = G.activePlan.n || 3;
-  G.personen = G.activePlan.personen || 2;
-  G.reste = G.activePlan.reste !== undefined ? G.activePlan.reste : 1;
-  G.freeze = G.activePlan.freeze !== undefined ? G.activePlan.freeze : 1;
-  G.sugsPartial = G.activePlan.sugsPartial || false;
-  goWeekRender(G.sugs[G.sel]);
-  // Switch to correct tab
-  setTimeout(function() { wtab(tab); }, 50);
-}
-
-function markEinkaufDone() {
-  if (!G.activePlan) return;
-  G.activePlan.einkaufDone = true;
-  localStorage.setItem('active_plan', JSON.stringify(G.activePlan));
-  renderActivePlan();
-  saveToGH(G.activePlan);
-  // Update history entry status
-  updateHistoryStatus(G.activePlan.saved || G.activePlan.date, 'einkauf');
-}
-
-function updateHistoryStatus(savedDate, status) {
-  var hist = JSON.parse(localStorage.getItem('local_history') || '[]');
-  var found = false;
-  for (var i = 0; i < hist.length; i++) {
-    if (hist[i].saved === savedDate || hist[i].date === savedDate) {
-      hist[i].status = status; found = true; break;
-    }
-  }
-  if (!found && hist.length) { hist[0].status = status; } // fallback: update latest
-  localStorage.setItem('local_history', JSON.stringify(hist));
-  // Also update on GitHub
-  saveHistoryToGH(hist);
-}
-
-function saveHistoryToGH(hist) {
-  var tok = getGHToken();
-  if (!tok) return;
-  var url = 'https://api.github.com/repos/' + GH_REPO + '/contents/' + ghFile('history.json');
-  var headers = { 'Authorization': 'token ' + tok, 'Content-Type': 'application/json', 'Accept': 'application/vnd.github.v3+json' };
-  fetch(url, { headers: headers })
-    .then(function(r) { return r.ok ? r.json() : null; })
-    .then(function(existing) {
-      var body = { message: 'Status aktualisiert', content: btoa(unescape(encodeURIComponent(JSON.stringify(hist, null, 2)))) };
-      if (existing && existing.sha) body.sha = existing.sha;
-      return fetch(url, { method: 'PUT', headers: headers, body: JSON.stringify(body) });
-    }).catch(function(){});
-}
-
-function clearActivePlan() {
-  if (!confirm('Aktiven Plan beenden?')) return;
-  G.activePlan = null;
-  localStorage.removeItem('active_plan');
-  $('active-plan').style.display = 'none';
-}
-
-function loadSaved() {
-  // Legacy: check active plan first
-  if (G.activePlan) { openActivePlan('e'); return; }
-  var ap = localStorage.getItem('active_plan');
-  if (ap) { try { G.activePlan = JSON.parse(ap); openActivePlan('e'); return; } catch(e){} }
-}
-
-function loadTest() {
-  G.sugs = [{
-    id: 1, thema: 'Test - Mediterran', kochabende: ['Montag', 'Mittwoch'],
-    gerichte: [{
-      tag: 'Montag', abend: 'Saag Paneer mit Basmatireis',
-      mittag_naechster_tag: 'Saag Paneer aufgewaermt', mittag_tag: 'Dienstag',
-      zutaten: [
-        { name: 'Paneer', menge: '450g' }, { name: 'TK-Spinat', menge: '500g aufgetaut' },
-        { name: 'Zwiebeln', menge: '2 grosse' }, { name: 'Basmatireis', menge: '600g' },
-        { name: 'Ghee', menge: '2 EL' }, { name: 'Knoblauch', menge: '3 Zehen' },
-        { name: 'Garam Masala', menge: '1 TL' }, { name: 'Zitrone', menge: '1/2' }
-      ],
-      schritte_vegi: [
-        { text: '2 EL Ghee in einer grossen Pfanne erhitzen. 450g Paneer in 3cm-Wuerfel schneiden, mit 1 TL Kurkuma wenden und bei mittlerer Hitze 8 Min. rundherum goldbraun anbraten. Paneer herausnehmen und beiseite stellen.', timer_min: 8, zutaten_schritt: ['450g Paneer', '2 EL Ghee', '1 TL Kurkuma'] },
-        { text: '2 grosse Zwiebeln fein hacken. Im verbliebenen Ghee bei mittlerer Hitze 10 Min. goldbraun karamellisieren lassen. 3 Knoblauchzehen und Ingwer dazugeben, 2 Min. weiterbraten.', timer_min: 10, zutaten_schritt: ['2 Zwiebeln', '3 Zehen Knoblauch'] },
-        { text: '1 TL Garam Masala einruehren, 2 Min. roesten. 500g Spinat (gut ausgedrueckt) zugeben, 100ml Wasser dazu, 3 Min. erwaermen. Mit Salz und Zitronensaft abschmecken.', timer_min: 3, zutaten_schritt: ['1 TL Garam Masala', '500g TK-Spinat', '1/2 Zitrone'] },
-        { text: 'Paneer zurueck in die Pfanne, 2-3 Min. warm ziehen lassen. 600g Basmatireis kochen - 300g fuer heute Abend, 300g fuer Dienstag separat abfuellen.', timer_min: 3, zutaten_schritt: ['Gebratener Paneer', '600g Basmatireis'] }
-      ],
-      schritte_fleisch: [
-        { text: 'Haehnchenbrust 300g in Streifen schneiden, mit Salz und Paprikapulver wuerzen. In separater Pfanne mit 1 EL Oel bei hoher Hitze 6 Min. goldbraun anbraten. Neben Saag Paneer servieren.', timer_min: 6, zutaten_schritt: ['300g Haehnchenbrust', 'Salz', 'Paprikapulver'] }
-      ],
-      prep_next: ['2 Portionen Saag Paneer in Tupperdosen abfuellen', '300g Reis separat in eine Tupperdose', 'Mittags: Saag Paneer 3 Min. Mikrowelle, Reis 1 Min. - getrennt erwaermen'],
-      einfrieren: ['2 weitere Portionen Saag Paneer in 2 Tupperdosen', 'Abkuehlen lassen, beschriften und einfrieren', 'Auftauen: ueber Nacht im Kuehlschrank, 4 Min. Mikrowelle'],
-      tipp: 'TK-Spinat wirklich gut ausdrucken - sonst wird das Gericht waessrig.'
-    }]
-  }];
-  G.sel = 0; goWeek();
-}
 </script>
 <!-- RATING MODAL -->
 <div id="rating-modal" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);z-index:100;align-items:flex-end;justify-content:center">
