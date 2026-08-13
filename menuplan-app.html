@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
-<title>Menuplan v5.0</title>
+<title>Menuplan v5.1</title>
 <style>
 :root{
   --red:#e8390e;--rl:#fff2ef;--grn:#2e7d32;--grl:#f0faf4;
@@ -145,7 +145,7 @@ input[type=password]{letter-spacing:2px}
 
 <!-- HOME -->
 <div class="scr on" id="sh">
-  <div class="hero"><h1>Menuplan</h1><p id="hsub">v5.0 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
+  <div class="hero"><h1>Menuplan</h1><p id="hsub">v5.1 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
 
   <!-- Active plan card -->
   <div id="active-plan" style="display:none;margin:10px 10px 0">
@@ -1648,8 +1648,13 @@ function renderAllSteps() {
     var isDone = !!G.done[i];
     var isAct = i === G.act;
     var cardCls = 'cstep-card' + (isAct ? ' active' : '') + (isDone ? ' done-card' : '');
-    // Title: use explicit titel field, fallback to first words of text
-    var title = s.titel || (s.text ? s.text.slice(0, 45) + (s.text.length > 45 ? '...' : '') : '');
+    // Title: use explicit titel field, or derive from first 3-4 words of text
+    var title = s.titel || '';
+    if (!title && s.text) {
+      var words = s.text.split(' ');
+      title = words.slice(0, 4).join(' ');
+      if (words.length > 4) title += '...';
+    }
     html += '<div class="' + cardCls + '" id="csc_' + i + '">' +
       '<div class="cstep-head" onclick="toggleStepCard(' + i + ')">' +
         '<div class="cstep-num">' + (isDone ? '&#10003;' : (i+1)) + '</div>' +
@@ -2278,8 +2283,10 @@ function analyzeFoto() {
     'Antworte NUR mit validem JSON ohne Text davor oder danach. Keine Apostrophe in Strings. ' +
     'Format: {"name":"Rezeptname","beschreibung":"Kurze Beschreibung","zeit_aktiv":"15 Min.","zeit_total":"45 Min.",' +
     '"zutaten":[{"name":"Karotten","menge":"2 Stk"}],' +
-    '"schritte":[{"text":"Detaillierter Schritt wohin die Zutaten kommen","timer_min":0,"zutaten_schritt":["Karotten"]}],' +
-    '"tipp":"Kochtipp"}';
+    '"schritte":[{"titel":"Gemuese schneiden","text":"Detaillierter Schritt wohin die Zutaten kommen","timer_min":0,"zutaten_schritt":["Karotten"]}],' +
+    '"tipp":"Kochtipp"}. ' +
+    'Das "titel" Feld pro Schritt: kurzes Substantiv (2-3 Woerter), z.B. "Sauce kochen", "Gemuese schneiden", "Dressing mixen", "Pasta kochen", "Anbraten", "Backen". ' +
+    'Das "text" Feld: ausfuehrliche Erklaerung mit Mengen und Technik.';
 
   var msg = 'Analysiere dieses Foto und leite daraus ein vollstaendiges Rezept fuer ' + p + ' Personen ab. ' +
     'Gib alle Zutaten mit genauen Mengen fuer ' + p + ' Personen an. ' +
