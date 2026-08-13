@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
-<title>Menuplan v3.9</title>
+<title>Menuplan v4.0</title>
 <style>
 :root{
   --red:#e8390e;--rl:#fff2ef;--grn:#2e7d32;--grl:#f0faf4;
@@ -145,7 +145,7 @@ input[type=password]{letter-spacing:2px}
 
 <!-- HOME -->
 <div class="scr on" id="sh">
-  <div class="hero"><h1>Menuplan</h1><p id="hsub">v3.9 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
+  <div class="hero"><h1>Menuplan</h1><p id="hsub">v4.0 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
 
   <!-- Active plan card -->
   <div id="active-plan" style="display:none;margin:10px 10px 0">
@@ -193,21 +193,28 @@ input[type=password]{letter-spacing:2px}
     <button class="btn btn-out" onclick="openFotoScreen()" style="flex:1;font-size:13px;padding:10px">&#128247; Foto-Rezept</button>
   </div>
 
-  <!-- GitHub Sync -->
+  <!-- Login Card -->
   <div class="card">
     <div class="cp">
-      <div class="clbl">GitHub Sync</div>
-      <div id="ghsetup">
-        <div class="fld"><label>Personal Access Token (public_repo)</label><input type="password" id="ghtoken" placeholder="ghp_..."></div>
-        <div style="font-size:11px;color:var(--gr3);margin-bottom:10px">Wird nur lokal gespeichert. Ermoeglicht geraeteuebergreifendes Laden des Menueplans.</div>
-        <button class="btn btn-out" onclick="saveGHToken()" style="padding:10px;font-size:13px">Token speichern</button>
+      <div id="login-section">
+        <div class="clbl">Anmelden</div>
+        <div class="fld"><label>Benutzername</label><input id="login-user" placeholder="z.B. roman, anna..." autocomplete="username" onkeydown="if(event.key==='Enter')$('login-pw').focus()"></div>
+        <div class="fld"><label>Passwort</label><input type="password" id="login-pw" placeholder="Passwort..." autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()"></div>
+        <div id="login-err" style="font-size:12px;color:var(--red);margin-bottom:8px;display:none"></div>
+        <button class="btn btn-red" onclick="doLogin()" style="padding:11px">Anmelden</button>
+        <div style="font-size:11px;color:var(--gr3);margin-top:8px;text-align:center">Jeder hat seinen eigenen Bereich</div>
       </div>
-      <div id="ghconnected" style="display:none">
-        <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
-          <div style="width:9px;height:9px;border-radius:50%;background:var(--grn)"></div>
-          <span style="font-size:13px;color:var(--txt2)">GitHub verbunden</span>
+      <div id="loggedin-section" style="display:none">
+        <div style="display:flex;align-items:center;justify-content:space-between">
+          <div style="display:flex;align-items:center;gap:8px">
+            <div style="width:9px;height:9px;border-radius:50%;background:var(--grn)"></div>
+            <div>
+              <div style="font-size:13px;font-weight:600;color:var(--txt)" id="loggedin-name"></div>
+              <div style="font-size:11px;color:var(--gr3)">Eigener Bereich aktiv</div>
+            </div>
+          </div>
+          <button onclick="doLogout()" style="background:none;border:none;font-size:12px;color:var(--gr3);cursor:pointer;font-family:inherit">Abmelden</button>
         </div>
-        <button class="btn btn-out" onclick="disconnectGH()" style="padding:9px;font-size:12px">Verbindung trennen</button>
       </div>
     </div>
   </div>
@@ -422,7 +429,8 @@ input[type=password]{letter-spacing:2px}
 var PROXY = 'https://menuplan-proxy.shop-242.workers.dev';
 var BAPI  = PROXY + '/bring';
 var GH_REPO = 'roterhut480/menuplan';
-var GH_FILE = 'saved-week.json';
+var GH_FILE = 'saved-week.json'; // legacy, use ghFile() instead
+function ghFile(name) { return getUserFolder() + name; }
 var BH = {
   'X-BRING-API-KEY': 'cof4Nc6D8saplXjE3h3HXqHH8m7VU2i1Gs0g85Sp',
   'X-BRING-CLIENT': 'android',
@@ -562,26 +570,186 @@ window.addEventListener('DOMContentLoaded', function() {
 });
 
 // ─── GITHUB ────────────────────────────────────────────────
+// ─── AUTH / LOGIN ──────────────────────────────────────────
+// Users stored as: gh_users = [{username, enc}]
+// enc = btoa(token + '|||' + password)
+// Current session: gh_session = {username, password}
+
+function getUsers() {
+  try { return JSON.parse(localStorage.getItem('gh_users') || '[]'); } catch(e) { return []; }
+}
+
+function saveUsers(users) {
+  localStorage.setItem('gh_users', JSON.stringify(users));
+}
+
+function doLogin() {
+  var username = ($('login-user').value || '').trim().toLowerCase().replace(/[^a-z0-9_]/g, '');
+  var pw = $('login-pw').value;
+  var err = $('login-err');
+  if (!username) { err.textContent = 'Bitte Benutzernamen eingeben'; err.style.display = 'block'; return; }
+  if (!pw) { err.textContent = 'Bitte Passwort eingeben'; err.style.display = 'block'; return; }
+
+  var users = getUsers();
+  var user = users.find(function(u) { return u.username === username; });
+
+  if (!user) {
+    // New user - check URL for setup token
+    var params = new URLSearchParams(window.location.search);
+    var setupTok = params.get('setup');
+    var setupPw = params.get('pw');
+    if (setupTok && setupPw && pw === setupPw) {
+      // Admin setup: create first user or add user with shared token
+      var enc = btoa(unescape(encodeURIComponent(setupTok + '|||' + setupPw)));
+      users.push({ username: username, enc: enc, isAdmin: users.length === 0 });
+      saveUsers(users);
+      startSession(username, pw);
+      return;
+    }
+    // Check if admin token exists to allow self-registration
+    var adminUser = users.find(function(u) { return u.isAdmin; });
+    if (adminUser) {
+      // New user registers with admin token (shared GH token) but own password
+      try {
+        var adminDec = decodeURIComponent(escape(atob(adminUser.enc)));
+        var adminParts = adminDec.split('|||');
+        var adminTok = adminParts[0];
+        var newEnc = btoa(unescape(encodeURIComponent(adminTok + '|||' + pw)));
+        users.push({ username: username, enc: newEnc, isAdmin: false });
+        saveUsers(users);
+        startSession(username, pw);
+        return;
+      } catch(e) {}
+    }
+    err.textContent = 'Benutzer nicht gefunden. Bitte Admin kontaktieren.';
+    err.style.display = 'block';
+    return;
+  }
+
+  // Existing user - verify password
+  try {
+    var dec = decodeURIComponent(escape(atob(user.enc)));
+    var parts = dec.split('|||');
+    if (parts[1] === pw) {
+      startSession(username, pw);
+    } else {
+      err.textContent = 'Falsches Passwort';
+      err.style.display = 'block';
+      $('login-pw').value = '';
+    }
+  } catch(e) {
+    err.textContent = 'Fehler: ' + e.message;
+    err.style.display = 'block';
+  }
+}
+
+function startSession(username, pw) {
+  localStorage.setItem('gh_session', JSON.stringify({ username: username, pw: pw }));
+  showLoggedIn();
+  syncAllFromGH();
+}
+
+function getGHToken() {
+  var session = getSession();
+  if (!session) return null;
+  var users = getUsers();
+  var user = users.find(function(u) { return u.username === session.username; });
+  if (!user) return null;
+  try {
+    var dec = decodeURIComponent(escape(atob(user.enc)));
+    var parts = dec.split('|||');
+    if (parts[1] === session.pw) return parts[0];
+  } catch(e) {}
+  return null;
+}
+
+function getSession() {
+  try { return JSON.parse(localStorage.getItem('gh_session')); } catch(e) { return null; }
+}
+
+function getUserFolder() {
+  var session = getSession();
+  return session ? 'users/' + session.username + '/' : '';
+}
+
+function doLogout() {
+  localStorage.removeItem('gh_session');
+  if ($('loggedin-section')) $('loggedin-section').style.display = 'none';
+  if ($('login-section')) $('login-section').style.display = 'block';
+  if ($('login-pw')) $('login-pw').value = '';
+  if ($('login-user')) $('login-user').value = '';
+  // Clear active plan display
+  if ($('active-plan')) $('active-plan').style.display = 'none';
+  G.activePlan = null;
+}
+
+function showLoggedIn() {
+  var session = getSession();
+  if ($('login-section')) $('login-section').style.display = 'none';
+  if ($('loggedin-section')) $('loggedin-section').style.display = 'block';
+  if ($('login-err')) $('login-err').style.display = 'none';
+  if ($('loggedin-name')) $('loggedin-name').textContent = session ? session.username : '';
+  if ($('login-pw')) $('login-pw').value = '';
+}
+
 function updateGHUI() {
-  var tok = localStorage.getItem('ght');
-  $('ghsetup').style.display = tok ? 'none' : 'block';
-  $('ghconnected').style.display = tok ? 'block' : 'none';
+  if (getSession()) showLoggedIn();
 }
-function saveGHToken() {
-  var tok = $('ghtoken').value.trim();
-  if (!tok) return;
-  localStorage.setItem('ght', tok);
-  $('ghtoken').value = '';
-  updateGHUI();
+
+function saveGHToken() {} // legacy noop
+function disconnectGH() { doLogout(); }
+
+function syncGH(btn) {
+  var origText = btn ? btn.textContent : '';
+  if (btn) { btn.textContent = '...'; btn.disabled = true; }
+  fetch('https://raw.githubusercontent.com/' + GH_REPO + '/main/' + ghFile('active-plan.json') + '?t=' + Date.now())
+    .then(function(r) { return r.ok ? r.json() : null; })
+    .then(function(d) {
+      if (d && d.sug) {
+        G.activePlan = d;
+        localStorage.setItem('active_plan', JSON.stringify(d));
+        renderActivePlan();
+        if (btn) btn.textContent = 'OK';
+      } else {
+        if (btn) btn.textContent = 'Leer';
+      }
+      setTimeout(function() { if (btn) { btn.textContent = origText; btn.disabled = false; } }, 1500);
+    })
+    .catch(function() {
+      if (btn) { btn.textContent = 'Err'; setTimeout(function(){ btn.textContent = origText; btn.disabled = false; }, 1500); }
+    });
 }
-function disconnectGH() {
-  localStorage.removeItem('ght');
-  updateGHUI();
+
+function syncAllFromGH() {
+  // Load active plan
+  fetch('https://raw.githubusercontent.com/' + GH_REPO + '/main/' + ghFile('active-plan.json') + '?t=' + Date.now())
+    .then(function(r) { return r.ok ? r.json() : null; })
+    .then(function(d) {
+      if (d && d.sug) {
+        G.activePlan = d;
+        localStorage.setItem('active_plan', JSON.stringify(d));
+        renderActivePlan();
+      }
+    }).catch(function(){});
+  // Load foto rezepte
+  fetch('https://raw.githubusercontent.com/' + GH_REPO + '/main/' + ghFile('foto-rezepte.json') + '?t=' + Date.now())
+    .then(function(r) { return r.ok ? r.json() : null; })
+    .then(function(fr) {
+      if (!Array.isArray(fr)) return;
+      var local = JSON.parse(localStorage.getItem('foto_rezepte') || '[]');
+      var merged = fr.slice();
+      local.forEach(function(l) {
+        if (!merged.find(function(g){ return g.name === l.name; })) merged.push(l);
+      });
+      localStorage.setItem('foto_rezepte', JSON.stringify(merged));
+    }).catch(function(){});
 }
+
+
 function saveToGH(data) {
-  var tok = localStorage.getItem('ght');
+  var tok = getGHToken();
   if (!tok) return;
-  var url = 'https://api.github.com/repos/' + GH_REPO + '/contents/' + GH_FILE;
+  var url = 'https://api.github.com/repos/' + GH_REPO + '/contents/' + ghFile('active-plan.json');
   var headers = { 'Authorization': 'token ' + tok, 'Content-Type': 'application/json', 'Accept': 'application/vnd.github.v3+json' };
   fetch(url, { headers: headers })
     .then(function(r) { return r.ok ? r.json() : null; })
@@ -594,12 +762,12 @@ function saveToGH(data) {
     .catch(function(e) { console.warn('GitHub save:', e); });
 }
 function syncGH(btn) {
-  var tok = localStorage.getItem('ght');
+  var tok = getGHToken();
   if (!tok) { alert('Bitte zuerst GitHub Token eingeben'); return; }
   var origText = btn.textContent;
   btn.textContent = '...';
   btn.disabled = true;
-  fetch('https://raw.githubusercontent.com/' + GH_REPO + '/main/' + GH_FILE + '?t=' + Date.now())
+  fetch('https://raw.githubusercontent.com/' + GH_REPO + '/main/' + ghFile('active-plan.json') + '?t=' + Date.now())
     .then(function(r) { return r.ok ? r.json() : null; })
     .then(function(d) {
       if (d && d.sug) {
@@ -1380,7 +1548,7 @@ function fmt(s) { return (Math.floor(s/60) < 10 ? '0' : '') + Math.floor(s/60) +
 
 // ─── PRINT ─────────────────────────────────────────────────
 function exportPDFToGH(ri) {
-  var tok = localStorage.getItem('ght');
+  var tok = getGHToken();
   if (!tok) { alert('Bitte zuerst GitHub Token einrichten'); return; }
   var sug = G.sugs[G.sel];
   var g = sug.gerichte[ri];
@@ -1454,7 +1622,7 @@ function showPrint(ri) {
 var GH_HISTORY = 'history.json';
 
 function saveToHistory(planData) {
-  var tok = localStorage.getItem('ght');
+  var tok = getGHToken();
   var entry = {
     date: new Date().toISOString().slice(0, 10),
     saved: new Date().toLocaleDateString('de-CH'),
@@ -1466,7 +1634,7 @@ function saveToHistory(planData) {
     gerichte: planData.sug ? planData.sug.gerichte.map(function(g){return {tag:g.tag, abend:g.abend};}) : [],
     plan: planData
   };
-  var url = 'https://api.github.com/repos/' + GH_REPO + '/contents/' + GH_HISTORY;
+  var url = 'https://api.github.com/repos/' + GH_REPO + '/contents/' + ghFile('history.json');
   var headers = { 'Authorization': 'token ' + tok, 'Content-Type': 'application/json', 'Accept': 'application/vnd.github.v3+json' };
   // Load existing history first
   fetch(url, { headers: headers })
@@ -1546,8 +1714,8 @@ function syncHistory() {
 function loadHistory() {
   $('hload').style.display = 'block';
   $('hlist').innerHTML = '';
-  var tok = localStorage.getItem('ght');
-  var url = 'https://raw.githubusercontent.com/' + GH_REPO + '/main/' + GH_HISTORY + '?t=' + Date.now();
+  var tok = getGHToken();
+  var url = 'https://raw.githubusercontent.com/' + GH_REPO + '/main/' + ghFile('history.json') + '?t=' + Date.now();
   fetch(url)
     .then(function(r) { return r.ok ? r.json() : []; })
     .then(function(history) {
@@ -1694,7 +1862,7 @@ function submitRating() {
 }
 
 function saveRatingToGH(entry) {
-  var tok = localStorage.getItem('ght');
+  var tok = getGHToken();
   if (!tok) {
     // Save locally if no GitHub token
     var local = JSON.parse(localStorage.getItem('local_ratings') || '[]');
@@ -1703,7 +1871,7 @@ function saveRatingToGH(entry) {
     console.log('Rating lokal gespeichert (kein GitHub Token)');
     return;
   }
-  var url = 'https://api.github.com/repos/' + GH_REPO + '/contents/' + GH_RATINGS;
+  var url = 'https://api.github.com/repos/' + GH_REPO + '/contents/' + ghFile('ratings.json');
   var headers = { 'Authorization': 'token ' + tok, 'Content-Type': 'application/json', 'Accept': 'application/vnd.github.v3+json' };
   fetch(url, { headers: headers })
     .then(function(r) { return r.ok ? r.json() : null; })
