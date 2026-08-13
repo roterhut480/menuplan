@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
-<title>Menuplan v4.2</title>
+<title>Menuplan v4.6</title>
 <style>
 :root{
   --red:#e8390e;--rl:#fff2ef;--grn:#2e7d32;--grl:#f0faf4;
@@ -145,7 +145,7 @@ input[type=password]{letter-spacing:2px}
 
 <!-- HOME -->
 <div class="scr on" id="sh">
-  <div class="hero"><h1>Menuplan</h1><p id="hsub">v4.2 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
+  <div class="hero"><h1>Menuplan</h1><p id="hsub">v4.6 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
 
   <!-- Active plan card -->
   <div id="active-plan" style="display:none;margin:10px 10px 0">
@@ -206,6 +206,12 @@ input[type=password]{letter-spacing:2px}
         <div class="fld"><label>Passwort</label><input type="password" id="login-pw" placeholder="Eigenes Passwort waehlen..." autocomplete="new-password" onkeydown="if(event.key==='Enter')doLogin()"></div>
         <div id="login-err" style="font-size:12px;color:var(--red);margin-bottom:8px;display:none"></div>
         <button class="btn btn-red" id="login-btn" onclick="doLogin()" style="padding:11px">Anmelden</button>
+        <!-- Manual setup fallback -->
+        <div id="login-manual-setup" style="display:none;margin-top:12px;padding-top:12px;border-top:.5px solid var(--bdr)">
+          <div style="font-size:11px;color:var(--gr3);margin-bottom:8px;font-weight:600">Ersteinrichtung</div>
+          <div class="fld"><label>GitHub Token (ghp_...)</label><input type="password" id="setup-token" placeholder="ghp_..."></div>
+          <button class="btn btn-out" onclick="doManualSetup()" style="padding:9px;font-size:13px">Einrichten</button>
+        </div>
         <div style="margin-top:12px;padding-top:12px;border-top:.5px solid var(--bdr);text-align:center">
           <div style="font-size:11px;color:var(--gr3);margin-bottom:6px">Andere einladen</div>
           <button class="btn btn-out" onclick="showInviteLink()" style="padding:9px;font-size:12px" id="invite-btn" style="display:none">Einladungslink erstellen</button>
@@ -352,6 +358,91 @@ input[type=password]{letter-spacing:2px}
   <div class="tbar">
     <div class="tbar-bk" onclick="go('sh')">&#8592;</div>
     <div><h1>Foto-Rezept</h1><div class="tbar-sub">Rezept aus Foto ableiten</div></div>
+    <button onclick="syncFotoRezepte(this)" style="background:rgba(255,255,255,.2);border:none;border-radius:6px;padding:6px 10px;font-size:12px;color:#fff;cursor:pointer;font-family:inherit;margin-left:auto">&#x1F504;</button>
+  </div>
+
+  <div class="card"><div class="cp">
+    <div class="clbl">Foto hochladen</div>
+    <div id="foto-upload-area" onclick="$('foto-input').click()"
+      style="border:2px dashed var(--bdr);border-radius:var(--r);padding:32px 16px;text-align:center;cursor:pointer;transition:border-color .2s;margin-bottom:10px"
+      ondragover="event.preventDefault();this.style.borderColor='var(--red)'"
+      ondragleave="this.style.borderColor='var(--bdr)'"
+      ondrop="event.preventDefault();this.style.borderColor='var(--bdr)';handleFotoFile(event.dataTransfer.files[0])">
+      <div style="font-size:36px;margin-bottom:8px">&#128247;</div>
+      <div style="font-size:14px;font-weight:600;color:var(--txt)">Foto antippen oder reinziehen</div>
+      <div style="font-size:12px;color:var(--gr3);margin-top:4px">Rezept, Menukarte, Kochbuch-Seite...</div>
+    </div>
+    <input type="file" id="foto-input" accept="image/*" style="display:none" onchange="handleFotoFile(this.files[0])">
+
+    <div id="foto-preview" style="display:none;margin-bottom:10px;text-align:center">
+      <img id="foto-img" style="max-width:100%;max-height:200px;border-radius:var(--r);border:.5px solid var(--bdr)">
+      <div style="margin-top:8px">
+        <button class="btn btn-out" onclick="clearFoto()" style="width:auto;padding:8px 16px;font-size:12px">&#x2715; Anderes Foto</button>
+      </div>
+    </div>
+
+    <div class="fld" style="margin-top:4px">
+      <label>Portionen</label>
+      <div class="chips" id="foto-pchips">
+        <button class="chip" onclick="setFotoP(1)">1</button>
+        <button class="chip on" onclick="setFotoP(2)">2</button>
+        <button class="chip" onclick="setFotoP(3)">3</button>
+        <button class="chip" onclick="setFotoP(4)">4</button>
+      </div>
+    </div>
+    <div class="fld" style="margin-top:8px">
+      <label>Hinweis (optional)</label>
+      <input id="foto-hint" placeholder="z.B. vegetarisch, ohne Nuesse, fuer 2 Personen...">
+    </div>
+
+    <button class="btn btn-red" id="foto-btn" onclick="analyzeFoto()" disabled style="margin-top:4px">Rezept ableiten</button>
+  </div></div>
+
+  <!-- Saved foto recipes -->
+  <div id="foto-saved-section" style="display:none;margin:10px 10px 0">
+    <div style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--gr3);margin-bottom:8px;padding:0 4px">Gespeicherte Rezepte</div>
+    <div id="foto-saved-list"></div>
+  </div>
+
+  <div id="foto-load" style="display:none;text-align:center;padding:32px">
+    <div class="spin" style="width:26px;height:26px;margin:0 auto 12px;border-width:2.5px"></div>
+    <div style="font-size:13px;color:var(--gr3)">Claude analysiert das Foto...</div>
+  </div>
+  <div id="foto-err" style="display:none" class="st er"></div>
+  <div id="foto-result" style="display:none"></div>
+</div>
+
+<!-- HISTORY -->
+<div class="scr" id="sh2">
+  <div class="tbar">
+    <div class="tbar-bk" onclick="go('sh')">&#8592;</div>
+    <div><h1>Verlauf</h1><div class="tbar-sub">Menuplaene &amp; Rezepte</div></div>
+    <button onclick="syncHistory()" style="background:rgba(255,255,255,.2);border:none;border-radius:6px;padding:6px 10px;font-size:12px;color:#fff;cursor:pointer;font-family:inherit;margin-left:auto">&#x1F504;</button>
+  </div>
+  <div class="tabs" style="margin:10px 10px 0">
+    <div class="tab on" id="htab-plans" onclick="hwtab('plans')">&#128197; Menuplaene</div>
+    <div class="tab" id="htab-recipes" onclick="hwtab('recipes')">&#127859; Rezepte</div>
+  </div>
+  <div id="htab-plans-content">
+    <div id="hload" style="display:none;text-align:center;padding:32px">
+      <div class="spin" style="width:22px;height:22px;margin:0 auto 10px;border-width:2px"></div>
+      <div style="font-size:13px;color:var(--gr3)">Lade Verlauf...</div>
+    </div>
+    <div id="hlist" style="padding:10px 10px 0"></div>
+  </div>
+  <div id="htab-recipes-content" style="display:none">
+    <div id="hrecipes-list" style="padding:10px 10px 0"></div>
+  </div>
+  <div style="padding:10px">
+    <button class="btn btn-out" onclick="go('sh')" style="font-size:13px;padding:10px">Zurueck</button>
+  </div>
+</div>
+<!-- FOTO REZEPT -->
+<div class="scr" id="sf">
+  <div class="tbar">
+    <div class="tbar-bk" onclick="go('sh')">&#8592;</div>
+    <div><h1>Foto-Rezept</h1><div class="tbar-sub">Rezept aus Foto ableiten</div></div>
+    <button onclick="syncFotoRezepte(this)" style="background:rgba(255,255,255,.2);border:none;border-radius:6px;padding:6px 10px;font-size:12px;color:#fff;cursor:pointer;font-family:inherit;margin-left:auto">&#x1F504;</button>
   </div>
 
   <div class="card"><div class="cp">
@@ -633,7 +724,9 @@ function doLogin() {
       startSession(username, pw);
       return;
     }
-    err.textContent = 'Kein Zugang. Bitte Einladungslink verwenden.';
+    // Show manual setup option
+    if ($('login-manual-setup')) $('login-manual-setup').style.display = 'block';
+    err.textContent = 'Noch kein Zugang eingerichtet.';
     err.style.display = 'block';
     return;
   }
@@ -761,6 +854,21 @@ function updateGHUI() {
   }
 }
 
+function doManualSetup() {
+  var username = ($('login-user').value || '').trim().toLowerCase().replace(/[^a-z0-9_]/g, '');
+  var pw = $('login-pw').value;
+  var tok = ($('setup-token').value || '').trim();
+  var err = $('login-err');
+  if (!username) { err.textContent = 'Bitte Benutzernamen eingeben'; err.style.display = 'block'; return; }
+  if (!pw) { err.textContent = 'Bitte Passwort eingeben'; err.style.display = 'block'; return; }
+  if (!tok || !tok.startsWith('ghp_')) { err.textContent = 'Bitte gueltigen GitHub Token eingeben (ghp_...)'; err.style.display = 'block'; return; }
+  var enc = btoa(unescape(encodeURIComponent(tok + '|||' + pw)));
+  var users = getUsers();
+  users.push({ username: username, enc: enc, isAdmin: true });
+  saveUsers(users);
+  startSession(username, pw);
+}
+
 function copyInviteLink() {
   var btn = $('copy-invite-btn');
   if (window._inviteUrl) {
@@ -805,17 +913,19 @@ function syncAllFromGH() {
         renderActivePlan();
       }
     }).catch(function(){});
-  // Load foto rezepte
+  // Load foto rezepte from GH (authoritative)
   fetch('https://raw.githubusercontent.com/' + GH_REPO + '/main/' + ghFile('foto-rezepte.json') + '?t=' + Date.now())
     .then(function(r) { return r.ok ? r.json() : null; })
     .then(function(fr) {
       if (!Array.isArray(fr)) return;
+      // GH is authoritative - merge local-only entries
       var local = JSON.parse(localStorage.getItem('foto_rezepte') || '[]');
       var merged = fr.slice();
       local.forEach(function(l) {
         if (!merged.find(function(g){ return g.name === l.name; })) merged.push(l);
       });
       localStorage.setItem('foto_rezepte', JSON.stringify(merged));
+      console.log('Foto-Rezepte von GH geladen:', merged.length);
     }).catch(function(){});
 }
 
@@ -1706,6 +1816,7 @@ function saveToHistory(planData) {
     reste: planData.reste,
     freeze: planData.freeze,
     gerichte: planData.sug ? planData.sug.gerichte.map(function(g){return {tag:g.tag, abend:g.abend};}) : [],
+    status: 'geplant',
     plan: planData
   };
   var url = 'https://api.github.com/repos/' + GH_REPO + '/contents/' + ghFile('history.json');
@@ -1789,10 +1900,106 @@ function deleteSavedFotoRezept(i) {
 function openHistory() {
   go('sh2');
   loadHistory();
+  // Reset to plans tab
+  if ($('htab-plans')) $('htab-plans').classList.add('on');
+  if ($('htab-recipes')) $('htab-recipes').classList.remove('on');
+  if ($('htab-plans-content')) $('htab-plans-content').style.display = 'block';
+  if ($('htab-recipes-content')) $('htab-recipes-content').style.display = 'none';
 }
 
 function syncHistory() {
   loadHistory();
+  loadHistoryRecipes();
+}
+
+function hwtab(t) {
+  $('htab-plans').classList.toggle('on', t === 'plans');
+  $('htab-recipes').classList.toggle('on', t === 'recipes');
+  $('htab-plans-content').style.display = t === 'plans' ? 'block' : 'none';
+  $('htab-recipes-content').style.display = t === 'recipes' ? 'block' : 'none';
+  if (t === 'recipes') loadHistoryRecipes();
+}
+
+function loadHistoryRecipes() {
+  var saved = JSON.parse(localStorage.getItem('foto_rezepte') || '[]');
+  var el = $('hrecipes-list');
+  if (!el) return;
+  if (!saved.length) {
+    el.innerHTML = '<div style="text-align:center;padding:40px;color:var(--gr3);font-size:13px">Noch keine gespeicherten Rezepte.<br><small>Foto-Rezept erstellen und speichern.</small></div>';
+    return;
+  }
+  var html = saved.map(function(r, i) {
+    var zCount = (r.zutaten||[]).length;
+    var sCount = (r.schritte||[]).length;
+    return '<div style="background:#fff;border-radius:var(--rlg);border:.5px solid var(--bdr);margin-bottom:8px;overflow:hidden">' +
+      '<div style="padding:12px 14px;border-bottom:.5px solid var(--gr);display:flex;align-items:center;gap:10px">' +
+        '<div style="width:36px;height:36px;border-radius:8px;background:var(--rl);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0">&#127859;</div>' +
+        '<div style="flex:1;min-width:0">' +
+          '<div style="font-size:15px;font-weight:700;color:var(--txt);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + (r.name||'Rezept') + '</div>' +
+          '<div style="font-size:11px;color:var(--gr3);margin-top:2px">' +
+            (r.saved||r.date||'') + ' · ' + (r.portionen||2) + ' Personen' +
+            (r.zeit_total ? ' · ' + r.zeit_total : '') +
+            ' · ' + zCount + ' Zutaten · ' + sCount + ' Schritte' +
+          '</div>' +
+        '</div>' +
+      '</div>' +
+      '<div style="padding:8px 14px;display:flex;gap:6px;flex-wrap:wrap">' +
+        '<div style="width:100%;margin-bottom:4px">' + statusBadge(r.status||'geplant') + '</div>' +
+        '<button class="btn btn-red" onclick="openHistoryRecipe(' + i + ')" style="flex:1;padding:9px;font-size:12px">Rezept oeffnen</button>' +
+        '<button class="btn btn-out" onclick="importHistoryRecipeToBring(' + i + ')" style="flex:1;padding:9px;font-size:12px">In Bring!</button>' +
+        (r.status !== 'gekocht' ? '<button class="btn btn-out" onclick="markFotoRezeptGekocht(' + i + ')" style="flex:1;padding:9px;font-size:11px">&#127859; Gekocht</button>' : '') +
+        '<button onclick="deleteHistoryRecipe(' + i + ')" style="background:none;border:.5px solid var(--bdr);border-radius:8px;padding:9px 12px;color:var(--gr3);cursor:pointer;font-size:16px">&#x2715;</button>' +
+      '</div>' +
+    '</div>';
+  }).join('');
+  el.innerHTML = html;
+  window._historyRecipes = saved;
+}
+
+function openHistoryRecipe(i) {
+  var saved = JSON.parse(localStorage.getItem('foto_rezepte') || '[]');
+  var r = saved[i];
+  if (!r) return;
+  window._fotoRezept = r;
+  G_foto.portionen = r.portionen || 2;
+  // Go to foto screen and show result
+  go('sf');
+  $('foto-upload-area').style.display = 'none';
+  $('foto-preview').style.display = 'none';
+  $('foto-result').style.display = 'none';
+  loadSavedFotoRezepte();
+  renderFotoRezept(r);
+  setTimeout(function(){
+    var el = $('foto-result');
+    if (el) el.scrollIntoView({behavior:'smooth', block:'start'});
+  }, 150);
+}
+
+function importHistoryRecipeToBring(i) {
+  var saved = JSON.parse(localStorage.getItem('foto_rezepte') || '[]');
+  var r = saved[i];
+  if (!r) return;
+  window._fotoRezept = r;
+  G_foto.portionen = r.portionen || 2;
+  importFotoFromResult();
+}
+
+function markFotoRezeptGekocht(i) {
+  var saved = JSON.parse(localStorage.getItem('foto_rezepte') || '[]');
+  if (!saved[i]) return;
+  saved[i].status = 'gekocht';
+  localStorage.setItem('foto_rezepte', JSON.stringify(saved));
+  loadHistoryRecipes();
+  loadSavedFotoRezepte();
+}
+
+function deleteHistoryRecipe(i) {
+  if (!confirm('Rezept loeschen?')) return;
+  var saved = JSON.parse(localStorage.getItem('foto_rezepte') || '[]');
+  saved.splice(i, 1);
+  localStorage.setItem('foto_rezepte', JSON.stringify(saved));
+  loadHistoryRecipes();
+  loadSavedFotoRezepte();
 }
 
 function loadHistory() {
@@ -1822,33 +2029,54 @@ function loadHistory() {
     });
 }
 
+var STATUS_CFG = {
+  'geplant':  { label: 'Geplant',         bg: '#f5f5f5', color: '#888',           icon: '&#128197;' },
+  'einkauf':  { label: 'Eingekauft',       bg: '#e3f2fd', color: '#1565c0',        icon: '&#9989;'   },
+  'gekocht':  { label: 'Gekocht',          bg: '#e8f5e9', color: '#2e7d32',        icon: '&#127859;' }
+};
+
+function statusBadge(status) {
+  var cfg = STATUS_CFG[status] || STATUS_CFG['geplant'];
+  return '<span style="background:' + cfg.bg + ';color:' + cfg.color + ';font-size:11px;font-weight:700;padding:3px 9px;border-radius:100px;white-space:nowrap">' + cfg.icon + ' ' + cfg.label + '</span>';
+}
+
 function renderHistoryList(history) {
   var html = '';
   for (var i = 0; i < history.length; i++) {
     var e = history[i];
     var dishes = (e.gerichte||[]).map(function(g){
-      return '<span style="font-size:11px;color:var(--gr3)">' + (g.tag||'').slice(0,2) + '</span> ' + (g.abend||'');
-    }).join('<br>');
-    var stars = e.stars ? ' · ' + '★'.repeat(e.stars) : '';
+      return '<div style="display:flex;gap:6px;padding:2px 0"><span style="font-size:11px;font-weight:700;color:var(--red);min-width:20px">' + (g.tag||'').slice(0,2) + '</span><span style="font-size:13px;color:var(--txt2)">' + (g.abend||'') + '</span></div>';
+    }).join('');
+    var stars = e.stars ? '<span style="color:#f59e0b;margin-left:4px">' + '★'.repeat(e.stars) + '</span>' : '';
+    var status = e.status || 'geplant';
     html += '<div style="background:#fff;border-radius:var(--rlg);border:.5px solid var(--bdr);margin-bottom:8px;overflow:hidden">' +
       '<div style="padding:10px 14px;border-bottom:.5px solid var(--gr)">' +
-        '<div style="display:flex;justify-content:space-between;align-items:center">' +
-          '<div style="font-size:15px;font-weight:700;color:var(--txt)">' + (e.thema||'Menuplan') + '</div>' +
-          '<div style="font-size:11px;color:var(--gr3)">' + (e.saved||e.date||'') + '</div>' +
+        '<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:6px">' +
+          '<div style="font-size:15px;font-weight:700;color:var(--txt);flex:1">' + (e.thema||'Menuplan') + stars + '</div>' +
+          statusBadge(status) +
         '</div>' +
-        '<div style="font-size:11px;color:var(--gr3);margin-top:2px">' +
-          (e.personen||2) + ' Personen · ' + (e.kochabende||3) + ' Abende' +
-          (e.reste ? ' · Reste' : '') + (e.freeze ? ' · Einfrieren' : '') + stars +
+        '<div style="font-size:11px;color:var(--gr3)">' +
+          (e.saved||e.date||'') + ' · ' + (e.personen||2) + ' Pers. · ' + (e.kochabende||3) + ' Abende' +
         '</div>' +
       '</div>' +
-      '<div style="padding:8px 14px;font-size:13px;color:var(--txt2);line-height:1.8">' + dishes + '</div>' +
-      '<div style="padding:0 14px 10px">' +
-        '<button class="btn btn-out" onclick="loadHistoryEntry(' + i + ')" style="padding:9px;font-size:12px">Plan laden</button>' +
+      '<div style="padding:8px 14px">' + dishes + '</div>' +
+      '<div style="padding:0 14px 10px;display:flex;gap:6px">' +
+        '<button class="btn btn-out" onclick="loadHistoryEntry(' + i + ')" style="flex:1;padding:9px;font-size:12px">Plan laden</button>' +
+        (status !== 'gekocht' ? '<button class="btn btn-out" onclick="markHistoryKekocht(' + i + ')" style="flex:1;padding:9px;font-size:12px">Als gekocht markieren</button>' : '') +
       '</div>' +
     '</div>';
   }
   $('hlist').innerHTML = html || '<div style="text-align:center;padding:40px;color:var(--gr3);font-size:13px">Noch keine gespeicherten Plaene.</div>';
   window._history = history;
+}
+
+function markHistoryKekocht(i) {
+  var hist = window._history;
+  if (!hist || !hist[i]) return;
+  hist[i].status = 'gekocht';
+  localStorage.setItem('local_history', JSON.stringify(hist));
+  saveHistoryToGH(hist);
+  renderHistoryList(hist);
 }
 
 function loadHistoryEntry(i) {
@@ -2121,8 +2349,9 @@ function renderFotoRezept(r) {
 function importFotoFromResult() {
   if (!window._fotoRezept) return;
   var r = window._fotoRezept;
-  // Auto-save so it's always accessible
-  saveFotoRezeptSilent(r);
+  // Auto-save with status 'einkauf'
+  r.status = 'einkauf';
+  saveFotoRezeptSilent(r, 'einkauf');
   var tmpSug = {
     thema: r.name || 'Foto-Rezept',
     kochabende: [],
@@ -2150,7 +2379,7 @@ function importFotoFromResult() {
   if (te && te.firstChild) te.insertBefore(backBtn, te.firstChild);
 }
 
-function saveFotoRezeptSilent(r) {
+function saveFotoRezeptSilent(r, status) {
   var entry = {
     id: Date.now(),
     date: new Date().toISOString().slice(0,10),
@@ -2162,13 +2391,51 @@ function saveFotoRezeptSilent(r) {
     portionen: G_foto.portionen,
     zutaten: r.zutaten || [],
     schritte: r.schritte || [],
-    tipp: r.tipp || ''
+    tipp: r.tipp || '',
+    status: status || r.status || 'geplant'
   };
   var saved = JSON.parse(localStorage.getItem('foto_rezepte') || '[]');
   var exists = saved.findIndex(function(s){ return s.name === entry.name; });
   if (exists >= 0) saved[exists] = entry; else saved.unshift(entry);
   if (saved.length > 100) saved = saved.slice(0, 100);
   localStorage.setItem('foto_rezepte', JSON.stringify(saved));
+  // Sync to GitHub
+  saveFotoRezepteToGH(saved);
+}
+
+function saveFotoRezepteToGH(saved) {
+  var tok = getGHToken();
+  if (!tok) return;
+  var url = 'https://api.github.com/repos/' + GH_REPO + '/contents/' + ghFile('foto-rezepte.json');
+  var headers = { 'Authorization': 'token ' + tok, 'Content-Type': 'application/json', 'Accept': 'application/vnd.github.v3+json' };
+  fetch(url, { headers: headers })
+    .then(function(r) { return r.ok ? r.json() : null; })
+    .then(function(existing) {
+      var body = { message: 'Foto-Rezepte aktualisiert', content: btoa(unescape(encodeURIComponent(JSON.stringify(saved, null, 2)))) };
+      if (existing && existing.sha) body.sha = existing.sha;
+      return fetch(url, { method: 'PUT', headers: headers, body: JSON.stringify(body) });
+    })
+    .then(function(r) { if (r && r.ok) console.log('Foto-Rezepte auf GitHub gespeichert'); })
+    .catch(function(e) { console.warn('Foto-Rezepte GH save:', e); });
+}
+
+function syncFotoRezepte(btn) {
+  var origText = btn ? btn.textContent : '';
+  if (btn) { btn.textContent = '...'; btn.disabled = true; }
+  fetch('https://raw.githubusercontent.com/' + GH_REPO + '/main/' + ghFile('foto-rezepte.json') + '?t=' + Date.now())
+    .then(function(r) { return r.ok ? r.json() : null; })
+    .then(function(fr) {
+      if (!Array.isArray(fr)) { if (btn) { btn.textContent = 'Leer'; setTimeout(function(){ btn.textContent = origText; btn.disabled = false; }, 1500); } return; }
+      var local = JSON.parse(localStorage.getItem('foto_rezepte') || '[]');
+      var merged = fr.slice();
+      local.forEach(function(l) {
+        if (!merged.find(function(g){ return g.name === l.name; })) merged.push(l);
+      });
+      localStorage.setItem('foto_rezepte', JSON.stringify(merged));
+      loadSavedFotoRezepte();
+      if (btn) { btn.textContent = 'OK'; setTimeout(function(){ btn.textContent = origText; btn.disabled = false; }, 1500); }
+    })
+    .catch(function() { if (btn) { btn.textContent = 'Err'; setTimeout(function(){ btn.textContent = origText; btn.disabled = false; }, 1500); } });
 }
 
 function saveFotoRezept() {
@@ -2283,6 +2550,36 @@ function markEinkaufDone() {
   localStorage.setItem('active_plan', JSON.stringify(G.activePlan));
   renderActivePlan();
   saveToGH(G.activePlan);
+  // Update history entry status
+  updateHistoryStatus(G.activePlan.saved || G.activePlan.date, 'einkauf');
+}
+
+function updateHistoryStatus(savedDate, status) {
+  var hist = JSON.parse(localStorage.getItem('local_history') || '[]');
+  var found = false;
+  for (var i = 0; i < hist.length; i++) {
+    if (hist[i].saved === savedDate || hist[i].date === savedDate) {
+      hist[i].status = status; found = true; break;
+    }
+  }
+  if (!found && hist.length) { hist[0].status = status; } // fallback: update latest
+  localStorage.setItem('local_history', JSON.stringify(hist));
+  // Also update on GitHub
+  saveHistoryToGH(hist);
+}
+
+function saveHistoryToGH(hist) {
+  var tok = getGHToken();
+  if (!tok) return;
+  var url = 'https://api.github.com/repos/' + GH_REPO + '/contents/' + ghFile('history.json');
+  var headers = { 'Authorization': 'token ' + tok, 'Content-Type': 'application/json', 'Accept': 'application/vnd.github.v3+json' };
+  fetch(url, { headers: headers })
+    .then(function(r) { return r.ok ? r.json() : null; })
+    .then(function(existing) {
+      var body = { message: 'Status aktualisiert', content: btoa(unescape(encodeURIComponent(JSON.stringify(hist, null, 2)))) };
+      if (existing && existing.sha) body.sha = existing.sha;
+      return fetch(url, { method: 'PUT', headers: headers, body: JSON.stringify(body) });
+    }).catch(function(){});
 }
 
 function clearActivePlan() {
