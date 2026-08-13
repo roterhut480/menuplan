@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
-<title>Menuplan v4.9</title>
+<title>Menuplan v5.0</title>
 <style>
 :root{
   --red:#e8390e;--rl:#fff2ef;--grn:#2e7d32;--grl:#f0faf4;
@@ -145,7 +145,7 @@ input[type=password]{letter-spacing:2px}
 
 <!-- HOME -->
 <div class="scr on" id="sh">
-  <div class="hero"><h1>Menuplan</h1><p id="hsub">v4.9 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
+  <div class="hero"><h1>Menuplan</h1><p id="hsub">v5.0 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
 
   <!-- Active plan card -->
   <div id="active-plan" style="display:none;margin:10px 10px 0">
@@ -2357,7 +2357,8 @@ function renderFotoRezept(r) {
       sRows +
     '</div></div>' +
     '<div style="padding:0 10px 10px;display:flex;flex-direction:column;gap:8px">' +
-      '<button class="btn btn-red" onclick="importFotoFromResult()" style="font-size:13px">In Bring! importieren</button>' +
+      '<button class="btn btn-red" onclick="startFotoCook()" style="font-size:13px">&#128113; Jetzt kochen</button>' +
+      '<button class="btn btn-out" onclick="importFotoFromResult()" style="font-size:13px">In Bring! importieren</button>' +
       '<div style="display:flex;gap:8px">' +
         '<button class="btn btn-out" onclick="saveFotoRezept()" style="flex:1;font-size:13px">&#128190; Speichern</button>' +
         '<button class="btn btn-out" onclick="showFotoPrint()" style="flex:1;font-size:13px">&#128438; PDF</button>' +
@@ -2441,6 +2442,47 @@ function saveFotoRezepteToGH(saved) {
     })
     .then(function(r) { if (r && r.ok) console.log('Foto-Rezepte auf GitHub gespeichert'); })
     .catch(function(e) { console.warn('Foto-Rezepte GH save:', e); });
+}
+
+function startFotoCook() {
+  var r = window._fotoRezept;
+  if (!r) return;
+
+  // Convert foto recipe steps to cook step format
+  var steps = (r.schritte || []).map(function(s) {
+    return {
+      type: 'v',
+      titel: s.titel || s.title || '',
+      text: s.text || '',
+      timer_min: s.timer_min || 0,
+      zs: s.zutaten_schritt || []
+    };
+  });
+
+  if (!steps.length) {
+    alert('Keine Kochschritte vorhanden. Bitte zuerst ein Rezept ableiten.');
+    return;
+  }
+
+  // Set up cook state
+  G.steps = steps;
+  G.cur = -1; G.act = 0; G.done = {};
+  G.cookingGerichtIdx = null; // no rating for foto recipes
+  clearInterval(G.tiv);
+
+  // Set cook screen title
+  if ($('ctit')) $('ctit').textContent = r.name || 'Foto-Rezept';
+
+  // Build ingredients overview
+  var fakeGericht = {
+    abend: r.name || 'Foto-Rezept',
+    mittag_naechster_tag: null,
+    zutaten: r.zutaten || [],
+    zeit_aktiv: r.zeit_aktiv || '',
+    zeit_total: r.zeit_total || ''
+  };
+  showIngOverview(fakeGericht);
+  go('sc');
 }
 
 function syncFotoRezepte(btn) {
