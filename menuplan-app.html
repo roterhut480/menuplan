@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
-<title>Menuplan v3.8</title>
+<title>Menuplan v3.9</title>
 <style>
 :root{
   --red:#e8390e;--rl:#fff2ef;--grn:#2e7d32;--grl:#f0faf4;
@@ -145,7 +145,7 @@ input[type=password]{letter-spacing:2px}
 
 <!-- HOME -->
 <div class="scr on" id="sh">
-  <div class="hero"><h1>Menuplan</h1><p id="hsub">v3.8 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
+  <div class="hero"><h1>Menuplan</h1><p id="hsub">v3.9 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
 
   <!-- Active plan card -->
   <div id="active-plan" style="display:none;margin:10px 10px 0">
@@ -1869,6 +1869,8 @@ function renderFotoRezept(r) {
 function importFotoFromResult() {
   if (!window._fotoRezept) return;
   var r = window._fotoRezept;
+  // Auto-save so it's always accessible
+  saveFotoRezeptSilent(r);
   var tmpSug = {
     thema: r.name || 'Foto-Rezept',
     kochabende: [],
@@ -1882,13 +1884,18 @@ function importFotoFromResult() {
   }
   $('wtit').textContent = r.name || 'Foto-Rezept';
   $('wsub').textContent = 'Foto-Rezept';
+  // Add "Rezept anzeigen" button to Einkauf tab
   renderEink(tmpSug);
+  // Add back-to-recipe button
+  var backBtn = document.createElement('div');
+  backBtn.style.cssText = 'padding:10px 10px 0';
+  backBtn.innerHTML = '<button class="btn btn-out" onclick="openFotoScreen()" style="font-size:13px;padding:10px">&#8592; Zurueck zum Rezept</button>';
+  var te = $('te');
+  if (te) te.insertBefore(backBtn, te.firstChild);
   go('sw'); wtab('e');
 }
 
-function saveFotoRezept() {
-  if (!window._fotoRezept) return;
-  var r = window._fotoRezept;
+function saveFotoRezeptSilent(r) {
   var entry = {
     id: Date.now(),
     date: new Date().toISOString().slice(0,10),
@@ -1903,11 +1910,16 @@ function saveFotoRezept() {
     tipp: r.tipp || ''
   };
   var saved = JSON.parse(localStorage.getItem('foto_rezepte') || '[]');
-  // Check if already saved (same name)
   var exists = saved.findIndex(function(s){ return s.name === entry.name; });
   if (exists >= 0) saved[exists] = entry; else saved.unshift(entry);
   if (saved.length > 100) saved = saved.slice(0, 100);
   localStorage.setItem('foto_rezepte', JSON.stringify(saved));
+}
+
+function saveFotoRezept() {
+  if (!window._fotoRezept) return;
+  saveFotoRezeptSilent(window._fotoRezept);
+  loadSavedFotoRezepte();
   // Show confirmation
   var btn = event.target;
   btn.textContent = 'Gespeichert!';
