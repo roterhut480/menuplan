@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
-<title>Menuplan v5.1</title>
+<title>Menuplan v5.6</title>
 <style>
 :root{
   --red:#e8390e;--rl:#fff2ef;--grn:#2e7d32;--grl:#f0faf4;
@@ -145,7 +145,7 @@ input[type=password]{letter-spacing:2px}
 
 <!-- HOME -->
 <div class="scr on" id="sh">
-  <div class="hero"><h1>Menuplan</h1><p id="hsub">v5.1 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
+  <div class="hero"><h1>Menuplan</h1><p id="hsub">v5.6 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
 
   <!-- Active plan card -->
   <div id="active-plan" style="display:none;margin:10px 10px 0">
@@ -243,6 +243,14 @@ input[type=password]{letter-spacing:2px}
           <button class="chip on" onclick="setP(2)">2 Personen</button>
           <button class="chip" onclick="setP(3)">3 Personen</button>
           <button class="chip" onclick="setP(4)">4 Personen</button>
+        </div>
+      </div>
+      <div class="fld" style="margin-top:10px">
+        <label>Fleisch-Modus</label>
+        <div class="chips" id="mchips">
+          <button class="chip" onclick="setM('vegi')">Vegetarisch</button>
+          <button class="chip on" onclick="setM('optional')">Optional Fleisch</button>
+          <button class="chip" onclick="setM('fleisch')">Alle mit Fleisch</button>
         </div>
       </div>
       <div class="fld" style="margin-top:10px">
@@ -539,7 +547,7 @@ var BH = {
 
 // ─── STATE ─────────────────────────────────────────────────
 var G = {
-  n: 3, personen: 2, reste: 1, freeze: 1, sugsPartial: false,
+  n: 3, personen: 2, modus: 'optional', reste: 1, freeze: 1, sugsPartial: false,
   sugs: [], sel: null,
   steps: [], cur: 0, act: 0, done: {},
   tiv: null, tl: 0, tt: 0,
@@ -582,6 +590,13 @@ function setP(p) {
   var chips = $('pchips').querySelectorAll('.chip');
   for (var i = 0; i < chips.length; i++) chips[i].classList.toggle('on', i === p - 1);
 }
+function setM(m) {
+  G.modus = m;
+  var chips = $('mchips').querySelectorAll('.chip');
+  chips[0].classList.toggle('on', m === 'vegi');
+  chips[1].classList.toggle('on', m === 'optional');
+  chips[2].classList.toggle('on', m === 'fleisch');
+}
 function setR(v) {
   G.reste = v;
   var chips = $('rchips').querySelectorAll('.chip');
@@ -596,52 +611,7 @@ function setF(v) {
 }
 
 // ─── SYSTEM PROMPT BUILDER ─────────────────────────────────
-function buildSYS() {
-  var p = G.personen || 2;
-  var portAbend  = p;
-  var portMittag = G.reste  ? p : 0;
-  var portFreeze = G.freeze ? 2 : 0;
-  var portTotal  = portAbend + portMittag + portFreeze;
-  var port = portTotal + ' total (' + portAbend + ' Abend' +
-    (portMittag ? ' + ' + portMittag + ' Mittag naechster Tag' : '') +
-    (portFreeze ? ' + 2 Einfrieren' : '') + ')';
 
-  var resteRule = G.reste
-    ? 'Reste vom Abend werden am naechsten Mittag verwendet (nur Mikrowelle oder kalt, kein Herd). Plane Gerichte die sich als Reste eignen: aufwaermbare Saucen, Eintöpfe, Currys. Reste muessen sich klar vom Abend unterscheiden z.B. Abend: Pasta mit Sauce, Mittag: kalter Pastasalat.'
-    : 'Keine Resteverwertung - nur Abendessen planen, keine Mittage. Koche nur 2 Portionen pro Abend (eine pro Person). Keine Erwaehnung von Resten oder Mittag in den Schritten.';
-  var freezeRule = G.freeze
-    ? '+2 Einfrierportionen mitkochen und in Tupperdosen einfrieren. Waehle Gerichte die sich gut einfrieren lassen: Saucen, Eintöpfe, Currys, Suppen, Bolognese. Keine Gerichte die beim Einfrieren leiden: Pasta (nur Sauce einfrieren), frische Salate, Gerichte mit rohem Avocado oder Gurke.'
-    : 'KEINE Einfrierportionen - koche exakt die benoetigte Menge. Waehle Gerichte die nicht eingefroren werden muessen und plane Portionen entsprechend kleiner. Keine Erwaehnung von Einfrieren in den Schritten.';
-
-  var mittag = G.reste ? '"mittag_naechster_tag":"Name","mittag_tag":"Dienstag",' : '';
-  var prep   = G.reste ? ',"prep_next":["Reste abfuellen","Mittags aufwaermen"]' : '';
-  var frz    = G.freeze? ',"einfrieren":["2 Port. einfrieren","Beschriften"]' : '';
-
-  var json = '{"vorschlaege":[{"id":1,"thema":"Thema","kochabende":["Mo","Mi"],"gerichte":[{"tag":"Montag","abend":"Name","zeit_aktiv":"15 Min.","zeit_total":"45 Min.",' + mittag + '"zutaten":[{"name":"Karotten","menge":"2 Stk"},{"name":"Oel","menge":"2 EL"}],"schritte_vegi":[{"text":"Schritt mit Mengenangaben","timer_min":5,"zutaten_schritt":["2 Zwiebeln"]}],"schritte_fleisch":[{"text":"Fleisch separat","timer_min":5,"zutaten_schritt":["300g Haehnchen"]}]' + prep + frz + ',"tipp":"Tipp"}]}]}';
-
-  var personenHinweis = p === 1
-    ? '1 Person (vegi). Alle Mengen fuer 1 Person berechnen.'
-    : p + ' Personen (davon 1 vegi, ' + (p-1) + ' vegi+Fleisch optional). Alle Mengen fuer ' + p + ' Personen berechnen.';
-
-  return 'NUR valides JSON, kein Text davor/danach. Keine Apostrophe in Strings. ' +
-    personenHinweis + ' Zuerich. Basis immer vegi. Mittags Mikrowelle/kalt. ' +
-    'Portionen pro Rezept: ' + port + '. Alle Zutatenmengen auf ' + portTotal + ' Portionen berechnen. ' +
-    resteRule + ' ' + freezeRule + ' ' +
-    'Keine 2 schwere KH. Mediterran/kohaerent. Proteinreich. Empfindliches frueh. ' +
-    'EINKAUFSEFFIZIENZ - sehr wichtig: ' +
-    '1. Zutaten-Ueberschneidung maximieren: Verwende ueber alle Kochabende hinweg moeglichst die gleichen Grundzutaten (z.B. Kichererbsen, Feta, Zucchini, Karotten, Zwiebeln, Knoblauch) damit keine Reste weggeworfen werden. ' +
-    '2. Saisonale und guenstige Zutaten bevorzugen: Huelsenfruechte (Linsen, Kichererbsen, Bohnen aus Dose), Eier, TK-Gemuese, Karotten, Zucchini, Zwiebeln, Kartoffeln sind guenstig und nahrhaft. Teure Einzelzutaten vermeiden die nur fuer ein Gericht gekauft werden. ' +
-    '3. Groesse beachten: z.B. 1 Dose Kichererbsen wird nicht fuer 1 EL verwendet - plane ganze Packungsgroessen ein. ' +
-    '4. Frische Kraeuter sparsam einsetzen: wenn Petersilie gekauft wird, soll sie in mindestens 2 Gerichten vorkommen. ' +
-    'Jedes Gericht hat zeit_aktiv (nur haendische Arbeit) und zeit_total (inkl. warten/kochen/backen). ' +
-    'Schritte mit Mengen und zutaten_schritt pro Schritt. ' +
-    'Jeden Schritt mit kurzem Kontext beginnen wohin die Zutaten kommen, z.B. ' +
-    '"In eine grosse Schuessel: Gurken und Tomaten schneiden" oder "In die Pfanne: Zwiebeln anbraten". ' +
-    'So weiss man beim schrittweisen Kochen immer wohin alles gehoert. ' +
-    'timer_min NUR setzen wenn aktiv gewartet werden muss (kochen, braten, backen, marinieren, ruhen). ' +
-    'Bei Vorbereitungsschritten (schneiden, hacken, abwiegen, mischen) IMMER timer_min:0. ' +
-    'Format exakt: ' + json;
-}
 
 // ─── INIT ──────────────────────────────────────────────────
 window.addEventListener('DOMContentLoaded', function() {
@@ -1147,9 +1117,22 @@ function buildSYS_overview() {
   var mittag = G.reste ? '"mittag_naechster_tag":"ResteName","mittag_tag":"Tag",' : '';
   var json = '{"vorschlaege":[{"id":1,"thema":"Thema","kochabende":["Mo","Mi","Fr"],"gerichte":[{"tag":"Montag","abend":"Gerichtsname","zeit_aktiv":"15 Min.","zeit_total":"40 Min.",' + mittag + '"zutaten":[{"name":"Karotten","menge":"300g"},{"name":"Kichererbsen","menge":"1 Dose 400g"}],"tipp":"Kurzer Tipp"}]}]}';
 
+  var modusText = '';
+  if (G.modus === 'vegi') {
+    modusText = 'Alle ' + p + ' Personen vegetarisch. Kein Fleisch. Keine Fleisch-Beilagen.';
+  } else if (G.modus === 'optional') {
+    modusText = p + ' Personen. 1 Person strikt vegetarisch (kein Fisch). ' + (p>1 ? (p-1) + ' Person(en) vegi + optional Fleisch als separate Beilage.' : '');
+  } else {
+    modusText = p + ' Personen. Alle Personen essen Fleisch. Fleisch ist integrierter Bestandteil der Gerichte, keine separate Zubereitung noetig.';
+  }
+  var fleischRule = G.modus === 'vegi'
+    ? 'Keine Fleischgerichte. Proteinreich durch Huelsenfruechte, Tofu, Tempeh, Eier, Kaese.'
+    : G.modus === 'optional'
+    ? 'Basis immer vegi, Fleisch immer separat zubereitet (zweite Pfanne). Keine doppelten Fleischsorten pro Woche.'
+    : 'Fleisch integriert im Gericht. Alle ' + p + ' Personen essen dasselbe - keine separate Zubereitung.';
+
   return 'Antworte NUR mit JSON, kein Text. Keine Apostrophe in Strings. ' +
-    p + ' Personen Zuerich, 1 Person vegi (kein Fisch), ' + (p>1 ? (p-1) + ' Person vegi+Fleisch separat. ' : '') +
-    'Basis vegi, Fleisch immer separat. Mittags nur Mikrowelle/kalt. ' +
+    modusText + ' ' + fleischRule + ' Mittags nur Mikrowelle/kalt. ' +
     'Portionen: ' + portTotal + ' (' + portAbend + ' Abend' + (portMittag?'+'+portMittag+' Mittag':'') + (portFreeze?'+2 Einfrieren':'') + '). ' +
     (G.reste ? 'Reste-Kette: Abend->naechster Mittag (unterschiedlich serviert). ' : 'Keine Reste. ') +
     (G.freeze ? 'Einfrieren: nur Saucen/Eintoepfe ohne Beilage. ' : '') +
@@ -1302,11 +1285,34 @@ function goSuggest() {
 
   var ratingsHint = '';
   try {
+    // Collect ratings from local_ratings (from cooking)
     var lr = JSON.parse(localStorage.getItem('local_ratings') || '[]');
-    var good = lr.filter(function(r){ return r.stars >= 4; }).slice(0,3).map(function(r){ return r.gericht; });
-    var bad  = lr.filter(function(r){ return r.stars <= 2; }).slice(0,3).map(function(r){ return r.gericht; });
-    if (good.length) ratingsHint += ' Aehnliches wie diese gut bewerteten Gerichte: ' + good.join(', ') + '.';
-    if (bad.length)  ratingsHint += ' Diese Gerichte vermeiden: ' + bad.join(', ') + '.';
+    // Also collect from local_history and foto_rezepte
+    var hist = JSON.parse(localStorage.getItem('local_history') || '[]');
+    var fotos = JSON.parse(localStorage.getItem('foto_rezepte') || '[]');
+    var goodItems = [], badItems = [];
+
+    lr.forEach(function(r) {
+      if (r.stars >= 4) goodItems.push({ name: r.gericht, stars: r.stars });
+      if (r.stars <= 2) badItems.push({ name: r.gericht, stars: r.stars });
+    });
+    hist.forEach(function(h) {
+      if (h.stars >= 4) goodItems.push({ name: h.thema, stars: h.stars });
+      if (h.stars <= 2) badItems.push({ name: h.thema, stars: h.stars });
+    });
+    fotos.forEach(function(f) {
+      if (f.stars >= 4) goodItems.push({ name: f.name, stars: f.stars });
+      if (f.stars <= 2) badItems.push({ name: f.name, stars: f.stars });
+    });
+
+    // Sort by stars descending, take top 4 each
+    goodItems.sort(function(a,b){ return b.stars - a.stars; });
+    badItems.sort(function(a,b){ return a.stars - b.stars; });
+    var good = goodItems.slice(0,4).map(function(r){ return r.name + ' (' + r.stars + '/5)'; });
+    var bad  = badItems.slice(0,4).map(function(r){ return r.name + ' (' + r.stars + '/5)'; });
+
+    if (good.length) ratingsHint += ' VORLIEBEN: Diese Gerichte oder aehnliche Gerichte derselben Kueche/desselben Stils wurden gut bewertet - aehnliche Kuechen, Aromen und Zutaten bevorzugen (aber nicht exakt gleiche Gerichte): ' + good.join(', ') + '.';
+    if (bad.length)  ratingsHint += ' ABNEIGUNGEN: Diese Gerichte oder aehnliche Gerichte dieser Kueche/dieses Stils wurden schlecht bewertet - entsprechende Kuechen, Aromen und Zutaten vermeiden: ' + bad.join(', ') + '.';
   } catch(e) {}
   // Add recent dishes to avoid repetition
   var recentHint = '';
@@ -1318,11 +1324,11 @@ function goSuggest() {
       for (var gi = 0; gi < ge.length; gi++) recentDishes.push(ge[gi].abend);
     }
     if (recentDishes.length > 0) {
-      recentHint = ' WICHTIG - Diese Gerichte wurden kuerzlich gekocht und sollen NICHT wiederholt werden: ' + recentDishes.join(', ') + '. Voellig andere Gerichte vorschlagen.';
+      recentHint = ' ABWECHSLUNG - Diese Gerichte wurden in den letzten Wochen gekocht: ' + recentDishes.join(', ') + '. Bitte andere Gerichte vorschlagen (gleiche Kueche ist ok, aber nicht dasselbe Gericht).';
     }
   } catch(e) {}
   var msg = 'Generiere genau 3 Menuvorschlaege mit je ' + G.n + ' Kochabenden fuer ' + p + ' Personen (' + portTotal + ' Portionen). ' +
-    resteInfo + '. ' + freezeInfo + '.' +
+    modusInfo + '. ' + resteInfo + '. ' + freezeInfo + '.' +
     (theme ? ' Thema: ' + theme + '.' : '') +
     (exist ? ' Vorhanden: ' + exist + '.' : '') +
     (feedback ? ' Vorherige abgelehnt weil: ' + feedback + '. Andere Gerichte vorschlagen.' : '') +
@@ -1521,11 +1527,41 @@ function buildSteps(g) {
   return st;
 }
 
+var G_cook_port = 2;
+var G_cook_base_port = 2;
+var G_cook_zutaten = [];
+
+function adjPort(d) {
+  G_cook_port = Math.max(1, Math.min(8, G_cook_port + d));
+  var el = $('port-display');
+  if (el) el.textContent = G_cook_port;
+  // Rescale ingredient amounts in the displayed list
+  rescaleZutaten();
+}
+
+function rescaleZutaten() {
+  var factor = G_cook_base_port > 0 ? G_cook_port / G_cook_base_port : 1;
+  // Re-render zutaten rows with scaled amounts
+  var rows = document.querySelectorAll('.zutat-row');
+  for (var i = 0; i < rows.length; i++) {
+    var base = parseFloat(rows[i].dataset.base);
+    var unit = rows[i].dataset.unit || '';
+    if (!isNaN(base)) {
+      var scaled = Math.round(base * factor * 10) / 10;
+      rows[i].querySelector('.zutat-menge').textContent = scaled + (unit ? ' ' + unit : '');
+    }
+  }
+}
+
 function startCook(ri) {
   var g = G.sugs[G.sel].gerichte[ri];
   G.steps = buildSteps(g);
   G.cur = -1; G.act = 0; G.done = {};
   G.cookingGerichtIdx = ri;
+  // Set base portions for scaling
+  G_cook_base_port = G.personen || 2;
+  G_cook_port = G_cook_base_port;
+  G_cook_zutaten = g.zutaten || [];
   clearInterval(G.tiv);
   $('ctit').textContent = g.abend;
   showIngOverview(g);
@@ -1557,6 +1593,13 @@ function showIngOverview(g) {
     '<div style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--gr3);padding:10px 0 6px">Zutaten</div>' +
     rows + '</div>' +
     '<div style="font-size:12px;color:var(--blu);background:var(--bll);border-radius:8px;padding:10px 12px;margin-bottom:16px;border:.5px solid #90caf9">Alle Zutaten bereitstellen und abmessen bevor du anfaengst.</div>' +
+    '<div style="background:#f9f9f9;border-radius:var(--r);padding:12px;margin-bottom:16px;border:.5px solid var(--bdr)">' +
+      '<div style="font-size:12px;font-weight:600;color:var(--txt2);margin-bottom:8px">Portionen anpassen</div>' +
+      '<div style="display:flex;align-items:center;gap:12px">' +
+        '<button onclick="adjPort(-1)" style="width:34px;height:34px;border-radius:50%;background:#fff;border:1.5px solid var(--bdr);font-size:20px;cursor:pointer;font-family:inherit;line-height:1">-</button>' +
+        '<div style="flex:1;text-align:center"><div id="port-display" style="font-size:22px;font-weight:700;color:var(--red)">' + G_cook_port + '</div><div style="font-size:11px;color:var(--gr3)">Portionen</div></div>' +
+        '<button onclick="adjPort(1)" style="width:34px;height:34px;border-radius:50%;background:#fff;border:1.5px solid var(--bdr);font-size:20px;cursor:pointer;font-family:inherit;line-height:1">+</button>' +
+      '</div></div>' +
     '<button class="btn btn-red" onclick="beginCook()">Los geht\'s</button>';
 
   $('cbody').innerHTML = html;
@@ -1685,11 +1728,18 @@ function doComplete(i) {
   G.done[i] = true;
   if (i === G.act) G.act = Math.min(G.act + 1, G.steps.length - 1);
   if (Object.keys(G.done).length === G.steps.length) {
-    // All steps done - show rating modal
-    if (G.cookingGerichtIdx !== undefined) {
+    // Mark as gekocht in history/foto-rezepte
+    if (G.cookingGerichtIdx !== undefined && G.cookingGerichtIdx !== null) {
+      // Menuplan-Rezept: update history status
+      markEinkaufDoneGekocht();
       showRatingModal(G.cookingGerichtIdx);
     } else {
-      go('sw');
+      // Foto-Rezept: mark as gekocht
+      if (window._fotoRezept) {
+        window._fotoRezept.status = 'gekocht';
+        saveFotoRezeptSilent(window._fotoRezept, 'gekocht');
+      }
+      go('sf');
     }
     return;
   }
@@ -1941,7 +1991,10 @@ function loadHistoryRecipes() {
       '<div style="padding:12px 14px;border-bottom:.5px solid var(--gr);display:flex;align-items:center;gap:10px">' +
         '<div style="width:36px;height:36px;border-radius:8px;background:var(--rl);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0">&#127859;</div>' +
         '<div style="flex:1;min-width:0">' +
-          '<div style="font-size:15px;font-weight:700;color:var(--txt);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + (r.name||'Rezept') + '</div>' +
+          '<div style="display:flex;align-items:center;gap:6px">' +
+            '<div style="font-size:15px;font-weight:700;color:var(--txt);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + (r.name||'Rezept') + '</div>' +
+            (r.stars ? '<span style="color:#f59e0b;font-size:13px">' + '&#9733;'.repeat(r.stars) + '</span>' : '') +
+          '</div>' +
           '<div style="font-size:11px;color:var(--gr3);margin-top:2px">' +
             (r.saved||r.date||'') + ' · ' + (r.portionen||2) + ' Personen' +
             (r.zeit_total ? ' · ' + r.zeit_total : '') +
@@ -1955,8 +2008,11 @@ function loadHistoryRecipes() {
           (r.status && r.status !== 'geplant' ? '<button onclick="resetFotoRezeptStatus(' + i + ')" style="background:none;border:none;font-size:11px;color:var(--gr3);cursor:pointer;font-family:inherit;padding:2px 6px">&#x2715; Zuruecksetzen</button>' : '') +
         '</div>' +
         '<button class="btn btn-red" onclick="openHistoryRecipe(' + i + ')" style="flex:1;padding:9px;font-size:12px">Rezept oeffnen</button>' +
-        '<button class="btn btn-out" onclick="importHistoryRecipeToBring(' + i + ')" style="flex:1;padding:9px;font-size:12px">In Bring!</button>' +
-        (r.status !== 'gekocht' ? '<button class="btn btn-out" onclick="markFotoRezeptGekocht(' + i + ')" style="flex:1;padding:9px;font-size:11px">&#127859; Gekocht</button>' : '') +
+        '<button class="btn btn-out" onclick="showFotoRating(' + i + ')" style="flex:1;padding:9px;font-size:12px">&#9733; Bewerten</button>' +
+        '<div style="display:flex;gap:6px;width:100%">' +
+          '<button class="btn btn-out" onclick="importHistoryRecipeToBring(' + i + ')" style="flex:1;padding:9px;font-size:12px">In Bring!</button>' +
+          (r.status !== 'gekocht' ? '<button class="btn btn-out" onclick="markFotoRezeptGekocht(' + i + ')" style="flex:1;padding:9px;font-size:11px">&#127859; Gekocht</button>' : '') +
+        '</div>' +
         '<button onclick="deleteHistoryRecipe(' + i + ')" style="background:none;border:.5px solid var(--bdr);border-radius:8px;padding:9px 12px;color:var(--gr3);cursor:pointer;font-size:16px">&#x2715;</button>' +
       '</div>' +
     '</div>';
@@ -2079,15 +2135,62 @@ function renderHistoryList(history) {
         '</div>' +
       '</div>' +
       '<div style="padding:8px 14px">' + dishes + '</div>' +
-      '<div style="padding:0 14px 10px;display:flex;gap:6px">' +
-        '<button class="btn btn-out" onclick="loadHistoryEntry(' + i + ')" style="flex:1;padding:9px;font-size:12px">Plan laden</button>' +
-        (status !== 'gekocht' ? '<button class="btn btn-out" onclick="markHistoryKekocht(' + i + ')" style="flex:1;padding:9px;font-size:12px">Als gekocht markieren</button>' : '') +
-        (status !== 'geplant' ? '<button class="btn btn-out" onclick="resetHistoryStatus(' + i + ')" style="padding:9px;font-size:12px">&#x2715; Reset</button>' : '') +
+      '<div style="padding:0 14px 10px;display:flex;flex-direction:column;gap:6px">' +
+        '<div style="display:flex;gap:6px">' +
+          '<button class="btn btn-out" onclick="loadHistoryEntry(' + i + ')" style="flex:1;padding:9px;font-size:12px">Plan laden</button>' +
+          '<button class="btn btn-out" onclick="showHistoryRating(' + i + ')" style="flex:1;padding:9px;font-size:12px">&#9733; Bewerten</button>' +
+        '</div>' +
+        '<div style="display:flex;gap:6px">' +
+          (status !== 'gekocht' ? '<button class="btn btn-out" onclick="markHistoryKekocht(' + i + ')" style="flex:1;padding:9px;font-size:12px">&#127859; Gekocht</button>' : '') +
+          (status !== 'geplant' ? '<button class="btn btn-out" onclick="resetHistoryStatus(' + i + ')" style="padding:9px;font-size:12px">&#x2715; Reset</button>' : '') +
+        '</div>' +
       '</div>' +
     '</div>';
   }
   $('hlist').innerHTML = html || '<div style="text-align:center;padding:40px;color:var(--gr3);font-size:13px">Noch keine gespeicherten Plaene.</div>';
   window._history = history;
+}
+
+function showHistoryRating(i) {
+  var hist = window._history;
+  if (!hist || !hist[i]) return;
+  var e = hist[i];
+  // Show rating modal for the whole plan
+  G_rating.stars = e.stars || 0;
+  G_rating.historyIdx = i;
+  G_rating.fotoIdx = null;
+  $('rm-title').textContent = e.thema || 'Menuplan';
+  $('rm-feedback').value = e.ratingFeedback || '';
+  $('rm-starlbl').textContent = '';
+  $('rm-submit').disabled = false;
+  // Set stars if already rated
+  var stars = $('rm-stars').querySelectorAll('.star-btn');
+  for (var j = 0; j < stars.length; j++) {
+    stars[j].style.opacity = j < (e.stars||0) ? '1' : '.25';
+    stars[j].style.color = j < (e.stars||0) ? '#f59e0b' : '#888';
+  }
+  if (e.stars) $('rm-starlbl').textContent = STAR_LABELS[e.stars] || '';
+  $('rating-modal').style.display = 'flex';
+}
+
+function showFotoRating(i) {
+  var saved = JSON.parse(localStorage.getItem('foto_rezepte') || '[]');
+  if (!saved[i]) return;
+  var r = saved[i];
+  G_rating.stars = r.stars || 0;
+  G_rating.fotoIdx = i;
+  G_rating.historyIdx = null;
+  $('rm-title').textContent = r.name || 'Foto-Rezept';
+  $('rm-feedback').value = r.ratingFeedback || '';
+  $('rm-starlbl').textContent = '';
+  $('rm-submit').disabled = false;
+  var stars = $('rm-stars').querySelectorAll('.star-btn');
+  for (var j = 0; j < stars.length; j++) {
+    stars[j].style.opacity = j < (r.stars||0) ? '1' : '.25';
+    stars[j].style.color = j < (r.stars||0) ? '#f59e0b' : '#888';
+  }
+  if (r.stars) $('rm-starlbl').textContent = STAR_LABELS[r.stars] || '';
+  $('rating-modal').style.display = 'flex';
 }
 
 function resetHistoryStatus(i) {
@@ -2142,19 +2245,23 @@ var GH_RATINGS = 'ratings.json';
 var G_rating = { gerichtIdx: null, stars: 0 };
 var STAR_LABELS = ['', 'Nicht so gut', 'Geht so', 'Gut', 'Sehr gut', 'Ausgezeichnet!'];
 
-function markEinkaufDone() {
+function markEinkaufDoneGekocht() {
+  // Mark active plan history entry as 'gekocht'
+  var hist = JSON.parse(localStorage.getItem('local_history') || '[]');
+  if (hist.length && hist[0].status !== 'gekocht') {
+    hist[0].status = 'gekocht';
+    localStorage.setItem('local_history', JSON.stringify(hist));
+    saveHistoryToGH(hist);
+  }
+  // Also update active plan
   if (G.activePlan) {
     G.activePlan.einkaufDone = true;
     localStorage.setItem('active_plan', JSON.stringify(G.activePlan));
     renderActivePlan();
     saveToGH(G.activePlan);
   }
-  var hist = JSON.parse(localStorage.getItem('local_history') || '[]');
-  if (hist.length) {
-    hist[0].status = 'einkauf';
-    localStorage.setItem('local_history', JSON.stringify(hist));
-  }
 }
+
 
 function showRatingModal(ri) {
   if (!G.sugs || G.sel === null) return;
@@ -2192,22 +2299,59 @@ function setStar(n) {
 
 function submitRating() {
   if (!G_rating.stars) return;
-  var g = G.sugs[G.sel].gerichte[G_rating.gerichtIdx];
-  var entry = {
-    date: new Date().toISOString().slice(0, 10),
-    saved: new Date().toLocaleDateString('de-CH'),
-    thema: G.sugs[G.sel].thema,
-    gericht: g.abend,
-    tag: g.tag,
-    stars: G_rating.stars,
-    label: STAR_LABELS[G_rating.stars],
-    feedback: $('rm-feedback').value.trim(),
-    personen: G.personen || 2,
-    zutaten: (g.zutaten||[]).map(function(z){ return z.name; }).join(', ')
-  };
-  saveRatingToGH(entry);
+  var feedback = $('rm-feedback').value.trim();
+
+  // Case 1: Rating from history plan
+  if (G_rating.historyIdx !== null && G_rating.historyIdx !== undefined) {
+    var hist = window._history;
+    if (hist && hist[G_rating.historyIdx]) {
+      hist[G_rating.historyIdx].stars = G_rating.stars;
+      hist[G_rating.historyIdx].ratingFeedback = feedback;
+      localStorage.setItem('local_history', JSON.stringify(hist));
+      saveHistoryToGH(hist);
+      renderHistoryList(hist);
+    }
+    $('rating-modal').style.display = 'none';
+    return;
+  }
+
+  // Case 2: Rating from foto recipe
+  if (G_rating.fotoIdx !== null && G_rating.fotoIdx !== undefined) {
+    var saved = JSON.parse(localStorage.getItem('foto_rezepte') || '[]');
+    if (saved[G_rating.fotoIdx]) {
+      saved[G_rating.fotoIdx].stars = G_rating.stars;
+      saved[G_rating.fotoIdx].ratingFeedback = feedback;
+      localStorage.setItem('foto_rezepte', JSON.stringify(saved));
+      saveFotoRezepteToGH(saved);
+      loadHistoryRecipes();
+    }
+    $('rating-modal').style.display = 'none';
+    return;
+  }
+
+  // Case 3: Rating from cooking (gerichtIdx)
+  var g = G.sugs && G.sel !== null ? G.sugs[G.sel].gerichte[G_rating.gerichtIdx] : null;
+  if (g) {
+    var entry = {
+      date: new Date().toISOString().slice(0, 10),
+      saved: new Date().toLocaleDateString('de-CH'),
+      thema: G.sugs[G.sel].thema,
+      gericht: g.abend,
+      tag: g.tag,
+      stars: G_rating.stars,
+      label: STAR_LABELS[G_rating.stars],
+      feedback: feedback,
+      personen: G.personen || 2,
+      zutaten: (g.zutaten||[]).map(function(z){ return z.name; }).join(', ')
+    };
+    saveRatingToGH(entry);
+    // Also update local history
+    var hist2 = JSON.parse(localStorage.getItem('local_history') || '[]');
+    if (hist2.length) { hist2[0].stars = G_rating.stars; hist2[0].ratingFeedback = feedback; }
+    localStorage.setItem('local_history', JSON.stringify(hist2));
+    saveHistoryToGH(hist2);
+  }
   $('rating-modal').style.display = 'none';
-  // Show confirmation
   go('sw');
   setTimeout(function() {
     var msg = G_rating.stars >= 4 ? 'Super! Bewertung gespeichert.' : 'Bewertung gespeichert. Danke fuers Feedback!';
@@ -2559,6 +2703,79 @@ function showFotoPrint() {
 }
 
 
+
+// ─── ACTIVE PLAN ───────────────────────────────────────────
+function clearActivePlan() {
+  if (!confirm('Aktiven Plan beenden?')) return;
+  G.activePlan = null;
+  localStorage.removeItem('active_plan');
+  if ($('active-plan')) $('active-plan').style.display = 'none';
+}
+
+function setActivePlanAndGo() {
+  if (G.sel === null) return;
+  var sug = G.sugs[G.sel];
+  var planData = {
+    sug: sug, sel: G.sel, n: G.n, personen: G.personen,
+    reste: G.reste, freeze: G.freeze,
+    saved: new Date().toLocaleDateString('de-CH'),
+    einkaufDone: false, sugsAll: G.sugs, sugsPartial: G.sugsPartial
+  };
+  G.activePlan = planData;
+  localStorage.setItem('active_plan', JSON.stringify(planData));
+  saveToGH(planData);
+  saveToHistory(planData);
+  localStorage.setItem('sw', JSON.stringify({ sugs: G.sugs, n: G.n, personen: G.personen, reste: G.reste, freeze: G.freeze, saved: planData.saved }));
+  renderActivePlan();
+  var spb = $('set-plan-btn');
+  if (spb) { spb.innerHTML = 'Als aktiven Plan setzen'; spb.disabled = false; }
+  goWeek();
+}
+
+function openActivePlan(tab) {
+  if (!G.activePlan || !G.activePlan.sug) return;
+  G.sugs = G.activePlan.sugsAll || [G.activePlan.sug];
+  G.sel = G.activePlan.sel || 0;
+  G.n = G.activePlan.n || 3;
+  G.personen = G.activePlan.personen || 2;
+  G.reste = G.activePlan.reste !== undefined ? G.activePlan.reste : 1;
+  G.freeze = G.activePlan.freeze !== undefined ? G.activePlan.freeze : 1;
+  G.sugsPartial = G.activePlan.sugsPartial || false;
+  goWeekRender(G.sugs[G.sel]);
+  setTimeout(function() { wtab(tab); }, 50);
+}
+
+function renderActivePlan() {
+  var ap = G.activePlan;
+  if (!ap || !ap.sug) return;
+  if ($('active-plan')) $('active-plan').style.display = 'block';
+  if ($('ap-title')) $('ap-title').textContent = ap.sug.thema;
+  if ($('ap-sub')) $('ap-sub').textContent = 'Gesetzt am ' + (ap.saved||'') + ' - ' + (ap.personen||2) + ' Personen';
+  var dishes = '';
+  var gerichte = ap.sug.gerichte || [];
+  for (var i = 0; i < gerichte.length; i++) {
+    var g = gerichte[i];
+    dishes += '<div style="display:flex;align-items:center;gap:8px;padding:4px 0">' +
+      '<span style="font-size:11px;font-weight:700;color:var(--red);min-width:24px">' + g.tag.slice(0,2) + '</span>' +
+      '<span style="font-size:13px;color:var(--txt)">' + g.abend + '</span></div>';
+  }
+  if ($('ap-dishes')) $('ap-dishes').innerHTML = dishes;
+  var dot = $('ap-einkauf-dot');
+  var lbl = $('ap-einkauf-lbl');
+  if (dot && lbl) {
+    dot.style.background = ap.einkaufDone ? 'var(--grn)' : 'var(--gr2)';
+    lbl.textContent = ap.einkaufDone ? 'In Bring! importiert' : 'Noch nicht importiert';
+  }
+}
+
+function markEinkaufDone() {
+  if (!G.activePlan) return;
+  G.activePlan.einkaufDone = true;
+  localStorage.setItem('active_plan', JSON.stringify(G.activePlan));
+  renderActivePlan();
+  saveToGH(G.activePlan);
+  updateHistoryStatus(G.activePlan.saved || G.activePlan.date, 'einkauf');
+}
 </script>
 <!-- RATING MODAL -->
 <div id="rating-modal" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);z-index:100;align-items:flex-end;justify-content:center">
