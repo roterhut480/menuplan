@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
-<title>Menuplan v5.9</title>
+<title>Menuplan v5.10</title>
 <style>
 :root{
   --red:#e8390e;--rl:#fff2ef;--grn:#2e7d32;--grl:#f0faf4;
@@ -145,7 +145,7 @@ input[type=password]{letter-spacing:2px}
 
 <!-- HOME -->
 <div class="scr on" id="sh">
-  <div class="hero"><h1>Menuplan</h1><p id="hsub">v5.9 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
+  <div class="hero"><h1>Menuplan</h1><p id="hsub">v5.10 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
 
   <!-- Active plan card -->
   <div id="active-plan" style="display:none;margin:10px 10px 0">
@@ -1339,11 +1339,11 @@ function goSuggest() {
     // Sort by stars descending, take top 4 each
     goodItems.sort(function(a,b){ return b.stars - a.stars; });
     badItems.sort(function(a,b){ return a.stars - b.stars; });
-    var good = goodItems.slice(0,4).map(function(r){ return r.name + ' (' + r.stars + '/5)'; });
-    var bad  = badItems.slice(0,4).map(function(r){ return r.name + ' (' + r.stars + '/5)'; });
+    var good = goodItems.slice(0,2).map(function(r){ return r.name; });
+    var bad  = badItems.slice(0,2).map(function(r){ return r.name; });
 
-    if (good.length) ratingsHint += ' VORLIEBEN: Diese Gerichte oder aehnliche Gerichte derselben Kueche/desselben Stils wurden gut bewertet - aehnliche Kuechen, Aromen und Zutaten bevorzugen (aber nicht exakt gleiche Gerichte): ' + good.join(', ') + '.';
-    if (bad.length)  ratingsHint += ' ABNEIGUNGEN: Diese Gerichte oder aehnliche Gerichte dieser Kueche/dieses Stils wurden schlecht bewertet - entsprechende Kuechen, Aromen und Zutaten vermeiden: ' + bad.join(', ') + '.';
+    if (good.length) ratingsHint += ' Aehnliches wie: ' + good.join(', ') + '.';
+    if (bad.length)  ratingsHint += ' Vermeiden: ' + bad.join(', ') + '.';
   } catch(e) {}
   // Add recent dishes to avoid repetition
   var recentHint = '';
@@ -1355,7 +1355,7 @@ function goSuggest() {
       for (var gi = 0; gi < ge.length; gi++) recentDishes.push(ge[gi].abend);
     }
     if (recentDishes.length > 0) {
-      recentHint = ' ABWECHSLUNG - Diese Gerichte wurden in den letzten Wochen gekocht: ' + recentDishes.join(', ') + '. Bitte andere Gerichte vorschlagen (gleiche Kueche ist ok, aber nicht dasselbe Gericht).';
+      recentHint = ' Nicht wiederholen: ' + recentDishes.slice(0,4).join(', ') + '.';
     }
   } catch(e) {}
   var msg = 'Generiere genau 3 Menuvorschlaege mit je ' + G.n + ' Kochabenden fuer ' + p + ' Personen (' + portTotal + ' Portionen). ' +
@@ -1364,7 +1364,7 @@ function goSuggest() {
     (exist ? ' Vorhanden: ' + exist + '.' : '') +
     (feedback ? ' Vorherige abgelehnt weil: ' + feedback + '. Andere Gerichte vorschlagen.' : '') +
     ratingsHint + recentHint +
-    ' Zutaten-Ueberschneidung maximieren. Guenstige Zutaten bevorzugen.';
+    ' Zutaten ueberschneiden. Guenstig.';
 
   callClaudeHaiku(buildSYS_overview(), msg, 1200)
   .then(function(raw) {
