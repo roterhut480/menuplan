@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
-<title>Menuplan v5.13</title>
+<title>Menuplan v5.14</title>
 <style>
 :root{
   --red:#e8390e;--rl:#fff2ef;--grn:#2e7d32;--grl:#f0faf4;
@@ -145,7 +145,7 @@ input[type=password]{letter-spacing:2px}
 
 <!-- HOME -->
 <div class="scr on" id="sh">
-  <div class="hero"><h1>Menuplan</h1><p id="hsub">v5.13 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
+  <div class="hero"><h1>Menuplan</h1><p id="hsub">v5.14 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
 
   <!-- Active plan card -->
   <div id="active-plan" style="display:none;margin:10px 10px 0">
@@ -1290,9 +1290,11 @@ function goSuggest() {
   $('slist').innerHTML = '';
   $('scta').style.display = 'none';
   $('serr').innerHTML = '';
+  $('serr').style.display = 'none';
   G.sel = null;
+  G.sugs = [];
   G.sugsPartial = true;
-  // Simple loading message with elapsed time
+
   var loadEl = $('sload').querySelector('div:last-child');
   var loadStart = Date.now();
   if (loadEl) loadEl.textContent = 'Claude generiert Vorschlaege...';
@@ -1300,122 +1302,78 @@ function goSuggest() {
     var sec = Math.round((Date.now() - loadStart) / 1000);
     if (loadEl) loadEl.textContent = 'Claude generiert Vorschlaege... (' + sec + 's)';
   }, 1000);
-  G._loadIv = loadIv; // flag: steps not yet loaded
+  G._loadIv = loadIv;
 
-  var theme = $('theme').value.trim();
-  var exist = $('exist').value.trim();
   var p = G.personen || 2;
   var portTotal = p + (G.reste ? p : 0) + (G.freeze ? 2 : 0);
-  var resteInfo = G.reste ? 'MIT Resteverwertung' : 'OHNE Resteverwertung';
-  var freezeInfo = G.freeze ? 'MIT Einfrierportionen' : 'OHNE Einfrierportionen';
-  var feedback = $('feedback') ? $('feedback').value.trim() : '';
+  var modusText = G.modus === 'vegi' ? 'vegetarisch' : G.modus === 'fleisch' ? 'mit Fleisch' : 'vegi+Fleisch optional';
 
-  var ratingsHint = '';
-  try {
-    // Collect ratings from local_ratings (from cooking)
-    var lr = JSON.parse(localStorage.getItem('local_ratings') || '[]');
-    // Also collect from local_history and foto_rezepte
-    var hist = JSON.parse(localStorage.getItem('local_history') || '[]');
-    var fotos = JSON.parse(localStorage.getItem('foto_rezepte') || '[]');
-    var goodItems = [], badItems = [];
+  // Ultra-simple message
+  var msg = G.n + ' Kochabende, ' + p + ' Personen, ' + modusText +
+    (G.reste ? ', mit Resten' : '') +
+    (G.freeze ? ', mit Einfrieren' : '') +
+    '. Kueche variieren.';
 
-    lr.forEach(function(r) {
-      if (r.stars >= 4) goodItems.push({ name: r.gericht, stars: r.stars });
-      if (r.stars <= 2) badItems.push({ name: r.gericht, stars: r.stars });
-    });
-    hist.forEach(function(h) {
-      if (h.stars >= 4) goodItems.push({ name: h.thema, stars: h.stars });
-      if (h.stars <= 2) badItems.push({ name: h.thema, stars: h.stars });
-    });
-    fotos.forEach(function(f) {
-      if (f.stars >= 4) goodItems.push({ name: f.name, stars: f.stars });
-      if (f.stars <= 2) badItems.push({ name: f.name, stars: f.stars });
-    });
+  var sys = buildSYS_overview();
 
-    // Sort by stars descending, take top 4 each
-    goodItems.sort(function(a,b){ return b.stars - a.stars; });
-    badItems.sort(function(a,b){ return a.stars - b.stars; });
-    var good = goodItems.slice(0,2).map(function(r){ return r.name; });
-    var bad  = badItems.slice(0,2).map(function(r){ return r.name; });
-
-    if (good.length) ratingsHint += ' Aehnliches wie: ' + good.join(', ') + '.';
-    if (bad.length)  ratingsHint += ' Vermeiden: ' + bad.join(', ') + '.';
-  } catch(e) {}
-  // Add recent dishes to avoid repetition
-  var recentHint = '';
-  try {
-    var lh = JSON.parse(localStorage.getItem('local_history') || '[]');
-    var recentDishes = [];
-    for (var hi = 0; hi < Math.min(lh.length, 4); hi++) {
-      var ge = lh[hi].gerichte || [];
-      for (var gi = 0; gi < ge.length; gi++) recentDishes.push(ge[gi].abend);
-    }
-    if (recentDishes.length > 0) {
-      recentHint = ' Nicht wiederholen: ' + recentDishes.slice(0,4).join(', ') + '.';
-    }
-  } catch(e) {}
-  var msg = 'Generiere genau 3 Menuvorschlaege mit je ' + G.n + ' Kochabenden fuer ' + p + ' Personen (' + portTotal + ' Portionen). ' +
-    modusInfo + '. ' + resteInfo + '. ' + freezeInfo + '.' +
-    (theme ? ' Thema: ' + theme + '.' : '') +
-    (exist ? ' Vorhanden: ' + exist + '.' : '') +
-    (feedback ? ' Vorherige abgelehnt weil: ' + feedback + '. Andere Gerichte vorschlagen.' : '') +
-    ratingsHint + recentHint +
-    ' Zutaten ueberschneiden. Guenstig.';
-
-  callClaudeHaiku(buildSYS_overview(), msg + ' Generiere NUR 1 Vorschlag (id:1).', 400)
-  .then(function(raw) {
-    var parsed = parseJSON(raw);
-    var newSugs = parsed.vorschlaege || [];
-    if (newSugs.length > 0) {
-      G.sugs = G.sugs.concat(newSugs);
-      G.sugs[G.sugs.length-1].id = G.sugs.length;
-      renderSugs();
-      $('scta').style.display = 'block';
-    }
-    // Load more if needed
-    if (G.sugs.length < 3) {
-      var nextMsg = msg + ' Generiere NUR 1 Vorschlag (id:' + (G.sugs.length+1) + '). Nicht dieselbe Kueche wie: ' + G.sugs.map(function(s){return s.thema;}).join(', ') + '.';
-      callClaudeHaiku(buildSYS_overview(), nextMsg, 400)
-        .then(function(raw2) {
-          try {
-            var p2 = parseJSON(raw2);
-            var s2 = p2.vorschlaege || [];
-            if (s2.length > 0) {
-              s2[0].id = G.sugs.length + 1;
-              G.sugs = G.sugs.concat(s2);
-              renderSugs();
+  // Load one suggestion at a time
+  function loadOne(id, extraMsg) {
+    return callClaudeHaiku(sys, msg + ' ' + extraMsg + ' NUR id:' + id, 400)
+      .then(function(raw) {
+        try {
+          var parsed = parseJSON(raw);
+          var sugs = parsed.vorschlaege || [];
+          if (sugs.length > 0) {
+            sugs[0].id = id;
+            G.sugs.push(sugs[0]);
+            renderSugs();
+            if (G.sugs.length === 1) {
+              $('sload').style.display = 'none';
+              $('scta').style.display = 'block';
+              if (G._loadIv) { clearInterval(G._loadIv); G._loadIv = null; }
             }
-          } catch(e) {}
-          if (G.sugs.length < 3) {
-            var nextMsg2 = msg + ' Generiere NUR 1 Vorschlag (id:3). Andere Kueche als: ' + G.sugs.map(function(s){return s.thema;}).join(', ') + '.';
-            callClaudeHaiku(buildSYS_overview(), nextMsg2, 400)
-              .then(function(raw3) {
-                try {
-                  var p3 = parseJSON(raw3);
-                  var s3 = p3.vorschlaege || [];
-                  if (s3.length > 0) { s3[0].id = 3; G.sugs = G.sugs.concat(s3); renderSugs(); }
-                } catch(e) {}
-              }).catch(function(){});
           }
-        }).catch(function(){});
-    }
-    if ($('feedback')) $('feedback').value = '';
-    if (G._loadIv) { clearInterval(G._loadIv); G._loadIv = null; }
-    $('sload').style.display = 'none';
-    // Enable button only after successful load
-    var spb = $('set-plan-btn');
-    if (spb) { spb.disabled = false; spb.style.opacity = '1'; spb.style.cursor = 'pointer'; }
-  })
-  .catch(function(e) {
-    if (G._loadIv) { clearInterval(G._loadIv); G._loadIv = null; }
-    $('sload').style.display = 'none';
-    var el = $('serr');
-    el.className = 'st er';
-    el.textContent = 'Fehler: ' + e.message + ' | ' + e.name;
-    el.style.display = 'block';
-    $('scta').style.display = 'block';
-  });
+        } catch(e) {
+          console.warn('Parse error id ' + id + ':', e.message, raw.slice(0,100));
+        }
+      })
+      .catch(function(e) {
+        console.warn('Load error id ' + id + ':', e.message);
+      });
+  }
+
+  loadOne(1, 'Vorschlag 1.')
+    .then(function() {
+      var used = G.sugs.map(function(s){ return s.thema; }).join(', ');
+      return loadOne(2, 'Vorschlag 2. Andere Kueche als: ' + used + '.');
+    })
+    .then(function() {
+      var used = G.sugs.map(function(s){ return s.thema; }).join(', ');
+      return loadOne(3, 'Vorschlag 3. Andere Kueche als: ' + used + '.');
+    })
+    .then(function() {
+      if (G._loadIv) { clearInterval(G._loadIv); G._loadIv = null; }
+      $('sload').style.display = 'none';
+      if (G.sugs.length === 0) {
+        var el = $('serr');
+        el.className = 'st er';
+        el.textContent = 'Keine Vorschlaege erhalten. Bitte nochmals versuchen.';
+        el.style.display = 'block';
+      }
+      $('scta').style.display = 'block';
+      if ($('feedback')) $('feedback').value = '';
+    })
+    .catch(function(e) {
+      if (G._loadIv) { clearInterval(G._loadIv); G._loadIv = null; }
+      $('sload').style.display = 'none';
+      var el = $('serr');
+      el.className = 'st er';
+      el.textContent = 'Fehler: ' + e.message;
+      el.style.display = 'block';
+      $('scta').style.display = 'block';
+    });
 }
+
 
 function renderSugs() {
   var html = '';
