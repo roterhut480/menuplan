@@ -1273,26 +1273,47 @@ function parseJSON(raw) {
 }
 
 function callClaude(sys, msg, maxTokens) {
+  var controller = typeof AbortController !== 'undefined' ? new AbortController() : null;
+  var timeoutId = controller ? setTimeout(function() { controller.abort(); }, 90000) : null;
   return fetch(PROXY + '/anthropic', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ model: 'claude-sonnet-4-5', max_tokens: maxTokens, system: sys, messages: [{ role: 'user', content: msg }] })
+    body: JSON.stringify({ model: 'claude-sonnet-4-5', max_tokens: maxTokens, system: sys, messages: [{ role: 'user', content: msg }] }),
+    signal: controller ? controller.signal : undefined
   })
-  .then(function(r) { return r.json(); })
+  .then(function(r) {
+    if (timeoutId) clearTimeout(timeoutId);
+    return r.json();
+  })
   .then(function(d) {
+    if (d.error) throw new Error(d.error.message || 'API Fehler');
     return (d.content && d.content[0] && d.content[0].text) ? d.content[0].text : '';
+  })
+  .catch(function(e) {
+    if (timeoutId) clearTimeout(timeoutId);
+    if (e.name === 'AbortError') throw new Error('Zeitueberschreitung (90s) - bitte nochmals versuchen');
+    throw e;
   });
 }
 
 function goSuggest() {
   go('ss');
   $('sload').style.display = 'block';
-  $('sload').querySelector('div:last-child').textContent = 'Claude generiert Vorschlaege...';
   $('slist').innerHTML = '';
   $('scta').style.display = 'none';
   $('serr').innerHTML = '';
   G.sel = null;
-  G.sugsPartial = true; // flag: steps not yet loaded
+  G.sugsPartial = true;
+  // Animated loading text
+  var loadMsgs = ['Claude denkt nach...', 'Rezepte werden geplant...', 'Einkaufsliste wird optimiert...', 'Fast fertig...'];
+  var loadIdx = 0;
+  var loadEl = $('sload').querySelector('div:last-child');
+  if (loadEl) loadEl.textContent = loadMsgs[0];
+  var loadIv = setInterval(function() {
+    loadIdx = (loadIdx + 1) % loadMsgs.length;
+    if (loadEl) loadEl.textContent = loadMsgs[loadIdx];
+  }, 4000);
+  G._loadIv = loadIv; // flag: steps not yet loaded
 
   var theme = $('theme').value.trim();
   var exist = $('exist').value.trim();
@@ -1354,11 +1375,12 @@ function goSuggest() {
     ratingsHint + recentHint +
     ' Zutaten-Ueberschneidung maximieren. Guenstige Zutaten bevorzugen.';
 
-  callClaude(buildSYS_overview(), msg, 6000)
+  callClaude(buildSYS_overview(), msg, 3500)
   .then(function(raw) {
     var parsed = parseJSON(raw);
     G.sugs = parsed.vorschlaege || [];
     if ($('feedback')) $('feedback').value = '';
+    if (G._loadIv) { clearInterval(G._loadIv); G._loadIv = null; }
     $('sload').style.display = 'none';
     renderSugs();
     $('scta').style.display = 'block';
@@ -1367,6 +1389,7 @@ function goSuggest() {
     if (spb) { spb.disabled = false; spb.style.opacity = '1'; spb.style.cursor = 'pointer'; }
   })
   .catch(function(e) {
+    if (G._loadIv) { clearInterval(G._loadIv); G._loadIv = null; }
     $('sload').style.display = 'none';
     var el = $('serr');
     el.className = 'st er';
