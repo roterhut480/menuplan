@@ -2,6 +2,126 @@
   {
     "date": "2026-08-31",
     "saved": "31.8.2026",
+    "thema": "Mediterranisch",
+    "personen": 1,
+    "kochabende": 2,
+    "reste": 0,
+    "freeze": 0,
+    "gerichte": [
+      {
+        "tag": "Di",
+        "abend": "Couscous-Gemuesesalat mit Kichererbsen"
+      },
+      {
+        "tag": "Fr",
+        "abend": "Vegetarische Paella mit Paprika und Zucchini"
+      }
+    ],
+    "status": "geplant",
+    "plan": {
+      "sug": {
+        "id": 1,
+        "thema": "Mediterranisch",
+        "kochabende": [
+          "Di",
+          "Fr"
+        ],
+        "gerichte": [
+          {
+            "tag": "Di",
+            "abend": "Couscous-Gemuesesalat mit Kichererbsen",
+            "zeit_aktiv": "15m",
+            "zeit_total": "20m"
+          },
+          {
+            "tag": "Fr",
+            "abend": "Vegetarische Paella mit Paprika und Zucchini",
+            "zeit_aktiv": "25m",
+            "zeit_total": "40m"
+          }
+        ]
+      },
+      "sel": 0,
+      "n": 2,
+      "personen": 1,
+      "reste": 0,
+      "freeze": 0,
+      "saved": "31.8.2026",
+      "einkaufDone": false,
+      "sugsAll": [
+        {
+          "id": 1,
+          "thema": "Mediterranisch",
+          "kochabende": [
+            "Di",
+            "Fr"
+          ],
+          "gerichte": [
+            {
+              "tag": "Di",
+              "abend": "Couscous-Gemuesesalat mit Kichererbsen",
+              "zeit_aktiv": "15m",
+              "zeit_total": "20m"
+            },
+            {
+              "tag": "Fr",
+              "abend": "Vegetarische Paella mit Paprika und Zucchini",
+              "zeit_aktiv": "25m",
+              "zeit_total": "40m"
+            }
+          ]
+        },
+        {
+          "id": 2,
+          "thema": "Orientalisch",
+          "kochabende": [
+            "Di",
+            "Do"
+          ],
+          "gerichte": [
+            {
+              "tag": "Di",
+              "abend": "Couscous mit Kichererbsen und Gemuese",
+              "zeit_aktiv": "15m",
+              "zeit_total": "25m"
+            },
+            {
+              "tag": "Do",
+              "abend": "Couscous-Salat mit Minze und Granatapfel",
+              "zeit_aktiv": "20m",
+              "zeit_total": "20m"
+            }
+          ]
+        },
+        {
+          "id": 3,
+          "thema": "Asiatisch-Indisch",
+          "kochabende": [
+            "Di",
+            "Do"
+          ],
+          "gerichte": [
+            {
+              "tag": "Di",
+              "abend": "Couscous-Gemüse-Pfanne mit Erdnusssoße",
+              "zeit_aktiv": "20m",
+              "zeit_total": "30m"
+            },
+            {
+              "tag": "Do",
+              "abend": "Linsen-Couscous-Salat mit Koriander",
+              "zeit_aktiv": "15m",
+              "zeit_total": "15m"
+            }
+          ]
+        }
+      ],
+      "sugsPartial": true
+    }
+  },
+  {
+    "date": "2026-08-31",
+    "saved": "31.8.2026",
     "thema": "Mediterranes Fleisch",
     "personen": 1,
     "kochabende": 2,
