@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
-<title>Menuplan v5.15</title>
+<title>Menuplan v5.16</title>
 <style>
 :root{
   --red:#e8390e;--rl:#fff2ef;--grn:#2e7d32;--grl:#f0faf4;
@@ -138,14 +138,21 @@ input[type=password]{letter-spacing:2px}
 .cstep-card.done-card .cstep-head-txt{text-decoration:line-through;color:var(--gr3)}
 .cstep-body{padding:0 14px 14px}
 /* print */
-@media print{body{background:#fff}.noprint{display:none!important}.scr{display:block!important;background:#fff;padding:0}}
+@media print{
+  body{background:#fff;margin:0;padding:0}
+  .noprint{display:none!important}
+  .scr{display:none!important;background:#fff;padding:0}
+  #sp{display:block!important;padding:0}
+  #pcon{padding:20px 24px}
+  @page{margin:15mm}
+}
 </style>
 </head>
 <body>
 
 <!-- HOME -->
 <div class="scr on" id="sh">
-  <div class="hero"><h1>Menuplan</h1><p id="hsub">v5.15 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
+  <div class="hero"><h1>Menuplan</h1><p id="hsub">v5.16 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
 
   <!-- Active plan card -->
   <div id="active-plan" style="display:none;margin:10px 10px 0">
@@ -1847,38 +1854,71 @@ function exportPDFToGH(ri) {
 
 function showPrint(ri) {
   var sug = G.sugs[G.sel], g = sug.gerichte[ri], items = getItems(sug);
-  var vRows = '', fRows = '', prepRows = '', frzRows = '', itRows = '';
+
+  var vSteps = '', fSteps = '', prepSteps = '', frzSteps = '', zRows = '';
 
   var sv = g.schritte_vegi || [];
-  for (var i = 0; i < sv.length; i++) vRows += '<div style="margin-bottom:8px;font-size:13px"><strong style="color:#e8390e">' + (i+1) + '.</strong> ' + sv[i].text + (sv[i].timer_min ? ' [' + sv[i].timer_min + ' Min.]' : '') + '</div>';
+  for (var i = 0; i < sv.length; i++) {
+    var timer = sv[i].timer_min > 0 ? '<span style="display:inline-block;background:#fff3e0;color:#e65100;font-size:11px;padding:2px 7px;border-radius:100px;margin-left:6px;font-weight:600">&#9201; ' + sv[i].timer_min + ' Min.</span>' : '';
+    vSteps += '<div style="display:flex;gap:12px;margin-bottom:12px;align-items:flex-start">' +
+      '<div style="width:24px;height:24px;border-radius:50%;background:#e8390e;color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0;margin-top:1px">' + (i+1) + '</div>' +
+      '<div style="flex:1"><div style="font-size:13px;line-height:1.6;color:#1a1a1a">' + sv[i].text + '</div>' + timer + '</div>' +
+    '</div>';
+  }
 
   var sf = g.schritte_fleisch || [];
-  for (var i = 0; i < sf.length; i++) fRows += '<div style="margin-bottom:8px;font-size:13px"><strong>' + (i+1) + '.</strong> ' + sf[i].text + '</div>';
+  for (var i = 0; i < sf.length; i++) {
+    var timer2 = sf[i].timer_min > 0 ? '<span style="display:inline-block;background:#fff3e0;color:#e65100;font-size:11px;padding:2px 7px;border-radius:100px;margin-left:6px;font-weight:600">&#9201; ' + sf[i].timer_min + ' Min.</span>' : '';
+    fSteps += '<div style="display:flex;gap:12px;margin-bottom:12px;align-items:flex-start">' +
+      '<div style="width:24px;height:24px;border-radius:50%;background:#e65100;color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0;margin-top:1px">' + (i+1) + '</div>' +
+      '<div style="flex:1;font-size:13px;line-height:1.6;color:#1a1a1a">' + sf[i].text + '</div>' + timer2 +
+    '</div>';
+  }
 
   var pr = g.prep_next || [];
-  for (var i = 0; i < pr.length; i++) prepRows += '<div style="margin-bottom:6px;font-size:13px"><strong>' + (i+1) + '.</strong> ' + pr[i] + '</div>';
+  for (var i = 0; i < pr.length; i++) prepSteps += '<div style="font-size:12px;padding:3px 0;color:#1565c0">&#8226; ' + pr[i] + '</div>';
 
   var fr = g.einfrieren || [];
-  for (var i = 0; i < fr.length; i++) frzRows += '<div style="margin-bottom:6px;font-size:13px"><strong>' + (i+1) + '.</strong> ' + fr[i] + '</div>';
+  for (var i = 0; i < fr.length; i++) frzSteps += '<div style="font-size:12px;padding:3px 0;color:#0277bd">&#8226; ' + fr[i] + '</div>';
 
   var gz = g.zutaten || [];
-  for (var i = 0; i < gz.length; i++) itRows += '<tr><td style="padding:5px 0;border-bottom:1px solid #f0f0f0;font-weight:500">&#9744; ' + gz[i].name + '</td><td style="padding:5px 0;border-bottom:1px solid #f0f0f0;color:#888;text-align:right">' + gz[i].menge + '</td></tr>';
+  for (var i = 0; i < gz.length; i++) {
+    zRows += '<tr>' +
+      '<td style="padding:7px 0;border-bottom:1px solid #f0f0f0;font-weight:600;font-size:13px;width:30%">' + gz[i].menge + '</td>' +
+      '<td style="padding:7px 0;border-bottom:1px solid #f0f0f0;font-size:13px;color:#333">' + gz[i].name + '</td>' +
+    '</tr>';
+  }
 
-  var allRows = '';
-  for (var i = 0; i < items.length; i++) allRows += '<tr><td style="padding:5px 0;border-bottom:1px solid #f0f0f0">&#9744; ' + items[i].name + '</td><td style="padding:5px 0;border-bottom:1px solid #f0f0f0;color:#888;text-align:right">' + items[i].menge + '</td></tr>';
+  var metaHtml = '';
+  if (g.zeit_aktiv || g.zeit_total) {
+    metaHtml = '<div style="display:flex;gap:0;background:#f7f7f7;border-radius:8px;margin-bottom:20px;overflow:hidden">';
+    if (g.zeit_aktiv) metaHtml += '<div style="flex:1;padding:12px 16px;border-right:1px solid #e0e0e0"><div style="font-size:10px;color:#888;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:2px">Aktive Zeit</div><div style="font-size:14px;font-weight:700;color:#1a1a1a">' + g.zeit_aktiv + '</div></div>';
+    if (g.zeit_total) metaHtml += '<div style="flex:1;padding:12px 16px"><div style="font-size:10px;color:#888;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:2px">Gesamtzeit</div><div style="font-size:14px;font-weight:700;color:#1a1a1a">' + g.zeit_total + '</div></div>';
+    metaHtml += '<div style="flex:1;padding:12px 16px;border-left:1px solid #e0e0e0"><div style="font-size:10px;color:#888;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:2px">Portionen</div><div style="font-size:14px;font-weight:700;color:#1a1a1a">' + (G.personen||2) + '</div></div>';
+    metaHtml += '</div>';
+  }
 
   $('pcon').innerHTML =
-    '<h1 style="font-size:20px;font-weight:800;margin-bottom:4px">' + g.abend + '</h1>' +
-    '<p style="color:#888;margin-bottom:16px;font-size:13px">' + g.tag + (g.mittag_tag ? ' &#8594; ' + g.mittag_tag + ': ' + g.mittag_naechster_tag : '') + '</p>' +
-    '<h2 style="font-size:14px;font-weight:700;margin-bottom:8px;color:#e8390e">Zutaten</h2>' +
-    '<table style="width:100%;border-collapse:collapse;margin-bottom:16px">' + itRows + '</table>' +
-    '<h2 style="font-size:14px;font-weight:700;margin-bottom:8px;color:#2e7d32">Zubereitung - Basis</h2>' + vRows +
-    (fRows ? '<h2 style="font-size:14px;font-weight:700;margin:12px 0 8px;color:#e65100">Fleisch-Beilage</h2>' + fRows : '') +
-    (prepRows ? '<h2 style="font-size:14px;font-weight:700;margin:12px 0 8px;color:#1565c0">Fuer morgen</h2>' + prepRows : '') +
-    (frzRows ? '<h2 style="font-size:14px;font-weight:700;margin:12px 0 8px;color:#0277bd">Einfrieren</h2>' + frzRows : '') +
-    (g.tipp ? '<div style="background:#fff9c4;border-left:3px solid #f9a825;padding:10px;margin-top:12px;border-radius:4px;font-size:13px"><strong>Tipp:</strong> ' + g.tipp + '</div>' : '') +
-    '<h2 style="font-size:14px;font-weight:700;margin:16px 0 8px;color:#e8390e">Einkaufsliste</h2>' +
-    '<table style="width:100%;border-collapse:collapse;font-size:13px">' + allRows + '</table>';
+    '<div style="border-bottom:3px solid #e8390e;padding-bottom:16px;margin-bottom:20px">' +
+      '<h1 style="font-size:24px;font-weight:800;color:#1a1a1a;margin:0 0 4px">' + g.abend + '</h1>' +
+      (g.mittag_tag ? '<p style="font-size:12px;color:#888;margin:0">&#8594; ' + g.mittag_tag + ': ' + g.mittag_naechster_tag + '</p>' : '') +
+    '</div>' +
+    metaHtml +
+    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:24px">' +
+      '<div>' +
+        '<h2 style="font-size:14px;font-weight:700;color:#1a1a1a;border-bottom:2px solid #e8390e;padding-bottom:6px;margin-bottom:12px">Zutaten</h2>' +
+        '<table style="width:100%;border-collapse:collapse">' + zRows + '</table>' +
+        (prepSteps ? '<div style="margin-top:16px;background:#e8f0fe;border-left:3px solid #1565c0;padding:10px 12px;border-radius:0 6px 6px 0"><div style="font-size:11px;font-weight:700;color:#1565c0;margin-bottom:4px">FUER MORGEN</div>' + prepSteps + '</div>' : '') +
+        (frzSteps ? '<div style="margin-top:10px;background:#e3f2fd;border-left:3px solid #0277bd;padding:10px 12px;border-radius:0 6px 6px 0"><div style="font-size:11px;font-weight:700;color:#0277bd;margin-bottom:4px">EINFRIEREN</div>' + frzSteps + '</div>' : '') +
+      '</div>' +
+      '<div>' +
+        '<h2 style="font-size:14px;font-weight:700;color:#1a1a1a;border-bottom:2px solid #e8390e;padding-bottom:6px;margin-bottom:12px">Zubereitung</h2>' +
+        vSteps +
+        (fSteps ? '<div style="margin-top:8px"><h3 style="font-size:12px;font-weight:700;color:#e65100;margin-bottom:8px">Fleisch-Beilage (optional)</h3>' + fSteps + '</div>' : '') +
+        (g.tipp ? '<div style="background:#fff8e1;border-left:3px solid #f9a825;padding:10px 12px;border-radius:0 6px 6px 0;margin-top:12px"><div style="font-size:11px;font-weight:700;color:#7d5a00;margin-bottom:4px">TIPP</div><div style="font-size:12px;color:#7d5a00;line-height:1.6">' + g.tipp + '</div></div>' : '') +
+      '</div>' +
+    '</div>' +
+    '<div style="margin-top:24px;padding-top:12px;border-top:1px solid #e0e0e0;font-size:10px;color:#aaa;text-align:right">Erstellt mit Menuplan App</div>';
   go('sp');
 }
 
