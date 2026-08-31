@@ -1,7 +1,7 @@
 {
   "sug": {
     "id": 1,
-    "thema": "Mediterranes Fleisch",
+    "thema": "Mediterranisch",
     "kochabende": [
       "Di",
       "Fr"
@@ -9,31 +9,272 @@
     "gerichte": [
       {
         "tag": "Di",
-        "abend": "Rindergulasch mit Kartoffeln",
-        "zeit_aktiv": "30m",
-        "zeit_total": "120m",
-        "mittag_naechster_tag": "Gulasch-Rest einfrieren"
+        "abend": "Couscous-Gemuesesalat mit Kichererbsen",
+        "zeit_aktiv": "15m",
+        "zeit_total": "20m",
+        "schritte_vegi": [
+          {
+            "titel": "Gemuese schneiden",
+            "text": "Paprika entkernen und in kleine Wuerfel schneiden. Salatgurke wuerfeln. Cocktailtomaten halbieren. Rote Zwiebel fein hacken. Alles in eine grosse Schuessel geben.",
+            "timer_min": 0,
+            "zutaten_schritt": [
+              "Paprika rot",
+              "Salatgurke",
+              "Cocktailtomaten",
+              "rote Zwiebel"
+            ]
+          },
+          {
+            "titel": "Bruehe erwaermen",
+            "text": "Gemusebruehe in einem Topf erwaermen bis sie gerade kocht.",
+            "timer_min": 3,
+            "zutaten_schritt": [
+              "Gemusebruehe"
+            ]
+          },
+          {
+            "titel": "Couscous quellen",
+            "text": "Couscous in eine Schuessel geben und mit der heissen Gemusebruehe uebergiessen. Mit Deckel oder Teller abdecken und 5 Minuten stehen lassen bis das Wasser aufgesogen ist.",
+            "timer_min": 5,
+            "zutaten_schritt": [
+              "Couscous"
+            ]
+          },
+          {
+            "titel": "Kichererbsen vorbereiten",
+            "text": "Kichererbsen aus der Dose abseihen, abspuelen und zur Schuessel mit dem geschnittenen Gemuese hinzufuegen.",
+            "timer_min": 0,
+            "zutaten_schritt": [
+              "Kichererbsen aus der Dose"
+            ]
+          },
+          {
+            "titel": "Dressing mischen",
+            "text": "Zitronensaft und Olivenoel in einer kleinen Schuessel vermengen. Mit Salz und Pfeffer abschmecken.",
+            "timer_min": 0,
+            "zutaten_schritt": [
+              "Zitronensaft",
+              "Olivenoel",
+              "Salz",
+              "Pfeffer"
+            ]
+          },
+          {
+            "titel": "Salat anrichten",
+            "text": "Den gequollenen Couscous zu dem Gemuese und den Kichererbsen geben. Frische Minze fein hacken und hinzufuegen. Das Dressing darueber giessen und alles gut vermengen. Nochmals abschmecken.",
+            "timer_min": 0,
+            "zutaten_schritt": [
+              "frische Minze"
+            ]
+          }
+        ],
+        "schritte_fleisch": [],
+        "zutaten": [
+          {
+            "name": "Couscous",
+            "menge": "100g"
+          },
+          {
+            "name": "Kichererbsen aus der Dose",
+            "menge": "200g"
+          },
+          {
+            "name": "Paprika rot",
+            "menge": "1 Stueck"
+          },
+          {
+            "name": "Salatgurke",
+            "menge": "100g"
+          },
+          {
+            "name": "Cocktailtomaten",
+            "menge": "100g"
+          },
+          {
+            "name": "rote Zwiebel",
+            "menge": "30g"
+          },
+          {
+            "name": "frische Minze",
+            "menge": "5g"
+          },
+          {
+            "name": "Zitronensaft",
+            "menge": "30ml"
+          },
+          {
+            "name": "Olivenoel",
+            "menge": "30ml"
+          },
+          {
+            "name": "Salz",
+            "menge": "nach Geschmack"
+          },
+          {
+            "name": "Pfeffer",
+            "menge": "nach Geschmack"
+          },
+          {
+            "name": "Gemusebruehe",
+            "menge": "150ml"
+          }
+        ]
       },
       {
         "tag": "Fr",
-        "abend": "Huehnchen-Piccata mit Pasta",
+        "abend": "Vegetarische Paella mit Paprika und Zucchini",
         "zeit_aktiv": "25m",
         "zeit_total": "40m",
-        "mittag_naechster_tag": "Huehnchen-Rest einfrieren"
+        "schritte_vegi": [
+          {
+            "titel": "Gemuese vorbereiten",
+            "text": "Rote und gelbe Paprika entkernen und in breite Streifen schneiden. Zucchini in Scheiben schneiden. Rote Zwiebel fein hacken. Knoblauch in duenne Scheiben schneiden.",
+            "timer_min": 0,
+            "zutaten_schritt": [
+              "rote Paprika",
+              "gelbe Paprika",
+              "Zucchini",
+              "rote Zwiebel",
+              "Knoblauch"
+            ]
+          },
+          {
+            "titel": "Bruehe wuerzen",
+            "text": "Gemusebruehe in einem Topf erwaermen. Safran hinzufuegen und kurz ziehen lassen damit sich der Geschmack entfaltet.",
+            "timer_min": 2,
+            "zutaten_schritt": [
+              "Gemusebruehe",
+              "Safran"
+            ]
+          },
+          {
+            "titel": "Zwiebeln anbraten",
+            "text": "Olivenoel in einer grossen Pfanne oder Paella-Pfanne erwaermen. Gehackte rote Zwiebel und Knoblauch darin anbraten bis sie glasig werden, etwa 2-3 Minuten.",
+            "timer_min": 3,
+            "zutaten_schritt": [
+              "Olivenoel",
+              "rote Zwiebel",
+              "Knoblauch"
+            ]
+          },
+          {
+            "titel": "Paprika braten",
+            "text": "Paprika-Streifen zur Pfanne geben und 2 Minuten mitbraten. Paprikapulver einstaeuben und kurz kochen bis es aromareich wird.",
+            "timer_min": 2,
+            "zutaten_schritt": [
+              "rote Paprika",
+              "gelbe Paprika",
+              "Paprikapulver"
+            ]
+          },
+          {
+            "titel": "Reis anbraten",
+            "text": "Langkornreis in die Pfanne geben und 2-3 Minuten unter staendigem Ruehren anbraten bis die Koerner glasig werden.",
+            "timer_min": 3,
+            "zutaten_schritt": [
+              "Langkornreis"
+            ]
+          },
+          {
+            "titel": "Bruehe kochen",
+            "text": "Die gewuerzten Bruehe graduell in die Pfanne giessen und umruehren. Zucchini-Scheiben einarbeiten. Auf mittlerer Hitze kochen lassen bis der Reis die Bruehe aufgenommen hat, etwa 15-18 Minuten. Nicht staendig umruehren damit sich eine leichte Kruste bildet.",
+            "timer_min": 18,
+            "zutaten_schritt": [
+              "Zucchini"
+            ]
+          },
+          {
+            "titel": "Erbsen hinzufuegen",
+            "text": "TK-Erbsen in die Pfanne ruehren und weitere 2-3 Minuten kochen bis sie erwaermt sind und der Reis gar ist.",
+            "timer_min": 3,
+            "zutaten_schritt": [
+              "TK-Erbsen"
+            ]
+          },
+          {
+            "titel": "Abschmecken",
+            "text": "Paella vom Herd nehmen und mit Salz und Pfeffer abschmecken. Mit frischer Petersilie garnieren und servieren.",
+            "timer_min": 0,
+            "zutaten_schritt": [
+              "Salz",
+              "Pfeffer",
+              "frische Petersilie"
+            ]
+          }
+        ],
+        "schritte_fleisch": [],
+        "zutaten": [
+          {
+            "name": "Langkornreis",
+            "menge": "150g"
+          },
+          {
+            "name": "rote Paprika",
+            "menge": "1 Stueck"
+          },
+          {
+            "name": "gelbe Paprika",
+            "menge": "1 Stueck"
+          },
+          {
+            "name": "Zucchini",
+            "menge": "200g"
+          },
+          {
+            "name": "rote Zwiebel",
+            "menge": "50g"
+          },
+          {
+            "name": "Knoblauch",
+            "menge": "2 Zehen"
+          },
+          {
+            "name": "TK-Erbsen",
+            "menge": "80g"
+          },
+          {
+            "name": "Gemusebruehe",
+            "menge": "400ml"
+          },
+          {
+            "name": "Safran",
+            "menge": "1 Prise"
+          },
+          {
+            "name": "Paprikapulver",
+            "menge": "1 Teeloefel"
+          },
+          {
+            "name": "Olivenoel",
+            "menge": "40ml"
+          },
+          {
+            "name": "Salz",
+            "menge": "nach Geschmack"
+          },
+          {
+            "name": "Pfeffer",
+            "menge": "nach Geschmack"
+          },
+          {
+            "name": "frische Petersilie",
+            "menge": "10g"
+          }
+        ]
       }
     ]
   },
   "sel": 0,
   "n": 2,
   "personen": 1,
-  "reste": 1,
-  "freeze": 1,
+  "reste": 0,
+  "freeze": 0,
   "saved": "31.8.2026",
   "einkaufDone": true,
   "sugsAll": [
     {
       "id": 1,
-      "thema": "Mediterranes Fleisch",
+      "thema": "Mediterranisch",
       "kochabende": [
         "Di",
         "Fr"
@@ -41,23 +282,264 @@
       "gerichte": [
         {
           "tag": "Di",
-          "abend": "Rindergulasch mit Kartoffeln",
-          "zeit_aktiv": "30m",
-          "zeit_total": "120m",
-          "mittag_naechster_tag": "Gulasch-Rest einfrieren"
+          "abend": "Couscous-Gemuesesalat mit Kichererbsen",
+          "zeit_aktiv": "15m",
+          "zeit_total": "20m",
+          "schritte_vegi": [
+            {
+              "titel": "Gemuese schneiden",
+              "text": "Paprika entkernen und in kleine Wuerfel schneiden. Salatgurke wuerfeln. Cocktailtomaten halbieren. Rote Zwiebel fein hacken. Alles in eine grosse Schuessel geben.",
+              "timer_min": 0,
+              "zutaten_schritt": [
+                "Paprika rot",
+                "Salatgurke",
+                "Cocktailtomaten",
+                "rote Zwiebel"
+              ]
+            },
+            {
+              "titel": "Bruehe erwaermen",
+              "text": "Gemusebruehe in einem Topf erwaermen bis sie gerade kocht.",
+              "timer_min": 3,
+              "zutaten_schritt": [
+                "Gemusebruehe"
+              ]
+            },
+            {
+              "titel": "Couscous quellen",
+              "text": "Couscous in eine Schuessel geben und mit der heissen Gemusebruehe uebergiessen. Mit Deckel oder Teller abdecken und 5 Minuten stehen lassen bis das Wasser aufgesogen ist.",
+              "timer_min": 5,
+              "zutaten_schritt": [
+                "Couscous"
+              ]
+            },
+            {
+              "titel": "Kichererbsen vorbereiten",
+              "text": "Kichererbsen aus der Dose abseihen, abspuelen und zur Schuessel mit dem geschnittenen Gemuese hinzufuegen.",
+              "timer_min": 0,
+              "zutaten_schritt": [
+                "Kichererbsen aus der Dose"
+              ]
+            },
+            {
+              "titel": "Dressing mischen",
+              "text": "Zitronensaft und Olivenoel in einer kleinen Schuessel vermengen. Mit Salz und Pfeffer abschmecken.",
+              "timer_min": 0,
+              "zutaten_schritt": [
+                "Zitronensaft",
+                "Olivenoel",
+                "Salz",
+                "Pfeffer"
+              ]
+            },
+            {
+              "titel": "Salat anrichten",
+              "text": "Den gequollenen Couscous zu dem Gemuese und den Kichererbsen geben. Frische Minze fein hacken und hinzufuegen. Das Dressing darueber giessen und alles gut vermengen. Nochmals abschmecken.",
+              "timer_min": 0,
+              "zutaten_schritt": [
+                "frische Minze"
+              ]
+            }
+          ],
+          "schritte_fleisch": [],
+          "zutaten": [
+            {
+              "name": "Couscous",
+              "menge": "100g"
+            },
+            {
+              "name": "Kichererbsen aus der Dose",
+              "menge": "200g"
+            },
+            {
+              "name": "Paprika rot",
+              "menge": "1 Stueck"
+            },
+            {
+              "name": "Salatgurke",
+              "menge": "100g"
+            },
+            {
+              "name": "Cocktailtomaten",
+              "menge": "100g"
+            },
+            {
+              "name": "rote Zwiebel",
+              "menge": "30g"
+            },
+            {
+              "name": "frische Minze",
+              "menge": "5g"
+            },
+            {
+              "name": "Zitronensaft",
+              "menge": "30ml"
+            },
+            {
+              "name": "Olivenoel",
+              "menge": "30ml"
+            },
+            {
+              "name": "Salz",
+              "menge": "nach Geschmack"
+            },
+            {
+              "name": "Pfeffer",
+              "menge": "nach Geschmack"
+            },
+            {
+              "name": "Gemusebruehe",
+              "menge": "150ml"
+            }
+          ]
         },
         {
           "tag": "Fr",
-          "abend": "Huehnchen-Piccata mit Pasta",
+          "abend": "Vegetarische Paella mit Paprika und Zucchini",
           "zeit_aktiv": "25m",
           "zeit_total": "40m",
-          "mittag_naechster_tag": "Huehnchen-Rest einfrieren"
+          "schritte_vegi": [
+            {
+              "titel": "Gemuese vorbereiten",
+              "text": "Rote und gelbe Paprika entkernen und in breite Streifen schneiden. Zucchini in Scheiben schneiden. Rote Zwiebel fein hacken. Knoblauch in duenne Scheiben schneiden.",
+              "timer_min": 0,
+              "zutaten_schritt": [
+                "rote Paprika",
+                "gelbe Paprika",
+                "Zucchini",
+                "rote Zwiebel",
+                "Knoblauch"
+              ]
+            },
+            {
+              "titel": "Bruehe wuerzen",
+              "text": "Gemusebruehe in einem Topf erwaermen. Safran hinzufuegen und kurz ziehen lassen damit sich der Geschmack entfaltet.",
+              "timer_min": 2,
+              "zutaten_schritt": [
+                "Gemusebruehe",
+                "Safran"
+              ]
+            },
+            {
+              "titel": "Zwiebeln anbraten",
+              "text": "Olivenoel in einer grossen Pfanne oder Paella-Pfanne erwaermen. Gehackte rote Zwiebel und Knoblauch darin anbraten bis sie glasig werden, etwa 2-3 Minuten.",
+              "timer_min": 3,
+              "zutaten_schritt": [
+                "Olivenoel",
+                "rote Zwiebel",
+                "Knoblauch"
+              ]
+            },
+            {
+              "titel": "Paprika braten",
+              "text": "Paprika-Streifen zur Pfanne geben und 2 Minuten mitbraten. Paprikapulver einstaeuben und kurz kochen bis es aromareich wird.",
+              "timer_min": 2,
+              "zutaten_schritt": [
+                "rote Paprika",
+                "gelbe Paprika",
+                "Paprikapulver"
+              ]
+            },
+            {
+              "titel": "Reis anbraten",
+              "text": "Langkornreis in die Pfanne geben und 2-3 Minuten unter staendigem Ruehren anbraten bis die Koerner glasig werden.",
+              "timer_min": 3,
+              "zutaten_schritt": [
+                "Langkornreis"
+              ]
+            },
+            {
+              "titel": "Bruehe kochen",
+              "text": "Die gewuerzten Bruehe graduell in die Pfanne giessen und umruehren. Zucchini-Scheiben einarbeiten. Auf mittlerer Hitze kochen lassen bis der Reis die Bruehe aufgenommen hat, etwa 15-18 Minuten. Nicht staendig umruehren damit sich eine leichte Kruste bildet.",
+              "timer_min": 18,
+              "zutaten_schritt": [
+                "Zucchini"
+              ]
+            },
+            {
+              "titel": "Erbsen hinzufuegen",
+              "text": "TK-Erbsen in die Pfanne ruehren und weitere 2-3 Minuten kochen bis sie erwaermt sind und der Reis gar ist.",
+              "timer_min": 3,
+              "zutaten_schritt": [
+                "TK-Erbsen"
+              ]
+            },
+            {
+              "titel": "Abschmecken",
+              "text": "Paella vom Herd nehmen und mit Salz und Pfeffer abschmecken. Mit frischer Petersilie garnieren und servieren.",
+              "timer_min": 0,
+              "zutaten_schritt": [
+                "Salz",
+                "Pfeffer",
+                "frische Petersilie"
+              ]
+            }
+          ],
+          "schritte_fleisch": [],
+          "zutaten": [
+            {
+              "name": "Langkornreis",
+              "menge": "150g"
+            },
+            {
+              "name": "rote Paprika",
+              "menge": "1 Stueck"
+            },
+            {
+              "name": "gelbe Paprika",
+              "menge": "1 Stueck"
+            },
+            {
+              "name": "Zucchini",
+              "menge": "200g"
+            },
+            {
+              "name": "rote Zwiebel",
+              "menge": "50g"
+            },
+            {
+              "name": "Knoblauch",
+              "menge": "2 Zehen"
+            },
+            {
+              "name": "TK-Erbsen",
+              "menge": "80g"
+            },
+            {
+              "name": "Gemusebruehe",
+              "menge": "400ml"
+            },
+            {
+              "name": "Safran",
+              "menge": "1 Prise"
+            },
+            {
+              "name": "Paprikapulver",
+              "menge": "1 Teeloefel"
+            },
+            {
+              "name": "Olivenoel",
+              "menge": "40ml"
+            },
+            {
+              "name": "Salz",
+              "menge": "nach Geschmack"
+            },
+            {
+              "name": "Pfeffer",
+              "menge": "nach Geschmack"
+            },
+            {
+              "name": "frische Petersilie",
+              "menge": "10g"
+            }
+          ]
         }
       ]
     },
     {
       "id": 2,
-      "thema": "Asiatisch",
+      "thema": "Orientalisch",
       "kochabende": [
         "Di",
         "Do"
@@ -65,41 +547,37 @@
       "gerichte": [
         {
           "tag": "Di",
-          "abend": "Rindfleisch-Teriyaki mit Brokkoli",
-          "zeit_aktiv": "25m",
-          "zeit_total": "40m",
-          "mittag_naechster_tag": "Teriyaki-Reis als Rest zum Einfrieren"
+          "abend": "Couscous mit Kichererbsen und Gemuese",
+          "zeit_aktiv": "15m",
+          "zeit_total": "25m"
         },
         {
           "tag": "Do",
-          "abend": "Huhn-Ginger-Suppe mit Glasnudeln",
+          "abend": "Couscous-Salat mit Minze und Granatapfel",
           "zeit_aktiv": "20m",
-          "zeit_total": "45m",
-          "mittag_naechster_tag": "Suppe portioniert einfrieren"
+          "zeit_total": "20m"
         }
       ]
     },
     {
       "id": 3,
-      "thema": "Amerikanisch",
+      "thema": "Asiatisch-Indisch",
       "kochabende": [
-        "Do",
-        "So"
+        "Di",
+        "Do"
       ],
       "gerichte": [
         {
-          "tag": "Do",
-          "abend": "Pulled Pork Sandwich",
-          "zeit_aktiv": "30m",
-          "zeit_total": "4h",
-          "mittag_naechster_tag": "Pulled Pork Reste zum Einfrieren"
+          "tag": "Di",
+          "abend": "Couscous-Gemüse-Pfanne mit Erdnusssoße",
+          "zeit_aktiv": "20m",
+          "zeit_total": "30m"
         },
         {
-          "tag": "So",
-          "abend": "Chili con Carne",
-          "zeit_aktiv": "25m",
-          "zeit_total": "2h",
-          "mittag_naechster_tag": "Chili Reste portioniert eingefroren"
+          "tag": "Do",
+          "abend": "Linsen-Couscous-Salat mit Koriander",
+          "zeit_aktiv": "15m",
+          "zeit_total": "15m"
         }
       ]
     }
