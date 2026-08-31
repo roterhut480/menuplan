@@ -2142,6 +2142,20 @@ var GH_RATINGS = 'ratings.json';
 var G_rating = { gerichtIdx: null, stars: 0 };
 var STAR_LABELS = ['', 'Nicht so gut', 'Geht so', 'Gut', 'Sehr gut', 'Ausgezeichnet!'];
 
+function markEinkaufDone() {
+  if (G.activePlan) {
+    G.activePlan.einkaufDone = true;
+    localStorage.setItem('active_plan', JSON.stringify(G.activePlan));
+    renderActivePlan();
+    saveToGH(G.activePlan);
+  }
+  var hist = JSON.parse(localStorage.getItem('local_history') || '[]');
+  if (hist.length) {
+    hist[0].status = 'einkauf';
+    localStorage.setItem('local_history', JSON.stringify(hist));
+  }
+}
+
 function showRatingModal(ri) {
   if (!G.sugs || G.sel === null) return;
   var g = G.sugs[G.sel].gerichte[ri];
