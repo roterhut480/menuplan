@@ -912,8 +912,27 @@ function saveToGH(data) {
       if (existing && existing.sha) body.sha = existing.sha;
       return fetch(url, { method: 'PUT', headers: headers, body: JSON.stringify(body) });
     })
-    .then(function(r) { if (r && r.ok) console.log('GitHub gespeichert'); })
-    .catch(function(e) { console.warn('GitHub save:', e); });
+    .then(function(r) {
+      if (r && r.ok) {
+        console.log('GitHub gespeichert: ' + ghFile('active-plan.json'));
+        // Show brief indicator
+        var ind = document.createElement('div');
+        ind.textContent = 'GitHub gespeichert';
+        ind.style.cssText = 'position:fixed;bottom:20px;right:16px;background:var(--grn);color:#fff;padding:8px 14px;border-radius:8px;font-size:12px;font-weight:600;z-index:999;opacity:1;transition:opacity 1s';
+        document.body.appendChild(ind);
+        setTimeout(function(){ ind.style.opacity='0'; setTimeout(function(){ ind.remove(); },1000); }, 2000);
+      } else if (r) {
+        console.warn('GitHub save failed: HTTP ' + r.status);
+        r.text().then(function(t){ console.warn('Response:', t.slice(0,200)); });
+        // Show error
+        var ind = document.createElement('div');
+        ind.textContent = 'GitHub Fehler: ' + r.status;
+        ind.style.cssText = 'position:fixed;bottom:20px;right:16px;background:var(--red);color:#fff;padding:8px 14px;border-radius:8px;font-size:12px;font-weight:600;z-index:999';
+        document.body.appendChild(ind);
+        setTimeout(function(){ ind.remove(); }, 4000);
+      }
+    })
+    .catch(function(e) { console.warn('GitHub save error:', e); });
 }
 function syncGH(btn) {
   var tok = getGHToken();
