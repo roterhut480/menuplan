@@ -1129,50 +1129,18 @@ function doImportItems() {
 // Quick overview system prompt - no steps, just dishes and ingredients
 function buildSYS_overview() {
   var p = G.personen || 2;
-  var portAbend = p;
-  var portMittag = G.reste ? p : 0;
-  var portFreeze = G.freeze ? 2 : 0;
-  var portTotal = portAbend + portMittag + portFreeze;
-  var mittag = G.reste ? '"mittag_naechster_tag":"ResteName","mittag_tag":"Tag",' : '';
-  var json = '{"vorschlaege":[{"id":1,"thema":"Thema","kochabende":["Mo","Mi","Fr"],"gerichte":[{"tag":"Montag","abend":"Gerichtsname","zeit_aktiv":"15 Min.","zeit_total":"40 Min.",' + mittag + '"zutaten":[{"name":"Karotten","menge":"300g"},{"name":"Kichererbsen","menge":"1 Dose 400g"}],"tipp":"Kurzer Tipp"}]}]}';
+  var modusText = G.modus === 'vegi' ? 'vegetarisch' : G.modus === 'fleisch' ? 'mit Fleisch' : 'vegi+optional Fleisch';
+  var mittag = G.reste ? ',"mittag_naechster_tag":"Linsensuppe als Rest"' : '';
+  var json = '{"vorschlaege":[{"id":1,"thema":"Asiatisch","kochabende":["Mo","Mi","Fr"],"gerichte":[{"tag":"Mo","abend":"Tofu-Gemu\u00ecsecurry","zeit_aktiv":"20m","zeit_total":"35m"' + mittag + '},{"tag":"Mi","abend":"Glasnudelsalat","zeit_aktiv":"15m","zeit_total":"15m"' + mittag + '}]}]}';
 
-  var modusText = '';
-  if (G.modus === 'vegi') {
-    modusText = 'Alle ' + p + ' Personen vegetarisch. Kein Fleisch. Keine Fleisch-Beilagen.';
-  } else if (G.modus === 'optional') {
-    modusText = p + ' Personen. 1 Person strikt vegetarisch (kein Fisch). ' + (p>1 ? (p-1) + ' Person(en) vegi + optional Fleisch als separate Beilage.' : '');
-  } else {
-    modusText = p + ' Personen. Alle Personen essen Fleisch. Fleisch ist integrierter Bestandteil der Gerichte, keine separate Zubereitung noetig.';
-  }
-  var fleischRule = G.modus === 'vegi'
-    ? 'Keine Fleischgerichte. Proteinreich durch Huelsenfruechte, Tofu, Tempeh, Eier, Kaese.'
-    : G.modus === 'optional'
-    ? 'Basis immer vegi, Fleisch immer separat zubereitet (zweite Pfanne). Keine doppelten Fleischsorten pro Woche.'
-    : 'Fleisch integriert im Gericht. Alle ' + p + ' Personen essen dasselbe - keine separate Zubereitung.';
-
-  return 'Antworte NUR mit JSON, kein Text. Keine Apostrophe in Strings. ' +
-    modusText + ' ' + fleischRule + ' Mittags nur Mikrowelle/kalt. ' +
-    'Portionen: ' + portTotal + ' (' + portAbend + ' Abend' + (portMittag?'+'+portMittag+' Mittag':'') + (portFreeze?'+2 Einfrieren':'') + '). ' +
-    (G.reste ? 'Reste-Kette: Abend->naechster Mittag (unterschiedlich serviert). ' : 'Keine Reste. ') +
-    (G.freeze ? 'Einfrieren: nur Saucen/Eintoepfe ohne Beilage. ' : '') +
-    'Regeln: 1 Fleischsorte/Woche. Ganze Packungen. Max 1 Kraeuterbund wenn in 2+ Gerichten. ' +
-    'Avocado nur frueh (Mo/Di). Frisches Fleisch/Spinat frueh. Keine 2 schweren KH. ' +
-    'TK-REGEL (sehr wichtig): Zutaten die in 2+ Gerichten benoetigt werden und nicht ganze Woche halten -> TK-Version angeben. ' +
-    'Spinat in 2+ Gerichten = TK-Spinat. Erbsen = TK-Erbsen. Mais = Dose. Bohnen = Dose. ' +
-    'Frischer Spinat NUR wenn einmaliges Gericht am Mo/Di. Sonst immer TK. ' +
-    'Kueche variieren (nicht immer mediterran). Mengen korrekt fuer ' + portTotal + ' Portionen. ' +
-    'ZUTATEN-UEBERSCHNEIDUNG (Kernziel fuer guenstigen Einkauf): ' +
-    'Plane die ' + G.n + ' Kochabende so, dass mindestens 3-4 Grundzutaten in mehreren Gerichten vorkommen. ' +
-    'Beispiele guter Ueberschneidung: Kichererbsen Mo im Curry + Mi im Salat. Feta Mo im Salat + Fr auf Pizza. ' +
-    'Kokosmilch Mi im Curry + Fr in der Suppe. Tomaten passiert Mo in Sauce + Mi in Eintopf. ' +
-    'Zucchini Mo gebraten + Mi gefuellt. Linsen Mo als Dal + Mi in Suppe. ' +
-    'Schlechte Planung (vermeiden): jedes Gericht hat voellig andere Zutaten -> teurer Einkauf, Reste vergammeln. ' +
-    'Wocheneinkauf soll mit 15-20 Zutaten auskommen, nicht 30+. ' +
-    'KURZ: max 8 Zutaten pro Gericht, keine langen Erklaerungen. ' +
-    'Format exakt: ' + json;
+  return 'Antworte NUR mit JSON, kein Text, keine Markdown-Backticks. Keine Apostrophe. ' +
+    'Generiere 3 Menuvorschlaege a ' + G.n + ' Gerichte fuer ' + p + ' Personen (' + modusText + '). ' +
+    'Felder pro Gericht: tag, abend (richtiger Gerichtsname!), zeit_aktiv, zeit_total' + (G.reste ? ', mittag_naechster_tag (kurzer Restename)' : '') + '. ' +
+    'KEINE anderen Felder, KEINE Zutaten. Kompakt. ' +
+    'Format-Beispiel: ' + json;
 }
 
-// Full recipe system prompt for one selected option
+
 function buildSYS_full(sug) {
   var p = G.personen || 2;
   var portAbend = p;
@@ -1304,15 +1272,14 @@ function goSuggest() {
   $('serr').innerHTML = '';
   G.sel = null;
   G.sugsPartial = true;
-  // Animated loading text
-  var loadMsgs = ['Claude denkt nach...', 'Rezepte werden geplant...', 'Einkaufsliste wird optimiert...', 'Fast fertig...'];
-  var loadIdx = 0;
+  // Simple loading message with elapsed time
   var loadEl = $('sload').querySelector('div:last-child');
-  if (loadEl) loadEl.textContent = loadMsgs[0];
+  var loadStart = Date.now();
+  if (loadEl) loadEl.textContent = 'Claude generiert Vorschlaege...';
   var loadIv = setInterval(function() {
-    loadIdx = (loadIdx + 1) % loadMsgs.length;
-    if (loadEl) loadEl.textContent = loadMsgs[loadIdx];
-  }, 4000);
+    var sec = Math.round((Date.now() - loadStart) / 1000);
+    if (loadEl) loadEl.textContent = 'Claude generiert Vorschlaege... (' + sec + 's)';
+  }, 1000);
   G._loadIv = loadIv; // flag: steps not yet loaded
 
   var theme = $('theme').value.trim();
@@ -1375,7 +1342,7 @@ function goSuggest() {
     ratingsHint + recentHint +
     ' Zutaten-Ueberschneidung maximieren. Guenstige Zutaten bevorzugen.';
 
-  callClaude(buildSYS_overview(), msg, 3500)
+  callClaude(buildSYS_overview(), msg, 800)
   .then(function(raw) {
     var parsed = parseJSON(raw);
     G.sugs = parsed.vorschlaege || [];
@@ -1406,11 +1373,16 @@ function renderSugs() {
     var days = '';
     for (var j = 0; j < s.gerichte.length; j++) {
       var g = s.gerichte[j];
-      days += '<div class="sug-d"><b style="color:var(--txt);min-width:22px;display:inline-block">' + g.tag.slice(0,2) + '</b> ' + g.abend + '</div>';
-      if (g.mittag_naechster_tag) days += '<div class="sug-nx">&#8627; ' + (g.mittag_tag||'') + ': ' + g.mittag_naechster_tag + '</div>';
+      var tagShort = (g.tag||'').slice(0,2);
+      days += '<div class="sug-d"><b style="color:var(--txt);min-width:22px;display:inline-block">' + tagShort + '</b> ' + g.abend + '</div>';
+      if (g.mittag_naechster_tag && g.mittag_naechster_tag !== 'Restename') {
+        days += '<div class="sug-nx">&#8627; ' + (g.mittag_tag||'') + ': ' + g.mittag_naechster_tag + '</div>';
+      }
     }
+    var zeitInfo = s.gerichte.length > 0 && s.gerichte[0].zeit_total ?
+      '<div style="font-size:11px;color:var(--gr3);margin-top:4px">&#9200; ca. ' + s.gerichte[0].zeit_total + ' pro Abend</div>' : '';
     html += '<div class="sug' + sel + '" onclick="selSug(' + i + ')">' +
-      '<div class="sug-h"><div class="sug-n">Option ' + (i+1) + (sel?' &#10003;':'') + '</div><div class="sug-t">' + s.thema + '</div></div>' +
+      '<div class="sug-h"><div class="sug-n">Option ' + (i+1) + (sel?' &#10003;':'') + '</div><div class="sug-t">' + s.thema + '</div>' + zeitInfo + '</div>' +
       '<div class="sug-b">' + days + '</div></div>';
   }
   $('slist').innerHTML = html;
