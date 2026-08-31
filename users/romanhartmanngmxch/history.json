@@ -1,0 +1,130 @@
+[
+  {
+    "date": "2026-08-31",
+    "saved": "31.8.2026",
+    "thema": "Mediterranes Fleisch",
+    "personen": 1,
+    "kochabende": 2,
+    "reste": 1,
+    "freeze": 1,
+    "gerichte": [
+      {
+        "tag": "Di",
+        "abend": "Rindergulasch mit Kartoffeln"
+      },
+      {
+        "tag": "Fr",
+        "abend": "Huehnchen-Piccata mit Pasta"
+      }
+    ],
+    "status": "geplant",
+    "plan": {
+      "sug": {
+        "id": 1,
+        "thema": "Mediterranes Fleisch",
+        "kochabende": [
+          "Di",
+          "Fr"
+        ],
+        "gerichte": [
+          {
+            "tag": "Di",
+            "abend": "Rindergulasch mit Kartoffeln",
+            "zeit_aktiv": "30m",
+            "zeit_total": "120m",
+            "mittag_naechster_tag": "Gulasch-Rest einfrieren"
+          },
+          {
+            "tag": "Fr",
+            "abend": "Huehnchen-Piccata mit Pasta",
+            "zeit_aktiv": "25m",
+            "zeit_total": "40m",
+            "mittag_naechster_tag": "Huehnchen-Rest einfrieren"
+          }
+        ]
+      },
+      "sel": 0,
+      "n": 2,
+      "personen": 1,
+      "reste": 1,
+      "freeze": 1,
+      "saved": "31.8.2026",
+      "einkaufDone": false,
+      "sugsAll": [
+        {
+          "id": 1,
+          "thema": "Mediterranes Fleisch",
+          "kochabende": [
+            "Di",
+            "Fr"
+          ],
+          "gerichte": [
+            {
+              "tag": "Di",
+              "abend": "Rindergulasch mit Kartoffeln",
+              "zeit_aktiv": "30m",
+              "zeit_total": "120m",
+              "mittag_naechster_tag": "Gulasch-Rest einfrieren"
+            },
+            {
+              "tag": "Fr",
+              "abend": "Huehnchen-Piccata mit Pasta",
+              "zeit_aktiv": "25m",
+              "zeit_total": "40m",
+              "mittag_naechster_tag": "Huehnchen-Rest einfrieren"
+            }
+          ]
+        },
+        {
+          "id": 2,
+          "thema": "Asiatisch",
+          "kochabende": [
+            "Di",
+            "Do"
+          ],
+          "gerichte": [
+            {
+              "tag": "Di",
+              "abend": "Rindfleisch-Teriyaki mit Brokkoli",
+              "zeit_aktiv": "25m",
+              "zeit_total": "40m",
+              "mittag_naechster_tag": "Teriyaki-Reis als Rest zum Einfrieren"
+            },
+            {
+              "tag": "Do",
+              "abend": "Huhn-Ginger-Suppe mit Glasnudeln",
+              "zeit_aktiv": "20m",
+              "zeit_total": "45m",
+              "mittag_naechster_tag": "Suppe portioniert einfrieren"
+            }
+          ]
+        },
+        {
+          "id": 3,
+          "thema": "Amerikanisch",
+          "kochabende": [
+            "Do",
+            "So"
+          ],
+          "gerichte": [
+            {
+              "tag": "Do",
+              "abend": "Pulled Pork Sandwich",
+              "zeit_aktiv": "30m",
+              "zeit_total": "4h",
+              "mittag_naechster_tag": "Pulled Pork Reste zum Einfrieren"
+            },
+            {
+              "tag": "So",
+              "abend": "Chili con Carne",
+              "zeit_aktiv": "25m",
+              "zeit_total": "2h",
+              "mittag_naechster_tag": "Chili Reste portioniert eingefroren"
+            }
+          ]
+        }
+      ],
+      "sugsPartial": true
+    }
+  }
+]
