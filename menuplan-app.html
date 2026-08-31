@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
-<title>Menuplan v5.14</title>
+<title>Menuplan v5.15</title>
 <style>
 :root{
   --red:#e8390e;--rl:#fff2ef;--grn:#2e7d32;--grl:#f0faf4;
@@ -145,7 +145,7 @@ input[type=password]{letter-spacing:2px}
 
 <!-- HOME -->
 <div class="scr on" id="sh">
-  <div class="hero"><h1>Menuplan</h1><p id="hsub">v5.14 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
+  <div class="hero"><h1>Menuplan</h1><p id="hsub">v5.15 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
 
   <!-- Active plan card -->
   <div id="active-plan" style="display:none;margin:10px 10px 0">
@@ -1429,7 +1429,7 @@ function goWeek() {
   var sys = buildSYS_full(sug);
   var msg = 'Vollstaendige Kochschritte fuer: ' + dishList + '. Fuer ' + portTotal + ' Portionen.';
 
-  callClaude(sys, msg, 5000)
+  callClaudeHaiku(sys, msg, 2000)
   .then(function(raw) {
     var parsed = parseJSON(raw);
     var fg = parsed.gerichte || [];
