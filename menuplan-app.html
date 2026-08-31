@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
-<title>Menuplan v5.16</title>
+<title>Menuplan v5.17</title>
 <style>
 :root{
   --red:#e8390e;--rl:#fff2ef;--grn:#2e7d32;--grl:#f0faf4;
@@ -152,7 +152,7 @@ input[type=password]{letter-spacing:2px}
 
 <!-- HOME -->
 <div class="scr on" id="sh">
-  <div class="hero"><h1>Menuplan</h1><p id="hsub">v5.16 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
+  <div class="hero"><h1>Menuplan</h1><p id="hsub">v5.17 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
 
   <!-- Active plan card -->
   <div id="active-plan" style="display:none;margin:10px 10px 0">
@@ -225,7 +225,7 @@ input[type=password]{letter-spacing:2px}
         </div>
       </div>
       <div id="loggedin-section" style="display:none">
-        <div style="display:flex;align-items:center;justify-content:space-between">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
           <div style="display:flex;align-items:center;gap:8px">
             <div style="width:9px;height:9px;border-radius:50%;background:var(--grn)"></div>
             <div>
@@ -235,6 +235,12 @@ input[type=password]{letter-spacing:2px}
           </div>
           <button onclick="doLogout()" style="background:none;border:none;font-size:12px;color:var(--gr3);cursor:pointer;font-family:inherit">Abmelden</button>
         </div>
+        <div id="token-refresh-section" style="display:none;padding-top:8px;border-top:.5px solid var(--bdr)">
+          <div style="font-size:11px;color:var(--red);margin-bottom:6px">&#x26A0; GitHub Token abgelaufen</div>
+          <div class="fld"><label>Neuer GitHub Token</label><input type="password" id="new-token" placeholder="ghp_..."></div>
+          <button class="btn btn-out" onclick="refreshToken()" style="padding:9px;font-size:12px">Token erneuern</button>
+        </div>
+        <button onclick="showTokenRefresh()" style="background:none;border:none;font-size:11px;color:var(--gr3);cursor:pointer;font-family:inherit;margin-top:4px">Token erneuern</button>
       </div>
     </div>
   </div>
@@ -846,6 +852,31 @@ function doManualSetup() {
   startSession(username, pw);
 }
 
+function showTokenRefresh() {
+  var s = $('token-refresh-section');
+  if (s) s.style.display = s.style.display === 'none' ? 'block' : 'none';
+}
+
+function refreshToken() {
+  var tok = ($('new-token') ? $('new-token').value.trim() : '');
+  if (!tok || !tok.startsWith('ghp_')) {
+    alert('Bitte gueltigen GitHub Token eingeben (beginnt mit ghp_)');
+    return;
+  }
+  var session = getSession();
+  if (!session) return;
+  var users = getUsers();
+  var user = users.find(function(u) { return u.username === session.username; });
+  if (!user) return;
+  // Update token keeping same password
+  var newEnc = btoa(unescape(encodeURIComponent(tok + '|||' + session.pw)));
+  user.enc = newEnc;
+  saveUsers(users);
+  if ($('new-token')) $('new-token').value = '';
+  if ($('token-refresh-section')) $('token-refresh-section').style.display = 'none';
+  alert('Token erneuert! GitHub-Sync aktiv.');
+}
+
 function copyInviteLink() {
   var btn = $('copy-invite-btn');
   if (window._inviteUrl) {
@@ -930,13 +961,15 @@ function saveToGH(data) {
         setTimeout(function(){ ind.style.opacity='0'; setTimeout(function(){ ind.remove(); },1000); }, 2000);
       } else if (r) {
         console.warn('GitHub save failed: HTTP ' + r.status);
-        r.text().then(function(t){ console.warn('Response:', t.slice(0,200)); });
-        // Show error
-        var ind = document.createElement('div');
-        ind.textContent = 'GitHub Fehler: ' + r.status;
-        ind.style.cssText = 'position:fixed;bottom:20px;right:16px;background:var(--red);color:#fff;padding:8px 14px;border-radius:8px;font-size:12px;font-weight:600;z-index:999';
-        document.body.appendChild(ind);
-        setTimeout(function(){ ind.remove(); }, 4000);
+        if (r.status === 401) {
+          // Show token refresh UI
+          if ($('token-refresh-section')) $('token-refresh-section').style.display = 'block';
+          var ind = document.createElement('div');
+          ind.textContent = 'GitHub Token abgelaufen - bitte erneuern';
+          ind.style.cssText = 'position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--red);color:#fff;padding:10px 16px;border-radius:8px;font-size:12px;font-weight:600;z-index:999;white-space:nowrap';
+          document.body.appendChild(ind);
+          setTimeout(function(){ ind.remove(); }, 5000);
+        }
       }
     })
     .catch(function(e) { console.warn('GitHub save error:', e); });
@@ -1436,7 +1469,7 @@ function goWeek() {
   var sys = buildSYS_full(sug);
   var msg = 'Vollstaendige Kochschritte fuer: ' + dishList + '. Fuer ' + portTotal + ' Portionen.';
 
-  callClaudeHaiku(sys, msg, 2000)
+  callClaudeHaiku(sys, msg, 3000)
   .then(function(raw) {
     var parsed = parseJSON(raw);
     var fg = parsed.gerichte || [];
@@ -1456,7 +1489,7 @@ function goWeek() {
     goWeekRender(sug);
   })
   .catch(function(e) {
-    if ($('rlist')) $('rlist').innerHTML = '<div style="padding:14px;color:var(--red);font-size:13px">Fehler: ' + e.message + '<br><br><button class="btn btn-out" onclick="goWeek()" style="font-size:13px;padding:10px">Nochmals versuchen</button></div>';
+    if ($('rlist')) $('rlist').innerHTML = '<div style="padding:14px;color:var(--red);font-size:13px">Fehler beim Laden der Rezepte.<br><br><button class="btn btn-red" onclick="goWeek()" style="font-size:13px;padding:10px;width:100%">Nochmals versuchen</button></div>';
     if ($('wsub')) $('wsub').textContent = sug.thema;
   });
 }
