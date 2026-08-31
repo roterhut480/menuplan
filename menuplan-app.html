@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
-<title>Menuplan v5.10</title>
+<title>Menuplan v5.11</title>
 <style>
 :root{
   --red:#e8390e;--rl:#fff2ef;--grn:#2e7d32;--grl:#f0faf4;
@@ -145,7 +145,7 @@ input[type=password]{letter-spacing:2px}
 
 <!-- HOME -->
 <div class="scr on" id="sh">
-  <div class="hero"><h1>Menuplan</h1><p id="hsub">v5.10 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
+  <div class="hero"><h1>Menuplan</h1><p id="hsub">v5.11 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
 
   <!-- Active plan card -->
   <div id="active-plan" style="display:none;margin:10px 10px 0">
@@ -1241,26 +1241,57 @@ function parseJSON(raw) {
 }
 
 function callClaudeHaiku(sys, msg, maxTokens) {
-  var controller = typeof AbortController !== 'undefined' ? new AbortController() : null;
-  var timeoutId = controller ? setTimeout(function() { controller.abort(); }, 30000) : null;
-  return fetch(PROXY + '/anthropic', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ model: 'claude-haiku-4-5-20251001', max_tokens: maxTokens, system: sys, messages: [{ role: 'user', content: msg }] }),
-    signal: controller ? controller.signal : undefined
-  })
-  .then(function(r) {
-    if (timeoutId) clearTimeout(timeoutId);
-    return r.json();
-  })
-  .then(function(d) {
-    if (d.error) throw new Error(d.error.message || 'API Fehler');
-    return (d.content && d.content[0] && d.content[0].text) ? d.content[0].text : '';
-  })
-  .catch(function(e) {
-    if (timeoutId) clearTimeout(timeoutId);
-    if (e.name === 'AbortError') throw new Error('Zeitueberschreitung - bitte nochmals versuchen');
-    throw e;
+  // Use streaming to avoid Worker CPU timeout
+  return new Promise(function(resolve, reject) {
+    fetch(PROXY + '/anthropic', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-haiku-4-5-20251001',
+        max_tokens: maxTokens,
+        stream: true,
+        system: sys,
+        messages: [{ role: 'user', content: msg }]
+      })
+    })
+    .then(function(r) {
+      if (!r.ok) return r.json().then(function(d){ throw new Error(d.error ? d.error.message : 'HTTP ' + r.status); });
+      if (!r.body) {
+        // Fallback: no streaming support
+        return r.json().then(function(d) {
+          resolve((d.content && d.content[0] && d.content[0].text) ? d.content[0].text : '');
+        });
+      }
+      var reader = r.body.getReader();
+      var decoder = new TextDecoder();
+      var buffer = '';
+      var fullText = '';
+
+      function read() {
+        reader.read().then(function(result) {
+          if (result.done) { resolve(fullText); return; }
+          buffer += decoder.decode(result.value, { stream: true });
+          var lines = buffer.split('\n');
+          buffer = lines.pop();
+          for (var i = 0; i < lines.length; i++) {
+            var line = lines[i].trim();
+            if (!line || line === 'data: [DONE]') continue;
+            if (line.startsWith('data: ')) {
+              try {
+                var data = JSON.parse(line.slice(6));
+                if (data.type === 'content_block_delta' && data.delta && data.delta.text) {
+                  fullText += data.delta.text;
+                }
+                if (data.type === 'message_stop') { resolve(fullText); return; }
+              } catch(e) {}
+            }
+          }
+          read();
+        }).catch(reject);
+      }
+      read();
+    })
+    .catch(reject);
   });
 }
 
