@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
-<title>Menuplan v5.17</title>
+<title>Menuplan v5.19</title>
 <style>
 :root{
   --red:#e8390e;--rl:#fff2ef;--grn:#2e7d32;--grl:#f0faf4;
@@ -152,7 +152,7 @@ input[type=password]{letter-spacing:2px}
 
 <!-- HOME -->
 <div class="scr on" id="sh">
-  <div class="hero"><h1>Menuplan</h1><p id="hsub">v5.17 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
+  <div class="hero"><h1>Menuplan</h1><p id="hsub">v5.19 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
 
   <!-- Active plan card -->
   <div id="active-plan" style="display:none;margin:10px 10px 0">
@@ -938,6 +938,36 @@ function syncAllFromGH() {
 }
 
 
+function ghPut(filename, data, message) {
+  var tok = getGHToken();
+  if (!tok) return Promise.resolve(null);
+  var url = 'https://api.github.com/repos/' + GH_REPO + '/contents/' + ghFile(filename);
+  var headers = { 'Authorization': 'token ' + tok, 'Content-Type': 'application/json', 'Accept': 'application/vnd.github.v3+json' };
+  var encoded = btoa(unescape(encodeURIComponent(JSON.stringify(data, null, 2))));
+  // Always fetch fresh SHA to avoid 409 conflicts
+  return fetch(url, { headers: headers })
+    .then(function(r) { return r.ok ? r.json() : null; })
+    .then(function(existing) {
+      var body = { message: message || 'Update', content: encoded };
+      if (existing && existing.sha) body.sha = existing.sha;
+      return fetch(url, { method: 'PUT', headers: headers, body: JSON.stringify(body) });
+    })
+    .then(function(r) {
+      if (r && r.ok) return r;
+      if (r && r.status === 409) {
+        // Retry once on conflict
+        return fetch(url, { headers: headers })
+          .then(function(r2) { return r2.ok ? r2.json() : null; })
+          .then(function(fresh) {
+            var body2 = { message: message || 'Update', content: encoded };
+            if (fresh && fresh.sha) body2.sha = fresh.sha;
+            return fetch(url, { method: 'PUT', headers: headers, body: JSON.stringify(body2) });
+          });
+      }
+      return r;
+    });
+}
+
 function saveToGH(data) {
   var tok = getGHToken();
   if (!tok) return;
@@ -1349,9 +1379,16 @@ function goSuggest() {
   var modusText = G.modus === 'vegi' ? 'vegetarisch' : G.modus === 'fleisch' ? 'mit Fleisch' : 'vegi+Fleisch optional';
 
   // Ultra-simple message
+  var theme = ($('theme') ? $('theme').value.trim() : '');
+  var exist = ($('exist') ? $('exist').value.trim() : '');
+  var feedback = ($('feedback') ? $('feedback').value.trim() : '');
+
   var msg = G.n + ' Kochabende, ' + p + ' Personen, ' + modusText +
     (G.reste ? ', mit Resten' : '') +
     (G.freeze ? ', mit Einfrieren' : '') +
+    (theme ? '. Thema: ' + theme : '') +
+    (exist ? '. Vorhandene Zutaten unbedingt verwenden: ' + exist : '') +
+    (feedback ? '. Vorherige Vorschlaege abgelehnt weil: ' + feedback + '. Deutlich andere Gerichte.' : '') +
     '. Kueche variieren.';
 
   var sys = buildSYS_overview();
@@ -1371,6 +1408,7 @@ function goSuggest() {
               $('sload').style.display = 'none';
               $('scta').style.display = 'block';
               if (G._loadIv) { clearInterval(G._loadIv); G._loadIv = null; }
+              if ($('feedback')) $('feedback').value = '';
             }
           }
         } catch(e) {
@@ -1469,7 +1507,7 @@ function goWeek() {
   var sys = buildSYS_full(sug);
   var msg = 'Vollstaendige Kochschritte fuer: ' + dishList + '. Fuer ' + portTotal + ' Portionen.';
 
-  callClaudeHaiku(sys, msg, 3000)
+  callClaudeHaiku(sys, msg, 5000)
   .then(function(raw) {
     var parsed = parseJSON(raw);
     var fg = parsed.gerichte || [];
@@ -2691,19 +2729,9 @@ function saveFotoRezeptSilent(r, status) {
 }
 
 function saveFotoRezepteToGH(saved) {
-  var tok = getGHToken();
-  if (!tok) return;
-  var url = 'https://api.github.com/repos/' + GH_REPO + '/contents/' + ghFile('foto-rezepte.json');
-  var headers = { 'Authorization': 'token ' + tok, 'Content-Type': 'application/json', 'Accept': 'application/vnd.github.v3+json' };
-  fetch(url, { headers: headers })
-    .then(function(r) { return r.ok ? r.json() : null; })
-    .then(function(existing) {
-      var body = { message: 'Foto-Rezepte aktualisiert', content: btoa(unescape(encodeURIComponent(JSON.stringify(saved, null, 2)))) };
-      if (existing && existing.sha) body.sha = existing.sha;
-      return fetch(url, { method: 'PUT', headers: headers, body: JSON.stringify(body) });
-    })
-    .then(function(r) { if (r && r.ok) console.log('Foto-Rezepte auf GitHub gespeichert'); })
-    .catch(function(e) { console.warn('Foto-Rezepte GH save:', e); });
+  ghPut('foto-rezepte.json', saved, 'Foto-Rezepte aktualisiert')
+    .then(function(r) { if (r && r.ok) console.log('Foto-Rezepte gespeichert'); })
+    .catch(function(e) { console.warn('Foto-Rezepte GH:', e); });
 }
 
 function startFotoCook() {
