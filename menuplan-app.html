@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
-<title>Menuplan v5.7</title>
+<title>Menuplan v5.9</title>
 <style>
 :root{
   --red:#e8390e;--rl:#fff2ef;--grn:#2e7d32;--grl:#f0faf4;
@@ -145,7 +145,7 @@ input[type=password]{letter-spacing:2px}
 
 <!-- HOME -->
 <div class="scr on" id="sh">
-  <div class="hero"><h1>Menuplan</h1><p id="hsub">v5.7 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
+  <div class="hero"><h1>Menuplan</h1><p id="hsub">v5.9 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
 
   <!-- Active plan card -->
   <div id="active-plan" style="display:none;margin:10px 10px 0">
@@ -1240,6 +1240,30 @@ function parseJSON(raw) {
   throw new Error('JSON ungueltig: ' + jsonStr.slice(0, 150));
 }
 
+function callClaudeHaiku(sys, msg, maxTokens) {
+  var controller = typeof AbortController !== 'undefined' ? new AbortController() : null;
+  var timeoutId = controller ? setTimeout(function() { controller.abort(); }, 30000) : null;
+  return fetch(PROXY + '/anthropic', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ model: 'claude-haiku-4-5-20251001', max_tokens: maxTokens, system: sys, messages: [{ role: 'user', content: msg }] }),
+    signal: controller ? controller.signal : undefined
+  })
+  .then(function(r) {
+    if (timeoutId) clearTimeout(timeoutId);
+    return r.json();
+  })
+  .then(function(d) {
+    if (d.error) throw new Error(d.error.message || 'API Fehler');
+    return (d.content && d.content[0] && d.content[0].text) ? d.content[0].text : '';
+  })
+  .catch(function(e) {
+    if (timeoutId) clearTimeout(timeoutId);
+    if (e.name === 'AbortError') throw new Error('Zeitueberschreitung - bitte nochmals versuchen');
+    throw e;
+  });
+}
+
 function callClaude(sys, msg, maxTokens) {
   var controller = typeof AbortController !== 'undefined' ? new AbortController() : null;
   var timeoutId = controller ? setTimeout(function() { controller.abort(); }, 90000) : null;
@@ -1342,7 +1366,7 @@ function goSuggest() {
     ratingsHint + recentHint +
     ' Zutaten-Ueberschneidung maximieren. Guenstige Zutaten bevorzugen.';
 
-  callClaude(buildSYS_overview(), msg, 800)
+  callClaudeHaiku(buildSYS_overview(), msg, 1200)
   .then(function(raw) {
     var parsed = parseJSON(raw);
     G.sugs = parsed.vorschlaege || [];
