@@ -11,13 +11,247 @@
         "tag": "Di",
         "abend": "Couscous-Gemuesepilaw mit Kichererbsen und optional Huehnchen",
         "zeit_aktiv": "15m",
-        "zeit_total": "25m"
+        "zeit_total": "25m",
+        "schritte_vegi": [
+          {
+            "titel": "Gemüse schneiden",
+            "text": "Zucchini waschen und in 0.5cm dicke Halbringe schneiden. Paprika putzen, entkernen und in Streifen schneiden. Zwiebel schälen und fein würfeln.",
+            "timer_min": 0,
+            "zutaten_schritt": [
+              "Zucchini",
+              "Paprika rot",
+              "Zwiebel"
+            ]
+          },
+          {
+            "titel": "Gemüse anbraten",
+            "text": "Olivenöl in großem Topf erhitzen. Zwiebel und Paprika darin 2 Minuten andünsten. Zucchini hinzufügen und weitere 3 Minuten mitbraten.",
+            "timer_min": 5,
+            "zutaten_schritt": [
+              "Olivenöl",
+              "Zwiebel",
+              "Paprika rot",
+              "Zucchini"
+            ]
+          },
+          {
+            "titel": "Gewürze und Kichererbsen",
+            "text": "Kurkuma über das Gemüse streuen und 30 Sekunden mitbraten. Abgetropfte Kichererbsen hinzufügen und kurz mitbraten.",
+            "timer_min": 1,
+            "zutaten_schritt": [
+              "Kurkuma",
+              "Kichererbsen (Dose)"
+            ]
+          },
+          {
+            "titel": "Brühe aufgießen",
+            "text": "Gemüsebrühe aufgießen und aufkochen lassen. Mit Salz und Pfeffer würzen.",
+            "timer_min": 3,
+            "zutaten_schritt": [
+              "Gemüsebrühe",
+              "Salz",
+              "Pfeffer"
+            ]
+          },
+          {
+            "titel": "Couscous einrühren",
+            "text": "Couscous einstreuen, gut umrühren und vom Herd nehmen. Topf mit Deckel oder Folie 5 Minuten quellen lassen.",
+            "timer_min": 5,
+            "zutaten_schritt": [
+              "Couscous"
+            ]
+          },
+          {
+            "titel": "Petersilie hinzufügen",
+            "text": "Nach Quellzeit Petersilie waschen, hacken und über den Pilaw streuen. Nochmals durchmischen und servieren.",
+            "timer_min": 0,
+            "zutaten_schritt": [
+              "Petersilie frisch"
+            ]
+          }
+        ],
+        "schritte_fleisch": [
+          {
+            "titel": "Hähnchen vorbereiten",
+            "text": "150g Hähnchenbrust in 1cm dicke Würfel schneiden.",
+            "timer_min": 0,
+            "zutaten_schritt": [
+              "Hähnchenbrust 150g"
+            ]
+          },
+          {
+            "titel": "Hähnchen anbraten",
+            "text": "Nach dem Anbraten des Gemüses Hähnchenwürfel in den Topf geben und 4-5 Minuten von allen Seiten goldbraun anbraten bis durchgegart.",
+            "timer_min": 5,
+            "zutaten_schritt": [
+              "Hähnchenbrust 150g"
+            ]
+          }
+        ],
+        "zutaten": [
+          {
+            "name": "Couscous",
+            "menge": "100g"
+          },
+          {
+            "name": "Kichererbsen (Dose)",
+            "menge": "200g"
+          },
+          {
+            "name": "Zucchini",
+            "menge": "150g"
+          },
+          {
+            "name": "Paprika rot",
+            "menge": "1"
+          },
+          {
+            "name": "Zwiebel",
+            "menge": "0.5"
+          },
+          {
+            "name": "Gemüsebrühe",
+            "menge": "200ml"
+          },
+          {
+            "name": "Olivenöl",
+            "menge": "1 EL"
+          },
+          {
+            "name": "Salz",
+            "menge": "1 Prise"
+          },
+          {
+            "name": "Pfeffer",
+            "menge": "1 Prise"
+          },
+          {
+            "name": "Kurkuma",
+            "menge": "0.5 TL"
+          },
+          {
+            "name": "Petersilie frisch",
+            "menge": "1 Handvoll"
+          }
+        ]
       },
       {
         "tag": "Fr",
         "abend": "Tomaten-Zucchini-Auflauf mit Mozzarella und optional Hackfleisch",
         "zeit_aktiv": "20m",
-        "zeit_total": "40m"
+        "zeit_total": "40m",
+        "schritte_vegi": [
+          {
+            "titel": "Gemüse schneiden",
+            "text": "Zucchini waschen und in dünne Längsscheiben (ca. 3mm) mit Sparschäler oder Gemüsehobel schneiden. Zwiebel und Knoblauch schälen, fein würfeln.",
+            "timer_min": 0,
+            "zutaten_schritt": [
+              "Zucchini",
+              "Zwiebel",
+              "Knoblauch"
+            ]
+          },
+          {
+            "titel": "Tomatensauce kochen",
+            "text": "Olivenöl in Topf erhitzen. Zwiebel und Knoblauch 2 Minuten andünsten. Dosentomaten hinzufügen, mit Oregano, Basilikum, Salz und Pfeffer würzen. 5 Minuten köcheln lassen.",
+            "timer_min": 7,
+            "zutaten_schritt": [
+              "Olivenöl",
+              "Zwiebel",
+              "Knoblauch",
+              "Tomaten (Dose)",
+              "Oregano getrocknet",
+              "Basilikum getrocknet",
+              "Salz",
+              "Pfeffer"
+            ]
+          },
+          {
+            "titel": "Auflauf schichten",
+            "text": "Kleine Auflaufform dünn mit Tomatensauce ausstreichen. Zucchini-Scheiben abwechselnd mit Sauce schichtet aufbauen - beginnen und enden mit Sauce.",
+            "timer_min": 0,
+            "zutaten_schritt": [
+              "Zucchini",
+              "Tomaten (Dose)"
+            ]
+          },
+          {
+            "titel": "Käse verteilen",
+            "text": "Mozzarella in Scheiben schneiden oder zerpflücken und gleichmäßig über den Auflauf verteilen. Parmesan darüber streuen.",
+            "timer_min": 0,
+            "zutaten_schritt": [
+              "Mozzarella",
+              "Parmesan gerieben"
+            ]
+          },
+          {
+            "titel": "Backen",
+            "text": "Auflauf in vorgeheiztem Ofen bei 200°C für 20-25 Minuten backen, bis die Käseoberfläche golden und leicht gebräunt ist.",
+            "timer_min": 23,
+            "zutaten_schritt": [
+              "Mozzarella",
+              "Parmesan gerieben"
+            ]
+          }
+        ],
+        "schritte_fleisch": [
+          {
+            "titel": "Hackfleisch anbraten",
+            "text": "150g Hackfleisch in Topf bei hoher Hitze anbraten, mit Salz und Pfeffer würzen, bis keine rosa Farbe mehr sichtbar ist. Danach zur Tomatensauce geben.",
+            "timer_min": 5,
+            "zutaten_schritt": [
+              "Hackfleisch 150g",
+              "Salz",
+              "Pfeffer"
+            ]
+          }
+        ],
+        "zutaten": [
+          {
+            "name": "Zucchini",
+            "menge": "300g"
+          },
+          {
+            "name": "Tomaten (Dose)",
+            "menge": "400g"
+          },
+          {
+            "name": "Mozzarella",
+            "menge": "150g"
+          },
+          {
+            "name": "Zwiebel",
+            "menge": "0.5"
+          },
+          {
+            "name": "Knoblauch",
+            "menge": "1 Zehe"
+          },
+          {
+            "name": "Olivenöl",
+            "menge": "1 EL"
+          },
+          {
+            "name": "Salz",
+            "menge": "1 Prise"
+          },
+          {
+            "name": "Pfeffer",
+            "menge": "1 Prise"
+          },
+          {
+            "name": "Oregano getrocknet",
+            "menge": "1 TL"
+          },
+          {
+            "name": "Basilikum getrocknet",
+            "menge": "0.5 TL"
+          },
+          {
+            "name": "Parmesan gerieben",
+            "menge": "2 EL"
+          }
+        ]
       }
     ]
   },
@@ -27,7 +261,7 @@
   "reste": 0,
   "freeze": 0,
   "saved": "1.9.2026",
-  "einkaufDone": false,
+  "einkaufDone": true,
   "sugsAll": [
     {
       "id": 1,
@@ -41,13 +275,247 @@
           "tag": "Di",
           "abend": "Couscous-Gemuesepilaw mit Kichererbsen und optional Huehnchen",
           "zeit_aktiv": "15m",
-          "zeit_total": "25m"
+          "zeit_total": "25m",
+          "schritte_vegi": [
+            {
+              "titel": "Gemüse schneiden",
+              "text": "Zucchini waschen und in 0.5cm dicke Halbringe schneiden. Paprika putzen, entkernen und in Streifen schneiden. Zwiebel schälen und fein würfeln.",
+              "timer_min": 0,
+              "zutaten_schritt": [
+                "Zucchini",
+                "Paprika rot",
+                "Zwiebel"
+              ]
+            },
+            {
+              "titel": "Gemüse anbraten",
+              "text": "Olivenöl in großem Topf erhitzen. Zwiebel und Paprika darin 2 Minuten andünsten. Zucchini hinzufügen und weitere 3 Minuten mitbraten.",
+              "timer_min": 5,
+              "zutaten_schritt": [
+                "Olivenöl",
+                "Zwiebel",
+                "Paprika rot",
+                "Zucchini"
+              ]
+            },
+            {
+              "titel": "Gewürze und Kichererbsen",
+              "text": "Kurkuma über das Gemüse streuen und 30 Sekunden mitbraten. Abgetropfte Kichererbsen hinzufügen und kurz mitbraten.",
+              "timer_min": 1,
+              "zutaten_schritt": [
+                "Kurkuma",
+                "Kichererbsen (Dose)"
+              ]
+            },
+            {
+              "titel": "Brühe aufgießen",
+              "text": "Gemüsebrühe aufgießen und aufkochen lassen. Mit Salz und Pfeffer würzen.",
+              "timer_min": 3,
+              "zutaten_schritt": [
+                "Gemüsebrühe",
+                "Salz",
+                "Pfeffer"
+              ]
+            },
+            {
+              "titel": "Couscous einrühren",
+              "text": "Couscous einstreuen, gut umrühren und vom Herd nehmen. Topf mit Deckel oder Folie 5 Minuten quellen lassen.",
+              "timer_min": 5,
+              "zutaten_schritt": [
+                "Couscous"
+              ]
+            },
+            {
+              "titel": "Petersilie hinzufügen",
+              "text": "Nach Quellzeit Petersilie waschen, hacken und über den Pilaw streuen. Nochmals durchmischen und servieren.",
+              "timer_min": 0,
+              "zutaten_schritt": [
+                "Petersilie frisch"
+              ]
+            }
+          ],
+          "schritte_fleisch": [
+            {
+              "titel": "Hähnchen vorbereiten",
+              "text": "150g Hähnchenbrust in 1cm dicke Würfel schneiden.",
+              "timer_min": 0,
+              "zutaten_schritt": [
+                "Hähnchenbrust 150g"
+              ]
+            },
+            {
+              "titel": "Hähnchen anbraten",
+              "text": "Nach dem Anbraten des Gemüses Hähnchenwürfel in den Topf geben und 4-5 Minuten von allen Seiten goldbraun anbraten bis durchgegart.",
+              "timer_min": 5,
+              "zutaten_schritt": [
+                "Hähnchenbrust 150g"
+              ]
+            }
+          ],
+          "zutaten": [
+            {
+              "name": "Couscous",
+              "menge": "100g"
+            },
+            {
+              "name": "Kichererbsen (Dose)",
+              "menge": "200g"
+            },
+            {
+              "name": "Zucchini",
+              "menge": "150g"
+            },
+            {
+              "name": "Paprika rot",
+              "menge": "1"
+            },
+            {
+              "name": "Zwiebel",
+              "menge": "0.5"
+            },
+            {
+              "name": "Gemüsebrühe",
+              "menge": "200ml"
+            },
+            {
+              "name": "Olivenöl",
+              "menge": "1 EL"
+            },
+            {
+              "name": "Salz",
+              "menge": "1 Prise"
+            },
+            {
+              "name": "Pfeffer",
+              "menge": "1 Prise"
+            },
+            {
+              "name": "Kurkuma",
+              "menge": "0.5 TL"
+            },
+            {
+              "name": "Petersilie frisch",
+              "menge": "1 Handvoll"
+            }
+          ]
         },
         {
           "tag": "Fr",
           "abend": "Tomaten-Zucchini-Auflauf mit Mozzarella und optional Hackfleisch",
           "zeit_aktiv": "20m",
-          "zeit_total": "40m"
+          "zeit_total": "40m",
+          "schritte_vegi": [
+            {
+              "titel": "Gemüse schneiden",
+              "text": "Zucchini waschen und in dünne Längsscheiben (ca. 3mm) mit Sparschäler oder Gemüsehobel schneiden. Zwiebel und Knoblauch schälen, fein würfeln.",
+              "timer_min": 0,
+              "zutaten_schritt": [
+                "Zucchini",
+                "Zwiebel",
+                "Knoblauch"
+              ]
+            },
+            {
+              "titel": "Tomatensauce kochen",
+              "text": "Olivenöl in Topf erhitzen. Zwiebel und Knoblauch 2 Minuten andünsten. Dosentomaten hinzufügen, mit Oregano, Basilikum, Salz und Pfeffer würzen. 5 Minuten köcheln lassen.",
+              "timer_min": 7,
+              "zutaten_schritt": [
+                "Olivenöl",
+                "Zwiebel",
+                "Knoblauch",
+                "Tomaten (Dose)",
+                "Oregano getrocknet",
+                "Basilikum getrocknet",
+                "Salz",
+                "Pfeffer"
+              ]
+            },
+            {
+              "titel": "Auflauf schichten",
+              "text": "Kleine Auflaufform dünn mit Tomatensauce ausstreichen. Zucchini-Scheiben abwechselnd mit Sauce schichtet aufbauen - beginnen und enden mit Sauce.",
+              "timer_min": 0,
+              "zutaten_schritt": [
+                "Zucchini",
+                "Tomaten (Dose)"
+              ]
+            },
+            {
+              "titel": "Käse verteilen",
+              "text": "Mozzarella in Scheiben schneiden oder zerpflücken und gleichmäßig über den Auflauf verteilen. Parmesan darüber streuen.",
+              "timer_min": 0,
+              "zutaten_schritt": [
+                "Mozzarella",
+                "Parmesan gerieben"
+              ]
+            },
+            {
+              "titel": "Backen",
+              "text": "Auflauf in vorgeheiztem Ofen bei 200°C für 20-25 Minuten backen, bis die Käseoberfläche golden und leicht gebräunt ist.",
+              "timer_min": 23,
+              "zutaten_schritt": [
+                "Mozzarella",
+                "Parmesan gerieben"
+              ]
+            }
+          ],
+          "schritte_fleisch": [
+            {
+              "titel": "Hackfleisch anbraten",
+              "text": "150g Hackfleisch in Topf bei hoher Hitze anbraten, mit Salz und Pfeffer würzen, bis keine rosa Farbe mehr sichtbar ist. Danach zur Tomatensauce geben.",
+              "timer_min": 5,
+              "zutaten_schritt": [
+                "Hackfleisch 150g",
+                "Salz",
+                "Pfeffer"
+              ]
+            }
+          ],
+          "zutaten": [
+            {
+              "name": "Zucchini",
+              "menge": "300g"
+            },
+            {
+              "name": "Tomaten (Dose)",
+              "menge": "400g"
+            },
+            {
+              "name": "Mozzarella",
+              "menge": "150g"
+            },
+            {
+              "name": "Zwiebel",
+              "menge": "0.5"
+            },
+            {
+              "name": "Knoblauch",
+              "menge": "1 Zehe"
+            },
+            {
+              "name": "Olivenöl",
+              "menge": "1 EL"
+            },
+            {
+              "name": "Salz",
+              "menge": "1 Prise"
+            },
+            {
+              "name": "Pfeffer",
+              "menge": "1 Prise"
+            },
+            {
+              "name": "Oregano getrocknet",
+              "menge": "1 TL"
+            },
+            {
+              "name": "Basilikum getrocknet",
+              "menge": "0.5 TL"
+            },
+            {
+              "name": "Parmesan gerieben",
+              "menge": "2 EL"
+            }
+          ]
         }
       ]
     },
