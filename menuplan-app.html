@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
-<title>Menuplan v5.23</title>
+<title>Menuplan v5.24</title>
 <style>
 :root{
   --red:#e8390e;--rl:#fff2ef;--grn:#2e7d32;--grl:#f0faf4;
@@ -152,7 +152,7 @@ input[type=password]{letter-spacing:2px}
 
 <!-- HOME -->
 <div class="scr on" id="sh">
-  <div class="hero"><h1>Menuplan</h1><p id="hsub">v5.23 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
+  <div class="hero"><h1>Menuplan</h1><p id="hsub">v5.24 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
 
   <!-- Active plan card -->
   <div id="active-plan" style="display:none;margin:10px 10px 0">
@@ -196,8 +196,39 @@ input[type=password]{letter-spacing:2px}
 
   <!-- History button -->
   <div style="padding:10px 10px 0;display:flex;gap:8px">
-    <button class="btn btn-out" onclick="openHistory()" style="flex:1;font-size:13px;padding:10px">&#128218; Verlauf</button>
     <button class="btn btn-out" onclick="openFotoScreen()" style="flex:1;font-size:13px;padding:10px">&#128247; Foto-Rezept</button>
+    <button class="btn btn-out" onclick="toggleUserMenu()" id="user-menu-btn" style="display:none;width:auto;padding:10px 14px;font-size:13px" title="Benutzermenu">&#128100;</button>
+  </div>
+
+  <!-- User Menu Dropdown -->
+  <div id="user-menu" style="display:none;margin:6px 10px 0;background:#fff;border-radius:var(--rlg);border:.5px solid var(--bdr);overflow:hidden;box-shadow:0 4px 16px rgba(0,0,0,.1)">
+    <!-- User info -->
+    <div style="padding:14px 16px;background:var(--red);color:#fff">
+      <div style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;opacity:.75;margin-bottom:4px">Angemeldet als</div>
+      <div id="um-username" style="font-size:16px;font-weight:700"></div>
+    </div>
+    <!-- Menu items -->
+    <div style="padding:8px 0">
+      <button onclick="openHistory();toggleUserMenu()" style="width:100%;text-align:left;padding:12px 16px;background:none;border:none;font-size:14px;color:var(--txt);cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:10px">
+        <span style="font-size:18px">&#128197;</span> Verlauf
+      </button>
+      <div style="height:.5px;background:var(--bdr);margin:0 16px"></div>
+      <button onclick="openPrefs();toggleUserMenu()" style="width:100%;text-align:left;padding:12px 16px;background:none;border:none;font-size:14px;color:var(--txt);cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:10px">
+        <span style="font-size:18px">&#9881;</span> Praeferenzen
+      </button>
+      <div style="height:.5px;background:var(--bdr);margin:0 16px"></div>
+      <button onclick="showInviteLink();toggleUserMenu()" style="width:100%;text-align:left;padding:12px 16px;background:none;border:none;font-size:14px;color:var(--txt);cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:10px">
+        <span style="font-size:18px">&#128279;</span> Einladungslink
+      </button>
+      <div style="height:.5px;background:var(--bdr);margin:0 16px"></div>
+      <button onclick="showTokenRefresh();toggleUserMenu()" style="width:100%;text-align:left;padding:12px 16px;background:none;border:none;font-size:14px;color:var(--txt);cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:10px">
+        <span style="font-size:18px">&#128273;</span> GitHub Token erneuern
+      </button>
+      <div style="height:.5px;background:var(--bdr);margin:0 16px"></div>
+      <button onclick="doLogout();toggleUserMenu()" style="width:100%;text-align:left;padding:12px 16px;background:none;border:none;font-size:14px;color:var(--red);cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:10px">
+        <span style="font-size:18px">&#x2192;</span> Abmelden
+      </button>
+    </div>
   </div>
 
   <!-- Login Card -->
@@ -433,6 +464,60 @@ input[type=password]{letter-spacing:2px}
   <div id="foto-result" style="display:none"></div>
 </div>
 
+<!-- PRAEFERENZEN -->
+<div class="scr" id="sprefs">
+  <div class="tbar">
+    <div class="tbar-bk" onclick="go('sh');toggleUserMenu()">&#8592;</div>
+    <div><h1>Praeferenzen</h1><div class="tbar-sub" id="prefs-username"></div></div>
+  </div>
+  <div class="card"><div class="cp">
+    <div class="clbl">Standard-Einstellungen</div>
+    <div class="fld"><label>Standard Personen</label>
+      <div class="chips" id="pref-pchips">
+        <button class="chip" onclick="setPref('personen',1)">1</button>
+        <button class="chip on" onclick="setPref('personen',2)">2</button>
+        <button class="chip" onclick="setPref('personen',3)">3</button>
+        <button class="chip" onclick="setPref('personen',4)">4</button>
+      </div>
+    </div>
+    <div class="fld" style="margin-top:10px"><label>Standard Fleisch-Modus</label>
+      <div class="chips" id="pref-mchips">
+        <button class="chip" onclick="setPref('modus','vegi')">Vegetarisch</button>
+        <button class="chip on" onclick="setPref('modus','optional')">Optional Fleisch</button>
+        <button class="chip" onclick="setPref('modus','fleisch')">Alle mit Fleisch</button>
+      </div>
+    </div>
+    <div class="fld" style="margin-top:10px"><label>Standard Kochabende</label>
+      <div class="chips" id="pref-nchips">
+        <button class="chip" onclick="setPref('n',2)">2</button>
+        <button class="chip on" onclick="setPref('n',3)">3</button>
+        <button class="chip" onclick="setPref('n',4)">4</button>
+      </div>
+    </div>
+    <div class="fld" style="margin-top:10px"><label>Resteverwertung</label>
+      <div class="chips" id="pref-rchips">
+        <button class="chip on" onclick="setPref('reste',1)">Ja</button>
+        <button class="chip" onclick="setPref('reste',0)">Nein</button>
+      </div>
+    </div>
+    <div class="fld" style="margin-top:10px"><label>Einfrieren</label>
+      <div class="chips" id="pref-fchips">
+        <button class="chip on" onclick="setPref('freeze',1)">Ja</button>
+        <button class="chip" onclick="setPref('freeze',0)">Nein</button>
+      </div>
+    </div>
+    <div class="fld" style="margin-top:10px"><label>Lieblingsküchen (optional)</label>
+      <input id="pref-kuechen" placeholder="z.B. asiatisch, mediterran, mexikanisch..."></div>
+    <div class="fld"><label>Abneigungen / Allergien (optional)</label>
+      <input id="pref-avoid" placeholder="z.B. Erdnuesse, Sellerie, zu scharf..."></div>
+    <button class="btn btn-red" onclick="savePrefs()" style="margin-top:4px">Praeferenzen speichern</button>
+    <div id="prefs-saved" style="display:none;font-size:12px;color:var(--grn);text-align:center;margin-top:8px">&#10003; Gespeichert!</div>
+  </div></div>
+  <div style="padding:10px">
+    <button class="btn btn-out" onclick="go('sh')" style="font-size:13px;padding:10px">Zurueck</button>
+  </div>
+</div>
+
 <!-- HISTORY -->
 <div class="scr" id="sh2">
   <div class="tbar">
@@ -515,6 +600,60 @@ input[type=password]{letter-spacing:2px}
   </div>
   <div id="foto-err" style="display:none" class="st er"></div>
   <div id="foto-result" style="display:none"></div>
+</div>
+
+<!-- PRAEFERENZEN -->
+<div class="scr" id="sprefs">
+  <div class="tbar">
+    <div class="tbar-bk" onclick="go('sh');toggleUserMenu()">&#8592;</div>
+    <div><h1>Praeferenzen</h1><div class="tbar-sub" id="prefs-username"></div></div>
+  </div>
+  <div class="card"><div class="cp">
+    <div class="clbl">Standard-Einstellungen</div>
+    <div class="fld"><label>Standard Personen</label>
+      <div class="chips" id="pref-pchips">
+        <button class="chip" onclick="setPref('personen',1)">1</button>
+        <button class="chip on" onclick="setPref('personen',2)">2</button>
+        <button class="chip" onclick="setPref('personen',3)">3</button>
+        <button class="chip" onclick="setPref('personen',4)">4</button>
+      </div>
+    </div>
+    <div class="fld" style="margin-top:10px"><label>Standard Fleisch-Modus</label>
+      <div class="chips" id="pref-mchips">
+        <button class="chip" onclick="setPref('modus','vegi')">Vegetarisch</button>
+        <button class="chip on" onclick="setPref('modus','optional')">Optional Fleisch</button>
+        <button class="chip" onclick="setPref('modus','fleisch')">Alle mit Fleisch</button>
+      </div>
+    </div>
+    <div class="fld" style="margin-top:10px"><label>Standard Kochabende</label>
+      <div class="chips" id="pref-nchips">
+        <button class="chip" onclick="setPref('n',2)">2</button>
+        <button class="chip on" onclick="setPref('n',3)">3</button>
+        <button class="chip" onclick="setPref('n',4)">4</button>
+      </div>
+    </div>
+    <div class="fld" style="margin-top:10px"><label>Resteverwertung</label>
+      <div class="chips" id="pref-rchips">
+        <button class="chip on" onclick="setPref('reste',1)">Ja</button>
+        <button class="chip" onclick="setPref('reste',0)">Nein</button>
+      </div>
+    </div>
+    <div class="fld" style="margin-top:10px"><label>Einfrieren</label>
+      <div class="chips" id="pref-fchips">
+        <button class="chip on" onclick="setPref('freeze',1)">Ja</button>
+        <button class="chip" onclick="setPref('freeze',0)">Nein</button>
+      </div>
+    </div>
+    <div class="fld" style="margin-top:10px"><label>Lieblingsküchen (optional)</label>
+      <input id="pref-kuechen" placeholder="z.B. asiatisch, mediterran, mexikanisch..."></div>
+    <div class="fld"><label>Abneigungen / Allergien (optional)</label>
+      <input id="pref-avoid" placeholder="z.B. Erdnuesse, Sellerie, zu scharf..."></div>
+    <button class="btn btn-red" onclick="savePrefs()" style="margin-top:4px">Praeferenzen speichern</button>
+    <div id="prefs-saved" style="display:none;font-size:12px;color:var(--grn);text-align:center;margin-top:8px">&#10003; Gespeichert!</div>
+  </div></div>
+  <div style="padding:10px">
+    <button class="btn btn-out" onclick="go('sh')" style="font-size:13px;padding:10px">Zurueck</button>
+  </div>
 </div>
 
 <!-- HISTORY -->
@@ -892,6 +1031,130 @@ function refreshToken() {
   if ($('new-token')) $('new-token').value = '';
   if ($('token-refresh-section')) $('token-refresh-section').style.display = 'none';
   alert('Token erneuert! GitHub-Sync aktiv.');
+}
+
+// ─── USER MENU ─────────────────────────────────────────────
+function toggleUserMenu() {
+  var menu = $('user-menu');
+  if (!menu) return;
+  var isVisible = menu.style.display !== 'none';
+  menu.style.display = isVisible ? 'none' : 'block';
+  if (!isVisible) {
+    // Update username display
+    var session = getSession();
+    if ($('um-username')) $('um-username').textContent = session ? session.username : '';
+    // Close on outside click
+    setTimeout(function() {
+      document.addEventListener('click', function closeMenu(e) {
+        if (!menu.contains(e.target) && e.target.id !== 'user-menu-btn') {
+          menu.style.display = 'none';
+          document.removeEventListener('click', closeMenu);
+        }
+      });
+    }, 100);
+  }
+}
+
+// Only show user menu button when logged in
+function showLoggedIn() {
+  var session = getSession();
+  if ($('login-section')) $('login-section').style.display = 'none';
+  if ($('loggedin-section')) $('loggedin-section').style.display = 'block';
+  if ($('login-err')) $('login-err').style.display = 'none';
+  if ($('loggedin-name')) $('loggedin-name').textContent = session ? session.username : '';
+  if ($('login-pw')) $('login-pw').value = '';
+  if ($('invite-btn')) $('invite-btn').style.display = 'block';
+  if ($('user-menu-btn')) $('user-menu-btn').style.display = 'flex';
+  // Load preferences
+  loadPrefs();
+}
+
+// ─── PREFERENCES ───────────────────────────────────────────
+function getPrefKey() {
+  var session = getSession();
+  return session ? 'prefs_' + session.username : 'prefs_default';
+}
+
+function loadPrefs() {
+  try {
+    var prefs = JSON.parse(localStorage.getItem(getPrefKey()) || '{}');
+    // Apply to G state
+    if (prefs.personen !== undefined) { G.personen = prefs.personen; setP(prefs.personen); }
+    if (prefs.modus !== undefined) { G.modus = prefs.modus; setM(prefs.modus); }
+    if (prefs.n !== undefined) { G.n = prefs.n; setN(prefs.n); }
+    if (prefs.reste !== undefined) { G.reste = prefs.reste; setR(prefs.reste); }
+    if (prefs.freeze !== undefined) { G.freeze = prefs.freeze; setF(prefs.freeze); }
+    if (prefs.kuechen && $('theme')) $('theme').placeholder = prefs.kuechen ? 'Pref: ' + prefs.kuechen : 'mediterran, asiatisch...';
+    return prefs;
+  } catch(e) { return {}; }
+}
+
+function openPrefs() {
+  var session = getSession();
+  if ($('prefs-username')) $('prefs-username').textContent = session ? session.username : '';
+  var prefs = loadPrefs();
+  // Update chips
+  var p = prefs.personen || G.personen || 2;
+  var m = prefs.modus || G.modus || 'optional';
+  var n = prefs.n || G.n || 3;
+  var r = prefs.reste !== undefined ? prefs.reste : G.reste;
+  var f = prefs.freeze !== undefined ? prefs.freeze : G.freeze;
+  var chips;
+  chips = document.querySelectorAll('#pref-pchips .chip');
+  chips.forEach(function(c,i){ c.classList.toggle('on', i+1===p); });
+  chips = document.querySelectorAll('#pref-mchips .chip');
+  chips[0].classList.toggle('on', m==='vegi');
+  chips[1].classList.toggle('on', m==='optional');
+  chips[2].classList.toggle('on', m==='fleisch');
+  chips = document.querySelectorAll('#pref-nchips .chip');
+  chips.forEach(function(c,i){ c.classList.toggle('on', i+2===n); });
+  chips = document.querySelectorAll('#pref-rchips .chip');
+  chips[0].classList.toggle('on', r===1); chips[1].classList.toggle('on', r===0);
+  chips = document.querySelectorAll('#pref-fchips .chip');
+  chips[0].classList.toggle('on', f===1); chips[1].classList.toggle('on', f===0);
+  if ($('pref-kuechen')) $('pref-kuechen').value = prefs.kuechen || '';
+  if ($('pref-avoid')) $('pref-avoid').value = prefs.avoid || '';
+  if ($('prefs-saved')) $('prefs-saved').style.display = 'none';
+  go('sprefs');
+}
+
+function setPref(key, val) {
+  // Update chip UI
+  var chipMap = { personen:'pref-pchips', modus:'pref-mchips', n:'pref-nchips', reste:'pref-rchips', freeze:'pref-fchips' };
+  var chipId = chipMap[key];
+  if (chipId) {
+    var chips = document.querySelectorAll('#' + chipId + ' .chip');
+    if (key === 'personen') chips.forEach(function(c,i){ c.classList.toggle('on', i+1===val); });
+    else if (key === 'n') chips.forEach(function(c,i){ c.classList.toggle('on', i+2===val); });
+    else if (key === 'modus') { chips[0].classList.toggle('on',val==='vegi'); chips[1].classList.toggle('on',val==='optional'); chips[2].classList.toggle('on',val==='fleisch'); }
+    else if (key === 'reste' || key === 'freeze') { chips[0].classList.toggle('on',val===1); chips[1].classList.toggle('on',val===0); }
+  }
+  // Save to temp
+  if (!window._tempPrefs) window._tempPrefs = {};
+  window._tempPrefs[key] = val;
+}
+
+function savePrefs() {
+  var prefs = JSON.parse(localStorage.getItem(getPrefKey()) || '{}');
+  // Merge temp prefs
+  if (window._tempPrefs) {
+    Object.keys(window._tempPrefs).forEach(function(k){ prefs[k] = window._tempPrefs[k]; });
+    window._tempPrefs = {};
+  }
+  prefs.kuechen = $('pref-kuechen') ? $('pref-kuechen').value.trim() : '';
+  prefs.avoid = $('pref-avoid') ? $('pref-avoid').value.trim() : '';
+  localStorage.setItem(getPrefKey(), JSON.stringify(prefs));
+  // Apply immediately
+  if (prefs.personen) { G.personen = prefs.personen; setP(prefs.personen); }
+  if (prefs.modus) { G.modus = prefs.modus; setM(prefs.modus); }
+  if (prefs.n) { G.n = prefs.n; setN(prefs.n); }
+  if (prefs.reste !== undefined) { G.reste = prefs.reste; setR(prefs.reste); }
+  if (prefs.freeze !== undefined) { G.freeze = prefs.freeze; setF(prefs.freeze); }
+  // Show confirmation
+  if ($('prefs-saved')) {
+    $('prefs-saved').style.display = 'block';
+    setTimeout(function(){ $('prefs-saved').style.display = 'none'; go('sh'); }, 1500);
+  }
 }
 
 function resetLocalUsers() {
@@ -1408,6 +1671,11 @@ function goSuggest() {
   var theme = ($('theme') ? $('theme').value.trim() : '');
   var exist = ($('exist') ? $('exist').value.trim() : '');
   var feedback = ($('feedback') ? $('feedback').value.trim() : '');
+  // Load user preferences for generation
+  var userPrefs = {};
+  try { userPrefs = JSON.parse(localStorage.getItem(getPrefKey()) || '{}'); } catch(e) {}
+  var prefKuechen = userPrefs.kuechen || '';
+  var prefAvoid = userPrefs.avoid || '';
 
   var msg = G.n + ' Kochabende, ' + p + ' Personen, ' + modusText +
     (G.reste ? ', mit Resten' : '') +
@@ -1415,6 +1683,8 @@ function goSuggest() {
     (theme ? '. Thema: ' + theme : '') +
     (exist ? '. Vorhandene Zutaten unbedingt verwenden: ' + exist : '') +
     (feedback ? '. Vorherige Vorschlaege abgelehnt weil: ' + feedback + '. Deutlich andere Gerichte.' : '') +
+    (prefKuechen ? '. Bevorzugte Kuechen: ' + prefKuechen : '') +
+    (prefAvoid ? '. Unbedingt vermeiden: ' + prefAvoid : '') +
     '. Kueche variieren.';
 
   var sys = buildSYS_overview();
