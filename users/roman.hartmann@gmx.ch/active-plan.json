@@ -1,0 +1,100 @@
+{
+  "sug": {
+    "id": 1,
+    "thema": "Mediterran",
+    "kochabende": [
+      "Di",
+      "Fr"
+    ],
+    "gerichte": [
+      {
+        "tag": "Di",
+        "abend": "Couscous-Gemuesepilaw mit Kichererbsen und optional Huehnchen",
+        "zeit_aktiv": "15m",
+        "zeit_total": "25m"
+      },
+      {
+        "tag": "Fr",
+        "abend": "Tomaten-Zucchini-Auflauf mit Mozzarella und optional Hackfleisch",
+        "zeit_aktiv": "20m",
+        "zeit_total": "40m"
+      }
+    ]
+  },
+  "sel": 0,
+  "n": 2,
+  "personen": 1,
+  "reste": 0,
+  "freeze": 0,
+  "saved": "1.9.2026",
+  "einkaufDone": false,
+  "sugsAll": [
+    {
+      "id": 1,
+      "thema": "Mediterran",
+      "kochabende": [
+        "Di",
+        "Fr"
+      ],
+      "gerichte": [
+        {
+          "tag": "Di",
+          "abend": "Couscous-Gemuesepilaw mit Kichererbsen und optional Huehnchen",
+          "zeit_aktiv": "15m",
+          "zeit_total": "25m"
+        },
+        {
+          "tag": "Fr",
+          "abend": "Tomaten-Zucchini-Auflauf mit Mozzarella und optional Hackfleisch",
+          "zeit_aktiv": "20m",
+          "zeit_total": "40m"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "thema": "Orientalisch",
+      "kochabende": [
+        "Di",
+        "Fr"
+      ],
+      "gerichte": [
+        {
+          "tag": "Di",
+          "abend": "Couscous-Gemuese-Tajine mit Kichererbsen",
+          "zeit_aktiv": "25m",
+          "zeit_total": "40m"
+        },
+        {
+          "tag": "Fr",
+          "abend": "Couscous mit Lammfleisch und Aprikosen",
+          "zeit_aktiv": "30m",
+          "zeit_total": "45m"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "thema": "Indisch-Asiatisch",
+      "kochabende": [
+        "Di",
+        "Do"
+      ],
+      "gerichte": [
+        {
+          "tag": "Di",
+          "abend": "Couscous-Gemüse-Curry mit Kichererbsen (optional Huhn)",
+          "zeit_aktiv": "25m",
+          "zeit_total": "40m"
+        },
+        {
+          "tag": "Do",
+          "abend": "Couscous-Bowl mit gebratenem Tofu und Erdnuss-Sauce (optional Garnelen)",
+          "zeit_aktiv": "20m",
+          "zeit_total": "30m"
+        }
+      ]
+    }
+  ],
+  "sugsPartial": true
+}
