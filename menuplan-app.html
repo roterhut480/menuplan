@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
-<title>Menuplan v5.20</title>
+<title>Menuplan v5.23</title>
 <style>
 :root{
   --red:#e8390e;--rl:#fff2ef;--grn:#2e7d32;--grl:#f0faf4;
@@ -152,7 +152,7 @@ input[type=password]{letter-spacing:2px}
 
 <!-- HOME -->
 <div class="scr on" id="sh">
-  <div class="hero"><h1>Menuplan</h1><p id="hsub">v5.20 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
+  <div class="hero"><h1>Menuplan</h1><p id="hsub">v5.23 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
 
   <!-- Active plan card -->
   <div id="active-plan" style="display:none;margin:10px 10px 0">
@@ -665,7 +665,7 @@ function saveUsers(users) {
 }
 
 function doLogin() {
-  var username = ($('login-user').value || '').trim().toLowerCase().replace(/[^a-z0-9_]/g, '');
+  var username = ($('login-user').value || '').trim().toLowerCase().replace(/[^a-z0-9_.@-]/g, '').replace(/[.@-]+$/, '');
   var pw = $('login-pw').value;
   var err = $('login-err');
   if (!username) { err.textContent = 'Bitte Benutzernamen eingeben'; err.style.display = 'block'; return; }
@@ -707,9 +707,8 @@ function doLogin() {
       startSession(username, pw);
       return;
     }
-    // Show manual setup option
     if ($('login-manual-setup')) $('login-manual-setup').style.display = 'block';
-    err.textContent = 'Noch kein Zugang eingerichtet.';
+    err.textContent = 'Kein Konto gefunden. Einladungslink verwenden oder unten einrichten.';
     err.style.display = 'block';
     return;
   }
@@ -809,16 +808,14 @@ function showInviteLink() {
 function updateGHUI() {
   if (getSession()) {
     showLoggedIn();
-    // Show invite button for logged-in users
-    if ($('invite-btn')) $('invite-btn').style.display = 'none';
     return;
   }
-  // Check for invite link
   var params = new URLSearchParams(window.location.search);
+
+  // Invite link
   var invite = params.get('invite');
   if (invite) {
     try {
-      // Decode invite: btoa(token)
       var tok = decodeURIComponent(escape(atob(invite)));
       if (tok && tok.startsWith('ghp_')) {
         window._inviteToken = tok;
@@ -826,19 +823,39 @@ function updateGHUI() {
         if ($('login-title')) $('login-title').textContent = 'Konto erstellen';
         if ($('login-btn')) $('login-btn').textContent = 'Konto erstellen';
         if ($('login-pw')) $('login-pw').placeholder = 'Eigenes Passwort waehlen...';
+        // Hide manual setup when using invite
+        if ($('login-manual-setup')) $('login-manual-setup').style.display = 'none';
+        return;
       }
     } catch(e) {}
   }
-  // Check for admin setup
+
+  // Setup URL param
   var setup = params.get('setup');
   if (setup) {
-    if ($('login-pw')) $('login-pw').placeholder = 'Adminpasswort festlegen...';
+    if ($('login-manual-setup')) $('login-manual-setup').style.display = 'block';
+    if ($('login-pw')) $('login-pw').placeholder = 'Passwort festlegen...';
     if ($('login-btn')) $('login-btn').textContent = 'Einrichten';
+    return;
+  }
+
+  // Show manual setup only if NO users exist yet
+  var users = getUsers();
+  if (users.length === 0) {
+    if ($('login-manual-setup')) $('login-manual-setup').style.display = 'block';
+    if ($('login-title')) $('login-title').textContent = 'Ersteinrichtung';
+    if ($('login-btn')) $('login-btn').textContent = 'Einrichten';
+  } else {
+    // Normal login - hide token field
+    if ($('login-manual-setup')) $('login-manual-setup').style.display = 'none';
+    if ($('login-title')) $('login-title').textContent = 'Anmelden';
+    if ($('login-btn')) $('login-btn').textContent = 'Anmelden';
+
   }
 }
 
 function doManualSetup() {
-  var username = ($('login-user').value || '').trim().toLowerCase().replace(/[^a-z0-9_]/g, '');
+  var username = ($('login-user').value || '').trim().toLowerCase().replace(/[^a-z0-9_.@-]/g, '').replace(/[.@-]+$/, '');
   var pw = $('login-pw').value;
   var tok = ($('setup-token').value || '').trim();
   var err = $('login-err');
@@ -875,6 +892,15 @@ function refreshToken() {
   if ($('new-token')) $('new-token').value = '';
   if ($('token-refresh-section')) $('token-refresh-section').style.display = 'none';
   alert('Token erneuert! GitHub-Sync aktiv.');
+}
+
+function resetLocalUsers() {
+  if (confirm('Lokale Anmeldedaten loeschen? Du kannst dich danach mit Einladungslink oder Token neu einrichten.')) {
+    localStorage.removeItem('gh_users');
+    localStorage.removeItem('gh_session');
+    localStorage.removeItem('gh_enc');
+    updateGHUI();
+  }
 }
 
 function copyInviteLink() {
