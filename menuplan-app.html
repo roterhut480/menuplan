@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
-<title>Menüplan v5.28</title>
+<title>Menüplan v5.30</title>
 <style>
 :root{
   --red:#e8390e;--rl:#fff2ef;--grn:#2e7d32;--grl:#f0faf4;
@@ -152,7 +152,7 @@ input[type=password]{letter-spacing:2px}
 
 <!-- HOME -->
 <div class="scr on" id="sh">
-  <div class="hero"><h1>Menüplan</h1><p id="hsub">v5.28 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
+  <div class="hero"><h1>Menüplan</h1><p id="hsub">v5.30 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
 
   <!-- Active plan card -->
   <div id="active-plan" style="display:none;margin:10px 10px 0">
@@ -554,140 +554,13 @@ input[type=password]{letter-spacing:2px}
   </div>
 </div>
 <!-- FOTO REZEPT -->
-<div class="scr" id="sf">
-  <div class="tbar">
-    <div class="tbar-bk" onclick="go('sh')">&#8592;</div>
-    <div><h1>Foto-Rezept</h1><div class="tbar-sub">Rezept aus Foto ableiten</div></div>
-    <button onclick="syncFotoRezepte(this)" style="background:rgba(255,255,255,.2);border:none;border-radius:6px;padding:6px 10px;font-size:12px;color:#fff;cursor:pointer;font-family:inherit;margin-left:auto">&#x1F504;</button>
-  </div>
 
-  <div class="card"><div class="cp">
-    <div class="clbl">Foto hochladen</div>
-    <div id="foto-upload-area" onclick="$('foto-input').click()"
-      style="border:2px dashed var(--bdr);border-radius:var(--r);padding:32px 16px;text-align:center;cursor:pointer;transition:border-color .2s;margin-bottom:10px"
-      ondragover="event.preventDefault();this.style.borderColor='var(--red)'"
-      ondragleave="this.style.borderColor='var(--bdr)'"
-      ondrop="event.preventDefault();this.style.borderColor='var(--bdr)';handleFotoFile(event.dataTransfer.files[0])">
-      <div style="font-size:36px;margin-bottom:8px">&#128247;</div>
-      <div style="font-size:14px;font-weight:600;color:var(--txt)">Foto antippen oder reinziehen</div>
-      <div style="font-size:12px;color:var(--gr3);margin-top:4px">Rezept, Menukarte, Kochbuch-Seite...</div>
-    </div>
-    <input type="file" id="foto-input" accept="image/*" style="display:none" onchange="handleFotoFile(this.files[0])">
-
-    <div id="foto-preview" style="display:none;margin-bottom:10px;text-align:center">
-      <img id="foto-img" style="max-width:100%;max-height:200px;border-radius:var(--r);border:.5px solid var(--bdr)">
-      <div style="margin-top:8px">
-        <button class="btn btn-out" onclick="clearFoto()" style="width:auto;padding:8px 16px;font-size:12px">&#x2715; Anderes Foto</button>
-      </div>
-    </div>
-
-    <div class="fld" style="margin-top:4px">
-      <label>Portionen</label>
-      <div class="chips" id="foto-pchips">
-        <button class="chip" onclick="setFotoP(1)">1</button>
-        <button class="chip on" onclick="setFotoP(2)">2</button>
-        <button class="chip" onclick="setFotoP(3)">3</button>
-        <button class="chip" onclick="setFotoP(4)">4</button>
-      </div>
-    </div>
-    <div class="fld" style="margin-top:8px">
-      <label>Hinweis (optional)</label>
-      <input id="foto-hint" placeholder="z.B. vegetarisch, ohne Nuesse, fuer 2 Personen...">
-    </div>
-
-    <button class="btn btn-red" id="foto-btn" onclick="analyzeFoto()" disabled style="margin-top:4px">Rezept ableiten</button>
-  </div></div>
-
-  <!-- Saved foto recipes -->
-  <div id="foto-saved-section" style="display:none;margin:10px 10px 0">
-    <div style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--gr3);margin-bottom:8px;padding:0 4px">Gespeicherte Rezepte</div>
-    <div id="foto-saved-list"></div>
-  </div>
-
-  <div id="foto-load" style="display:none;text-align:center;padding:32px">
-    <div class="spin" style="width:26px;height:26px;margin:0 auto 12px;border-width:2.5px"></div>
-    <div style="font-size:13px;color:var(--gr3)">Claude analysiert das Foto...</div>
-  </div>
-  <div id="foto-err" style="display:none" class="st er"></div>
-  <div id="foto-result" style="display:none"></div>
-</div>
 
 <!-- PRAEFERENZEN -->
-<div class="scr" id="sprefs">
-  <div class="tbar">
-    <div class="tbar-bk" onclick="go('sh');toggleUserMenu()">&#8592;</div>
-    <div><h1>Präferenzen</h1><div class="tbar-sub" id="prefs-username"></div></div>
-  </div>
-  <div class="card"><div class="cp">
-    <div class="clbl">Standard-Einstellungen</div>
-    <div class="fld"><label>Standard Personen</label>
-      <div class="chips" id="pref-pchips">
-        <button class="chip" onclick="setPref('personen',1)">1</button>
-        <button class="chip on" onclick="setPref('personen',2)">2</button>
-        <button class="chip" onclick="setPref('personen',3)">3</button>
-        <button class="chip" onclick="setPref('personen',4)">4</button>
-      </div>
-    </div>
-    <div class="fld" style="margin-top:10px"><label>Standard Fleisch-Modus</label>
-      <div class="chips" id="pref-mchips">
-        <button class="chip" onclick="setPref('modus','vegi')">Vegetarisch</button>
-        <button class="chip on" onclick="setPref('modus','optional')">Optional Fleisch</button>
-        <button class="chip" onclick="setPref('modus','fleisch')">Alle mit Fleisch</button>
-      </div>
-    </div>
-    <div class="fld" style="margin-top:10px"><label>Standard Kochabende</label>
-      <div class="chips" id="pref-nchips">
-        <button class="chip" onclick="setPref('n',2)">2</button>
-        <button class="chip on" onclick="setPref('n',3)">3</button>
-        <button class="chip" onclick="setPref('n',4)">4</button>
-      </div>
-    </div>
-    <div class="fld" style="margin-top:10px"><label>Resteverwertung</label>
-      <div class="chips" id="pref-rchips">
-        <button class="chip on" onclick="setPref('reste',1)">Ja</button>
-        <button class="chip" onclick="setPref('reste',0)">Nein</button>
-      </div>
-    </div>
-    <div class="fld" style="margin-top:10px"><label>Einfrieren</label>
-      <div class="chips" id="pref-fchips">
-        <button class="chip on" onclick="setPref('freeze',1)">Ja</button>
-        <button class="chip" onclick="setPref('freeze',0)">Nein</button>
-      </div>
-    </div>
-    <div class="fld" style="margin-top:10px"><label>Lieblingsküchen (optional)</label>
-      <input id="pref-kuechen" placeholder="z.B. asiatisch, mediterran, mexikanisch..."></div>
-    <div class="fld"><label>Abneigungen / Allergien (optional)</label>
-      <input id="pref-avoid" placeholder="z.B. Erdnuesse, Sellerie, zu scharf..."></div>
-    <button class="btn btn-red" onclick="savePrefs()" style="margin-top:4px">Präferenzen speichern</button>
-    <div id="prefs-saved" style="display:none;font-size:12px;color:var(--grn);text-align:center;margin-top:8px">&#10003; Gespeichert!</div>
-  </div></div>
-  <div class="card"><div class="cp">
-    <div class="clbl">Lernprofil aus Bewertungen</div>
-    <div style="font-size:11px;color:var(--gr3);margin-bottom:10px">Wird automatisch aus deinen Bewertungen aufgebaut und bei der Menugenerierung beruecksichtigt.</div>
-    <div id="prefs-profile"><div style="font-size:12px;color:var(--gr3);font-style:italic">Wird geladen...</div></div>
-    <button class="btn btn-out" onclick="resetLearningProfile()" style="margin-top:10px;padding:9px;font-size:12px">Lernprofil zurücksetzen</button>
-  </div></div>
-  <div style="padding:10px">
-    <button class="btn btn-out" onclick="go('sh')" style="font-size:13px;padding:10px">Zurück</button>
-  </div>
-</div>
+
 
 <!-- HISTORY -->
-<div class="scr" id="sh2">
-  <div class="tbar">
-    <div class="tbar-bk" onclick="go('sh')">&#8592;</div>
-    <div><h1>Verlauf</h1><div class="tbar-sub">Bisherige Menüpläne</div></div>
-    <button onclick="syncHistory()" style="background:rgba(255,255,255,.2);border:none;border-radius:6px;padding:6px 10px;font-size:12px;color:#fff;cursor:pointer;font-family:inherit;margin-left:auto">&#x1F504; Sync</button>
-  </div>
-  <div id="hload" style="text-align:center;padding:40px 16px;display:none">
-    <div class="spin" style="width:22px;height:22px;margin:0 auto 10px;border-width:2px"></div>
-    <div style="font-size:13px;color:var(--gr3)">Lade Verlauf...</div>
-  </div>
-  <div id="hlist" style="padding:10px 10px 0"></div>
-  <div style="padding:10px">
-    <button class="btn btn-out" onclick="go('sh')" style="font-size:13px;padding:10px">Zurück zur Startseite</button>
-  </div>
-</div>
+
 
 <!-- PRINT -->
 <div class="scr" id="sp">
@@ -925,15 +798,6 @@ function doLogout() {
   G.activePlan = null;
 }
 
-function showLoggedIn() {
-  var session = getSession();
-  if ($('login-section')) $('login-section').style.display = 'none';
-  if ($('loggedin-section')) $('loggedin-section').style.display = 'block';
-  if ($('login-err')) $('login-err').style.display = 'none';
-  if ($('loggedin-name')) $('loggedin-name').textContent = session ? session.username : '';
-  if ($('login-pw')) $('login-pw').value = '';
-  if ($('invite-btn')) $('invite-btn').style.display = 'block';
-}
 
 function showInviteLink() {
   var tok = getGHToken();
@@ -1348,26 +1212,6 @@ function copyInviteLink() {
 function saveGHToken() {} // legacy noop
 function disconnectGH() { doLogout(); }
 
-function syncGH(btn) {
-  var origText = btn ? btn.textContent : '';
-  if (btn) { btn.textContent = '...'; btn.disabled = true; }
-  fetch('https://raw.githubusercontent.com/' + GH_REPO + '/main/' + ghFile('active-plan.json') + '?t=' + Date.now())
-    .then(function(r) { return r.ok ? r.json() : null; })
-    .then(function(d) {
-      if (d && d.sug) {
-        G.activePlan = d;
-        localStorage.setItem('active_plan', JSON.stringify(d));
-        renderActivePlan();
-        if (btn) btn.textContent = 'OK';
-      } else {
-        if (btn) btn.textContent = 'Leer';
-      }
-      setTimeout(function() { if (btn) { btn.textContent = origText; btn.disabled = false; } }, 1500);
-    })
-    .catch(function() {
-      if (btn) { btn.textContent = 'Err'; setTimeout(function(){ btn.textContent = origText; btn.disabled = false; }, 1500); }
-    });
-}
 
 function syncAllFromGH() {
   // Load active plan
@@ -1731,8 +1575,8 @@ function validateIngredients(gerichte) {
     // Only update if we removed something (log for debugging)
     if (filtered.length < g.zutaten.length) {
       var removed = g.zutaten.filter(function(z) { return filtered.indexOf(z) === -1; });
-      console.log('Removed unused ingredients from ' + g.abend + ':', removed.map(function(z){return z.name;}).join(', '));
-      g.zutaten = filtered;
+      console.warn('Unused ingredients in ' + g.abend + ' (NOT removed):', removed.map(function(z){return z.name;}).join(', '));
+      // Don't delete - just log. Missing ingredient at stove is worse than extra on list.
     }
   }
   return gerichte;
@@ -1776,6 +1620,8 @@ function parseJSON(raw) {
 
 function callClaudeHaiku(sys, msg, maxTokens) {
   console.log('callClaudeHaiku:', PROXY, 'tokens:', maxTokens, 'msg len:', msg.length);
+  var controller = typeof AbortController !== 'undefined' ? new AbortController() : null;
+  var timeoutId = controller ? setTimeout(function() { controller.abort(); }, 60000) : null;
   return fetch(PROXY + '/anthropic', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -1784,13 +1630,22 @@ function callClaudeHaiku(sys, msg, maxTokens) {
       max_tokens: maxTokens,
       system: sys,
       messages: [{ role: 'user', content: msg }]
-    })
+    }),
+    signal: controller ? controller.signal : undefined
   })
-  .then(function(r) { return r.json(); })
+  .then(function(r) {
+    if (timeoutId) clearTimeout(timeoutId);
+    return r.json();
+  })
   .then(function(d) {
     console.log('API response type:', d.type, 'error:', d.error);
     if (d.error) throw new Error(d.error.message || d.error.type || 'API Fehler');
     return (d.content && d.content[0] && d.content[0].text) ? d.content[0].text : '';
+  })
+  .catch(function(e) {
+    if (timeoutId) clearTimeout(timeoutId);
+    if (e.name === 'AbortError') throw new Error('Zeitüberschreitung (60s) – bitte nochmals versuchen');
+    throw e;
   });
 }
 
@@ -1839,7 +1694,6 @@ function goSuggest() {
   G._loadIv = loadIv;
 
   var p = G.personen || 2;
-  var portTotal = p + (G.reste ? p : 0) + (G.freeze ? 2 : 0);
   var modusText = G.modus === 'vegi' ? 'vegetarisch' : G.modus === 'fleisch' ? 'mit Fleisch' : 'vegi+Fleisch optional';
 
   // Ultra-simple message
@@ -2027,6 +1881,27 @@ function wtab(t) {
   $('tr').style.display = t === 'r' ? 'block' : 'none';
 }
 
+function parseMengeVal(menge) {
+  var s = String(menge||'').trim();
+  var m = s.match(/^([\d.,]+)\s*(.*)$/);
+  if (!m) return null;
+  var num = parseFloat(m[1].replace(',','.'));
+  return isNaN(num) ? null : { num: num, unit: m[2].trim().toLowerCase() };
+}
+
+function mergeMengen(m1, m2) {
+  var p1 = parseMengeVal(m1), p2 = parseMengeVal(m2);
+  if (p1 && p2 && p1.unit === p2.unit && p1.unit !== '') {
+    var sum = Math.round((p1.num + p2.num) * 10) / 10;
+    return sum + ' ' + p1.unit;
+  }
+  if (p1 && p2 && p1.unit === '' && p2.unit === '') {
+    var sum2 = Math.round((p1.num + p2.num) * 10) / 10;
+    return String(sum2);
+  }
+  return m1 + ' + ' + m2;
+}
+
 function getItems(sug) {
   var items = [], seen = {};
   for (var i = 0; i < sug.gerichte.length; i++) {
@@ -2035,7 +1910,7 @@ function getItems(sug) {
       var z = zutaten[j];
       var k = z.name.toLowerCase();
       if (seen[k] !== undefined) {
-        items[seen[k]].menge += ' + ' + z.menge;
+        items[seen[k]].menge = mergeMengen(items[seen[k]].menge, z.menge);
       } else {
         seen[k] = items.length;
         items.push({ name: z.name, menge: z.menge });
@@ -2106,6 +1981,17 @@ var G_cook_port = 2;
 var G_cook_base_port = 2;
 var G_cook_zutaten = [];
 
+function parseMengeNum(menge) {
+  if (!menge) return 0;
+  var m = String(menge).match(/^[\d.,]+/);
+  return m ? parseFloat(m[0].replace(',','.')) : 0;
+}
+
+function parseMengeUnit(menge) {
+  if (!menge) return '';
+  return String(menge).replace(/^[\d.,\s]+/, '').trim();
+}
+
 function adjPort(d) {
   G_cook_port = Math.max(1, Math.min(8, G_cook_port + d));
   var el = $('port-display');
@@ -2116,14 +2002,16 @@ function adjPort(d) {
 
 function rescaleZutaten() {
   var factor = G_cook_base_port > 0 ? G_cook_port / G_cook_base_port : 1;
-  // Re-render zutaten rows with scaled amounts
-  var rows = document.querySelectorAll('.zutat-row');
+  var rows = document.querySelectorAll('#cing .zutat-row');
   for (var i = 0; i < rows.length; i++) {
     var base = parseFloat(rows[i].dataset.base);
     var unit = rows[i].dataset.unit || '';
-    if (!isNaN(base)) {
+    var cell = rows[i].querySelector('.zutat-menge');
+    if (cell && !isNaN(base) && base > 0) {
       var scaled = Math.round(base * factor * 10) / 10;
-      rows[i].querySelector('.zutat-menge').textContent = scaled + (unit ? ' ' + unit : '');
+      // Format nicely: whole numbers without decimal
+      var display = (scaled === Math.floor(scaled)) ? scaled.toString() : scaled.toString();
+      cell.textContent = display + (unit ? ' ' + unit : '');
     }
   }
 }
@@ -2141,6 +2029,7 @@ function startCook(ri) {
   $('ctit').textContent = g.abend;
   showIngOverview(g);
   go('sc');
+  requestWakeLock();
 }
 
 function showIngOverview(g) {
@@ -2152,9 +2041,11 @@ function showIngOverview(g) {
   var rows = '';
   var zutaten = g.zutaten || [];
   for (var i = 0; i < zutaten.length; i++) {
-    rows += '<div style="display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:.5px solid #f0f0f0">' +
+    var _mNum = parseMengeNum(zutaten[i].menge);
+    var _mUnit = parseMengeUnit(zutaten[i].menge);
+    rows += '<div class="zutat-row" data-base="' + _mNum + '" data-unit="' + _mUnit + '" style="display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:.5px solid #f0f0f0">' +
       '<span style="font-size:14px;font-weight:500">' + zutaten[i].name + '</span>' +
-      '<span style="font-size:13px;color:var(--gr3);font-weight:500">' + zutaten[i].menge + '</span></div>';
+      '<span class="zutat-menge" style="font-size:13px;color:var(--gr3);font-weight:500">' + zutaten[i].menge + '</span></div>';
   }
 
   var html = '<div class="badge bv">Vor dem Kochen</div>' +
@@ -2346,18 +2237,28 @@ function startT(i) {
   var s = G.steps[i];
   G.tl = s.timer_min * 60; G.tt = G.tl;
   clearInterval(G.tiv);
+  G.timerEnd = Date.now() + G.tl * 1000;
   G.tiv = setInterval(function() {
-    G.tl--;
-    if (G.tl <= 0) {
-      clearInterval(G.tiv);
+    var rem = Math.ceil((G.timerEnd - Date.now()) / 1000);
+    if (rem <= 0) {
+      clearInterval(G.tiv); G.tiv = null;
       td.textContent = 'Fertig!'; td.classList.remove('run'); td.classList.add('fin');
       if (tb) tb.style.width = '0%'; btn.textContent = 'Fertig';
+      if (navigator.vibrate) navigator.vibrate([300, 100, 300]);
+      try {
+        var ctx = new (window.AudioContext || window.webkitAudioContext)();
+        var osc = ctx.createOscillator(); var gn = ctx.createGain();
+        osc.connect(gn); gn.connect(ctx.destination);
+        osc.frequency.value = 880; gn.gain.setValueAtTime(0.3, ctx.currentTime);
+        gn.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime+0.8);
+        osc.start(); osc.stop(ctx.currentTime+0.8);
+      } catch(e) {}
       return;
     }
-    td.textContent = fmt(G.tl);
-    if (tb) tb.style.width = Math.round((G.tl / G.tt) * 100) + '%';
-    if (G.tl <= 30) td.style.color = '#b71c1c';
-  }, 1000);
+    td.textContent = fmt(rem);
+    if (tb) tb.style.width = Math.round((rem / G.tt) * 100) + '%';
+    if (rem <= 30) td.style.color = '#b71c1c';
+  }, 500);
 }
 function fmt(s) { return (Math.floor(s/60) < 10 ? '0' : '') + Math.floor(s/60) + ':' + (s%60 < 10 ? '0' : '') + (s%60); }
 
@@ -2749,7 +2650,7 @@ function renderHistoryList(history) {
           '<button class="btn btn-out" onclick="showHistoryRating(' + i + ')" style="flex:1;padding:9px;font-size:12px">&#9733; Bewerten</button>' +
         '</div>' +
         '<div style="display:flex;gap:6px">' +
-          (status !== 'gekocht' ? '<button class="btn btn-out" onclick="markHistoryKekocht(' + i + ')" style="flex:1;padding:9px;font-size:12px">&#127859; Gekocht</button>' : '') +
+          (status !== 'gekocht' ? '<button class="btn btn-out" onclick="markHistoryGekocht(' + i + ')" style="flex:1;padding:9px;font-size:12px">&#127859; Gekocht</button>' : '') +
           (status !== 'geplant' ? '<button class="btn btn-out" onclick="resetHistoryStatus(' + i + ')" style="padding:9px;font-size:12px">&#x2715; Reset</button>' : '') +
         '</div>' +
       '</div>' +
@@ -2810,7 +2711,7 @@ function resetHistoryStatus(i) {
   renderHistoryList(hist);
 }
 
-function markHistoryKekocht(i) {
+function markHistoryGekocht(i) {
   var hist = window._history;
   if (!hist || !hist[i]) return;
   hist[i].status = 'gekocht';
@@ -2875,6 +2776,8 @@ function showRatingModal(ri) {
   if (!G.sugs || G.sel === null) return;
   var g = G.sugs[G.sel].gerichte[ri];
   G_rating.gerichtIdx = ri;
+  G_rating.historyIdx = null;
+  G_rating.fotoIdx = null;
   G_rating.stars = 0;
   $('rm-title').textContent = g.abend;
   $('rm-feedback').value = '';
@@ -3235,6 +3138,7 @@ function startFotoCook() {
 
   // Set cook screen title
   if ($('ctit')) $('ctit').textContent = r.name || 'Foto-Rezept';
+  requestWakeLock();
 
   // Build ingredients overview
   var fakeGericht = {
@@ -3246,6 +3150,7 @@ function startFotoCook() {
   };
   showIngOverview(fakeGericht);
   go('sc');
+  requestWakeLock();
 }
 
 function syncFotoRezepte(btn) {
@@ -3301,6 +3206,25 @@ function showFotoPrint() {
 }
 
 
+
+// ─── WAKE LOCK ─────────────────────────────────────────────
+var _wakeLock = null;
+function requestWakeLock() {
+  if ('wakeLock' in navigator) {
+    navigator.wakeLock.request('screen')
+      .then(function(wl) { _wakeLock = wl; })
+      .catch(function() {});
+  }
+}
+function releaseWakeLock() {
+  if (_wakeLock) { _wakeLock.release().catch(function(){}); _wakeLock = null; }
+}
+document.addEventListener('visibilitychange', function() {
+  if (document.visibilityState === 'visible' && !_wakeLock) {
+    var sc = $('sc');
+    if (sc && sc.style.display !== 'none') requestWakeLock();
+  }
+});
 
 // ─── ACTIVE PLAN ───────────────────────────────────────────
 function clearActivePlan() {
