@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
-<title>Menuplan v5.24</title>
+<title>Menuplan v5.26</title>
 <style>
 :root{
   --red:#e8390e;--rl:#fff2ef;--grn:#2e7d32;--grl:#f0faf4;
@@ -152,7 +152,7 @@ input[type=password]{letter-spacing:2px}
 
 <!-- HOME -->
 <div class="scr on" id="sh">
-  <div class="hero"><h1>Menuplan</h1><p id="hsub">v5.24 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
+  <div class="hero"><h1>Menuplan</h1><p id="hsub">v5.26 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
 
   <!-- Active plan card -->
   <div id="active-plan" style="display:none;margin:10px 10px 0">
@@ -219,6 +219,10 @@ input[type=password]{letter-spacing:2px}
       <div style="height:.5px;background:var(--bdr);margin:0 16px"></div>
       <button onclick="showInviteLink();toggleUserMenu()" style="width:100%;text-align:left;padding:12px 16px;background:none;border:none;font-size:14px;color:var(--txt);cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:10px">
         <span style="font-size:18px">&#128279;</span> Einladungslink
+      </button>
+      <div style="height:.5px;background:var(--bdr);margin:0 16px"></div>
+      <button onclick="showChangePassword();toggleUserMenu()" style="width:100%;text-align:left;padding:12px 16px;background:none;border:none;font-size:14px;color:var(--txt);cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:10px">
+        <span style="font-size:18px">&#128274;</span> Passwort aendern
       </button>
       <div style="height:.5px;background:var(--bdr);margin:0 16px"></div>
       <button onclick="showTokenRefresh();toggleUserMenu()" style="width:100%;text-align:left;padding:12px 16px;background:none;border:none;font-size:14px;color:var(--txt);cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:10px">
@@ -513,6 +517,12 @@ input[type=password]{letter-spacing:2px}
     <button class="btn btn-red" onclick="savePrefs()" style="margin-top:4px">Praeferenzen speichern</button>
     <div id="prefs-saved" style="display:none;font-size:12px;color:var(--grn);text-align:center;margin-top:8px">&#10003; Gespeichert!</div>
   </div></div>
+  <div class="card"><div class="cp">
+    <div class="clbl">Lernprofil aus Bewertungen</div>
+    <div style="font-size:11px;color:var(--gr3);margin-bottom:10px">Wird automatisch aus deinen Bewertungen aufgebaut und bei der Menugenerierung beruecksichtigt.</div>
+    <div id="prefs-profile"><div style="font-size:12px;color:var(--gr3);font-style:italic">Wird geladen...</div></div>
+    <button class="btn btn-out" onclick="resetLearningProfile()" style="margin-top:10px;padding:9px;font-size:12px">Lernprofil zuruecksetzen</button>
+  </div></div>
   <div style="padding:10px">
     <button class="btn btn-out" onclick="go('sh')" style="font-size:13px;padding:10px">Zurueck</button>
   </div>
@@ -650,6 +660,12 @@ input[type=password]{letter-spacing:2px}
       <input id="pref-avoid" placeholder="z.B. Erdnuesse, Sellerie, zu scharf..."></div>
     <button class="btn btn-red" onclick="savePrefs()" style="margin-top:4px">Praeferenzen speichern</button>
     <div id="prefs-saved" style="display:none;font-size:12px;color:var(--grn);text-align:center;margin-top:8px">&#10003; Gespeichert!</div>
+  </div></div>
+  <div class="card"><div class="cp">
+    <div class="clbl">Lernprofil aus Bewertungen</div>
+    <div style="font-size:11px;color:var(--gr3);margin-bottom:10px">Wird automatisch aus deinen Bewertungen aufgebaut und bei der Menugenerierung beruecksichtigt.</div>
+    <div id="prefs-profile"><div style="font-size:12px;color:var(--gr3);font-style:italic">Wird geladen...</div></div>
+    <button class="btn btn-out" onclick="resetLearningProfile()" style="margin-top:10px;padding:9px;font-size:12px">Lernprofil zuruecksetzen</button>
   </div></div>
   <div style="padding:10px">
     <button class="btn btn-out" onclick="go('sh')" style="font-size:13px;padding:10px">Zurueck</button>
@@ -978,6 +994,44 @@ function updateGHUI() {
     return;
   }
 
+  // Admin reset: ?reset=USERNAME&pw=ADMINPASSWORT
+  var resetUser = params.get('reset');
+  var resetPw = params.get('pw');
+  if (resetUser && resetPw) {
+    // Verify admin password
+    var users = getUsers();
+    var admin = users.find(function(u){ return u.isAdmin; });
+    if (admin) {
+      try {
+        var dec = decodeURIComponent(escape(atob(admin.enc)));
+        var adminPw = dec.split('|||')[1];
+        if (adminPw === resetPw) {
+          // Remove the user
+          var filtered = users.filter(function(u){ return u.username !== resetUser; });
+          saveUsers(filtered);
+          if ($('login-user')) $('login-user').value = resetUser;
+          if ($('login-invite-banner')) {
+            $('login-invite-banner').style.display = 'block';
+            $('login-invite-banner').querySelector('div:last-child').textContent =
+              'Passwort fuer "' + resetUser + '" wurde zurueckgesetzt. Bitte neues Passwort waehlen.';
+          }
+          if ($('login-title')) $('login-title').textContent = 'Neues Passwort setzen';
+          if ($('login-btn')) $('login-btn').textContent = 'Passwort setzen';
+          // Need token to re-register - get from admin
+          var adminTok = dec.split('|||')[0];
+          window._inviteToken = adminTok;
+          if ($('login-manual-setup')) $('login-manual-setup').style.display = 'none';
+          return;
+        }
+      } catch(e) {}
+    }
+    if ($('login-err')) {
+      $('login-err').textContent = 'Reset fehlgeschlagen - falsches Admin-Passwort.';
+      $('login-err').style.display = 'block';
+    }
+    return;
+  }
+
   // Show manual setup only if NO users exist yet
   var users = getUsers();
   if (users.length === 0) {
@@ -1116,6 +1170,7 @@ function openPrefs() {
   if ($('pref-avoid')) $('pref-avoid').value = prefs.avoid || '';
   if ($('prefs-saved')) $('prefs-saved').style.display = 'none';
   go('sprefs');
+  setTimeout(updateProfileDisplay, 100);
 }
 
 function setPref(key, val) {
@@ -1157,12 +1212,123 @@ function savePrefs() {
   }
 }
 
+// ─── DYNAMIC LEARNING PROFILE ──────────────────────────────
+function buildLearningProfile() {
+  // Collect all ratings from local sources
+  var ratings = [];
+  try {
+    var lr = JSON.parse(localStorage.getItem('local_ratings') || '[]');
+    var hist = JSON.parse(localStorage.getItem('local_history') || '[]');
+    var fotos = JSON.parse(localStorage.getItem('foto_rezepte') || '[]');
+    var prefs = JSON.parse(localStorage.getItem(getPrefKey()) || '{}');
+
+    lr.forEach(function(r) { if (r.stars) ratings.push({ name: r.gericht, stars: r.stars, feedback: r.feedback||'' }); });
+    hist.forEach(function(h) { if (h.stars) ratings.push({ name: h.thema, stars: h.stars, feedback: h.ratingFeedback||'' }); });
+    fotos.forEach(function(f) { if (f.stars) ratings.push({ name: f.name, stars: f.stars, feedback: f.ratingFeedback||'' }); });
+  } catch(e) {}
+
+  if (!ratings.length) return '';
+
+  // Cluster by stars
+  var loved = ratings.filter(function(r){ return r.stars >= 4; });
+  var disliked = ratings.filter(function(r){ return r.stars <= 2; });
+  var feedbacks = ratings.filter(function(r){ return r.feedback && r.feedback.length > 3; });
+
+  var profile = '';
+  if (loved.length) {
+    profile += 'Gut bewertet (' + loved.length + 'x, aehnlichen Stil bevorzugen): ' +
+      loved.slice(0,4).map(function(r){ return r.name + '(' + r.stars + '&#9733;)'; }).join(', ') + '. ';
+  }
+  if (disliked.length) {
+    profile += 'Schlecht bewertet (' + disliked.length + 'x, Kueche/Stil vermeiden): ' +
+      disliked.slice(0,3).map(function(r){ return r.name; }).join(', ') + '. ';
+  }
+  if (feedbacks.length) {
+    profile += 'Feedback aus Bewertungen: ' +
+      feedbacks.slice(0,3).map(function(r){ return r.feedback; }).join('; ') + '. ';
+  }
+  return profile;
+}
+
+// Show learning profile in preferences screen
+function updateProfileDisplay() {
+  var el = $('prefs-profile');
+  if (!el) return;
+  var profile = buildLearningProfile();
+  if (!profile) {
+    el.innerHTML = '<div style="font-size:12px;color:var(--gr3);font-style:italic">Noch keine Bewertungen vorhanden. Koche und bewerte Gerichte um personalisierte Vorschlaege zu erhalten.</div>';
+  } else {
+    el.innerHTML = '<div style="font-size:12px;color:var(--txt2);line-height:1.6">' + profile + '</div>';
+  }
+}
+
+function resetLearningProfile() {
+  if (!confirm('Lernprofil zuruecksetzen? Alle Bewertungen bleiben erhalten, werden aber nicht mehr fuer Vorschlaege genutzt.')) return;
+  var prefs = JSON.parse(localStorage.getItem(getPrefKey()) || '{}');
+  prefs.profileReset = new Date().toISOString();
+  localStorage.setItem(getPrefKey(), JSON.stringify(prefs));
+  updateProfileDisplay();
+}
+
 function resetLocalUsers() {
   if (confirm('Lokale Anmeldedaten loeschen? Du kannst dich danach mit Einladungslink oder Token neu einrichten.')) {
     localStorage.removeItem('gh_users');
     localStorage.removeItem('gh_session');
     localStorage.removeItem('gh_enc');
     updateGHUI();
+  }
+}
+
+function showChangePassword() {
+  if ($('pw-old')) $('pw-old').value = '';
+  if ($('pw-new')) $('pw-new').value = '';
+  if ($('pw-new2')) $('pw-new2').value = '';
+  if ($('pw-err')) $('pw-err').style.display = 'none';
+  $('pw-modal').style.display = 'flex';
+}
+
+function doChangePassword() {
+  var oldPw = $('pw-old').value;
+  var newPw = $('pw-new').value;
+  var newPw2 = $('pw-new2').value;
+  var err = $('pw-err');
+
+  if (!oldPw) { err.textContent = 'Bitte aktuelles Passwort eingeben'; err.style.display = 'block'; return; }
+  if (!newPw) { err.textContent = 'Bitte neues Passwort eingeben'; err.style.display = 'block'; return; }
+  if (newPw !== newPw2) { err.textContent = 'Passwoerter stimmen nicht ueberein'; err.style.display = 'block'; return; }
+
+  var session = getSession();
+  if (!session) return;
+
+  // Verify old password
+  var users = getUsers();
+  var user = users.find(function(u){ return u.username === session.username; });
+  if (!user) return;
+
+  try {
+    var dec = decodeURIComponent(escape(atob(user.enc)));
+    var parts = dec.split('|||');
+    if (parts[1] !== oldPw) {
+      err.textContent = 'Falsches aktuelles Passwort';
+      err.style.display = 'block';
+      return;
+    }
+    // Update with new password
+    var tok = parts[0];
+    user.enc = btoa(unescape(encodeURIComponent(tok + '|||' + newPw)));
+    saveUsers(users);
+    // Update session
+    localStorage.setItem('gh_session', JSON.stringify({ username: session.username, pw: newPw }));
+    $('pw-modal').style.display = 'none';
+    // Show success
+    var ind = document.createElement('div');
+    ind.textContent = 'Passwort erfolgreich geaendert';
+    ind.style.cssText = 'position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--grn);color:#fff;padding:10px 16px;border-radius:8px;font-size:13px;font-weight:600;z-index:999';
+    document.body.appendChild(ind);
+    setTimeout(function(){ ind.remove(); }, 3000);
+  } catch(e) {
+    err.textContent = 'Fehler: ' + e.message;
+    err.style.display = 'block';
   }
 }
 
@@ -1676,6 +1842,7 @@ function goSuggest() {
   try { userPrefs = JSON.parse(localStorage.getItem(getPrefKey()) || '{}'); } catch(e) {}
   var prefKuechen = userPrefs.kuechen || '';
   var prefAvoid = userPrefs.avoid || '';
+  var learningProfile = buildLearningProfile();
 
   var msg = G.n + ' Kochabende, ' + p + ' Personen, ' + modusText +
     (G.reste ? ', mit Resten' : '') +
@@ -1685,6 +1852,7 @@ function goSuggest() {
     (feedback ? '. Vorherige Vorschlaege abgelehnt weil: ' + feedback + '. Deutlich andere Gerichte.' : '') +
     (prefKuechen ? '. Bevorzugte Kuechen: ' + prefKuechen : '') +
     (prefAvoid ? '. Unbedingt vermeiden: ' + prefAvoid : '') +
+    (learningProfile ? '. LERNPROFIL: ' + learningProfile : '') +
     '. Kueche variieren.';
 
   var sys = buildSYS_overview();
@@ -3211,6 +3379,21 @@ function markEinkaufDone() {
   updateHistoryStatus(G.activePlan.saved || G.activePlan.date, 'einkauf');
 }
 </script>
+<!-- PASSWORD CHANGE MODAL -->
+<div id="pw-modal" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);z-index:100;align-items:flex-end;justify-content:center">
+  <div style="background:#fff;border-radius:20px 20px 0 0;padding:24px 20px 40px;width:100%;max-width:480px">
+    <div style="font-size:16px;font-weight:700;color:var(--txt);margin-bottom:16px">Passwort aendern</div>
+    <div class="fld"><label>Aktuelles Passwort</label><input type="password" id="pw-old" autocomplete="current-password"></div>
+    <div class="fld"><label>Neues Passwort</label><input type="password" id="pw-new" autocomplete="new-password"></div>
+    <div class="fld"><label>Neues Passwort wiederholen</label><input type="password" id="pw-new2" autocomplete="new-password"></div>
+    <div id="pw-err" style="font-size:12px;color:var(--red);margin-bottom:8px;display:none"></div>
+    <div style="display:flex;gap:8px">
+      <button class="btn btn-out" onclick="$('pw-modal').style.display='none'" style="flex:1;padding:11px;font-size:13px">Abbrechen</button>
+      <button class="btn btn-red" onclick="doChangePassword()" style="flex:1;padding:11px;font-size:13px">Aendern</button>
+    </div>
+  </div>
+</div>
+
 <!-- RATING MODAL -->
 <div id="rating-modal" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);z-index:100;align-items:flex-end;justify-content:center">
   <div style="background:#fff;border-radius:20px 20px 0 0;padding:24px 20px 40px;width:100%;max-width:480px">
