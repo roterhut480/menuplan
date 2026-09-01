@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
-<title>Menuplan v5.26</title>
+<title>Menüplan v5.28</title>
 <style>
 :root{
   --red:#e8390e;--rl:#fff2ef;--grn:#2e7d32;--grl:#f0faf4;
@@ -152,13 +152,13 @@ input[type=password]{letter-spacing:2px}
 
 <!-- HOME -->
 <div class="scr on" id="sh">
-  <div class="hero"><h1>Menuplan</h1><p id="hsub">v5.26 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
+  <div class="hero"><h1>Menüplan</h1><p id="hsub">v5.28 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
 
   <!-- Active plan card -->
   <div id="active-plan" style="display:none;margin:10px 10px 0">
     <div style="background:var(--red);border-radius:var(--rlg);padding:14px 16px;color:#fff;margin-bottom:1px">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
-        <div style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;opacity:.75">Aktiver Menuplan</div>
+        <div style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;opacity:.75">Aktiver Menüplan</div>
         <div style="display:flex;gap:6px;align-items:center">
           <button onclick="syncGH(this)" style="background:rgba(255,255,255,.2);border:none;border-radius:6px;padding:4px 8px;font-size:11px;color:#fff;cursor:pointer;font-family:inherit">&#x1F504;</button>
           <button onclick="clearActivePlan()" style="background:rgba(255,255,255,.15);border:none;border-radius:6px;padding:4px 8px;font-size:11px;color:#fff;cursor:pointer;font-family:inherit">&#x2715; Beenden</button>
@@ -189,7 +189,7 @@ input[type=password]{letter-spacing:2px}
       <!-- Dish list -->
       <div id="ap-dishes" style="padding:10px 14px"></div>
       <div style="padding:0 14px 12px">
-        <button class="btn btn-out" onclick="openActivePlan('e')" style="font-size:13px;padding:10px">Plan oeffnen</button>
+        <button class="btn btn-out" onclick="openActivePlan('e')" style="font-size:13px;padding:10px">Plan öffnen</button>
       </div>
     </div>
   </div>
@@ -197,7 +197,7 @@ input[type=password]{letter-spacing:2px}
   <!-- History button -->
   <div style="padding:10px 10px 0;display:flex;gap:8px">
     <button class="btn btn-out" onclick="openFotoScreen()" style="flex:1;font-size:13px;padding:10px">&#128247; Foto-Rezept</button>
-    <button class="btn btn-out" onclick="toggleUserMenu()" id="user-menu-btn" style="display:none;width:auto;padding:10px 14px;font-size:13px" title="Benutzermenu">&#128100;</button>
+    <button class="btn btn-out" onclick="toggleUserMenu()" id="user-menu-btn" style="display:none;width:auto;padding:10px 14px;font-size:13px" title="Benutzermenü">&#128100;</button>
   </div>
 
   <!-- User Menu Dropdown -->
@@ -214,7 +214,7 @@ input[type=password]{letter-spacing:2px}
       </button>
       <div style="height:.5px;background:var(--bdr);margin:0 16px"></div>
       <button onclick="openPrefs();toggleUserMenu()" style="width:100%;text-align:left;padding:12px 16px;background:none;border:none;font-size:14px;color:var(--txt);cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:10px">
-        <span style="font-size:18px">&#9881;</span> Praeferenzen
+        <span style="font-size:18px">&#9881;</span> Präferenzen
       </button>
       <div style="height:.5px;background:var(--bdr);margin:0 16px"></div>
       <button onclick="showInviteLink();toggleUserMenu()" style="width:100%;text-align:left;padding:12px 16px;background:none;border:none;font-size:14px;color:var(--txt);cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:10px">
@@ -222,7 +222,7 @@ input[type=password]{letter-spacing:2px}
       </button>
       <div style="height:.5px;background:var(--bdr);margin:0 16px"></div>
       <button onclick="showChangePassword();toggleUserMenu()" style="width:100%;text-align:left;padding:12px 16px;background:none;border:none;font-size:14px;color:var(--txt);cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:10px">
-        <span style="font-size:18px">&#128274;</span> Passwort aendern
+        <span style="font-size:18px">&#128274;</span> Passwort ändern
       </button>
       <div style="height:.5px;background:var(--bdr);margin:0 16px"></div>
       <button onclick="showTokenRefresh();toggleUserMenu()" style="width:100%;text-align:left;padding:12px 16px;background:none;border:none;font-size:14px;color:var(--txt);cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:10px">
@@ -241,11 +241,11 @@ input[type=password]{letter-spacing:2px}
       <div id="login-section">
         <div id="login-invite-banner" style="display:none;background:var(--grl);border:.5px solid #a5d6a7;border-radius:8px;padding:10px 12px;margin-bottom:12px">
           <div style="font-size:12px;font-weight:700;color:var(--grn);margin-bottom:2px">Einladung erhalten!</div>
-          <div style="font-size:12px;color:var(--grn)">Waehle einen Benutzernamen und ein eigenes Passwort.</div>
+          <div style="font-size:12px;color:var(--grn)">Wähle einen Benutzernamen und ein eigenes Passwort.</div>
         </div>
         <div class="clbl" id="login-title">Anmelden</div>
         <div class="fld"><label>Benutzername</label><input id="login-user" placeholder="z.B. roman, anna..." autocomplete="username" onkeydown="if(event.key==='Enter')$('login-pw').focus()"></div>
-        <div class="fld"><label>Passwort</label><input type="password" id="login-pw" placeholder="Eigenes Passwort waehlen..." autocomplete="new-password" onkeydown="if(event.key==='Enter')doLogin()"></div>
+        <div class="fld"><label>Passwort</label><input type="password" id="login-pw" placeholder="Eigenes Passwort wählen..." autocomplete="new-password" onkeydown="if(event.key==='Enter')doLogin()"></div>
         <div id="login-err" style="font-size:12px;color:var(--red);margin-bottom:8px;display:none"></div>
         <button class="btn btn-red" id="login-btn" onclick="doLogin()" style="padding:11px">Anmelden</button>
         <!-- Manual setup fallback -->
@@ -320,7 +320,7 @@ input[type=password]{letter-spacing:2px}
         <label>Einfrierportionen mitkochen?</label>
         <div class="chips" id="fchips">
           <button class="chip on" onclick="setF(1)">Ja - +2 Portionen einfrieren</button>
-          <button class="chip" onclick="setF(0)">Nein - nur fuer heute</button>
+          <button class="chip" onclick="setF(0)">Nein - nur für heute</button>
         </div>
       </div>
       <div class="fld" style="margin-top:10px"><label>Thema (optional)</label><input id="theme" placeholder="mediterran, asiatisch..."></div>
@@ -329,7 +329,7 @@ input[type=password]{letter-spacing:2px}
   </div>
 
   <div style="padding:10px 10px 0">
-    <button class="btn btn-red" onclick="goSuggest()">Menuvorschlaege generieren</button>
+    <button class="btn btn-red" onclick="goSuggest()">Menüvorschläge generieren</button>
 
   </div>
 </div>
@@ -338,11 +338,11 @@ input[type=password]{letter-spacing:2px}
 <div class="scr" id="ss">
   <div class="tbar">
     <div class="tbar-bk" onclick="go('sh')">&#8592;</div>
-    <div><h1>Menuvorschlaege</h1><div class="tbar-sub">Waehle eine Abfolge</div></div>
+    <div><h1>Menüvorschläge</h1><div class="tbar-sub">Wähle eine Abfolge</div></div>
   </div>
   <div id="sload" style="display:none;text-align:center;padding:40px 16px">
     <div class="spin" style="width:26px;height:26px;margin:0 auto 12px;border-width:2.5px"></div>
-    <div style="font-size:13px;color:var(--gr3)">Claude generiert Vorschlaege...</div>
+    <div style="font-size:13px;color:var(--gr3)">Claude generiert Vorschläge...</div>
   </div>
   <div id="serr"></div>
   <div id="slist"></div>
@@ -351,7 +351,7 @@ input[type=password]{letter-spacing:2px}
     <div style="margin-top:16px;padding-top:16px;border-top:.5px solid var(--bdr)">
       <div style="font-size:12px;color:var(--gr3);margin-bottom:6px;font-weight:500">Nicht zufrieden? Sag Claude warum:</div>
       <textarea id="feedback" placeholder="z.B. zu wenig Proteine, kein Pasta-Gericht, zu aufwaendig..." style="width:100%;background:#fff;border:1px solid var(--bdr);border-radius:7px;color:var(--txt);font-size:14px;padding:10px 12px;font-family:inherit;resize:none;height:72px;outline:none;transition:border-color .2s" onfocus="this.style.borderColor='var(--red)'" onblur="this.style.borderColor='var(--bdr)'"></textarea>
-      <button class="btn btn-out" style="margin-top:8px" onclick="goSuggest()">Neue Vorschlaege generieren</button>
+      <button class="btn btn-out" style="margin-top:8px" onclick="goSuggest()">Neue Vorschläge generieren</button>
     </div>
   </div>
 </div>
@@ -472,7 +472,7 @@ input[type=password]{letter-spacing:2px}
 <div class="scr" id="sprefs">
   <div class="tbar">
     <div class="tbar-bk" onclick="go('sh');toggleUserMenu()">&#8592;</div>
-    <div><h1>Praeferenzen</h1><div class="tbar-sub" id="prefs-username"></div></div>
+    <div><h1>Präferenzen</h1><div class="tbar-sub" id="prefs-username"></div></div>
   </div>
   <div class="card"><div class="cp">
     <div class="clbl">Standard-Einstellungen</div>
@@ -514,17 +514,17 @@ input[type=password]{letter-spacing:2px}
       <input id="pref-kuechen" placeholder="z.B. asiatisch, mediterran, mexikanisch..."></div>
     <div class="fld"><label>Abneigungen / Allergien (optional)</label>
       <input id="pref-avoid" placeholder="z.B. Erdnuesse, Sellerie, zu scharf..."></div>
-    <button class="btn btn-red" onclick="savePrefs()" style="margin-top:4px">Praeferenzen speichern</button>
+    <button class="btn btn-red" onclick="savePrefs()" style="margin-top:4px">Präferenzen speichern</button>
     <div id="prefs-saved" style="display:none;font-size:12px;color:var(--grn);text-align:center;margin-top:8px">&#10003; Gespeichert!</div>
   </div></div>
   <div class="card"><div class="cp">
     <div class="clbl">Lernprofil aus Bewertungen</div>
     <div style="font-size:11px;color:var(--gr3);margin-bottom:10px">Wird automatisch aus deinen Bewertungen aufgebaut und bei der Menugenerierung beruecksichtigt.</div>
     <div id="prefs-profile"><div style="font-size:12px;color:var(--gr3);font-style:italic">Wird geladen...</div></div>
-    <button class="btn btn-out" onclick="resetLearningProfile()" style="margin-top:10px;padding:9px;font-size:12px">Lernprofil zuruecksetzen</button>
+    <button class="btn btn-out" onclick="resetLearningProfile()" style="margin-top:10px;padding:9px;font-size:12px">Lernprofil zurücksetzen</button>
   </div></div>
   <div style="padding:10px">
-    <button class="btn btn-out" onclick="go('sh')" style="font-size:13px;padding:10px">Zurueck</button>
+    <button class="btn btn-out" onclick="go('sh')" style="font-size:13px;padding:10px">Zurück</button>
   </div>
 </div>
 
@@ -532,11 +532,11 @@ input[type=password]{letter-spacing:2px}
 <div class="scr" id="sh2">
   <div class="tbar">
     <div class="tbar-bk" onclick="go('sh')">&#8592;</div>
-    <div><h1>Verlauf</h1><div class="tbar-sub">Menuplaene &amp; Rezepte</div></div>
+    <div><h1>Verlauf</h1><div class="tbar-sub">Menüpläne &amp; Rezepte</div></div>
     <button onclick="syncHistory()" style="background:rgba(255,255,255,.2);border:none;border-radius:6px;padding:6px 10px;font-size:12px;color:#fff;cursor:pointer;font-family:inherit;margin-left:auto">&#x1F504;</button>
   </div>
   <div class="tabs" style="margin:10px 10px 0">
-    <div class="tab on" id="htab-plans" onclick="hwtab('plans')">&#128197; Menuplaene</div>
+    <div class="tab on" id="htab-plans" onclick="hwtab('plans')">&#128197; Menüpläne</div>
     <div class="tab" id="htab-recipes" onclick="hwtab('recipes')">&#127859; Rezepte</div>
   </div>
   <div id="htab-plans-content">
@@ -550,7 +550,7 @@ input[type=password]{letter-spacing:2px}
     <div id="hrecipes-list" style="padding:10px 10px 0"></div>
   </div>
   <div style="padding:10px">
-    <button class="btn btn-out" onclick="go('sh')" style="font-size:13px;padding:10px">Zurueck</button>
+    <button class="btn btn-out" onclick="go('sh')" style="font-size:13px;padding:10px">Zurück</button>
   </div>
 </div>
 <!-- FOTO REZEPT -->
@@ -616,7 +616,7 @@ input[type=password]{letter-spacing:2px}
 <div class="scr" id="sprefs">
   <div class="tbar">
     <div class="tbar-bk" onclick="go('sh');toggleUserMenu()">&#8592;</div>
-    <div><h1>Praeferenzen</h1><div class="tbar-sub" id="prefs-username"></div></div>
+    <div><h1>Präferenzen</h1><div class="tbar-sub" id="prefs-username"></div></div>
   </div>
   <div class="card"><div class="cp">
     <div class="clbl">Standard-Einstellungen</div>
@@ -658,17 +658,17 @@ input[type=password]{letter-spacing:2px}
       <input id="pref-kuechen" placeholder="z.B. asiatisch, mediterran, mexikanisch..."></div>
     <div class="fld"><label>Abneigungen / Allergien (optional)</label>
       <input id="pref-avoid" placeholder="z.B. Erdnuesse, Sellerie, zu scharf..."></div>
-    <button class="btn btn-red" onclick="savePrefs()" style="margin-top:4px">Praeferenzen speichern</button>
+    <button class="btn btn-red" onclick="savePrefs()" style="margin-top:4px">Präferenzen speichern</button>
     <div id="prefs-saved" style="display:none;font-size:12px;color:var(--grn);text-align:center;margin-top:8px">&#10003; Gespeichert!</div>
   </div></div>
   <div class="card"><div class="cp">
     <div class="clbl">Lernprofil aus Bewertungen</div>
     <div style="font-size:11px;color:var(--gr3);margin-bottom:10px">Wird automatisch aus deinen Bewertungen aufgebaut und bei der Menugenerierung beruecksichtigt.</div>
     <div id="prefs-profile"><div style="font-size:12px;color:var(--gr3);font-style:italic">Wird geladen...</div></div>
-    <button class="btn btn-out" onclick="resetLearningProfile()" style="margin-top:10px;padding:9px;font-size:12px">Lernprofil zuruecksetzen</button>
+    <button class="btn btn-out" onclick="resetLearningProfile()" style="margin-top:10px;padding:9px;font-size:12px">Lernprofil zurücksetzen</button>
   </div></div>
   <div style="padding:10px">
-    <button class="btn btn-out" onclick="go('sh')" style="font-size:13px;padding:10px">Zurueck</button>
+    <button class="btn btn-out" onclick="go('sh')" style="font-size:13px;padding:10px">Zurück</button>
   </div>
 </div>
 
@@ -676,7 +676,7 @@ input[type=password]{letter-spacing:2px}
 <div class="scr" id="sh2">
   <div class="tbar">
     <div class="tbar-bk" onclick="go('sh')">&#8592;</div>
-    <div><h1>Verlauf</h1><div class="tbar-sub">Bisherige Menuplaene</div></div>
+    <div><h1>Verlauf</h1><div class="tbar-sub">Bisherige Menüpläne</div></div>
     <button onclick="syncHistory()" style="background:rgba(255,255,255,.2);border:none;border-radius:6px;padding:6px 10px;font-size:12px;color:#fff;cursor:pointer;font-family:inherit;margin-left:auto">&#x1F504; Sync</button>
   </div>
   <div id="hload" style="text-align:center;padding:40px 16px;display:none">
@@ -685,14 +685,14 @@ input[type=password]{letter-spacing:2px}
   </div>
   <div id="hlist" style="padding:10px 10px 0"></div>
   <div style="padding:10px">
-    <button class="btn btn-out" onclick="go('sh')" style="font-size:13px;padding:10px">Zurueck zur Startseite</button>
+    <button class="btn btn-out" onclick="go('sh')" style="font-size:13px;padding:10px">Zurück zur Startseite</button>
   </div>
 </div>
 
 <!-- PRINT -->
 <div class="scr" id="sp">
   <div style="padding:10px" class="noprint">
-    <button class="btn btn-out" onclick="go('sw')" style="margin-bottom:8px">Zurueck</button>
+    <button class="btn btn-out" onclick="go('sw')" style="margin-bottom:8px">Zurück</button>
     <button class="btn btn-red" onclick="window.print()">Als PDF speichern</button>
   </div>
   <div id="pcon" style="padding:14px;background:#fff;min-height:300px"></div>
@@ -948,7 +948,7 @@ function showInviteLink() {
     modal.id = 'invite-modal';
     modal.innerHTML = '<div style="background:#fff;border-radius:14px;padding:20px;width:100%;max-width:400px">' +
       '<div style="font-size:16px;font-weight:700;margin-bottom:8px">Einladungslink</div>' +
-      '<div style="font-size:12px;color:var(--gr3);margin-bottom:12px">Link teilen - Empfaenger waehlt eigenen Benutzernamen und Passwort.</div>' +
+      '<div style="font-size:12px;color:var(--gr3);margin-bottom:12px">Link teilen - Empfänger wählt eigenen Benutzernamen und Passwort.</div>' +
       '<div style="background:#f5f5f5;border-radius:8px;padding:10px;font-size:11px;word-break:break-all;margin-bottom:12px;font-family:monospace;color:var(--txt2)">' + url + '</div>' +
       '<div style="display:flex;gap:8px">' +
         '<button id="copy-invite-btn" onclick="copyInviteLink()" class="btn btn-red" style="flex:1;padding:10px;font-size:13px">Link kopieren</button>'+
@@ -977,7 +977,7 @@ function updateGHUI() {
         if ($('login-invite-banner')) $('login-invite-banner').style.display = 'block';
         if ($('login-title')) $('login-title').textContent = 'Konto erstellen';
         if ($('login-btn')) $('login-btn').textContent = 'Konto erstellen';
-        if ($('login-pw')) $('login-pw').placeholder = 'Eigenes Passwort waehlen...';
+        if ($('login-pw')) $('login-pw').placeholder = 'Eigenes Passwort wählen...';
         // Hide manual setup when using invite
         if ($('login-manual-setup')) $('login-manual-setup').style.display = 'none';
         return;
@@ -1013,7 +1013,7 @@ function updateGHUI() {
           if ($('login-invite-banner')) {
             $('login-invite-banner').style.display = 'block';
             $('login-invite-banner').querySelector('div:last-child').textContent =
-              'Passwort fuer "' + resetUser + '" wurde zurueckgesetzt. Bitte neues Passwort waehlen.';
+              'Passwort fuer "' + resetUser + '" wurde zurückgesetzt. Bitte neues Passwort wählen.';
           }
           if ($('login-title')) $('login-title').textContent = 'Neues Passwort setzen';
           if ($('login-btn')) $('login-btn').textContent = 'Passwort setzen';
@@ -1240,7 +1240,7 @@ function buildLearningProfile() {
       loved.slice(0,4).map(function(r){ return r.name + '(' + r.stars + '&#9733;)'; }).join(', ') + '. ';
   }
   if (disliked.length) {
-    profile += 'Schlecht bewertet (' + disliked.length + 'x, Kueche/Stil vermeiden): ' +
+    profile += 'Schlecht bewertet (' + disliked.length + 'x, Küche/Stil vermeiden): ' +
       disliked.slice(0,3).map(function(r){ return r.name; }).join(', ') + '. ';
   }
   if (feedbacks.length) {
@@ -1256,22 +1256,26 @@ function updateProfileDisplay() {
   if (!el) return;
   var profile = buildLearningProfile();
   if (!profile) {
-    el.innerHTML = '<div style="font-size:12px;color:var(--gr3);font-style:italic">Noch keine Bewertungen vorhanden. Koche und bewerte Gerichte um personalisierte Vorschlaege zu erhalten.</div>';
+    el.innerHTML = '<div style="font-size:12px;color:var(--gr3);font-style:italic">Noch keine Bewertungen vorhanden. Koche und bewerte Gerichte um personalisierte Vorschläge zu erhalten.</div>';
   } else {
     el.innerHTML = '<div style="font-size:12px;color:var(--txt2);line-height:1.6">' + profile + '</div>';
   }
 }
 
 function resetLearningProfile() {
-  if (!confirm('Lernprofil zuruecksetzen? Alle Bewertungen bleiben erhalten, werden aber nicht mehr fuer Vorschlaege genutzt.')) return;
+  if (!confirm('Lernprofil zurücksetzen? Alle Bewertungen bleiben erhalten, werden aber nicht mehr fuer Vorschläge genutzt.')) return;
   var prefs = JSON.parse(localStorage.getItem(getPrefKey()) || '{}');
   prefs.profileReset = new Date().toISOString();
   localStorage.setItem(getPrefKey(), JSON.stringify(prefs));
   updateProfileDisplay();
 }
 
+function saveHistoryToGH(hist) {
+  ghPut('history.json', hist, 'History aktualisiert').catch(function(){});
+}
+
 function resetLocalUsers() {
-  if (confirm('Lokale Anmeldedaten loeschen? Du kannst dich danach mit Einladungslink oder Token neu einrichten.')) {
+  if (confirm('Lokale Anmeldedaten löschen? Du kannst dich danach mit Einladungslink oder Token neu einrichten.')) {
     localStorage.removeItem('gh_users');
     localStorage.removeItem('gh_session');
     localStorage.removeItem('gh_enc');
@@ -1540,7 +1544,10 @@ function doImport() {
         G.bUUID = res.d.uuid;
         localStorage.setItem('bs', JSON.stringify({ t: G.bToken, u: G.bUUID, e: email }));
         loadBringLists(function() {
-          doImportItems();
+          // Show list selector - let user pick list and click import
+          btn.innerHTML = 'In Bring! importieren';
+          btn.disabled = false;
+          showSt('ist', 'Angemeldet! Bitte Liste auswählen und nochmals importieren.', 'ok');
         });
       })
       .catch(function(e) {
@@ -1553,10 +1560,10 @@ function doImport() {
 }
 
 function doImportItems() {
-  if (G.sel === null) { showSt('ist', 'Bitte zuerst eine Menuewoche auswaehlen.', 'er'); return; }
+  if (G.sel === null) { showSt('ist', 'Bitte zuerst eine Menüwoche auswählen.', 'er'); return; }
   var sug = G.sugs[G.sel];
   var listUuid = $('blist').value;
-  if (!listUuid) { showSt('ist', 'Bitte eine Bring!-Liste auswaehlen.', 'er'); return; }
+  if (!listUuid) { showSt('ist', 'Bitte eine Bring!-Liste auswählen.', 'er'); return; }
 
   var items = getItems(sug);
   var clearFirst = $('bclr').checked;
@@ -1587,8 +1594,10 @@ function doImportItems() {
         var arr = Array.isArray(d.purchase) ? d.purchase : Array.isArray(d.items) ? d.items : [];
         if (arr.length === 0) return;
         var removes = arr.map(function(it) {
-          return { itemId: typeof it === 'string' ? it : (it.itemId || it.name || ''), spec: '', operation: 'REMOVE', accuracy: '0.0', altitude: '0.0', latitude: '0.0', longitude: '0.0' };
+          var id = typeof it === 'string' ? it : (it.itemId || it.name || it.item || '');
+          return { itemId: id, spec: it.specification || it.spec || '', operation: 'REMOVE', accuracy: '0.0', altitude: '0.0', latitude: '0.0', longitude: '0.0' };
         }).filter(function(x) { return x.itemId; });
+        console.log('Clearing', removes.length, 'items from list');
         if (removes.length === 0) return;
         return fetch(BAPI + '/v2/bringlists/' + listUuid + '/items', {
           method: 'PUT', headers: hJson,
@@ -1655,12 +1664,12 @@ function doImportItems() {
 function buildSYS_overview() {
   var p = G.personen || 2;
   var modusText = G.modus === 'vegi' ? 'vegetarisch' : G.modus === 'fleisch' ? 'mit Fleisch' : 'vegi+optional Fleisch';
-  var mittag = G.reste ? ',"mittag_naechster_tag":"Linsensuppe als Rest"' : '';
+  var mittag = G.reste ? ',"mittag_nächster_tag":"Linsensuppe als Rest"' : '';
   var json = '{"vorschlaege":[{"id":1,"thema":"Asiatisch","kochabende":["Mo","Mi","Fr"],"gerichte":[{"tag":"Mo","abend":"Tofu-Gemu\u00ecsecurry","zeit_aktiv":"20m","zeit_total":"35m"' + mittag + '},{"tag":"Mi","abend":"Glasnudelsalat","zeit_aktiv":"15m","zeit_total":"15m"' + mittag + '}]}]}';
 
   return 'Antworte NUR mit JSON, kein Text, keine Markdown-Backticks. Keine Apostrophe. ' +
-    'Generiere 3 Menuvorschlaege a ' + G.n + ' Gerichte fuer ' + p + ' Personen (' + modusText + '). ' +
-    'Felder pro Gericht: tag, abend (richtiger Gerichtsname!), zeit_aktiv, zeit_total' + (G.reste ? ', mittag_naechster_tag (kurzer Restename)' : '') + '. ' +
+    'Generiere 3 Menüvorschläge a ' + G.n + ' Gerichte fuer ' + p + ' Personen (' + modusText + '). ' +
+    'Felder pro Gericht: tag, abend (richtiger Gerichtsname!), zeit_aktiv, zeit_total' + (G.reste ? ', mittag_nächster_tag (kurzer Restename)' : '') + '. ' +
     'KEINE anderen Felder, KEINE Zutaten. Kompakt. ' +
     'Format-Beispiel: ' + json;
 }
@@ -1672,7 +1681,7 @@ function buildSYS_full(sug) {
   var portMittag = G.reste ? p : 0;
   var portFreeze = G.freeze ? 2 : 0;
   var portTotal = portAbend + portMittag + portFreeze;
-  var mittag = G.reste ? '"mittag_naechster_tag":"Name","mittag_tag":"Dienstag",' : '';
+  var mittag = G.reste ? '"mittag_nächster_tag":"Name","mittag_tag":"Dienstag",' : '';
   var prep = G.reste ? ',"prep_next":["Reste abfuellen","Mittags aufwaermen"]' : '';
   var frz = G.freeze ? ',"einfrieren":["2 Port. einfrieren","Beschriften"]' : '';
   var json = '{"gerichte":[{"tag":"Montag","abend":"Name",' + mittag + '"zutaten":[{"name":"X","menge":"Y"}],"schritte_vegi":[{"titel":"Sauce","text":"Detaillierter Schritt","timer_min":0,"zutaten_schritt":["X"]}],"schritte_fleisch":[{"titel":"Fleisch anbraten","text":"Detaillierter Schritt","timer_min":0,"zutaten_schritt":["X"]}]' + prep + frz + ',"tipp":"Tipp","zeit_aktiv":"X","zeit_total":"Y"}]}';
@@ -1680,13 +1689,13 @@ function buildSYS_full(sug) {
   return 'NUR valides JSON, kein Text. Keine Apostrophe. ' +
     'Generiere vollstaendige Kochschritte fuer diese Gerichte: ' + dishes + '. ' +
     'Fuer ' + portTotal + ' Portionen (' + portAbend + ' Abend' + (portMittag?' + '+portMittag+' Mittag':'') + (portFreeze?' + 2 Einfrieren':'') + '). ' +
-    (G.reste ? 'Reste vom Abend werden am naechsten Mittag verwendet.' : 'Keine Reste.') + ' ' +
+    (G.reste ? 'Reste vom Abend werden am nächsten Mittag verwendet.' : 'Keine Reste.') + ' ' +
     (G.freeze ? '+2 Einfrierportionen mitkochen.' : 'Keine Einfrierportionen.') + ' ' +
     'WICHTIG: Das Zutaten-Array (zutaten) muss EXAKT die Zutaten enthalten die im Rezept verwendet werden - nicht mehr, nicht weniger. ' +
     'Keine Zutaten in der Liste die nicht explizit in einem Kochschritt vorkommen. ' +
     'Haltbarkeit beachten: wenn Spinat, Erbsen, Mais oder Beeren in Zutaten - TK-Version bevorzugen wenn das Gericht nicht am ersten Kochtag (Mo) stattfindet. ' +
     'Frischer Spinat nur bei Mo-Gerichten, sonst TK-Spinat angeben. ' +
-    'Jeden Schritt hat ein "titel" Feld (2-3 Woerter, Substantiv): z.B. "Sauce kochen", "Gemuese schneiden", "Dressing mixen", "Pasta kochen", "Anbraten", "Backen", "Umfuellen". ' +
+    'Jeden Schritt hat ein "titel" Feld (2-3 Woerter, Substantiv): z.B. "Sauce kochen", "Gemüse schneiden", "Dressing mixen", "Pasta kochen", "Anbraten", "Backen", "Umfuellen". ' +
     'Jeden Schritt mit Kontext beginnen wohin Zutaten kommen. ' +
     'timer_min NUR bei aktivem Warten (kochen/braten/backen), sonst 0. ' +
     'Format: ' + json;
@@ -1822,10 +1831,10 @@ function goSuggest() {
 
   var loadEl = $('sload').querySelector('div:last-child');
   var loadStart = Date.now();
-  if (loadEl) loadEl.textContent = 'Claude generiert Vorschlaege...';
+  if (loadEl) loadEl.textContent = 'Claude generiert Vorschläge...';
   var loadIv = setInterval(function() {
     var sec = Math.round((Date.now() - loadStart) / 1000);
-    if (loadEl) loadEl.textContent = 'Claude generiert Vorschlaege... (' + sec + 's)';
+    if (loadEl) loadEl.textContent = 'Claude generiert Vorschläge... (' + sec + 's)';
   }, 1000);
   G._loadIv = loadIv;
 
@@ -1840,7 +1849,7 @@ function goSuggest() {
   // Load user preferences for generation
   var userPrefs = {};
   try { userPrefs = JSON.parse(localStorage.getItem(getPrefKey()) || '{}'); } catch(e) {}
-  var prefKuechen = userPrefs.kuechen || '';
+  var prefKüchen = userPrefs.kuechen || '';
   var prefAvoid = userPrefs.avoid || '';
   var learningProfile = buildLearningProfile();
 
@@ -1849,11 +1858,11 @@ function goSuggest() {
     (G.freeze ? ', mit Einfrieren' : '') +
     (theme ? '. Thema: ' + theme : '') +
     (exist ? '. Vorhandene Zutaten unbedingt verwenden: ' + exist : '') +
-    (feedback ? '. Vorherige Vorschlaege abgelehnt weil: ' + feedback + '. Deutlich andere Gerichte.' : '') +
-    (prefKuechen ? '. Bevorzugte Kuechen: ' + prefKuechen : '') +
+    (feedback ? '. Vorherige Vorschläge abgelehnt weil: ' + feedback + '. Deutlich andere Gerichte.' : '') +
+    (prefKüchen ? '. Bevorzugte Küchen: ' + prefKüchen : '') +
     (prefAvoid ? '. Unbedingt vermeiden: ' + prefAvoid : '') +
     (learningProfile ? '. LERNPROFIL: ' + learningProfile : '') +
-    '. Kueche variieren.';
+    '. Küche variieren.';
 
   var sys = buildSYS_overview();
 
@@ -1887,11 +1896,11 @@ function goSuggest() {
   loadOne(1, 'Vorschlag 1.')
     .then(function() {
       var used = G.sugs.map(function(s){ return s.thema; }).join(', ');
-      return loadOne(2, 'Vorschlag 2. Andere Kueche als: ' + used + '.');
+      return loadOne(2, 'Vorschlag 2. Andere Küche als: ' + used + '.');
     })
     .then(function() {
       var used = G.sugs.map(function(s){ return s.thema; }).join(', ');
-      return loadOne(3, 'Vorschlag 3. Andere Kueche als: ' + used + '.');
+      return loadOne(3, 'Vorschlag 3. Andere Küche als: ' + used + '.');
     })
     .then(function() {
       if (G._loadIv) { clearInterval(G._loadIv); G._loadIv = null; }
@@ -1899,7 +1908,7 @@ function goSuggest() {
       if (G.sugs.length === 0) {
         var el = $('serr');
         el.className = 'st er';
-        el.textContent = 'Keine Vorschlaege erhalten. Bitte nochmals versuchen.';
+        el.textContent = 'Keine Vorschläge erhalten. Bitte nochmals versuchen.';
         el.style.display = 'block';
       }
       $('scta').style.display = 'block';
@@ -1927,8 +1936,8 @@ function renderSugs() {
       var g = s.gerichte[j];
       var tagShort = (g.tag||'').slice(0,2);
       days += '<div class="sug-d"><b style="color:var(--txt);min-width:22px;display:inline-block">' + tagShort + '</b> ' + g.abend + '</div>';
-      if (g.mittag_naechster_tag && g.mittag_naechster_tag !== 'Restename') {
-        days += '<div class="sug-nx">&#8627; ' + (g.mittag_tag||'') + ': ' + g.mittag_naechster_tag + '</div>';
+      if (g.mittag_nächster_tag && g.mittag_nächster_tag !== 'Restename') {
+        days += '<div class="sug-nx">&#8627; ' + (g.mittag_tag||'') + ': ' + g.mittag_nächster_tag + '</div>';
       }
     }
     var zeitInfo = s.gerichte.length > 0 && s.gerichte[0].zeit_total ?
@@ -1980,7 +1989,7 @@ function goWeek() {
       if (fg[i].schritte_fleisch) sug.gerichte[i].schritte_fleisch = fg[i].schritte_fleisch;
       if (fg[i].prep_next)        sug.gerichte[i].prep_next        = fg[i].prep_next;
       if (fg[i].einfrieren)       sug.gerichte[i].einfrieren       = fg[i].einfrieren;
-      if (fg[i].mittag_naechster_tag) sug.gerichte[i].mittag_naechster_tag = fg[i].mittag_naechster_tag;
+      if (fg[i].mittag_nächster_tag) sug.gerichte[i].mittag_nächster_tag = fg[i].mittag_nächster_tag;
       if (fg[i].mittag_tag)       sug.gerichte[i].mittag_tag       = fg[i].mittag_tag;
       // Also update zutaten if full recipe has them
       if (fg[i].zutaten && fg[i].zutaten.length) sug.gerichte[i].zutaten = fg[i].zutaten;
@@ -2059,7 +2068,7 @@ function renderRez(sug) {
   var html = '';
   for (var i = 0; i < sug.gerichte.length; i++) {
     var g = sug.gerichte[i];
-    var next = g.mittag_naechster_tag ? ('&#8594; ' + g.mittag_tag + ': ' + g.mittag_naechster_tag) : '';
+    var next = g.mittag_nächster_tag ? ('&#8594; ' + g.mittag_tag + ': ' + g.mittag_nächster_tag) : '';
     var zeitHtml = (g.zeit_aktiv || g.zeit_total) ?
       '<div style="display:flex;gap:12px;margin-top:5px">' +
       (g.zeit_aktiv ? '<span style="font-size:11px;color:var(--gr3)">&#9998; Aktiv: <b style="color:var(--txt2)">' + g.zeit_aktiv + '</b></span>' : '') +
@@ -2150,7 +2159,7 @@ function showIngOverview(g) {
 
   var html = '<div class="badge bv">Vor dem Kochen</div>' +
     '<div style="font-size:16px;font-weight:700;margin-bottom:4px">' + g.abend + '</div>' +
-    (g.mittag_naechster_tag ? '<div style="font-size:13px;color:var(--gr3);margin-bottom:8px">Morgen: ' + g.mittag_naechster_tag + '</div>' : '') +
+    (g.mittag_nächster_tag ? '<div style="font-size:13px;color:var(--gr3);margin-bottom:8px">Morgen: ' + g.mittag_nächster_tag + '</div>' : '') +
     ((g.zeit_aktiv || g.zeit_total) ? '<div style="display:flex;gap:12px;margin-bottom:16px">' +
       (g.zeit_aktiv ? '<span style="font-size:12px;color:var(--gr3)">&#9998; Aktiv: <b style="color:var(--txt2)">' + g.zeit_aktiv + '</b></span>' : '') +
       (g.zeit_total ? '<span style="font-size:12px;color:var(--gr3)">&#9200; Total: <b style="color:var(--txt2)">' + g.zeit_total + '</b></span>' : '') +
@@ -2158,7 +2167,7 @@ function showIngOverview(g) {
     '<div style="background:#f9f9f9;border-radius:var(--r);padding:0 12px;margin-bottom:16px;border:.5px solid var(--bdr)">' +
     '<div style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--gr3);padding:10px 0 6px">Zutaten</div>' +
     rows + '</div>' +
-    '<div style="font-size:12px;color:var(--blu);background:var(--bll);border-radius:8px;padding:10px 12px;margin-bottom:16px;border:.5px solid #90caf9">Alle Zutaten bereitstellen und abmessen bevor du anfaengst.</div>' +
+    '<div style="font-size:12px;color:var(--blu);background:var(--bll);border-radius:8px;padding:10px 12px;margin-bottom:16px;border:.5px solid #90caf9">Alle Zutaten bereitstellen und abmessen bevor du anfängst.</div>' +
     '<div style="background:#f9f9f9;border-radius:var(--r);padding:12px;margin-bottom:16px;border:.5px solid var(--bdr)">' +
       '<div style="font-size:12px;font-weight:600;color:var(--txt2);margin-bottom:8px">Portionen anpassen</div>' +
       '<div style="display:flex;align-items:center;gap:12px">' +
@@ -2182,7 +2191,7 @@ function beginCook() {
   }, 100);
 }
 
-var BADGES = { v: '<div class="badge bv">Basis - beide</div>', f: '<div class="badge bf">Fleisch-Beilage</div>', p: '<div class="badge bp">Fuer morgen</div>', fr: '<div class="badge bfr">Einfrieren</div>', t: '<div class="badge bt">Tipp</div>' };
+var BADGES = { v: '<div class="badge bv">Basis - beide</div>', f: '<div class="badge bf">Fleisch-Beilage</div>', p: '<div class="badge bp">Für morgen</div>', fr: '<div class="badge bfr">Einfrieren</div>', t: '<div class="badge bt">Tipp</div>' };
 
 function renderSegs() {
   var html = '';
@@ -2296,7 +2305,7 @@ function doComplete(i) {
   if (Object.keys(G.done).length === G.steps.length) {
     // Mark as gekocht in history/foto-rezepte
     if (G.cookingGerichtIdx !== undefined && G.cookingGerichtIdx !== null) {
-      // Menuplan-Rezept: update history status
+      // Menüplan-Rezept: update history status
       markEinkaufDoneGekocht();
       showRatingModal(G.cookingGerichtIdx);
     } else {
@@ -2436,14 +2445,14 @@ function showPrint(ri) {
   $('pcon').innerHTML =
     '<div style="border-bottom:3px solid #e8390e;padding-bottom:16px;margin-bottom:20px">' +
       '<h1 style="font-size:24px;font-weight:800;color:#1a1a1a;margin:0 0 4px">' + g.abend + '</h1>' +
-      (g.mittag_tag ? '<p style="font-size:12px;color:#888;margin:0">&#8594; ' + g.mittag_tag + ': ' + g.mittag_naechster_tag + '</p>' : '') +
+      (g.mittag_tag ? '<p style="font-size:12px;color:#888;margin:0">&#8594; ' + g.mittag_tag + ': ' + g.mittag_nächster_tag + '</p>' : '') +
     '</div>' +
     metaHtml +
     '<div style="display:grid;grid-template-columns:1fr 1fr;gap:24px">' +
       '<div>' +
         '<h2 style="font-size:14px;font-weight:700;color:#1a1a1a;border-bottom:2px solid #e8390e;padding-bottom:6px;margin-bottom:12px">Zutaten</h2>' +
         '<table style="width:100%;border-collapse:collapse">' + zRows + '</table>' +
-        (prepSteps ? '<div style="margin-top:16px;background:#e8f0fe;border-left:3px solid #1565c0;padding:10px 12px;border-radius:0 6px 6px 0"><div style="font-size:11px;font-weight:700;color:#1565c0;margin-bottom:4px">FUER MORGEN</div>' + prepSteps + '</div>' : '') +
+        (prepSteps ? '<div style="margin-top:16px;background:#e8f0fe;border-left:3px solid #1565c0;padding:10px 12px;border-radius:0 6px 6px 0"><div style="font-size:11px;font-weight:700;color:#1565c0;margin-bottom:4px">FÜR MORGEN</div>' + prepSteps + '</div>' : '') +
         (frzSteps ? '<div style="margin-top:10px;background:#e3f2fd;border-left:3px solid #0277bd;padding:10px 12px;border-radius:0 6px 6px 0"><div style="font-size:11px;font-weight:700;color:#0277bd;margin-bottom:4px">EINFRIEREN</div>' + frzSteps + '</div>' : '') +
       '</div>' +
       '<div>' +
@@ -2453,7 +2462,7 @@ function showPrint(ri) {
         (g.tipp ? '<div style="background:#fff8e1;border-left:3px solid #f9a825;padding:10px 12px;border-radius:0 6px 6px 0;margin-top:12px"><div style="font-size:11px;font-weight:700;color:#7d5a00;margin-bottom:4px">TIPP</div><div style="font-size:12px;color:#7d5a00;line-height:1.6">' + g.tipp + '</div></div>' : '') +
       '</div>' +
     '</div>' +
-    '<div style="margin-top:24px;padding-top:12px;border-top:1px solid #e0e0e0;font-size:10px;color:#aaa;text-align:right">Erstellt mit Menuplan App</div>';
+    '<div style="margin-top:24px;padding-top:12px;border-top:1px solid #e0e0e0;font-size:10px;color:#aaa;text-align:right">Erstellt mit Menüplan App</div>';
   go('sp');
 }
 
@@ -2465,7 +2474,7 @@ function saveToHistory(planData) {
   var entry = {
     date: new Date().toISOString().slice(0, 10),
     saved: new Date().toLocaleDateString('de-CH'),
-    thema: planData.sug ? planData.sug.thema : (planData.sugs && planData.sugs[planData.sel||0] ? planData.sugs[planData.sel||0].thema : 'Menuplan'),
+    thema: planData.sug ? planData.sug.thema : (planData.sugs && planData.sugs[planData.sel||0] ? planData.sugs[planData.sel||0].thema : 'Menüplan'),
     personen: planData.personen || 2,
     kochabende: planData.n || 3,
     reste: planData.reste,
@@ -2490,7 +2499,7 @@ function saveToHistory(planData) {
       history.unshift(entry);
       // Keep last 52 entries (1 year)
       if (history.length > 52) history = history.slice(0, 52);
-      var body = { message: 'Menuplan ' + entry.date, content: btoa(unescape(encodeURIComponent(JSON.stringify(history, null, 2)))) };
+      var body = { message: 'Menüplan ' + entry.date, content: btoa(unescape(encodeURIComponent(JSON.stringify(history, null, 2)))) };
       if (sha) body.sha = sha;
       return fetch(url, { method: 'PUT', headers: headers, body: JSON.stringify(body) });
     })
@@ -2515,7 +2524,7 @@ function loadSavedFotoRezepte() {
         '<div style="font-size:11px;color:var(--gr3);margin-top:2px">' + r.saved + ' · ' + r.portionen + ' Personen' + (r.zeit_total ? ' · ' + r.zeit_total : '') + '</div>' +
       '</div>' +
       '<div style="display:flex;gap:6px;flex-shrink:0">' +
-        '<button onclick="loadSavedFotoRezeptDetail(' + i + ')" class="btn btn-out" style="width:auto;padding:7px 12px;font-size:12px">Oeffnen</button>' +
+        '<button onclick="loadSavedFotoRezeptDetail(' + i + ')" class="btn btn-out" style="width:auto;padding:7px 12px;font-size:12px">Öffnen</button>' +
         '<button onclick="deleteSavedFotoRezept(' + i + ')" style="background:none;border:none;color:var(--gr3);font-size:18px;cursor:pointer;padding:0 4px">&#x2715;</button>' +
       '</div>' +
     '</div>';
@@ -2604,9 +2613,9 @@ function loadHistoryRecipes() {
       '<div style="padding:8px 14px;display:flex;gap:6px;flex-wrap:wrap">' +
         '<div style="width:100%;margin-bottom:4px;display:flex;align-items:center;justify-content:space-between">' +
           statusBadge(r.status||'geplant') +
-          (r.status && r.status !== 'geplant' ? '<button onclick="resetFotoRezeptStatus(' + i + ')" style="background:none;border:none;font-size:11px;color:var(--gr3);cursor:pointer;font-family:inherit;padding:2px 6px">&#x2715; Zuruecksetzen</button>' : '') +
+          (r.status && r.status !== 'geplant' ? '<button onclick="resetFotoRezeptStatus(' + i + ')" style="background:none;border:none;font-size:11px;color:var(--gr3);cursor:pointer;font-family:inherit;padding:2px 6px">&#x2715; Zurücksetzen</button>' : '') +
         '</div>' +
-        '<button class="btn btn-red" onclick="openHistoryRecipe(' + i + ')" style="flex:1;padding:9px;font-size:12px">Rezept oeffnen</button>' +
+        '<button class="btn btn-red" onclick="openHistoryRecipe(' + i + ')" style="flex:1;padding:9px;font-size:12px">Rezept öffnen</button>' +
         '<button class="btn btn-out" onclick="showFotoRating(' + i + ')" style="flex:1;padding:9px;font-size:12px">&#9733; Bewerten</button>' +
         '<div style="display:flex;gap:6px;width:100%">' +
           '<button class="btn btn-out" onclick="importHistoryRecipeToBring(' + i + ')" style="flex:1;padding:9px;font-size:12px">In Bring!</button>' +
@@ -2668,7 +2677,7 @@ function markFotoRezeptGekocht(i) {
 }
 
 function deleteHistoryRecipe(i) {
-  if (!confirm('Rezept loeschen?')) return;
+  if (!confirm('Rezept löschen?')) return;
   var saved = JSON.parse(localStorage.getItem('foto_rezepte') || '[]');
   saved.splice(i, 1);
   localStorage.setItem('foto_rezepte', JSON.stringify(saved));
@@ -2686,7 +2695,7 @@ function loadHistory() {
     .then(function(history) {
       $('hload').style.display = 'none';
       if (!history || !history.length) {
-        $('hlist').innerHTML = '<div style="text-align:center;padding:40px;color:var(--gr3);font-size:13px">Noch keine gespeicherten Plaene.</div>';
+        $('hlist').innerHTML = '<div style="text-align:center;padding:40px;color:var(--gr3);font-size:13px">Noch keine gespeicherten Pläne.</div>';
         return;
       }
       renderHistoryList(history);
@@ -2698,7 +2707,7 @@ function loadHistory() {
       if (localHist.length) {
         renderHistoryList(localHist);
       } else {
-        $('hlist').innerHTML = '<div style="text-align:center;padding:40px;color:var(--gr3);font-size:13px">Noch keine gespeicherten Plaene.<br><small>Tipp: GitHub Token einrichten fuer geraeteuebergreifenden Zugriff.</small></div>';
+        $('hlist').innerHTML = '<div style="text-align:center;padding:40px;color:var(--gr3);font-size:13px">Noch keine gespeicherten Pläne.<br><small>Tipp: GitHub Token einrichten für geräteübergreifenden Zugriff.</small></div>';
       }
     });
 }
@@ -2726,7 +2735,7 @@ function renderHistoryList(history) {
     html += '<div style="background:#fff;border-radius:var(--rlg);border:.5px solid var(--bdr);margin-bottom:8px;overflow:hidden">' +
       '<div style="padding:10px 14px;border-bottom:.5px solid var(--gr)">' +
         '<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:6px">' +
-          '<div style="font-size:15px;font-weight:700;color:var(--txt);flex:1">' + (e.thema||'Menuplan') + stars + '</div>' +
+          '<div style="font-size:15px;font-weight:700;color:var(--txt);flex:1">' + (e.thema||'Menüplan') + stars + '</div>' +
           statusBadge(status) +
         '</div>' +
         '<div style="font-size:11px;color:var(--gr3)">' +
@@ -2746,7 +2755,7 @@ function renderHistoryList(history) {
       '</div>' +
     '</div>';
   }
-  $('hlist').innerHTML = html || '<div style="text-align:center;padding:40px;color:var(--gr3);font-size:13px">Noch keine gespeicherten Plaene.</div>';
+  $('hlist').innerHTML = html || '<div style="text-align:center;padding:40px;color:var(--gr3);font-size:13px">Noch keine gespeicherten Pläne.</div>';
   window._history = history;
 }
 
@@ -2758,7 +2767,7 @@ function showHistoryRating(i) {
   G_rating.stars = e.stars || 0;
   G_rating.historyIdx = i;
   G_rating.fotoIdx = null;
-  $('rm-title').textContent = e.thema || 'Menuplan';
+  $('rm-title').textContent = e.thema || 'Menüplan';
   $('rm-feedback').value = e.ratingFeedback || '';
   $('rm-starlbl').textContent = '';
   $('rm-submit').disabled = false;
@@ -3040,9 +3049,9 @@ function analyzeFoto() {
     'Antworte NUR mit validem JSON ohne Text davor oder danach. Keine Apostrophe in Strings. ' +
     'Format: {"name":"Rezeptname","beschreibung":"Kurze Beschreibung","zeit_aktiv":"15 Min.","zeit_total":"45 Min.",' +
     '"zutaten":[{"name":"Karotten","menge":"2 Stk"}],' +
-    '"schritte":[{"titel":"Gemuese schneiden","text":"Detaillierter Schritt wohin die Zutaten kommen","timer_min":0,"zutaten_schritt":["Karotten"]}],' +
+    '"schritte":[{"titel":"Gemüse schneiden","text":"Detaillierter Schritt wohin die Zutaten kommen","timer_min":0,"zutaten_schritt":["Karotten"]}],' +
     '"tipp":"Kochtipp"}. ' +
-    'Das "titel" Feld pro Schritt: kurzes Substantiv (2-3 Woerter), z.B. "Sauce kochen", "Gemuese schneiden", "Dressing mixen", "Pasta kochen", "Anbraten", "Backen". ' +
+    'Das "titel" Feld pro Schritt: kurzes Substantiv (2-3 Woerter), z.B. "Sauce kochen", "Gemüse schneiden", "Dressing mixen", "Pasta kochen", "Anbraten", "Backen". ' +
     'Das "text" Feld: ausfuehrliche Erklaerung mit Mengen und Technik.';
 
   var msg = 'Analysiere dieses Foto und leite daraus ein vollstaendiges Rezept fuer ' + p + ' Personen ab. ' +
@@ -3112,7 +3121,7 @@ function renderFotoRezept(r) {
         (r.zeit_aktiv ? '<span style="font-size:12px;color:var(--gr3)">&#9998; Aktiv: <b style="color:var(--txt2)">' + r.zeit_aktiv + '</b></span>' : '') +
         (r.zeit_total ? '<span style="font-size:12px;color:var(--gr3)">&#9200; Total: <b style="color:var(--txt2)">' + r.zeit_total + '</b></span>' : '') +
       '</div>' +
-      '<div class="clbl">Zutaten fuer ' + G_foto.portionen + ' Personen</div>' +
+      '<div class="clbl">Zutaten für ' + G_foto.portionen + ' Personen</div>' +
       '<div style="margin-bottom:14px">' + zRows + '</div>' +
       (r.tipp ? '<div style="background:#fffde7;border-left:3px solid #f9a825;padding:10px 12px;border-radius:0 8px 8px 0;font-size:13px;margin-bottom:14px"><b>Tipp:</b> ' + r.tipp + '</div>' : '') +
     '</div></div>' +
@@ -3163,7 +3172,7 @@ function importFotoFromResult() {
   var backBtn = document.createElement('div');
   backBtn.id = 'foto-back-btn';
   backBtn.style.cssText = 'padding:10px 10px 0';
-  backBtn.innerHTML = '<button class="btn btn-out" onclick="openFotoScreen()" style="font-size:13px;padding:10px">&#8592; Zurueck zum Foto-Rezept</button>';
+  backBtn.innerHTML = '<button class="btn btn-out" onclick="openFotoScreen()" style="font-size:13px;padding:10px">&#8592; Zurück zum Foto-Rezept</button>';
   var te = $('te');
   if (te && te.firstChild) te.insertBefore(backBtn, te.firstChild);
 }
@@ -3230,7 +3239,7 @@ function startFotoCook() {
   // Build ingredients overview
   var fakeGericht = {
     abend: r.name || 'Foto-Rezept',
-    mittag_naechster_tag: null,
+    mittag_nächster_tag: null,
     zutaten: r.zutaten || [],
     zeit_aktiv: r.zeit_aktiv || '',
     zeit_total: r.zeit_total || ''
@@ -3382,14 +3391,14 @@ function markEinkaufDone() {
 <!-- PASSWORD CHANGE MODAL -->
 <div id="pw-modal" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);z-index:100;align-items:flex-end;justify-content:center">
   <div style="background:#fff;border-radius:20px 20px 0 0;padding:24px 20px 40px;width:100%;max-width:480px">
-    <div style="font-size:16px;font-weight:700;color:var(--txt);margin-bottom:16px">Passwort aendern</div>
+    <div style="font-size:16px;font-weight:700;color:var(--txt);margin-bottom:16px">Passwort ändern</div>
     <div class="fld"><label>Aktuelles Passwort</label><input type="password" id="pw-old" autocomplete="current-password"></div>
     <div class="fld"><label>Neues Passwort</label><input type="password" id="pw-new" autocomplete="new-password"></div>
     <div class="fld"><label>Neues Passwort wiederholen</label><input type="password" id="pw-new2" autocomplete="new-password"></div>
     <div id="pw-err" style="font-size:12px;color:var(--red);margin-bottom:8px;display:none"></div>
     <div style="display:flex;gap:8px">
       <button class="btn btn-out" onclick="$('pw-modal').style.display='none'" style="flex:1;padding:11px;font-size:13px">Abbrechen</button>
-      <button class="btn btn-red" onclick="doChangePassword()" style="flex:1;padding:11px;font-size:13px">Aendern</button>
+      <button class="btn btn-red" onclick="doChangePassword()" style="flex:1;padding:11px;font-size:13px">Ändern</button>
     </div>
   </div>
 </div>
@@ -3411,10 +3420,10 @@ function markEinkaufDone() {
     <!-- Feedback -->
     <div class="fld">
       <label>Kommentar (optional)</label>
-      <textarea id="rm-feedback" placeholder="Was hat gefallen? Was wuerde ich aendern?" style="width:100%;background:#fff;border:1px solid var(--bdr);border-radius:7px;color:var(--txt);font-size:14px;padding:10px 12px;font-family:inherit;resize:none;height:80px;outline:none" onfocus="this.style.borderColor='var(--red)'" onblur="this.style.borderColor='var(--bdr)'"></textarea>
+      <textarea id="rm-feedback" placeholder="Was hat gefallen? Was wuerde ich ändern?" style="width:100%;background:#fff;border:1px solid var(--bdr);border-radius:7px;color:var(--txt);font-size:14px;padding:10px 12px;font-family:inherit;resize:none;height:80px;outline:none" onfocus="this.style.borderColor='var(--red)'" onblur="this.style.borderColor='var(--bdr)'"></textarea>
     </div>
     <div style="display:flex;gap:8px;margin-top:4px">
-      <button class="btn btn-out" onclick="closeRating()" style="flex:1;padding:11px;font-size:13px">Ueberspringen</button>
+      <button class="btn btn-out" onclick="closeRating()" style="flex:1;padding:11px;font-size:13px">Überspringen</button>
       <button class="btn btn-red" onclick="submitRating()" style="flex:1;padding:11px;font-size:13px" id="rm-submit" disabled>Speichern</button>
     </div>
   </div>
