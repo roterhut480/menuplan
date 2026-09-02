@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=yes">
-<title>Menüplan v5.39</title>
+<title>Menüplan v5.40</title>
 <style>
 :root{
   --red:#e8390e;--rl:#fff2ef;--grn:#2e7d32;--grl:#f0faf4;
@@ -152,7 +152,7 @@ input[type=password]{letter-spacing:2px}
 
 <!-- HOME -->
 <div class="scr on" id="sh">
-  <div class="hero"><h1>Menüplan</h1><p id="hsub">v5.39 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
+  <div class="hero"><h1>Menüplan</h1><p id="hsub">v5.40 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
 
   <!-- Active plan card -->
   <div id="active-plan" style="display:none;margin:10px 10px 0">
@@ -761,37 +761,39 @@ function doLogin() {
   var username = ($('login-user').value || '').trim().toLowerCase().replace(/[^a-z0-9_.@-]/g, '').replace(/[.@-]+$/, '');
   var pw = $('login-pw').value;
   var err = $('login-err');
+  var loginBtn = $('login-btn');
+
   if (!username) { err.textContent = 'Bitte Benutzernamen eingeben'; err.style.display = 'block'; return; }
   if (!pw) { err.textContent = 'Bitte Passwort eingeben'; err.style.display = 'block'; return; }
 
-  // If worker-based auth: verify against worker directly
-  var loginBtn = $('login-btn');
   if (loginBtn) { loginBtn.disabled = true; loginBtn.textContent = 'Prüfe...'; }
+  err.style.display = 'none';
 
-  // Try worker auth first (no token needed client-side)
-  fetch(PROXY + '/gh/users/' + username + '/active-plan.json', {
-    headers: { 'X-MP-User': username, 'X-MP-Pass': pw, 'Content-Type': 'application/json' }
+  // Verify against worker using a lightweight ping
+  fetch(PROXY + '/anthropic', {
+    method: 'POST',
+    headers: { 'X-MP-User': username, 'X-MP-Pass': pw, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ model: 'claude-haiku-4-5-20251001', max_tokens: 1, messages: [{ role: 'user', content: 'hi' }] })
   }).then(function(r) {
-    if (r.ok || r.status === 404) {
-      // Auth successful (404 = valid creds but file not found yet)
+    if (loginBtn) { loginBtn.disabled = false; loginBtn.textContent = 'Anmelden'; }
+    if (r.status === 401) {
+      err.textContent = 'Falscher Benutzername oder Passwort.';
+      err.style.display = 'block';
+      $('login-pw').value = '';
+    } else {
+      // 200 or any non-401 = credentials accepted by worker
       localStorage.setItem('gh_session', JSON.stringify({ username: username, pw: pw }));
       showLoggedIn();
       syncAllFromGH();
-      if (loginBtn) { loginBtn.disabled = false; loginBtn.textContent = 'Anmelden'; }
-    } else if (r.status === 401) {
-      // Fall back to local user store
-      localLogin(username, pw);
-      if (loginBtn) { loginBtn.disabled = false; loginBtn.textContent = 'Anmelden'; }
-    } else {
-      localLogin(username, pw);
-      if (loginBtn) { loginBtn.disabled = false; loginBtn.textContent = 'Anmelden'; }
     }
   }).catch(function() {
-    // No worker connection - fall back to local
-    localLogin(username, pw);
+    // Worker unreachable - save session and continue offline
     if (loginBtn) { loginBtn.disabled = false; loginBtn.textContent = 'Anmelden'; }
+    localStorage.setItem('gh_session', JSON.stringify({ username: username, pw: pw }));
+    showLoggedIn();
   });
 }
+
 
 function localLogin(username, pw) {
   var err = $('login-err');
