@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=yes">
-<title>Menüplan v5.40</title>
+<title>Menüplan v5.43</title>
 <style>
 :root{
   --red:#e8390e;--rl:#fff2ef;--grn:#2e7d32;--grl:#f0faf4;
@@ -152,7 +152,7 @@ input[type=password]{letter-spacing:2px}
 
 <!-- HOME -->
 <div class="scr on" id="sh">
-  <div class="hero"><h1>Menüplan</h1><p id="hsub">v5.40 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
+  <div class="hero"><h1>Menüplan</h1><p id="hsub">v5.43 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
 
   <!-- Active plan card -->
   <div id="active-plan" style="display:none;margin:10px 10px 0">
@@ -282,12 +282,12 @@ input[type=password]{letter-spacing:2px}
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
           <label style="margin:0">👤 Personen</label>
           <div style="display:flex;align-items:center;gap:12px">
-            <button onclick="setP(Math.max(1,G.personen-1))" style="width:32px;height:32px;border-radius:50%;background:#f5f5f5;border:1.5px solid var(--bdr);font-size:18px;cursor:pointer;font-family:inherit;line-height:1;display:flex;align-items:center;justify-content:center">−</button>
+            <button onclick="setP(G.personen-1)" style="width:32px;height:32px;border-radius:50%;background:#f5f5f5;border:1.5px solid var(--bdr);font-size:18px;cursor:pointer;font-family:inherit;line-height:1;display:flex;align-items:center;justify-content:center">−</button>
             <div style="min-width:80px;text-align:center">
               <div id="p-display" style="font-size:24px;font-weight:800;color:var(--red)">2</div>
-              <div style="font-size:11px;color:var(--gr3)">Personen</div>
+              <div style="font-size:11px;color:var(--gr3)">Personen (1–6)</div>
             </div>
-            <button onclick="setP(Math.min(8,G.personen+1))" style="width:32px;height:32px;border-radius:50%;background:#f5f5f5;border:1.5px solid var(--bdr);font-size:18px;cursor:pointer;font-family:inherit;line-height:1;display:flex;align-items:center;justify-content:center">+</button>
+            <button onclick="setP(G.personen+1)" style="width:32px;height:32px;border-radius:50%;background:#f5f5f5;border:1.5px solid var(--bdr);font-size:18px;cursor:pointer;font-family:inherit;line-height:1;display:flex;align-items:center;justify-content:center">+</button>
           </div>
         </div>
       </div>
@@ -297,12 +297,12 @@ input[type=password]{letter-spacing:2px}
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
           <label style="margin:0">🍳 Kochabende</label>
           <div style="display:flex;align-items:center;gap:12px">
-            <button onclick="setN(Math.max(2,G.n-1))" style="width:32px;height:32px;border-radius:50%;background:#f5f5f5;border:1.5px solid var(--bdr);font-size:18px;cursor:pointer;font-family:inherit;line-height:1;display:flex;align-items:center;justify-content:center">−</button>
+            <button onclick="setN(G.n-1)" style="width:32px;height:32px;border-radius:50%;background:#f5f5f5;border:1.5px solid var(--bdr);font-size:18px;cursor:pointer;font-family:inherit;line-height:1;display:flex;align-items:center;justify-content:center">−</button>
             <div style="min-width:80px;text-align:center">
               <div id="n-display" style="font-size:24px;font-weight:800;color:var(--red)">3</div>
-              <div style="font-size:11px;color:var(--gr3)">Abende</div>
+              <div style="font-size:11px;color:var(--gr3)">Abende (1–7)</div>
             </div>
-            <button onclick="setN(Math.min(5,G.n+1))" style="width:32px;height:32px;border-radius:50%;background:#f5f5f5;border:1.5px solid var(--bdr);font-size:18px;cursor:pointer;font-family:inherit;line-height:1;display:flex;align-items:center;justify-content:center">+</button>
+            <button onclick="setN(G.n+1)" style="width:32px;height:32px;border-radius:50%;background:#f5f5f5;border:1.5px solid var(--bdr);font-size:18px;cursor:pointer;font-family:inherit;line-height:1;display:flex;align-items:center;justify-content:center">+</button>
           </div>
         </div>
       </div>
@@ -640,13 +640,14 @@ function showSt(id, msg, type) {
 
 // ─── OPTION SETTERS ────────────────────────────────────────
 function setN(n) {
+  n = Math.max(1, Math.min(7, n));
   G.n = n;
   if ($('n-display')) $('n-display').textContent = n;
 }
-function setP(p) {
-  G.personen = p;
-  var chips = $('pchips').querySelectorAll('.chip');
-  for (var i = 0; i < chips.length; i++) chips[i].classList.toggle('on', i === p - 1);
+function setP(n) {
+  n = Math.max(1, Math.min(6, n));
+  G.personen = n;
+  if ($('p-display')) $('p-display').textContent = n;
 }
 function setM(m) {
   G.modus = m;
@@ -2761,6 +2762,37 @@ function applyReplace() {
   ind.style.cssText = 'position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--grn);color:#fff;padding:10px 16px;border-radius:8px;font-size:13px;font-weight:600;z-index:999;white-space:nowrap';
   document.body.appendChild(ind);
   setTimeout(function(){ ind.remove(); }, 2500);
+}
+
+
+function showLoggedIn() {
+  var session = getSession();
+  if ($('login-section')) $('login-section').style.display = 'none';
+  if ($('loggedin-section')) $('loggedin-section').style.display = 'block';
+  if ($('login-err')) $('login-err').style.display = 'none';
+  if ($('loggedin-name')) $('loggedin-name').textContent = session ? session.username : '';
+  if ($('login-pw')) $('login-pw').value = '';
+  if ($('invite-btn')) $('invite-btn').style.display = 'block';
+  if ($('user-menu-btn')) $('user-menu-btn').style.display = 'flex';
+  // Load user preferences
+  loadPrefs();
+  // Load active plan from localStorage
+  try {
+    var ap = JSON.parse(localStorage.getItem('active_plan') || 'null');
+    if (ap) { G.activePlan = ap; renderActivePlan(); }
+  } catch(e) {}
+}
+
+function doManualSetup() {
+  var username = ($('login-user').value || '').trim().toLowerCase().replace(/[^a-z0-9_.@-]/g, '').replace(/[.@-]+$/, '');
+  var pw = $('login-pw').value;
+  var err = $('login-err');
+  if (!username) { err.textContent = 'Bitte Benutzernamen eingeben'; err.style.display = 'block'; return; }
+  if (!pw) { err.textContent = 'Bitte Passwort eingeben'; err.style.display = 'block'; return; }
+  // Just save session - worker handles auth
+  localStorage.setItem('gh_session', JSON.stringify({ username: username, pw: pw }));
+  showLoggedIn();
+  syncAllFromGH();
 }
 
 </script>
