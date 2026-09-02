@@ -2,7 +2,7 @@
 <html lang="de">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=yes">
 <title>Menüplan v5.30</title>
 <style>
 :root{
@@ -1720,16 +1720,22 @@ function goSuggest() {
 
   var sys = buildSYS_overview();
 
-  // Load one suggestion at a time
-  function loadOne(id, extraMsg) {
-    return callClaudeHaiku(sys, msg + ' ' + extraMsg + ' NUR id:' + id, 400)
+  // Load all 3 suggestions in parallel
+  function loadOne(id) {
+    var controller = typeof AbortController !== 'undefined' ? new AbortController() : null;
+    var tid = controller ? setTimeout(function(){ controller.abort(); }, 25000) : null;
+    return callClaudeHaiku(sys, msg + ' Vorschlag ' + id + ' von 3. Wähle eine andere Küche als die anderen Vorschläge.', 400)
       .then(function(raw) {
+        if (tid) clearTimeout(tid);
         try {
           var parsed = parseJSON(raw);
           var sugs = parsed.vorschlaege || [];
           if (sugs.length > 0) {
             sugs[0].id = id;
-            G.sugs.push(sugs[0]);
+            // Dedupe by thema
+            var exists = G.sugs.some(function(s){ return s.thema === sugs[0].thema; });
+            if (!exists) G.sugs.push(sugs[0]);
+            G.sugs.sort(function(a,b){ return a.id - b.id; });
             renderSugs();
             if (G.sugs.length === 1) {
               $('sload').style.display = 'none';
@@ -1739,23 +1745,13 @@ function goSuggest() {
             }
           }
         } catch(e) {
-          console.warn('Parse error id ' + id + ':', e.message, raw.slice(0,100));
+          console.warn('Parse error id ' + id + ':', e.message);
         }
       })
-      .catch(function(e) {
-        console.warn('Load error id ' + id + ':', e.message);
-      });
+      .catch(function(e) { if (tid) clearTimeout(tid); console.warn('Load error id ' + id + ':', e.message); });
   }
 
-  loadOne(1, 'Vorschlag 1.')
-    .then(function() {
-      var used = G.sugs.map(function(s){ return s.thema; }).join(', ');
-      return loadOne(2, 'Vorschlag 2. Andere Küche als: ' + used + '.');
-    })
-    .then(function() {
-      var used = G.sugs.map(function(s){ return s.thema; }).join(', ');
-      return loadOne(3, 'Vorschlag 3. Andere Küche als: ' + used + '.');
-    })
+  Promise.all([loadOne(1), loadOne(2), loadOne(3)])
     .then(function() {
       if (G._loadIv) { clearInterval(G._loadIv); G._loadIv = null; }
       $('sload').style.display = 'none';
@@ -1766,7 +1762,6 @@ function goSuggest() {
         el.style.display = 'block';
       }
       $('scta').style.display = 'block';
-      if ($('feedback')) $('feedback').value = '';
     })
     .catch(function(e) {
       if (G._loadIv) { clearInterval(G._loadIv); G._loadIv = null; }
@@ -1902,22 +1897,31 @@ function mergeMengen(m1, m2) {
   return m1 + ' + ' + m2;
 }
 
+function addMengen(a, b) {
+  var pa = parseMenge(a), pb = parseMenge(b);
+  if (pa && pb && pa.unit === pb.unit && pa.unit !== '') {
+    var sum = Math.round((pa.num + pb.num) * 100) / 100;
+    return sum + (pa.unit ? ' ' + pa.unit : '');
+  }
+  return a + ' + ' + b;
+}
+
 function getItems(sug) {
-  var items = [], seen = {};
+  var map = {}, order = [];
   for (var i = 0; i < sug.gerichte.length; i++) {
     var zutaten = sug.gerichte[i].zutaten || [];
     for (var j = 0; j < zutaten.length; j++) {
       var z = zutaten[j];
-      var k = z.name.toLowerCase();
-      if (seen[k] !== undefined) {
-        items[seen[k]].menge = mergeMengen(items[seen[k]].menge, z.menge);
+      var key = z.name.toLowerCase().trim();
+      if (map[key]) {
+        map[key].menge = addMengen(map[key].menge, z.menge);
       } else {
-        seen[k] = items.length;
-        items.push({ name: z.name, menge: z.menge });
+        map[key] = { name: z.name, menge: z.menge };
+        order.push(key);
       }
     }
   }
-  return items;
+  return order.map(function(k){ return map[k]; });
 }
 
 function renderEink(sug) {
@@ -1932,11 +1936,24 @@ function renderEink(sug) {
 }
 
 function togItem(i) {
-  var c = $('ic' + i), r = $('ir' + i);
-  var on = c.classList.toggle('on');
-  c.innerHTML = on ? '&#10003;' : '';
-  c.style.color = '#fff';
-  r.classList.toggle('done', on);
+  G.checked = G.checked || {};
+  G.checked[i] = !G.checked[i];
+  var el = document.querySelectorAll('.eitem')[i];
+  if (el) el.classList.toggle('checked', !!G.checked[i]);
+  try { localStorage.setItem('einkauf_checked', JSON.stringify(G.checked)); } catch(e) {}
+}
+
+function loadCheckedItems() {
+  try {
+    var saved = JSON.parse(localStorage.getItem('einkauf_checked') || '{}');
+    G.checked = saved;
+    setTimeout(function() {
+      var items = document.querySelectorAll('.eitem');
+      Object.keys(saved).forEach(function(i) {
+        if (saved[i] && items[parseInt(i)]) items[parseInt(i)].classList.add('checked');
+      });
+    }, 150);
+  } catch(e) {}
 }
 
 function renderRez(sug) {
@@ -1990,6 +2007,13 @@ function parseMengeNum(menge) {
 function parseMengeUnit(menge) {
   if (!menge) return '';
   return String(menge).replace(/^[\d.,\s]+/, '').trim();
+}
+
+function parseMenge(menge) {
+  if (!menge) return null;
+  var m = String(menge).trim().match(/^([0-9]+\.?[0-9]*)\s*(.*)$/);
+  if (!m) return null;
+  return { num: parseFloat(m[1]), unit: m[2].trim() };
 }
 
 function adjPort(d) {
@@ -3245,6 +3269,8 @@ function setActivePlanAndGo() {
   };
   G.activePlan = planData;
   localStorage.setItem('active_plan', JSON.stringify(planData));
+  localStorage.removeItem('einkauf_checked');  // Neuer Plan = neue Liste
+  G.checked = {};
   saveToGH(planData);
   saveToHistory(planData);
   localStorage.setItem('sw', JSON.stringify({ sugs: G.sugs, n: G.n, personen: G.personen, reste: G.reste, freeze: G.freeze, saved: planData.saved }));
