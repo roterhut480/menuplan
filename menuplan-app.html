@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=yes">
-<title>Menüplan v5.31</title>
+<title>Menüplan v5.33</title>
 <style>
 :root{
   --red:#e8390e;--rl:#fff2ef;--grn:#2e7d32;--grl:#f0faf4;
@@ -152,7 +152,7 @@ input[type=password]{letter-spacing:2px}
 
 <!-- HOME -->
 <div class="scr on" id="sh">
-  <div class="hero"><h1>Menüplan</h1><p id="hsub">v5.31 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
+  <div class="hero"><h1>Menüplan</h1><p id="hsub">v5.33 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
 
   <!-- Active plan card -->
   <div id="active-plan" style="display:none;margin:10px 10px 0">
@@ -863,22 +863,18 @@ function updateGHUI() {
   }
   var params = new URLSearchParams(window.location.search);
 
-  // Invite link
+  // Invite link: ?invite=1
   var invite = params.get('invite');
   if (invite) {
-    try {
-      var tok = decodeURIComponent(escape(atob(invite)));
-      if (tok && tok.startsWith('ghp_')) {
-        window._inviteToken = tok;
-        if ($('login-invite-banner')) $('login-invite-banner').style.display = 'block';
-        if ($('login-title')) $('login-title').textContent = 'Konto erstellen';
-        if ($('login-btn')) $('login-btn').textContent = 'Konto erstellen';
-        if ($('login-pw')) $('login-pw').placeholder = 'Eigenes Passwort wählen...';
-        // Hide manual setup when using invite
-        if ($('login-manual-setup')) $('login-manual-setup').style.display = 'none';
-        return;
-      }
-    } catch(e) {}
+    if ($('login-invite-banner')) $('login-invite-banner').style.display = 'block';
+    if ($('login-title')) $('login-title').textContent = 'Konto erstellen';
+    if ($('login-btn')) $('login-btn').textContent = 'Konto erstellen';
+    if ($('login-pw')) $('login-pw').placeholder = 'Eigenes Passwort wählen...';
+    if ($('login-manual-setup')) $('login-manual-setup').style.display = 'none';
+    // Pre-fill username if ref given
+    var ref = params.get('ref');
+    if (ref && $('login-user')) $('login-user').placeholder = 'z.B. ' + ref + '_2, anna...';
+    return;
   }
 
   // Setup URL param
@@ -1205,20 +1201,24 @@ function doChangePassword() {
   var user = users.find(function(u){ return u.username === session.username; });
   if (!user) return;
 
+  // Verify against current session
   try {
-    var dec = decodeURIComponent(escape(atob(user.enc)));
-    var parts = dec.split('|||');
+    var parts = [null, session.pw]; // use session password as truth
+    var dec = user ? decodeURIComponent(escape(atob(user.enc))) : null;
+    if (dec) parts = dec.split('|||');
     if (parts[1] !== oldPw) {
       err.textContent = 'Falsches aktuelles Passwort';
       err.style.display = 'block';
       return;
     }
-    // Update with new password
-    var tok = parts[0];
-    user.enc = btoa(unescape(encodeURIComponent(tok + '|||' + newPw)));
-    saveUsers(users);
-    // Update session
+    // Update session with new password (Worker MP_USERS must be updated separately by admin)
     localStorage.setItem('gh_session', JSON.stringify({ username: session.username, pw: newPw }));
+    // Also update local users store if it exists
+    if (user) {
+      var tok = parts[0];
+      user.enc = btoa(unescape(encodeURIComponent(tok + '|||' + newPw)));
+      saveUsers(users);
+    }
     $('pw-modal').style.display = 'none';
     // Show success
     var ind = document.createElement('div');
@@ -1247,7 +1247,7 @@ function disconnectGH() { doLogout(); }
 
 function syncAllFromGH() {
   // Load active plan
-  fetch('https://raw.githubusercontent.com/' + GH_REPO + '/main/' + ghFile('active-plan.json') + '?t=' + Date.now())
+  fetch(PROXY + '/gh/' + ghFile('active-plan.json'), { headers: getAuthHeaders() || {} })
     .then(function(r) { return r.ok ? r.json() : null; })
     .then(function(d) {
       if (d && d.sug) {
@@ -1257,7 +1257,7 @@ function syncAllFromGH() {
       }
     }).catch(function(){});
   // Load foto rezepte from GH (authoritative)
-  fetch('https://raw.githubusercontent.com/' + GH_REPO + '/main/' + ghFile('foto-rezepte.json') + '?t=' + Date.now())
+  fetch(PROXY + '/gh/' + ghFile('foto-rezepte.json'), { headers: getAuthHeaders() || {} })
     .then(function(r) { return r.ok ? r.json() : null; })
     .then(function(fr) {
       if (!Array.isArray(fr)) return;
@@ -1319,65 +1319,425 @@ function ghPut(filename, data, message) {
 }
 
 function saveToGH(data) {
-  var tok = getGHToken();
-  if (!tok) return;
-  var url = 'https://api.github.com/repos/' + GH_REPO + '/contents/' + ghFile('active-plan.json');
-  var headers = { 'Authorization': 'token ' + tok, 'Content-Type': 'application/json', 'Accept': 'application/vnd.github.v3+json' };
-  fetch(url, { headers: headers })
-    .then(function(r) { return r.ok ? r.json() : null; })
-    .then(function(existing) {
-      var body = { message: 'Aktiver Plan gespeichert', content: btoa(unescape(encodeURIComponent(JSON.stringify(data, null, 2)))) };
-      if (existing && existing.sha) body.sha = existing.sha;
-      return fetch(url, { method: 'PUT', headers: headers, body: JSON.stringify(body) });
-    })
-    .then(function(r) {
-      if (r && r.ok) {
-        console.log('GitHub gespeichert: ' + ghFile('active-plan.json'));
-        // Show brief indicator
-        var ind = document.createElement('div');
-        ind.textContent = 'GitHub gespeichert';
-        ind.style.cssText = 'position:fixed;bottom:20px;right:16px;background:var(--grn);color:#fff;padding:8px 14px;border-radius:8px;font-size:12px;font-weight:600;z-index:999;opacity:1;transition:opacity 1s';
-        document.body.appendChild(ind);
-        setTimeout(function(){ ind.style.opacity='0'; setTimeout(function(){ ind.remove(); },1000); }, 2000);
-      } else if (r) {
-        console.warn('GitHub save failed: HTTP ' + r.status);
-        if (r.status === 401) {
-          // Show token refresh UI
-          if ($('token-refresh-section')) $('token-refresh-section').style.display = 'block';
-          var ind = document.createElement('div');
-          ind.textContent = 'GitHub Token abgelaufen - bitte erneuern';
-          ind.style.cssText = 'position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--red);color:#fff;padding:10px 16px;border-radius:8px;font-size:12px;font-weight:600;z-index:999;white-space:nowrap';
-          document.body.appendChild(ind);
-          setTimeout(function(){ ind.remove(); }, 5000);
-        }
-      }
-    })
-    .catch(function(e) { console.warn('GitHub save error:', e); });
+  ghPut('active-plan.json', data, 'Aktiver Plan').catch(function(){});
 }
-function syncGH(btn) {
-  var tok = getGHToken();
-  if (!tok) { alert('Bitte zuerst GitHub Token eingeben'); return; }
-  var origText = btn.textContent;
-  btn.textContent = '...';
-  btn.disabled = true;
-  fetch('https://raw.githubusercontent.com/' + GH_REPO + '/main/' + ghFile('active-plan.json') + '?t=' + Date.now())
+
+
+function saveHistoryToGH(hist) {
+  ghPut('history.json', hist, 'History aktualisiert').catch(function(){});
+}
+
+function resetLocalUsers() {
+  if (confirm('Lokale Anmeldedaten löschen? Du kannst dich danach mit Einladungslink oder Token neu einrichten.')) {
+    localStorage.removeItem('gh_users');
+    localStorage.removeItem('gh_session');
+    localStorage.removeItem('gh_enc');
+    updateGHUI();
+  }
+}
+
+function showChangePassword() {
+  if ($('pw-old')) $('pw-old').value = '';
+  if ($('pw-new')) $('pw-new').value = '';
+  if ($('pw-new2')) $('pw-new2').value = '';
+  if ($('pw-err')) $('pw-err').style.display = 'none';
+  $('pw-modal').style.display = 'flex';
+}
+
+function doChangePassword() {
+  var oldPw = $('pw-old').value;
+  var newPw = $('pw-new').value;
+  var newPw2 = $('pw-new2').value;
+  var err = $('pw-err');
+
+  if (!oldPw) { err.textContent = 'Bitte aktuelles Passwort eingeben'; err.style.display = 'block'; return; }
+  if (!newPw) { err.textContent = 'Bitte neues Passwort eingeben'; err.style.display = 'block'; return; }
+  if (newPw !== newPw2) { err.textContent = 'Passwoerter stimmen nicht ueberein'; err.style.display = 'block'; return; }
+
+  var session = getSession();
+  if (!session) return;
+
+  // Verify old password
+  var users = getUsers();
+  var user = users.find(function(u){ return u.username === session.username; });
+  if (!user) return;
+
+  // Verify against current session
+  try {
+    var parts = [null, session.pw]; // use session password as truth
+    var dec = user ? decodeURIComponent(escape(atob(user.enc))) : null;
+    if (dec) parts = dec.split('|||');
+    if (parts[1] !== oldPw) {
+      err.textContent = 'Falsches aktuelles Passwort';
+      err.style.display = 'block';
+      return;
+    }
+    // Update session with new password (Worker MP_USERS must be updated separately by admin)
+    localStorage.setItem('gh_session', JSON.stringify({ username: session.username, pw: newPw }));
+    // Also update local users store if it exists
+    if (user) {
+      var tok = parts[0];
+      user.enc = btoa(unescape(encodeURIComponent(tok + '|||' + newPw)));
+      saveUsers(users);
+    }
+    $('pw-modal').style.display = 'none';
+    // Show success
+    var ind = document.createElement('div');
+    ind.textContent = 'Passwort erfolgreich geaendert';
+    ind.style.cssText = 'position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--grn);color:#fff;padding:10px 16px;border-radius:8px;font-size:13px;font-weight:600;z-index:999';
+    document.body.appendChild(ind);
+    setTimeout(function(){ ind.remove(); }, 3000);
+  } catch(e) {
+    err.textContent = 'Fehler: ' + e.message;
+    err.style.display = 'block';
+  }
+}
+
+function copyInviteLink() {
+  var btn = $('copy-invite-btn');
+  if (window._inviteUrl) {
+    navigator.clipboard.writeText(window._inviteUrl).then(function() {
+      if (btn) btn.textContent = 'Kopiert!';
+      setTimeout(function(){ if (btn) btn.textContent = 'Link kopieren'; }, 2000);
+    });
+  }
+}
+function saveGHToken() {} // legacy noop
+function disconnectGH() { doLogout(); }
+
+
+function syncAllFromGH() {
+  // Load active plan
+  fetch(PROXY + '/gh/' + ghFile('active-plan.json'), { headers: getAuthHeaders() || {} })
     .then(function(r) { return r.ok ? r.json() : null; })
     .then(function(d) {
       if (d && d.sug) {
         G.activePlan = d;
         localStorage.setItem('active_plan', JSON.stringify(d));
         renderActivePlan();
-        btn.textContent = 'OK';
-      } else if (d && d.sugs) {
-        // Legacy format
-        btn.textContent = 'OK';
-      } else {
-        btn.textContent = 'Leer';
       }
-      setTimeout(function() { btn.textContent = origText; btn.disabled = false; }, 1500);
-    })
-    .catch(function() { btn.textContent = 'Err'; setTimeout(function() { btn.textContent = origText; btn.disabled = false; }, 1500); });
+    }).catch(function(){});
+  // Load foto rezepte from GH (authoritative)
+  fetch(PROXY + '/gh/' + ghFile('foto-rezepte.json'), { headers: getAuthHeaders() || {} })
+    .then(function(r) { return r.ok ? r.json() : null; })
+    .then(function(fr) {
+      if (!Array.isArray(fr)) return;
+      // GH is authoritative - merge local-only entries
+      var local = JSON.parse(localStorage.getItem('foto_rezepte') || '[]');
+      var merged = fr.slice();
+      local.forEach(function(l) {
+        if (!merged.find(function(g){ return g.name === l.name; })) merged.push(l);
+      });
+      localStorage.setItem('foto_rezepte', JSON.stringify(merged));
+      console.log('Foto-Rezepte von GH geladen:', merged.length);
+    }).catch(function(){});
 }
+
+
+function getAuthHeaders() {
+  var session = getSession();
+  if (!session) return null;
+  return { 'X-MP-User': session.username, 'X-MP-Pass': session.pw, 'Content-Type': 'application/json' };
+}
+
+function ghGet(filepath) {
+  var h = getAuthHeaders();
+  if (!h) return Promise.resolve(null);
+  return fetch(PROXY + '/gh/' + filepath, { headers: h })
+    .then(function(r) { return r.ok ? r.json() : null; });
+}
+
+function ghPut(filename, data, message) {
+  var h = getAuthHeaders();
+  if (!h) return Promise.resolve(null);
+  var encoded = btoa(unescape(encodeURIComponent(JSON.stringify(data, null, 2))));
+  var filepath = ghFile(filename);
+  // Get current SHA first
+  return fetch(PROXY + '/gh/' + filepath, { headers: h })
+    .then(function(r) { return r.ok ? r.json() : null; })
+    .then(function(existing) {
+      var body = { message: message || 'Update', content: encoded };
+      if (existing && existing.sha) body.sha = existing.sha;
+      return fetch(PROXY + '/gh/' + filepath, {
+        method: 'PUT', headers: h, body: JSON.stringify(body)
+      });
+    })
+    .then(function(r) {
+      if (r && r.ok) return r;
+      if (r && r.status === 409) {
+        return fetch(PROXY + '/gh/' + filepath, { headers: h })
+          .then(function(r2) { return r2.ok ? r2.json() : null; })
+          .then(function(fresh) {
+            var body2 = { message: message || 'Update', content: encoded };
+            if (fresh && fresh.sha) body2.sha = fresh.sha;
+            return fetch(PROXY + '/gh/' + filepath, {
+              method: 'PUT', headers: h, body: JSON.stringify(body2)
+            });
+          });
+      }
+      return r;
+    });
+}
+
+
+function syncGH(btn) {
+  var origText = btn ? btn.textContent : '';
+  if (btn) { btn.textContent = '...'; btn.disabled = true; }
+  var h = getAuthHeaders();
+  if (!h) { if (btn) { btn.textContent = origText; btn.disabled = false; } return; }
+  fetch(PROXY + '/gh/' + ghFile('active-plan.json'), { headers: h })
+    .then(function(r) { return r.ok ? r.json() : null; })
+    .then(function(d) {
+      if (d && d.content) {
+        var plan = JSON.parse(decodeURIComponent(escape(atob(d.content.split('\n').join('')))));
+        if (plan && plan.sug) {
+          G.activePlan = plan;
+          localStorage.setItem('active_plan', JSON.stringify(plan));
+          renderActivePlan();
+        }
+      }
+      if (btn) { btn.textContent = 'OK'; setTimeout(function(){ btn.textContent = origText; btn.disabled = false; }, 1500); }
+    })
+    .catch(function() {
+      if (btn) { btn.textContent = 'Err'; setTimeout(function(){ btn.textContent = origText; btn.disabled = false; }, 1500); }
+    });
+}
+
+
+function syncAllFromGH() {
+  // Load active plan
+  fetch(PROXY + '/gh/' + ghFile('active-plan.json'), { headers: getAuthHeaders() || {} })
+    .then(function(r) { return r.ok ? r.json() : null; })
+    .then(function(d) {
+      if (d && d.sug) {
+        G.activePlan = d;
+        localStorage.setItem('active_plan', JSON.stringify(d));
+        renderActivePlan();
+      }
+    }).catch(function(){});
+  // Load foto rezepte from GH (authoritative)
+  fetch(PROXY + '/gh/' + ghFile('foto-rezepte.json'), { headers: getAuthHeaders() || {} })
+    .then(function(r) { return r.ok ? r.json() : null; })
+    .then(function(fr) {
+      if (!Array.isArray(fr)) return;
+      // GH is authoritative - merge local-only entries
+      var local = JSON.parse(localStorage.getItem('foto_rezepte') || '[]');
+      var merged = fr.slice();
+      local.forEach(function(l) {
+        if (!merged.find(function(g){ return g.name === l.name; })) merged.push(l);
+      });
+      localStorage.setItem('foto_rezepte', JSON.stringify(merged));
+      console.log('Foto-Rezepte von GH geladen:', merged.length);
+    }).catch(function(){});
+}
+
+
+function getAuthHeaders() {
+  var session = getSession();
+  if (!session) return null;
+  return { 'X-MP-User': session.username, 'X-MP-Pass': session.pw, 'Content-Type': 'application/json' };
+}
+
+function ghGet(filepath) {
+  var h = getAuthHeaders();
+  if (!h) return Promise.resolve(null);
+  return fetch(PROXY + '/gh/' + filepath, { headers: h })
+    .then(function(r) { return r.ok ? r.json() : null; });
+}
+
+function ghPut(filename, data, message) {
+  var h = getAuthHeaders();
+  if (!h) return Promise.resolve(null);
+  var encoded = btoa(unescape(encodeURIComponent(JSON.stringify(data, null, 2))));
+  var filepath = ghFile(filename);
+  // Get current SHA first
+  return fetch(PROXY + '/gh/' + filepath, { headers: h })
+    .then(function(r) { return r.ok ? r.json() : null; })
+    .then(function(existing) {
+      var body = { message: message || 'Update', content: encoded };
+      if (existing && existing.sha) body.sha = existing.sha;
+      return fetch(PROXY + '/gh/' + filepath, {
+        method: 'PUT', headers: h, body: JSON.stringify(body)
+      });
+    })
+    .then(function(r) {
+      if (r && r.ok) return r;
+      if (r && r.status === 409) {
+        return fetch(PROXY + '/gh/' + filepath, { headers: h })
+          .then(function(r2) { return r2.ok ? r2.json() : null; })
+          .then(function(fresh) {
+            var body2 = { message: message || 'Update', content: encoded };
+            if (fresh && fresh.sha) body2.sha = fresh.sha;
+            return fetch(PROXY + '/gh/' + filepath, {
+              method: 'PUT', headers: h, body: JSON.stringify(body2)
+            });
+          });
+      }
+      return r;
+    });
+}
+
+
+
+
+function saveHistoryToGH(hist) {
+  ghPut('history.json', hist, 'History aktualisiert').catch(function(){});
+}
+
+function resetLocalUsers() {
+  if (confirm('Lokale Anmeldedaten löschen? Du kannst dich danach mit Einladungslink oder Token neu einrichten.')) {
+    localStorage.removeItem('gh_users');
+    localStorage.removeItem('gh_session');
+    localStorage.removeItem('gh_enc');
+    updateGHUI();
+  }
+}
+
+function showChangePassword() {
+  if ($('pw-old')) $('pw-old').value = '';
+  if ($('pw-new')) $('pw-new').value = '';
+  if ($('pw-new2')) $('pw-new2').value = '';
+  if ($('pw-err')) $('pw-err').style.display = 'none';
+  $('pw-modal').style.display = 'flex';
+}
+
+function doChangePassword() {
+  var oldPw = $('pw-old').value;
+  var newPw = $('pw-new').value;
+  var newPw2 = $('pw-new2').value;
+  var err = $('pw-err');
+
+  if (!oldPw) { err.textContent = 'Bitte aktuelles Passwort eingeben'; err.style.display = 'block'; return; }
+  if (!newPw) { err.textContent = 'Bitte neues Passwort eingeben'; err.style.display = 'block'; return; }
+  if (newPw !== newPw2) { err.textContent = 'Passwoerter stimmen nicht ueberein'; err.style.display = 'block'; return; }
+
+  var session = getSession();
+  if (!session) return;
+
+  // Verify old password
+  var users = getUsers();
+  var user = users.find(function(u){ return u.username === session.username; });
+  if (!user) return;
+
+  // Verify against current session
+  try {
+    var parts = [null, session.pw]; // use session password as truth
+    var dec = user ? decodeURIComponent(escape(atob(user.enc))) : null;
+    if (dec) parts = dec.split('|||');
+    if (parts[1] !== oldPw) {
+      err.textContent = 'Falsches aktuelles Passwort';
+      err.style.display = 'block';
+      return;
+    }
+    // Update session with new password (Worker MP_USERS must be updated separately by admin)
+    localStorage.setItem('gh_session', JSON.stringify({ username: session.username, pw: newPw }));
+    // Also update local users store if it exists
+    if (user) {
+      var tok = parts[0];
+      user.enc = btoa(unescape(encodeURIComponent(tok + '|||' + newPw)));
+      saveUsers(users);
+    }
+    $('pw-modal').style.display = 'none';
+    // Show success
+    var ind = document.createElement('div');
+    ind.textContent = 'Passwort erfolgreich geaendert';
+    ind.style.cssText = 'position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--grn);color:#fff;padding:10px 16px;border-radius:8px;font-size:13px;font-weight:600;z-index:999';
+    document.body.appendChild(ind);
+    setTimeout(function(){ ind.remove(); }, 3000);
+  } catch(e) {
+    err.textContent = 'Fehler: ' + e.message;
+    err.style.display = 'block';
+  }
+}
+
+function copyInviteLink() {
+  var btn = $('copy-invite-btn');
+  if (window._inviteUrl) {
+    navigator.clipboard.writeText(window._inviteUrl).then(function() {
+      if (btn) btn.textContent = 'Kopiert!';
+      setTimeout(function(){ if (btn) btn.textContent = 'Link kopieren'; }, 2000);
+    });
+  }
+}
+function saveGHToken() {} // legacy noop
+function disconnectGH() { doLogout(); }
+
+
+function syncAllFromGH() {
+  // Load active plan
+  fetch(PROXY + '/gh/' + ghFile('active-plan.json'), { headers: getAuthHeaders() || {} })
+    .then(function(r) { return r.ok ? r.json() : null; })
+    .then(function(d) {
+      if (d && d.sug) {
+        G.activePlan = d;
+        localStorage.setItem('active_plan', JSON.stringify(d));
+        renderActivePlan();
+      }
+    }).catch(function(){});
+  // Load foto rezepte from GH (authoritative)
+  fetch(PROXY + '/gh/' + ghFile('foto-rezepte.json'), { headers: getAuthHeaders() || {} })
+    .then(function(r) { return r.ok ? r.json() : null; })
+    .then(function(fr) {
+      if (!Array.isArray(fr)) return;
+      // GH is authoritative - merge local-only entries
+      var local = JSON.parse(localStorage.getItem('foto_rezepte') || '[]');
+      var merged = fr.slice();
+      local.forEach(function(l) {
+        if (!merged.find(function(g){ return g.name === l.name; })) merged.push(l);
+      });
+      localStorage.setItem('foto_rezepte', JSON.stringify(merged));
+      console.log('Foto-Rezepte von GH geladen:', merged.length);
+    }).catch(function(){});
+}
+
+
+function getAuthHeaders() {
+  var session = getSession();
+  if (!session) return null;
+  return { 'X-MP-User': session.username, 'X-MP-Pass': session.pw, 'Content-Type': 'application/json' };
+}
+
+function ghGet(filepath) {
+  var h = getAuthHeaders();
+  if (!h) return Promise.resolve(null);
+  return fetch(PROXY + '/gh/' + filepath, { headers: h })
+    .then(function(r) { return r.ok ? r.json() : null; });
+}
+
+function ghPut(filename, data, message) {
+  var h = getAuthHeaders();
+  if (!h) return Promise.resolve(null);
+  var encoded = btoa(unescape(encodeURIComponent(JSON.stringify(data, null, 2))));
+  var filepath = ghFile(filename);
+  // Get current SHA first
+  return fetch(PROXY + '/gh/' + filepath, { headers: h })
+    .then(function(r) { return r.ok ? r.json() : null; })
+    .then(function(existing) {
+      var body = { message: message || 'Update', content: encoded };
+      if (existing && existing.sha) body.sha = existing.sha;
+      return fetch(PROXY + '/gh/' + filepath, {
+        method: 'PUT', headers: h, body: JSON.stringify(body)
+      });
+    })
+    .then(function(r) {
+      if (r && r.ok) return r;
+      if (r && r.status === 409) {
+        return fetch(PROXY + '/gh/' + filepath, { headers: h })
+          .then(function(r2) { return r2.ok ? r2.json() : null; })
+          .then(function(fresh) {
+            var body2 = { message: message || 'Update', content: encoded };
+            if (fresh && fresh.sha) body2.sha = fresh.sha;
+            return fetch(PROXY + '/gh/' + filepath, {
+              method: 'PUT', headers: h, body: JSON.stringify(body2)
+            });
+          });
+      }
+      return r;
+    });
+}
+
+
+
 function loadSaved() {
   if (!G.savedWeek || !G.savedWeek.sugs) return;
   G.sugs = G.savedWeek.sugs;
@@ -1699,9 +2059,11 @@ function callClaudeHaiku(sys, msg, maxTokens) {
 function callClaude(sys, msg, maxTokens) {
   var controller = typeof AbortController !== 'undefined' ? new AbortController() : null;
   var timeoutId = controller ? setTimeout(function() { controller.abort(); }, 90000) : null;
+  var h = getAuthHeaders() || {};
+  h['Content-Type'] = 'application/json';
   return fetch(PROXY + '/anthropic', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: h,
     body: JSON.stringify({ model: 'claude-sonnet-4-5', max_tokens: maxTokens, system: sys, messages: [{ role: 'user', content: msg }] }),
     signal: controller ? controller.signal : undefined
   })
@@ -1985,7 +2347,7 @@ function renderEink(sug) {
 function togItem(i) {
   G.checked = G.checked || {};
   G.checked[i] = !G.checked[i];
-  var el = document.querySelectorAll('.eitem')[i];
+  var el = document.querySelectorAll('.irow')[i];
   if (el) el.classList.toggle('checked', !!G.checked[i]);
   try { localStorage.setItem('einkauf_checked', JSON.stringify(G.checked)); } catch(e) {}
 }
@@ -1995,7 +2357,7 @@ function loadCheckedItems() {
     var saved = JSON.parse(localStorage.getItem('einkauf_checked') || '{}');
     G.checked = saved;
     setTimeout(function() {
-      var items = document.querySelectorAll('.eitem');
+      var items = document.querySelectorAll('.irow');
       Object.keys(saved).forEach(function(i) {
         if (saved[i] && items[parseInt(i)]) items[parseInt(i)].classList.add('checked');
       });
@@ -2018,11 +2380,9 @@ function renderRez(sug) {
       (next ? '<div class="rnext">' + next + '</div>' : '') + '</div>' +
       '<div class="ract">' +
       '<button class="btn btn-red" onclick="startCook(' + i + ')">Jetzt kochen</button>' +
+      '<button class="btn btn-out" onclick="showReplaceGericht(' + i + ')" style="display:flex;align-items:center;justify-content:center;gap:6px">&#x21BA; Gericht austauschen</button>' +
       '<button class="btn btn-out" onclick="showRatingModal(' + i + ')" style="display:flex;align-items:center;justify-content:center;gap:6px"><span style="color:#f59e0b;font-size:16px">&#9733;</span> Bewerten</button>' +
-      '<div style="display:flex;gap:6px">' +
-      '<button class="btn btn-out" onclick="showPrint(' + i + ')" style="flex:1">Als PDF</button>' +
-      '<button class="btn btn-out" onclick="exportPDFToGH(' + i + ')" style="flex:1;font-size:12px">&#128190; GitHub</button>' +
-      '</div>' +
+      '<button class="btn btn-out" onclick="showPrint(' + i + ')" style="font-size:13px">Als PDF</button>' +
       '</div></div>';
   }
   $('rlist').innerHTML = html;
@@ -2335,38 +2695,11 @@ function fmt(s) { return (Math.floor(s/60) < 10 ? '0' : '') + Math.floor(s/60) +
 
 // ─── PRINT ─────────────────────────────────────────────────
 function exportPDFToGH(ri) {
-  var tok = getGHToken();
-  if (!tok) { alert('Bitte zuerst GitHub Token einrichten'); return; }
-  var sug = G.sugs[G.sel];
-  var g = sug.gerichte[ri];
-  var date = new Date().toISOString().slice(0,10);
-  var filename = date + '_' + (sug.thema||'menuplan').replace(/[^a-zA-Z0-9]/g,'_') + '.html';
-
-  // Generate HTML content of recipe
+  // PDF export to GH disabled - use browser print instead
   showPrint(ri);
-  var html = '<html><head><meta charset="UTF-8"><title>' + g.abend + '</title>' +
-    '<style>body{font-family:sans-serif;padding:20px;max-width:800px}h1{color:#e8390e}h2{color:#2e7d32;margin-top:16px}table{width:100%;border-collapse:collapse}td{padding:6px;border-bottom:1px solid #eee}.tipp{background:#fffde7;padding:10px;border-left:3px solid #f9a825;margin-top:12px}</style></head><body>' +
-    document.getElementById('pcon').innerHTML + '</body></html>';
-
-  var url = 'https://api.github.com/repos/' + GH_REPO + '/contents/pdfs/' + filename;
-  var headers = { 'Authorization': 'token ' + tok, 'Content-Type': 'application/json', 'Accept': 'application/vnd.github.v3+json' };
-
-  // Check if exists
-  fetch(url, { headers: headers })
-    .then(function(r) { return r.ok ? r.json() : null; })
-    .then(function(existing) {
-      var body = { message: 'Rezept ' + g.abend, content: btoa(unescape(encodeURIComponent(html))) };
-      if (existing && existing.sha) body.sha = existing.sha;
-      return fetch(url, { method: 'PUT', headers: headers, body: JSON.stringify(body) });
-    })
-    .then(function(r) {
-      if (r && r.ok) {
-        var ghUrl = 'https://github.com/' + GH_REPO + '/blob/main/pdfs/' + filename;
-        alert('Rezept gespeichert: ' + ghUrl);
-      }
-    })
-    .catch(function(e) { console.warn('PDF save:', e); });
+  setTimeout(function(){ window.print(); }, 500);
 }
+
 
 function showPrint(ri) {
   var sug = G.sugs[G.sel], g = sug.gerichte[ri], items = getItems(sug);
@@ -2442,935 +2775,28 @@ function showPrint(ri) {
 var GH_HISTORY = 'history.json';
 
 function saveToHistory(planData) {
-  var tok = getGHToken();
+  var sug = planData.sug || (planData.sugs && planData.sugs[planData.sel||0]);
   var entry = {
-    date: new Date().toISOString().slice(0, 10),
+    date: new Date().toISOString().slice(0,10),
     saved: new Date().toLocaleDateString('de-CH'),
-    thema: planData.sug ? planData.sug.thema : (planData.sugs && planData.sugs[planData.sel||0] ? planData.sugs[planData.sel||0].thema : 'Menüplan'),
+    thema: sug ? sug.thema : 'Menüplan',
     personen: planData.personen || 2,
     kochabende: planData.n || 3,
     reste: planData.reste,
     freeze: planData.freeze,
-    gerichte: planData.sug ? planData.sug.gerichte.map(function(g){return {tag:g.tag, abend:g.abend};}) : [],
+    gerichte: sug ? sug.gerichte.map(function(g){ return {tag:g.tag, abend:g.abend}; }) : [],
     status: 'geplant',
     plan: planData
   };
-  var url = 'https://api.github.com/repos/' + GH_REPO + '/contents/' + ghFile('history.json');
-  var headers = { 'Authorization': 'token ' + tok, 'Content-Type': 'application/json', 'Accept': 'application/vnd.github.v3+json' };
-  // Load existing history first
-  fetch(url, { headers: headers })
-    .then(function(r) { return r.ok ? r.json() : null; })
-    .then(function(existing) {
-      var history = [];
-      var sha = '';
-      if (existing && existing.content) {
-      try { history = JSON.parse(atob(existing.content.split('\n').join(''))); } catch(e) { history = []; }
-        sha = existing.sha;
-      }
-      // Add new entry at beginning
-      history.unshift(entry);
-      // Keep last 52 entries (1 year)
-      if (history.length > 52) history = history.slice(0, 52);
-      var body = { message: 'Menüplan ' + entry.date, content: btoa(unescape(encodeURIComponent(JSON.stringify(history, null, 2)))) };
-      if (sha) body.sha = sha;
-      return fetch(url, { method: 'PUT', headers: headers, body: JSON.stringify(body) });
-    })
-    .then(function(r) { if (r && r.ok) console.log('History gespeichert'); })
-    .catch(function(e) { console.warn('History save:', e); });
+  // Save locally always
+  var localHist = JSON.parse(localStorage.getItem('local_history') || '[]');
+  localHist.unshift(entry);
+  if (localHist.length > 52) localHist = localHist.slice(0,52);
+  localStorage.setItem('local_history', JSON.stringify(localHist));
+  // Save to GH via worker
+  saveHistoryToGH(localHist);
 }
 
-function openFotoScreen() {
-  go('sf');
-  loadSavedFotoRezepte();
-}
-
-function loadSavedFotoRezepte() {
-  var saved = JSON.parse(localStorage.getItem('foto_rezepte') || '[]');
-  var sec = $('foto-saved-section');
-  if (!saved.length) { sec.style.display = 'none'; return; }
-  sec.style.display = 'block';
-  var html = saved.map(function(r, i) {
-    return '<div style="background:#fff;border-radius:var(--r);border:.5px solid var(--bdr);padding:10px 14px;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between;gap:8px">' +
-      '<div style="flex:1;min-width:0">' +
-        '<div style="font-size:14px;font-weight:600;color:var(--txt);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + r.name + '</div>' +
-        '<div style="font-size:11px;color:var(--gr3);margin-top:2px">' + r.saved + ' · ' + r.portionen + ' Personen' + (r.zeit_total ? ' · ' + r.zeit_total : '') + '</div>' +
-      '</div>' +
-      '<div style="display:flex;gap:6px;flex-shrink:0">' +
-        '<button onclick="loadSavedFotoRezeptDetail(' + i + ')" class="btn btn-out" style="width:auto;padding:7px 12px;font-size:12px">Öffnen</button>' +
-        '<button onclick="deleteSavedFotoRezept(' + i + ')" style="background:none;border:none;color:var(--gr3);font-size:18px;cursor:pointer;padding:0 4px">&#x2715;</button>' +
-      '</div>' +
-    '</div>';
-  }).join('');
-  $('foto-saved-list').innerHTML = html;
-  window._savedFotoRezepte = saved;
-}
-
-function loadSavedFotoRezeptDetail(i) {
-  // Always load fresh from localStorage
-  var saved = JSON.parse(localStorage.getItem('foto_rezepte') || '[]');
-  var r = saved[i];
-  if (!r) return;
-  window._fotoRezept = r;
-  window._savedFotoRezepte = saved; // keep in sync
-  G_foto.portionen = r.portionen || 2;
-  $('foto-upload-area').style.display = 'none';
-  $('foto-preview').style.display = 'none';
-  $('foto-result').style.display = 'none';
-  $('foto-err').style.display = 'none';
-  $('foto-load').style.display = 'none';
-  renderFotoRezept(r);
-  // Scroll to result
-  setTimeout(function(){
-    var el = $('foto-result');
-    if (el) el.scrollIntoView({behavior:'smooth', block:'start'});
-  }, 150);
-}
-
-function deleteSavedFotoRezept(i) {
-  var saved = JSON.parse(localStorage.getItem('foto_rezepte') || '[]');
-  saved.splice(i, 1);
-  localStorage.setItem('foto_rezepte', JSON.stringify(saved));
-  loadSavedFotoRezepte();
-}
-
-function openHistory() {
-  go('sh2');
-  loadHistory();
-  // Reset to plans tab
-  if ($('htab-plans')) $('htab-plans').classList.add('on');
-  if ($('htab-recipes')) $('htab-recipes').classList.remove('on');
-  if ($('htab-plans-content')) $('htab-plans-content').style.display = 'block';
-  if ($('htab-recipes-content')) $('htab-recipes-content').style.display = 'none';
-}
-
-function syncHistory() {
-  loadHistory();
-  loadHistoryRecipes();
-}
-
-function hwtab(t) {
-  $('htab-plans').classList.toggle('on', t === 'plans');
-  $('htab-recipes').classList.toggle('on', t === 'recipes');
-  $('htab-plans-content').style.display = t === 'plans' ? 'block' : 'none';
-  $('htab-recipes-content').style.display = t === 'recipes' ? 'block' : 'none';
-  if (t === 'recipes') loadHistoryRecipes();
-}
-
-function loadHistoryRecipes() {
-  var saved = JSON.parse(localStorage.getItem('foto_rezepte') || '[]');
-  var el = $('hrecipes-list');
-  if (!el) return;
-  if (!saved.length) {
-    el.innerHTML = '<div style="text-align:center;padding:40px;color:var(--gr3);font-size:13px">Noch keine gespeicherten Rezepte.<br><small>Foto-Rezept erstellen und speichern.</small></div>';
-    return;
-  }
-  var html = saved.map(function(r, i) {
-    var zCount = (r.zutaten||[]).length;
-    var sCount = (r.schritte||[]).length;
-    return '<div style="background:#fff;border-radius:var(--rlg);border:.5px solid var(--bdr);margin-bottom:8px;overflow:hidden">' +
-      '<div style="padding:12px 14px;border-bottom:.5px solid var(--gr);display:flex;align-items:center;gap:10px">' +
-        '<div style="width:36px;height:36px;border-radius:8px;background:var(--rl);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0">&#127859;</div>' +
-        '<div style="flex:1;min-width:0">' +
-          '<div style="display:flex;align-items:center;gap:6px">' +
-            '<div style="font-size:15px;font-weight:700;color:var(--txt);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + (r.name||'Rezept') + '</div>' +
-            (r.stars ? '<span style="color:#f59e0b;font-size:13px">' + '&#9733;'.repeat(r.stars) + '</span>' : '') +
-          '</div>' +
-          '<div style="font-size:11px;color:var(--gr3);margin-top:2px">' +
-            (r.saved||r.date||'') + ' · ' + (r.portionen||2) + ' Personen' +
-            (r.zeit_total ? ' · ' + r.zeit_total : '') +
-            ' · ' + zCount + ' Zutaten · ' + sCount + ' Schritte' +
-          '</div>' +
-        '</div>' +
-      '</div>' +
-      '<div style="padding:8px 14px;display:flex;gap:6px;flex-wrap:wrap">' +
-        '<div style="width:100%;margin-bottom:4px;display:flex;align-items:center;justify-content:space-between">' +
-          statusBadge(r.status||'geplant') +
-          (r.status && r.status !== 'geplant' ? '<button onclick="resetFotoRezeptStatus(' + i + ')" style="background:none;border:none;font-size:11px;color:var(--gr3);cursor:pointer;font-family:inherit;padding:2px 6px">&#x2715; Zurücksetzen</button>' : '') +
-        '</div>' +
-        '<button class="btn btn-red" onclick="openHistoryRecipe(' + i + ')" style="flex:1;padding:9px;font-size:12px">Rezept öffnen</button>' +
-        '<button class="btn btn-out" onclick="showFotoRating(' + i + ')" style="flex:1;padding:9px;font-size:12px">&#9733; Bewerten</button>' +
-        '<div style="display:flex;gap:6px;width:100%">' +
-          '<button class="btn btn-out" onclick="importHistoryRecipeToBring(' + i + ')" style="flex:1;padding:9px;font-size:12px">In Bring!</button>' +
-          (r.status !== 'gekocht' ? '<button class="btn btn-out" onclick="markFotoRezeptGekocht(' + i + ')" style="flex:1;padding:9px;font-size:11px">&#127859; Gekocht</button>' : '') +
-        '</div>' +
-        '<button onclick="deleteHistoryRecipe(' + i + ')" style="background:none;border:.5px solid var(--bdr);border-radius:8px;padding:9px 12px;color:var(--gr3);cursor:pointer;font-size:16px">&#x2715;</button>' +
-      '</div>' +
-    '</div>';
-  }).join('');
-  el.innerHTML = html;
-  window._historyRecipes = saved;
-}
-
-function openHistoryRecipe(i) {
-  var saved = JSON.parse(localStorage.getItem('foto_rezepte') || '[]');
-  var r = saved[i];
-  if (!r) return;
-  window._fotoRezept = r;
-  G_foto.portionen = r.portionen || 2;
-  // Go to foto screen and show result
-  go('sf');
-  $('foto-upload-area').style.display = 'none';
-  $('foto-preview').style.display = 'none';
-  $('foto-result').style.display = 'none';
-  loadSavedFotoRezepte();
-  renderFotoRezept(r);
-  setTimeout(function(){
-    var el = $('foto-result');
-    if (el) el.scrollIntoView({behavior:'smooth', block:'start'});
-  }, 150);
-}
-
-function importHistoryRecipeToBring(i) {
-  var saved = JSON.parse(localStorage.getItem('foto_rezepte') || '[]');
-  var r = saved[i];
-  if (!r) return;
-  window._fotoRezept = r;
-  G_foto.portionen = r.portionen || 2;
-  importFotoFromResult();
-}
-
-function resetFotoRezeptStatus(i) {
-  var saved = JSON.parse(localStorage.getItem('foto_rezepte') || '[]');
-  if (!saved[i]) return;
-  saved[i].status = 'geplant';
-  localStorage.setItem('foto_rezepte', JSON.stringify(saved));
-  saveFotoRezepteToGH(saved);
-  loadHistoryRecipes();
-  loadSavedFotoRezepte();
-}
-
-function markFotoRezeptGekocht(i) {
-  var saved = JSON.parse(localStorage.getItem('foto_rezepte') || '[]');
-  if (!saved[i]) return;
-  saved[i].status = 'gekocht';
-  localStorage.setItem('foto_rezepte', JSON.stringify(saved));
-  loadHistoryRecipes();
-  loadSavedFotoRezepte();
-}
-
-function deleteHistoryRecipe(i) {
-  if (!confirm('Rezept löschen?')) return;
-  var saved = JSON.parse(localStorage.getItem('foto_rezepte') || '[]');
-  saved.splice(i, 1);
-  localStorage.setItem('foto_rezepte', JSON.stringify(saved));
-  loadHistoryRecipes();
-  loadSavedFotoRezepte();
-}
-
-function loadHistory() {
-  $('hload').style.display = 'block';
-  $('hlist').innerHTML = '';
-  var tok = getGHToken();
-  var h = getAuthHeaders();
-  var url = h ? PROXY + '/gh/' + ghFile('history.json') : null;
-  var fetchProm = url
-    ? fetch(url, { headers: h }).then(function(r) {
-        if (!r.ok) return [];
-        return r.json().then(function(d) {
-          if (!d || !d.content) return [];
-          return JSON.parse(decodeURIComponent(escape(atob(d.content.split('\n').join('')))));
-        });
-      })
-    : Promise.resolve([]);
-  fetchProm
-    .then(function(history) {
-      $('hload').style.display = 'none';
-      if (!history || !history.length) {
-        $('hlist').innerHTML = '<div style="text-align:center;padding:40px;color:var(--gr3);font-size:13px">Noch keine gespeicherten Pläne.</div>';
-        return;
-      }
-      renderHistoryList(history);
-    })
-    .catch(function() {
-      // Fallback to localStorage
-      var localHist = JSON.parse(localStorage.getItem('local_history') || '[]');
-      $('hload').style.display = 'none';
-      if (localHist.length) {
-        renderHistoryList(localHist);
-      } else {
-        $('hlist').innerHTML = '<div style="text-align:center;padding:40px;color:var(--gr3);font-size:13px">Noch keine gespeicherten Pläne.<br><small>Tipp: GitHub Token einrichten für geräteübergreifenden Zugriff.</small></div>';
-      }
-    });
-}
-
-var STATUS_CFG = {
-  'geplant':  { label: 'Geplant',         bg: '#f5f5f5', color: '#888',           icon: '&#128197;' },
-  'einkauf':  { label: 'Eingekauft',       bg: '#e3f2fd', color: '#1565c0',        icon: '&#9989;'   },
-  'gekocht':  { label: 'Gekocht',          bg: '#e8f5e9', color: '#2e7d32',        icon: '&#127859;' }
-};
-
-function statusBadge(status) {
-  var cfg = STATUS_CFG[status] || STATUS_CFG['geplant'];
-  return '<span style="background:' + cfg.bg + ';color:' + cfg.color + ';font-size:11px;font-weight:700;padding:3px 9px;border-radius:100px;white-space:nowrap">' + cfg.icon + ' ' + cfg.label + '</span>';
-}
-
-function renderHistoryList(history) {
-  var html = '';
-  for (var i = 0; i < history.length; i++) {
-    var e = history[i];
-    var dishes = (e.gerichte||[]).map(function(g){
-      return '<div style="display:flex;gap:6px;padding:2px 0"><span style="font-size:11px;font-weight:700;color:var(--red);min-width:20px">' + (g.tag||'').slice(0,2) + '</span><span style="font-size:13px;color:var(--txt2)">' + (g.abend||'') + '</span></div>';
-    }).join('');
-    var stars = e.stars ? '<span style="color:#f59e0b;margin-left:4px">' + '★'.repeat(e.stars) + '</span>' : '';
-    var status = e.status || 'geplant';
-    html += '<div style="background:#fff;border-radius:var(--rlg);border:.5px solid var(--bdr);margin-bottom:8px;overflow:hidden">' +
-      '<div style="padding:10px 14px;border-bottom:.5px solid var(--gr)">' +
-        '<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:6px">' +
-          '<div style="font-size:15px;font-weight:700;color:var(--txt);flex:1">' + (e.thema||'Menüplan') + stars + '</div>' +
-          statusBadge(status) +
-        '</div>' +
-        '<div style="font-size:11px;color:var(--gr3)">' +
-          (e.saved||e.date||'') + ' · ' + (e.personen||2) + ' Pers. · ' + (e.kochabende||3) + ' Abende' +
-        '</div>' +
-      '</div>' +
-      '<div style="padding:8px 14px">' + dishes + '</div>' +
-      '<div style="padding:0 14px 10px;display:flex;flex-direction:column;gap:6px">' +
-        '<div style="display:flex;gap:6px">' +
-          '<button class="btn btn-out" onclick="loadHistoryEntry(' + i + ')" style="flex:1;padding:9px;font-size:12px">Plan laden</button>' +
-          '<button class="btn btn-out" onclick="showHistoryRating(' + i + ')" style="flex:1;padding:9px;font-size:12px">&#9733; Bewerten</button>' +
-        '</div>' +
-        '<div style="display:flex;gap:6px">' +
-          (status !== 'gekocht' ? '<button class="btn btn-out" onclick="markHistoryGekocht(' + i + ')" style="flex:1;padding:9px;font-size:12px">&#127859; Gekocht</button>' : '') +
-          (status !== 'geplant' ? '<button class="btn btn-out" onclick="resetHistoryStatus(' + i + ')" style="padding:9px;font-size:12px">&#x2715; Reset</button>' : '') +
-        '</div>' +
-      '</div>' +
-    '</div>';
-  }
-  $('hlist').innerHTML = html || '<div style="text-align:center;padding:40px;color:var(--gr3);font-size:13px">Noch keine gespeicherten Pläne.</div>';
-  window._history = history;
-}
-
-function showHistoryRating(i) {
-  var hist = window._history;
-  if (!hist || !hist[i]) return;
-  var e = hist[i];
-  // Show rating modal for the whole plan
-  G_rating.stars = e.stars || 0;
-  G_rating.historyIdx = i;
-  G_rating.fotoIdx = null;
-  $('rm-title').textContent = e.thema || 'Menüplan';
-  $('rm-feedback').value = e.ratingFeedback || '';
-  $('rm-starlbl').textContent = '';
-  $('rm-submit').disabled = false;
-  // Set stars if already rated
-  var stars = $('rm-stars').querySelectorAll('.star-btn');
-  for (var j = 0; j < stars.length; j++) {
-    stars[j].style.opacity = j < (e.stars||0) ? '1' : '.25';
-    stars[j].style.color = j < (e.stars||0) ? '#f59e0b' : '#888';
-  }
-  if (e.stars) $('rm-starlbl').textContent = STAR_LABELS[e.stars] || '';
-  $('rating-modal').style.display = 'flex';
-}
-
-function showFotoRating(i) {
-  var saved = JSON.parse(localStorage.getItem('foto_rezepte') || '[]');
-  if (!saved[i]) return;
-  var r = saved[i];
-  G_rating.stars = r.stars || 0;
-  G_rating.fotoIdx = i;
-  G_rating.historyIdx = null;
-  $('rm-title').textContent = r.name || 'Foto-Rezept';
-  $('rm-feedback').value = r.ratingFeedback || '';
-  $('rm-starlbl').textContent = '';
-  $('rm-submit').disabled = false;
-  var stars = $('rm-stars').querySelectorAll('.star-btn');
-  for (var j = 0; j < stars.length; j++) {
-    stars[j].style.opacity = j < (r.stars||0) ? '1' : '.25';
-    stars[j].style.color = j < (r.stars||0) ? '#f59e0b' : '#888';
-  }
-  if (r.stars) $('rm-starlbl').textContent = STAR_LABELS[r.stars] || '';
-  $('rating-modal').style.display = 'flex';
-}
-
-function resetHistoryStatus(i) {
-  var hist = window._history;
-  if (!hist || !hist[i]) return;
-  hist[i].status = 'geplant';
-  localStorage.setItem('local_history', JSON.stringify(hist));
-  saveHistoryToGH(hist);
-  renderHistoryList(hist);
-}
-
-function markHistoryGekocht(i) {
-  var hist = window._history;
-  if (!hist || !hist[i]) return;
-  hist[i].status = 'gekocht';
-  localStorage.setItem('local_history', JSON.stringify(hist));
-  saveHistoryToGH(hist);
-  renderHistoryList(hist);
-}
-
-function loadHistoryEntry(i) {
-  var e = window._history[i];
-  if (!e || !e.plan) return;
-  var plan = e.plan;
-  G.activePlan = plan;
-  localStorage.setItem('active_plan', JSON.stringify(plan));
-  if (plan.sugs) {
-    G.sugs = plan.sugs;
-    G.sel = plan.sel || 0;
-    G.n = plan.n || 3;
-    G.personen = plan.personen || 2;
-    G.reste = plan.reste !== undefined ? plan.reste : 1;
-    G.freeze = plan.freeze !== undefined ? plan.freeze : 1;
-    G.sugsPartial = plan.sugsPartial || false;
-    renderActivePlan();
-    goWeekRender(G.sugs[G.sel]);
-  } else if (plan.sug) {
-    G.sugs = [plan.sug];
-    G.sel = 0;
-    G.n = plan.n || 3;
-    G.personen = plan.personen || 2;
-    G.reste = plan.reste !== undefined ? plan.reste : 1;
-    G.freeze = plan.freeze !== undefined ? plan.freeze : 1;
-    G.sugsPartial = false;
-    renderActivePlan();
-    goWeekRender(plan.sug);
-  }
-}
-
-// ─── RATING ────────────────────────────────────────────────
-var GH_RATINGS = 'ratings.json';
-var G_rating = { gerichtIdx: null, stars: 0 };
-var STAR_LABELS = ['', 'Nicht so gut', 'Geht so', 'Gut', 'Sehr gut', 'Ausgezeichnet!'];
-
-function markEinkaufDoneGekocht() {
-  // Mark active plan history entry as 'gekocht'
-  var hist = JSON.parse(localStorage.getItem('local_history') || '[]');
-  if (hist.length && hist[0].status !== 'gekocht') {
-    hist[0].status = 'gekocht';
-    localStorage.setItem('local_history', JSON.stringify(hist));
-    saveHistoryToGH(hist);
-  }
-  // Also update active plan
-  if (G.activePlan) {
-    G.activePlan.einkaufDone = true;
-    localStorage.setItem('active_plan', JSON.stringify(G.activePlan));
-    renderActivePlan();
-    saveToGH(G.activePlan);
-  }
-}
-
-
-function showRatingModal(ri) {
-  if (!G.sugs || G.sel === null) return;
-  var g = G.sugs[G.sel].gerichte[ri];
-  G_rating.gerichtIdx = ri;
-  G_rating.historyIdx = null;
-  G_rating.fotoIdx = null;
-  G_rating.stars = 0;
-  $('rm-title').textContent = g.abend;
-  $('rm-feedback').value = '';
-  $('rm-starlbl').textContent = '';
-  $('rm-submit').disabled = true;
-  // Reset stars
-  var stars = $('rm-stars').querySelectorAll('.star-btn');
-  for (var i = 0; i < stars.length; i++) stars[i].style.opacity = '.3';
-  // Show modal
-  var m = $('rating-modal');
-  m.style.display = 'flex';
-  setTimeout(function() { m.style.opacity = '1'; }, 10);
-}
-
-function closeRating() {
-  $('rating-modal').style.display = 'none';
-  go('sw');
-}
-
-function setStar(n) {
-  G_rating.stars = n;
-  var stars = $('rm-stars').querySelectorAll('.star-btn');
-  for (var i = 0; i < stars.length; i++) {
-    stars[i].style.opacity = i < n ? '1' : '.25';
-    stars[i].style.color = i < n ? '#f59e0b' : '#888';
-  }
-  $('rm-starlbl').textContent = STAR_LABELS[n] || '';
-  $('rm-submit').disabled = false;
-}
-
-function submitRating() {
-  if (!G_rating.stars) return;
-  var feedback = $('rm-feedback').value.trim();
-
-  // Case 1: Rating from history plan
-  if (G_rating.historyIdx !== null && G_rating.historyIdx !== undefined) {
-    var hist = window._history;
-    if (hist && hist[G_rating.historyIdx]) {
-      hist[G_rating.historyIdx].stars = G_rating.stars;
-      hist[G_rating.historyIdx].ratingFeedback = feedback;
-      localStorage.setItem('local_history', JSON.stringify(hist));
-      saveHistoryToGH(hist);
-      renderHistoryList(hist);
-    }
-    $('rating-modal').style.display = 'none';
-    return;
-  }
-
-  // Case 2: Rating from foto recipe
-  if (G_rating.fotoIdx !== null && G_rating.fotoIdx !== undefined) {
-    var saved = JSON.parse(localStorage.getItem('foto_rezepte') || '[]');
-    if (saved[G_rating.fotoIdx]) {
-      saved[G_rating.fotoIdx].stars = G_rating.stars;
-      saved[G_rating.fotoIdx].ratingFeedback = feedback;
-      localStorage.setItem('foto_rezepte', JSON.stringify(saved));
-      saveFotoRezepteToGH(saved);
-      loadHistoryRecipes();
-    }
-    $('rating-modal').style.display = 'none';
-    return;
-  }
-
-  // Case 3: Rating from cooking (gerichtIdx)
-  var g = G.sugs && G.sel !== null ? G.sugs[G.sel].gerichte[G_rating.gerichtIdx] : null;
-  if (g) {
-    var entry = {
-      date: new Date().toISOString().slice(0, 10),
-      saved: new Date().toLocaleDateString('de-CH'),
-      thema: G.sugs[G.sel].thema,
-      gericht: g.abend,
-      tag: g.tag,
-      stars: G_rating.stars,
-      label: STAR_LABELS[G_rating.stars],
-      feedback: feedback,
-      personen: G.personen || 2,
-      zutaten: (g.zutaten||[]).map(function(z){ return z.name; }).join(', ')
-    };
-    saveRatingToGH(entry);
-    // Also update local history
-    var hist2 = JSON.parse(localStorage.getItem('local_history') || '[]');
-    if (hist2.length) { hist2[0].stars = G_rating.stars; hist2[0].ratingFeedback = feedback; }
-    localStorage.setItem('local_history', JSON.stringify(hist2));
-    saveHistoryToGH(hist2);
-  }
-  $('rating-modal').style.display = 'none';
-  go('sw');
-  setTimeout(function() {
-    var msg = G_rating.stars >= 4 ? 'Super! Bewertung gespeichert.' : 'Bewertung gespeichert. Danke fuers Feedback!';
-    showSt('ist', msg, 'ok');
-    setTimeout(function(){ if($('ist')) $('ist').style.display='none'; }, 3000);
-  }, 300);
-}
-
-function saveRatingToGH(entry) {
-  var tok = getGHToken();
-  if (!tok) {
-    // Save locally if no GitHub token
-    var local = JSON.parse(localStorage.getItem('local_ratings') || '[]');
-    local.unshift(entry);
-    localStorage.setItem('local_ratings', JSON.stringify(local.slice(0, 100)));
-    console.log('Rating lokal gespeichert (kein GitHub Token)');
-    return;
-  }
-  var url = 'https://api.github.com/repos/' + GH_REPO + '/contents/' + ghFile('ratings.json');
-  var headers = { 'Authorization': 'token ' + tok, 'Content-Type': 'application/json', 'Accept': 'application/vnd.github.v3+json' };
-  fetch(url, { headers: headers })
-    .then(function(r) { return r.ok ? r.json() : null; })
-    .then(function(existing) {
-      var ratings = [];
-      var sha = '';
-      if (existing && existing.content) {
-        try { ratings = JSON.parse(atob(existing.content.split('\n').join(''))); } catch(e) { ratings = []; }
-        sha = existing.sha;
-      }
-      ratings.unshift(entry);
-      if (ratings.length > 200) ratings = ratings.slice(0, 200);
-      var body = { message: 'Bewertung ' + entry.date + ': ' + entry.gericht + ' ' + entry.stars + '/5', content: btoa(unescape(encodeURIComponent(JSON.stringify(ratings, null, 2)))) };
-      if (sha) body.sha = sha;
-      return fetch(url, { method: 'PUT', headers: headers, body: JSON.stringify(body) });
-    })
-    .then(function(r) { if (r && r.ok) console.log('Bewertung auf GitHub gespeichert'); })
-    .catch(function(e) { console.warn('Rating save:', e); });
-}
-
-// ─── FOTO REZEPT ───────────────────────────────────────────
-var G_foto = { base64: null, mime: null, portionen: 2 };
-
-function setFotoP(n) {
-  G_foto.portionen = n;
-  var chips = $('foto-pchips').querySelectorAll('.chip');
-  for (var i = 0; i < chips.length; i++) chips[i].classList.toggle('on', i === n - 1);
-}
-
-function handleFotoFile(file) {
-  if (!file || !file.type.startsWith('image/')) return;
-  G_foto.mime = file.type;
-  var reader = new FileReader();
-  reader.onload = function(e) {
-    var dataUrl = e.target.result;
-    G_foto.base64 = dataUrl.split(',')[1];
-    $('foto-img').src = dataUrl;
-    $('foto-preview').style.display = 'block';
-    $('foto-upload-area').style.display = 'none';
-    $('foto-btn').disabled = false;
-    $('foto-result').style.display = 'none';
-    $('foto-err').style.display = 'none';
-  };
-  reader.readAsDataURL(file);
-}
-
-function clearFoto() {
-  G_foto.base64 = null; G_foto.mime = null;
-  $('foto-input').value = '';
-  $('foto-preview').style.display = 'none';
-  $('foto-upload-area').style.display = 'block';
-  $('foto-btn').disabled = true;
-  $('foto-result').style.display = 'none';
-  $('foto-err').style.display = 'none';
-}
-
-function analyzeFoto() {
-  if (!G_foto.base64) return;
-  $('foto-load').style.display = 'block';
-  $('foto-result').style.display = 'none';
-  $('foto-err').style.display = 'none';
-  $('foto-btn').disabled = true;
-
-  var hint = $('foto-hint').value.trim();
-  var p = G_foto.portionen;
-
-  var sys = 'Du analysierst Fotos von Rezepten, Menukarten oder Gerichten und leitest daraus ein vollstaendiges Rezept ab. ' +
-    'Antworte NUR mit validem JSON ohne Text davor oder danach. Keine Apostrophe in Strings. ' +
-    'Format: {"name":"Rezeptname","beschreibung":"Kurze Beschreibung","zeit_aktiv":"15 Min.","zeit_total":"45 Min.",' +
-    '"zutaten":[{"name":"Karotten","menge":"2 Stk"}],' +
-    '"schritte":[{"titel":"Gemüse schneiden","text":"Detaillierter Schritt wohin die Zutaten kommen","timer_min":0,"zutaten_schritt":["Karotten"]}],' +
-    '"tipp":"Kochtipp"}. ' +
-    'Das "titel" Feld pro Schritt: kurzes Substantiv (2-3 Woerter), z.B. "Sauce kochen", "Gemüse schneiden", "Dressing mixen", "Pasta kochen", "Anbraten", "Backen". ' +
-    'Das "text" Feld: ausfuehrliche Erklaerung mit Mengen und Technik.';
-
-  var msg = 'Analysiere dieses Foto und leite daraus ein vollstaendiges Rezept fuer ' + p + ' Personen ab. ' +
-    'Gib alle Zutaten mit genauen Mengen fuer ' + p + ' Personen an. ' +
-    'Schritte detailliert mit Kontext wohin Zutaten kommen. ' +
-    (hint ? 'Hinweis: ' + hint + '.' : '');
-
-  fetch(PROXY + '/anthropic', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      model: 'claude-sonnet-4-5',
-      max_tokens: 3000,
-      system: sys,
-      messages: [{
-        role: 'user',
-        content: [
-          { type: 'image', source: { type: 'base64', media_type: G_foto.mime, data: G_foto.base64 } },
-          { type: 'text', text: msg }
-        ]
-      }]
-    })
-  })
-  .then(function(r) { return r.json(); })
-  .then(function(d) {
-    $('foto-load').style.display = 'none';
-    $('foto-btn').disabled = false;
-    var raw = (d.content && d.content[0] && d.content[0].text) ? d.content[0].text : '';
-    if (!raw) throw new Error('Keine Antwort erhalten');
-    var rezept = parseJSON(raw);
-    renderFotoRezept(rezept);
-  })
-  .catch(function(e) {
-    $('foto-load').style.display = 'none';
-    $('foto-btn').disabled = false;
-    $('foto-err').textContent = 'Fehler: ' + e.message;
-    $('foto-err').style.display = 'block';
-  });
-}
-
-function renderFotoRezept(r) {
-  var zRows = (r.zutaten||[]).map(function(z) {
-    return '<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:.5px solid #f5f5f5">' +
-      '<span style="font-size:14px;font-weight:500">' + z.name + '</span>' +
-      '<span style="font-size:13px;color:var(--gr3)">' + z.menge + '</span></div>';
-  }).join('');
-
-  var sRows = (r.schritte||[]).map(function(s, i) {
-    var pills = (s.zutaten_schritt||[]).map(function(z) {
-      return '<span class="zpill">' + z + '</span>';
-    }).join('');
-    return '<div style="margin-bottom:14px">' +
-      '<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">' +
-        '<div style="width:24px;height:24px;border-radius:50%;background:var(--red);color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0">' + (i+1) + '</div>' +
-        (s.timer_min > 0 ? '<span style="font-size:11px;color:var(--gr3);background:#f5f5f5;padding:2px 8px;border-radius:100px">&#9201; ' + s.timer_min + ' Min.</span>' : '') +
-      '</div>' +
-      (pills ? '<div class="zpills" style="margin-bottom:6px">' + pills + '</div>' : '') +
-      '<div style="font-size:14px;color:var(--txt);line-height:1.6">' + s.text + '</div>' +
-    '</div>';
-  }).join('');
-
-  var html =
-    '<div class="card"><div class="cp">' +
-      '<div style="font-size:19px;font-weight:800;color:var(--txt);margin-bottom:4px">' + (r.name||'Rezept') + '</div>' +
-      (r.beschreibung ? '<div style="font-size:13px;color:var(--gr3);margin-bottom:10px">' + r.beschreibung + '</div>' : '') +
-      '<div style="display:flex;gap:12px;margin-bottom:14px">' +
-        (r.zeit_aktiv ? '<span style="font-size:12px;color:var(--gr3)">&#9998; Aktiv: <b style="color:var(--txt2)">' + r.zeit_aktiv + '</b></span>' : '') +
-        (r.zeit_total ? '<span style="font-size:12px;color:var(--gr3)">&#9200; Total: <b style="color:var(--txt2)">' + r.zeit_total + '</b></span>' : '') +
-      '</div>' +
-      '<div class="clbl">Zutaten für ' + G_foto.portionen + ' Personen</div>' +
-      '<div style="margin-bottom:14px">' + zRows + '</div>' +
-      (r.tipp ? '<div style="background:#fffde7;border-left:3px solid #f9a825;padding:10px 12px;border-radius:0 8px 8px 0;font-size:13px;margin-bottom:14px"><b>Tipp:</b> ' + r.tipp + '</div>' : '') +
-    '</div></div>' +
-    '<div class="card"><div class="cp">' +
-      '<div class="clbl">Zubereitung</div>' +
-      sRows +
-    '</div></div>' +
-    '<div style="padding:0 10px 10px;display:flex;flex-direction:column;gap:8px">' +
-      '<button class="btn btn-red" onclick="startFotoCook()" style="font-size:13px">&#128113; Jetzt kochen</button>' +
-      '<button class="btn btn-out" onclick="importFotoFromResult()" style="font-size:13px">In Bring! importieren</button>' +
-      '<div style="display:flex;gap:8px">' +
-        '<button class="btn btn-out" onclick="saveFotoRezept()" style="flex:1;font-size:13px">&#128190; Speichern</button>' +
-        '<button class="btn btn-out" onclick="showFotoPrint()" style="flex:1;font-size:13px">&#128438; PDF</button>' +
-      '</div>' +
-    '</div>';
-
-  // Store for bring import
-  window._fotoRezept = r;
-  $('foto-result').innerHTML = html;
-  $('foto-result').style.display = 'block';
-}
-
-function importFotoFromResult() {
-  if (!window._fotoRezept) return;
-  var r = window._fotoRezept;
-  // Auto-save with status 'einkauf'
-  r.status = 'einkauf';
-  saveFotoRezeptSilent(r, 'einkauf');
-  var tmpSug = {
-    thema: r.name || 'Foto-Rezept',
-    kochabende: [],
-    gerichte: [{ tag: 'Foto', abend: r.name || 'Foto-Rezept', zutaten: r.zutaten || [] }]
-  };
-  G.sugs = [tmpSug]; G.sel = 0;
-  if (G.bLists.length) {
-    $('blist').innerHTML = G.bLists.map(function(l){ return '<option value="' + l.listUuid + '">' + l.name + '</option>'; }).join('');
-    $('blistwrap').style.display = 'block';
-    $('bfields').style.display = 'none';
-  }
-  $('wtit').textContent = r.name || 'Foto-Rezept';
-  $('wsub').textContent = 'Foto-Rezept';
-  // Add "Rezept anzeigen" button to Einkauf tab
-  renderEink(tmpSug);
-  go('sw'); wtab('e');
-  // Insert back button at top of einkauf tab
-  var oldBack = document.getElementById('foto-back-btn');
-  if (oldBack) oldBack.remove();
-  var backBtn = document.createElement('div');
-  backBtn.id = 'foto-back-btn';
-  backBtn.style.cssText = 'padding:10px 10px 0';
-  backBtn.innerHTML = '<button class="btn btn-out" onclick="openFotoScreen()" style="font-size:13px;padding:10px">&#8592; Zurück zum Foto-Rezept</button>';
-  var te = $('te');
-  if (te && te.firstChild) te.insertBefore(backBtn, te.firstChild);
-}
-
-function saveFotoRezeptSilent(r, status) {
-  var entry = {
-    id: Date.now(),
-    date: new Date().toISOString().slice(0,10),
-    saved: new Date().toLocaleDateString('de-CH'),
-    name: r.name || 'Foto-Rezept',
-    beschreibung: r.beschreibung || '',
-    zeit_aktiv: r.zeit_aktiv || '',
-    zeit_total: r.zeit_total || '',
-    portionen: G_foto.portionen,
-    zutaten: r.zutaten || [],
-    schritte: r.schritte || [],
-    tipp: r.tipp || '',
-    status: status || r.status || 'geplant'
-  };
-  var saved = JSON.parse(localStorage.getItem('foto_rezepte') || '[]');
-  var exists = saved.findIndex(function(s){ return s.name === entry.name; });
-  if (exists >= 0) saved[exists] = entry; else saved.unshift(entry);
-  if (saved.length > 100) saved = saved.slice(0, 100);
-  localStorage.setItem('foto_rezepte', JSON.stringify(saved));
-  // Sync to GitHub
-  saveFotoRezepteToGH(saved);
-}
-
-function saveFotoRezepteToGH(saved) {
-  ghPut('foto-rezepte.json', saved, 'Foto-Rezepte aktualisiert')
-    .then(function(r) { if (r && r.ok) console.log('Foto-Rezepte gespeichert'); })
-    .catch(function(e) { console.warn('Foto-Rezepte GH:', e); });
-}
-
-function startFotoCook() {
-  var r = window._fotoRezept;
-  if (!r) return;
-
-  // Convert foto recipe steps to cook step format
-  var steps = (r.schritte || []).map(function(s) {
-    return {
-      type: 'v',
-      titel: s.titel || s.title || '',
-      text: s.text || '',
-      timer_min: s.timer_min || 0,
-      zs: s.zutaten_schritt || []
-    };
-  });
-
-  if (!steps.length) {
-    alert('Keine Kochschritte vorhanden. Bitte zuerst ein Rezept ableiten.');
-    return;
-  }
-
-  // Set up cook state
-  G.steps = steps;
-  G.cur = -1; G.act = 0; G.done = {};
-  G.cookingGerichtIdx = null; // no rating for foto recipes
-  clearInterval(G.tiv);
-
-  // Set cook screen title
-  if ($('ctit')) $('ctit').textContent = r.name || 'Foto-Rezept';
-  requestWakeLock();
-
-  // Build ingredients overview
-  var fakeGericht = {
-    abend: r.name || 'Foto-Rezept',
-    mittag_nächster_tag: null,
-    zutaten: r.zutaten || [],
-    zeit_aktiv: r.zeit_aktiv || '',
-    zeit_total: r.zeit_total || ''
-  };
-  showIngOverview(fakeGericht);
-  go('sc');
-  requestWakeLock();
-}
-
-function syncFotoRezepte(btn) {
-  var origText = btn ? btn.textContent : '';
-  if (btn) { btn.textContent = '...'; btn.disabled = true; }
-  fetch('https://raw.githubusercontent.com/' + GH_REPO + '/main/' + ghFile('foto-rezepte.json') + '?t=' + Date.now())
-    .then(function(r) { return r.ok ? r.json() : null; })
-    .then(function(fr) {
-      if (!Array.isArray(fr)) { if (btn) { btn.textContent = 'Leer'; setTimeout(function(){ btn.textContent = origText; btn.disabled = false; }, 1500); } return; }
-      var local = JSON.parse(localStorage.getItem('foto_rezepte') || '[]');
-      var merged = fr.slice();
-      local.forEach(function(l) {
-        if (!merged.find(function(g){ return g.name === l.name; })) merged.push(l);
-      });
-      localStorage.setItem('foto_rezepte', JSON.stringify(merged));
-      loadSavedFotoRezepte();
-      if (btn) { btn.textContent = 'OK'; setTimeout(function(){ btn.textContent = origText; btn.disabled = false; }, 1500); }
-    })
-    .catch(function() { if (btn) { btn.textContent = 'Err'; setTimeout(function(){ btn.textContent = origText; btn.disabled = false; }, 1500); } });
-}
-
-function saveFotoRezept() {
-  if (!window._fotoRezept) return;
-  saveFotoRezeptSilent(window._fotoRezept);
-  loadSavedFotoRezepte();
-  // Show confirmation
-  var btn = event.target;
-  btn.textContent = 'Gespeichert!';
-  btn.style.color = 'var(--grn)';
-  btn.style.borderColor = 'var(--grn)';
-  setTimeout(function(){ btn.textContent = '\uD83D\uDCBE Speichern'; btn.style.color=''; btn.style.borderColor=''; }, 2000);
-}
-
-function showFotoPrint() {
-  if (!window._fotoRezept) return;
-  var r = window._fotoRezept;
-  // Build print HTML
-  var zRows = (r.zutaten||[]).map(function(z){
-    return '<tr><td style="padding:5px 0;border-bottom:1px solid #f0f0f0;font-weight:500">&#9744; ' + z.name + '</td><td style="padding:5px 0;border-bottom:1px solid #f0f0f0;color:#888;text-align:right">' + z.menge + '</td></tr>';
-  }).join('');
-  var sRows = (r.schritte||[]).map(function(s,i){
-    return '<div style="margin-bottom:10px;font-size:13px"><strong style="color:#e8390e">' + (i+1) + '.</strong> ' + s.text + (s.timer_min > 0 ? ' [' + s.timer_min + ' Min.]' : '') + '</div>';
-  }).join('');
-  $('pcon').innerHTML =
-    '<h1 style="font-size:20px;font-weight:800;margin-bottom:4px">' + (r.name||'Rezept') + '</h1>' +
-    (r.beschreibung ? '<p style="color:#888;margin-bottom:12px;font-size:13px">' + r.beschreibung + '</p>' : '') +
-    (r.zeit_total ? '<p style="font-size:12px;color:#888;margin-bottom:16px">Aktiv: ' + (r.zeit_aktiv||'?') + ' · Total: ' + r.zeit_total + ' · ' + G_foto.portionen + ' Personen</p>' : '') +
-    '<h2 style="font-size:14px;font-weight:700;margin-bottom:8px;color:#e8390e">Zutaten</h2>' +
-    '<table style="width:100%;border-collapse:collapse;margin-bottom:16px">' + zRows + '</table>' +
-    '<h2 style="font-size:14px;font-weight:700;margin-bottom:8px;color:#2e7d32">Zubereitung</h2>' + sRows +
-    (r.tipp ? '<div style="background:#fff9c4;border-left:3px solid #f9a825;padding:10px;margin-top:12px;border-radius:4px;font-size:13px"><strong>Tipp:</strong> ' + r.tipp + '</div>' : '');
-  go('sp');
-}
-
-
-
-// ─── WAKE LOCK ─────────────────────────────────────────────
-var _wakeLock = null;
-function requestWakeLock() {
-  if ('wakeLock' in navigator) {
-    navigator.wakeLock.request('screen')
-      .then(function(wl) { _wakeLock = wl; })
-      .catch(function() {});
-  }
-}
-function releaseWakeLock() {
-  if (_wakeLock) { _wakeLock.release().catch(function(){}); _wakeLock = null; }
-}
-document.addEventListener('visibilitychange', function() {
-  if (document.visibilityState === 'visible' && !_wakeLock) {
-    var sc = $('sc');
-    if (sc && sc.style.display !== 'none') requestWakeLock();
-  }
-});
-
-// ─── ACTIVE PLAN ───────────────────────────────────────────
-function clearActivePlan() {
-  if (!confirm('Aktiven Plan beenden?')) return;
-  G.activePlan = null;
-  localStorage.removeItem('active_plan');
-  if ($('active-plan')) $('active-plan').style.display = 'none';
-}
-
-function setActivePlanAndGo() {
-  if (G.sel === null) return;
-  var sug = G.sugs[G.sel];
-  var planData = {
-    sug: sug, sel: G.sel, n: G.n, personen: G.personen,
-    reste: G.reste, freeze: G.freeze,
-    saved: new Date().toLocaleDateString('de-CH'),
-    einkaufDone: false, sugsAll: G.sugs, sugsPartial: G.sugsPartial
-  };
-  G.activePlan = planData;
-  localStorage.setItem('active_plan', JSON.stringify(planData));
-  localStorage.removeItem('einkauf_checked');  // Neuer Plan = neue Liste
-  G.checked = {};
-  saveToGH(planData);
-  saveToHistory(planData);
-  localStorage.setItem('sw', JSON.stringify({ sugs: G.sugs, n: G.n, personen: G.personen, reste: G.reste, freeze: G.freeze, saved: planData.saved }));
-  renderActivePlan();
-  var spb = $('set-plan-btn');
-  if (spb) { spb.innerHTML = 'Als aktiven Plan setzen'; spb.disabled = false; }
-  goWeek();
-}
-
-function openActivePlan(tab) {
-  if (!G.activePlan || !G.activePlan.sug) return;
-  G.sugs = G.activePlan.sugsAll || [G.activePlan.sug];
-  G.sel = G.activePlan.sel || 0;
-  G.n = G.activePlan.n || 3;
-  G.personen = G.activePlan.personen || 2;
-  G.reste = G.activePlan.reste !== undefined ? G.activePlan.reste : 1;
-  G.freeze = G.activePlan.freeze !== undefined ? G.activePlan.freeze : 1;
-  G.sugsPartial = G.activePlan.sugsPartial || false;
-  goWeekRender(G.sugs[G.sel]);
-  setTimeout(function() { wtab(tab); }, 50);
-}
-
-function renderActivePlan() {
-  var ap = G.activePlan;
-  if (!ap || !ap.sug) return;
-  if ($('active-plan')) $('active-plan').style.display = 'block';
-  if ($('ap-title')) $('ap-title').textContent = ap.sug.thema;
-  if ($('ap-sub')) $('ap-sub').textContent = 'Gesetzt am ' + (ap.saved||'') + ' - ' + (ap.personen||2) + ' Personen';
-  var dishes = '';
-  var gerichte = ap.sug.gerichte || [];
-  for (var i = 0; i < gerichte.length; i++) {
-    var g = gerichte[i];
-    dishes += '<div style="display:flex;align-items:center;gap:8px;padding:4px 0">' +
-      '<span style="font-size:11px;font-weight:700;color:var(--red);min-width:24px">' + g.tag.slice(0,2) + '</span>' +
-      '<span style="font-size:13px;color:var(--txt)">' + g.abend + '</span></div>';
-  }
-  if ($('ap-dishes')) $('ap-dishes').innerHTML = dishes;
-  var dot = $('ap-einkauf-dot');
-  var lbl = $('ap-einkauf-lbl');
-  if (dot && lbl) {
-    dot.style.background = ap.einkaufDone ? 'var(--grn)' : 'var(--gr2)';
-    lbl.textContent = ap.einkaufDone ? 'In Bring! importiert' : 'Noch nicht importiert';
-  }
-}
 
 function updateHistoryStatus(savedDate, status) {
   var hist = JSON.parse(localStorage.getItem('local_history') || '[]');
@@ -3393,47 +2819,130 @@ function markEinkaufDone() {
   saveToGH(G.activePlan);
   updateHistoryStatus(G.activePlan.saved || G.activePlan.date, 'einkauf');
 }
+// ─── GERICHT AUSTAUSCHEN ───────────────────────────────────
+var G_rep = { gerichtIdx: null, newGericht: null, tags: [] };
+
+function showReplaceGericht(ri) {
+  if (!G.sugs || G.sel === null) return;
+  var g = G.sugs[G.sel].gerichte[ri];
+  G_rep.gerichtIdx = ri;
+  G_rep.newGericht = null;
+  G_rep.tags = [];
+  $('rep-title').textContent = g.abend + ' (' + g.tag + ')';
+  $('rep-hint').value = '';
+  $('rep-load').style.display = 'none';
+  $('rep-result').style.display = 'none';
+  $('rep-apply').style.display = 'none';
+  $('rep-gen-btn').style.display = '';
+  $('rep-gen-btn').textContent = '↺ Neu generieren';
+  $('rep-gen-btn').disabled = false;
+  var chips = $('rep-tags').querySelectorAll('.chip');
+  chips.forEach(function(c){ c.classList.remove('on'); });
+  $('replace-modal').style.display = 'flex';
+}
+
+function toggleRepTag(btn, tag) {
+  btn.classList.toggle('on');
+  var idx = G_rep.tags.indexOf(tag);
+  if (idx >= 0) G_rep.tags.splice(idx, 1);
+  else G_rep.tags.push(tag);
+}
+
+function closeReplace() {
+  $('replace-modal').style.display = 'none';
+  G_rep.newGericht = null;
+}
+
+function generateReplace() {
+  if (G.sel === null) return;
+  var sug = G.sugs[G.sel];
+  var ri = G_rep.gerichtIdx;
+  var g = sug.gerichte[ri];
+  var hint = $('rep-hint').value.trim();
+
+  $('rep-load').style.display = 'block';
+  $('rep-result').style.display = 'none';
+  $('rep-apply').style.display = 'none';
+  $('rep-gen-btn').disabled = true;
+
+  var existing = sug.gerichte.map(function(gx){ return gx.abend; }).join(', ');
+  var otherZutaten = sug.gerichte
+    .filter(function(_, i){ return i !== ri; })
+    .flatMap ? sug.gerichte.filter(function(_, i){ return i !== ri; }).map(function(gx){ return (gx.zutaten||[]).map(function(z){ return z.name; }).join(', '); }).join(', ')
+    : sug.gerichte.filter(function(_, i){ return i !== ri; }).map(function(gx){ return (gx.zutaten||[]).map(function(z){ return z.name; }).join(', '); }).join(', ');
+  var reason = G_rep.tags.length ? 'Grund fuer Austausch: ' + G_rep.tags.join(', ') + '.' : '';
+
+  var msg = 'Ersetze "' + g.abend + '" am ' + g.tag + '. ' + reason +
+    (hint ? ' Wunsch: ' + hint + '.' : '') +
+    ' Andere Gerichte diese Woche nicht wiederholen: ' + existing + '.' +
+    ' Verfuegbare Zutaten der Woche mitnutzen: ' + otherZutaten + '.' +
+    ' Fuer ' + (G.personen||2) + ' Personen.' +
+    (G.reste ? ' Mit Resteverwertung am naechsten Tag.' : '') +
+    ' NUR valides JSON. Format: {"gerichte":[{"tag":"' + g.tag + '","abend":"Gerichtsname","mittag_naechster_tag":"Restname","zeit_aktiv":"20m","zeit_total":"40m","zutaten":[{"name":"X","menge":"Y"}],"schritte_vegi":[{"titel":"Schritt","text":"Detail","timer_min":0,"zutaten_schritt":["X"]}],"tipp":"Tipp"}]}';
+
+  callClaudeHaiku(buildSYS_full(sug), msg, 2000)
+    .then(function(raw) {
+      $('rep-load').style.display = 'none';
+      $('rep-gen-btn').disabled = false;
+      try {
+        var parsed = parseJSON(raw);
+        var gerichte = parsed.gerichte || [];
+        if (!gerichte.length) throw new Error('Kein Gericht generiert');
+        var ng = gerichte[0];
+        G_rep.newGericht = ng;
+        $('rep-name').textContent = ng.abend;
+        $('rep-meta').textContent =
+          (ng.zeit_aktiv||'') + (ng.zeit_total ? ' · Total ' + ng.zeit_total : '') +
+          ((ng.zutaten||[]).length ? ' · ' + ng.zutaten.length + ' Zutaten' : '');
+        $('rep-result').style.display = 'block';
+        $('rep-apply').style.display = '';
+        $('rep-gen-btn').textContent = '↺ Nochmals';
+      } catch(e) {
+        $('rep-result').innerHTML = '<div style="color:var(--red);font-size:13px">Fehler: ' + e.message + '</div>';
+        $('rep-result').style.display = 'block';
+      }
+    })
+    .catch(function(e) {
+      $('rep-load').style.display = 'none';
+      $('rep-gen-btn').disabled = false;
+      $('rep-result').innerHTML = '<div style="color:var(--red);font-size:13px">Fehler: ' + e.message + '</div>';
+      $('rep-result').style.display = 'block';
+    });
+}
+
+function applyReplace() {
+  if (!G_rep.newGericht || G_rep.gerichtIdx === null) return;
+  var ri = G_rep.gerichtIdx;
+  var sug = G.sugs[G.sel];
+  var oldG = sug.gerichte[ri];
+  var ng = G_rep.newGericht;
+
+  // Keep scheduling info from original
+  ng.tag = oldG.tag;
+  if (oldG.mittag_tag) ng.mittag_tag = oldG.mittag_tag;
+  if (!ng.mittag_naechster_tag && oldG.mittag_naechster_tag) {
+    ng.mittag_naechster_tag = ng.abend + ' Reste';
+  }
+
+  sug.gerichte[ri] = ng;
+  G.sugsPartial = false;
+
+  // Save
+  if (G.activePlan) {
+    G.activePlan.sug = sug;
+    localStorage.setItem('active_plan', JSON.stringify(G.activePlan));
+    saveToGH(G.activePlan);
+  }
+
+  closeReplace();
+  goWeekRender(sug);
+  wtab('r');
+
+  var ind = document.createElement('div');
+  ind.textContent = '"' + ng.abend + '" uebernommen';
+  ind.style.cssText = 'position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--grn);color:#fff;padding:10px 16px;border-radius:8px;font-size:13px;font-weight:600;z-index:999;white-space:nowrap';
+  document.body.appendChild(ind);
+  setTimeout(function(){ ind.remove(); }, 2500);
+}
+
 </script>
-<!-- PASSWORD CHANGE MODAL -->
-<div id="pw-modal" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);z-index:100;align-items:flex-end;justify-content:center">
-  <div style="background:#fff;border-radius:20px 20px 0 0;padding:24px 20px 40px;width:100%;max-width:480px">
-    <div style="font-size:16px;font-weight:700;color:var(--txt);margin-bottom:16px">Passwort ändern</div>
-    <div class="fld"><label>Aktuelles Passwort</label><input type="password" id="pw-old" autocomplete="current-password"></div>
-    <div class="fld"><label>Neues Passwort</label><input type="password" id="pw-new" autocomplete="new-password"></div>
-    <div class="fld"><label>Neues Passwort wiederholen</label><input type="password" id="pw-new2" autocomplete="new-password"></div>
-    <div id="pw-err" style="font-size:12px;color:var(--red);margin-bottom:8px;display:none"></div>
-    <div style="display:flex;gap:8px">
-      <button class="btn btn-out" onclick="$('pw-modal').style.display='none'" style="flex:1;padding:11px;font-size:13px">Abbrechen</button>
-      <button class="btn btn-red" onclick="doChangePassword()" style="flex:1;padding:11px;font-size:13px">Ändern</button>
-    </div>
-  </div>
-</div>
-
-<!-- RATING MODAL -->
-<div id="rating-modal" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);z-index:100;align-items:flex-end;justify-content:center">
-  <div style="background:#fff;border-radius:20px 20px 0 0;padding:24px 20px 40px;width:100%;max-width:480px">
-    <div style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--gr3);margin-bottom:6px">Gericht bewerten</div>
-    <div id="rm-title" style="font-size:18px;font-weight:700;color:var(--txt);margin-bottom:16px"></div>
-    <!-- Stars -->
-    <div style="display:flex;gap:8px;margin-bottom:16px" id="rm-stars">
-      <button onclick="setStar(1)" class="star-btn" style="font-size:32px;background:none;border:none;cursor:pointer;padding:4px;opacity:.3">&#9733;</button>
-      <button onclick="setStar(2)" class="star-btn" style="font-size:32px;background:none;border:none;cursor:pointer;padding:4px;opacity:.3">&#9733;</button>
-      <button onclick="setStar(3)" class="star-btn" style="font-size:32px;background:none;border:none;cursor:pointer;padding:4px;opacity:.3">&#9733;</button>
-      <button onclick="setStar(4)" class="star-btn" style="font-size:32px;background:none;border:none;cursor:pointer;padding:4px;opacity:.3">&#9733;</button>
-      <button onclick="setStar(5)" class="star-btn" style="font-size:32px;background:none;border:none;cursor:pointer;padding:4px;opacity:.3">&#9733;</button>
-    </div>
-    <div id="rm-starlbl" style="font-size:13px;color:var(--gr3);margin-bottom:14px;min-height:18px"></div>
-    <!-- Feedback -->
-    <div class="fld">
-      <label>Kommentar (optional)</label>
-      <textarea id="rm-feedback" placeholder="Was hat gefallen? Was wuerde ich ändern?" style="width:100%;background:#fff;border:1px solid var(--bdr);border-radius:7px;color:var(--txt);font-size:14px;padding:10px 12px;font-family:inherit;resize:none;height:80px;outline:none" onfocus="this.style.borderColor='var(--red)'" onblur="this.style.borderColor='var(--bdr)'"></textarea>
-    </div>
-    <div style="display:flex;gap:8px;margin-top:4px">
-      <button class="btn btn-out" onclick="closeRating()" style="flex:1;padding:11px;font-size:13px">Überspringen</button>
-      <button class="btn btn-red" onclick="submitRating()" style="flex:1;padding:11px;font-size:13px" id="rm-submit" disabled>Speichern</button>
-    </div>
-  </div>
-</div>
-
-</body>
-</html>
