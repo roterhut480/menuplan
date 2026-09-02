@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=yes">
-<title>Menüplan v5.33</title>
+<title>Menüplan v5.34</title>
 <style>
 :root{
   --red:#e8390e;--rl:#fff2ef;--grn:#2e7d32;--grl:#f0faf4;
@@ -152,7 +152,7 @@ input[type=password]{letter-spacing:2px}
 
 <!-- HOME -->
 <div class="scr on" id="sh">
-  <div class="hero"><h1>Menüplan</h1><p id="hsub">v5.33 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
+  <div class="hero"><h1>Menüplan</h1><p id="hsub">v5.34 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
 
   <!-- Active plan card -->
   <div id="active-plan" style="display:none;margin:10px 10px 0">
@@ -2026,12 +2026,13 @@ function parseJSON(raw) {
 }
 
 function callClaudeHaiku(sys, msg, maxTokens) {
-  console.log('callClaudeHaiku:', PROXY, 'tokens:', maxTokens, 'msg len:', msg.length);
+  var session = getSession();
+  var authHeaders = session ? { 'X-MP-User': session.username, 'X-MP-Pass': session.pw, 'Content-Type': 'application/json' } : { 'Content-Type': 'application/json' };
   var controller = typeof AbortController !== 'undefined' ? new AbortController() : null;
   var timeoutId = controller ? setTimeout(function() { controller.abort(); }, 60000) : null;
   return fetch(PROXY + '/anthropic', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: authHeaders,
     body: JSON.stringify({
       model: 'claude-haiku-4-5-20251001',
       max_tokens: maxTokens,
@@ -2057,13 +2058,13 @@ function callClaudeHaiku(sys, msg, maxTokens) {
 }
 
 function callClaude(sys, msg, maxTokens) {
+  var session = getSession();
+  var authHeaders = session ? { 'X-MP-User': session.username, 'X-MP-Pass': session.pw, 'Content-Type': 'application/json' } : { 'Content-Type': 'application/json' };
   var controller = typeof AbortController !== 'undefined' ? new AbortController() : null;
   var timeoutId = controller ? setTimeout(function() { controller.abort(); }, 90000) : null;
-  var h = getAuthHeaders() || {};
-  h['Content-Type'] = 'application/json';
   return fetch(PROXY + '/anthropic', {
     method: 'POST',
-    headers: h,
+    headers: authHeaders,
     body: JSON.stringify({ model: 'claude-sonnet-4-5', max_tokens: maxTokens, system: sys, messages: [{ role: 'user', content: msg }] }),
     signal: controller ? controller.signal : undefined
   })
