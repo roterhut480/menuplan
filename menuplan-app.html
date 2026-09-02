@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=yes">
-<title>Menüplan v5.30</title>
+<title>Menüplan v5.31</title>
 <style>
 :root{
   --red:#e8390e;--rl:#fff2ef;--grn:#2e7d32;--grl:#f0faf4;
@@ -152,7 +152,7 @@ input[type=password]{letter-spacing:2px}
 
 <!-- HOME -->
 <div class="scr on" id="sh">
-  <div class="hero"><h1>Menüplan</h1><p id="hsub">v5.30 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
+  <div class="hero"><h1>Menüplan</h1><p id="hsub">v5.31 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
 
   <!-- Active plan card -->
   <div id="active-plan" style="display:none;margin:10px 10px 0">
@@ -699,6 +699,37 @@ function doLogin() {
   if (!username) { err.textContent = 'Bitte Benutzernamen eingeben'; err.style.display = 'block'; return; }
   if (!pw) { err.textContent = 'Bitte Passwort eingeben'; err.style.display = 'block'; return; }
 
+  // If worker-based auth: verify against worker directly
+  var loginBtn = $('login-btn');
+  if (loginBtn) { loginBtn.disabled = true; loginBtn.textContent = 'Prüfe...'; }
+
+  // Try worker auth first (no token needed client-side)
+  fetch(PROXY + '/gh/users/' + username + '/active-plan.json', {
+    headers: { 'X-MP-User': username, 'X-MP-Pass': pw, 'Content-Type': 'application/json' }
+  }).then(function(r) {
+    if (r.ok || r.status === 404) {
+      // Auth successful (404 = valid creds but file not found yet)
+      localStorage.setItem('gh_session', JSON.stringify({ username: username, pw: pw }));
+      showLoggedIn();
+      syncAllFromGH();
+      if (loginBtn) { loginBtn.disabled = false; loginBtn.textContent = 'Anmelden'; }
+    } else if (r.status === 401) {
+      // Fall back to local user store
+      localLogin(username, pw);
+      if (loginBtn) { loginBtn.disabled = false; loginBtn.textContent = 'Anmelden'; }
+    } else {
+      localLogin(username, pw);
+      if (loginBtn) { loginBtn.disabled = false; loginBtn.textContent = 'Anmelden'; }
+    }
+  }).catch(function() {
+    // No worker connection - fall back to local
+    localLogin(username, pw);
+    if (loginBtn) { loginBtn.disabled = false; loginBtn.textContent = 'Anmelden'; }
+  });
+}
+
+function localLogin(username, pw) {
+  var err = $('login-err');
   var users = getUsers();
   var user = users.find(function(u) { return u.username === username; });
 
@@ -800,11 +831,12 @@ function doLogout() {
 
 
 function showInviteLink() {
-  var tok = getGHToken();
-  if (!tok) { alert('Bitte zuerst anmelden'); return; }
+  var session = getSession();
+  if (!session) { alert('Bitte zuerst anmelden'); return; }
   try {
-    var invite = btoa(unescape(encodeURIComponent(tok)));
-    var url = window.location.origin + window.location.pathname + '?invite=' + invite;
+    // Invite URL contains NO token - just a flag so new user knows to register
+    // New user will need to set their own password; worker verifies against MP_USERS
+    var url = window.location.origin + window.location.pathname + '?invite=1&ref=' + encodeURIComponent(session.username);
     window._inviteUrl = url;
     // Show modal with link
     var modal = document.createElement('div');
@@ -1241,30 +1273,45 @@ function syncAllFromGH() {
 }
 
 
+function getAuthHeaders() {
+  var session = getSession();
+  if (!session) return null;
+  return { 'X-MP-User': session.username, 'X-MP-Pass': session.pw, 'Content-Type': 'application/json' };
+}
+
+function ghGet(filepath) {
+  var h = getAuthHeaders();
+  if (!h) return Promise.resolve(null);
+  return fetch(PROXY + '/gh/' + filepath, { headers: h })
+    .then(function(r) { return r.ok ? r.json() : null; });
+}
+
 function ghPut(filename, data, message) {
-  var tok = getGHToken();
-  if (!tok) return Promise.resolve(null);
-  var url = 'https://api.github.com/repos/' + GH_REPO + '/contents/' + ghFile(filename);
-  var headers = { 'Authorization': 'token ' + tok, 'Content-Type': 'application/json', 'Accept': 'application/vnd.github.v3+json' };
+  var h = getAuthHeaders();
+  if (!h) return Promise.resolve(null);
   var encoded = btoa(unescape(encodeURIComponent(JSON.stringify(data, null, 2))));
-  // Always fetch fresh SHA to avoid 409 conflicts
-  return fetch(url, { headers: headers })
+  var filepath = ghFile(filename);
+  // Get current SHA first
+  return fetch(PROXY + '/gh/' + filepath, { headers: h })
     .then(function(r) { return r.ok ? r.json() : null; })
     .then(function(existing) {
       var body = { message: message || 'Update', content: encoded };
       if (existing && existing.sha) body.sha = existing.sha;
-      return fetch(url, { method: 'PUT', headers: headers, body: JSON.stringify(body) });
+      return fetch(PROXY + '/gh/' + filepath, {
+        method: 'PUT', headers: h, body: JSON.stringify(body)
+      });
     })
     .then(function(r) {
       if (r && r.ok) return r;
       if (r && r.status === 409) {
-        // Retry once on conflict
-        return fetch(url, { headers: headers })
+        return fetch(PROXY + '/gh/' + filepath, { headers: h })
           .then(function(r2) { return r2.ok ? r2.json() : null; })
           .then(function(fresh) {
             var body2 = { message: message || 'Update', content: encoded };
             if (fresh && fresh.sha) body2.sha = fresh.sha;
-            return fetch(url, { method: 'PUT', headers: headers, body: JSON.stringify(body2) });
+            return fetch(PROXY + '/gh/' + filepath, {
+              method: 'PUT', headers: h, body: JSON.stringify(body2)
+            });
           });
       }
       return r;
@@ -2614,9 +2661,18 @@ function loadHistory() {
   $('hload').style.display = 'block';
   $('hlist').innerHTML = '';
   var tok = getGHToken();
-  var url = 'https://raw.githubusercontent.com/' + GH_REPO + '/main/' + ghFile('history.json') + '?t=' + Date.now();
-  fetch(url)
-    .then(function(r) { return r.ok ? r.json() : []; })
+  var h = getAuthHeaders();
+  var url = h ? PROXY + '/gh/' + ghFile('history.json') : null;
+  var fetchProm = url
+    ? fetch(url, { headers: h }).then(function(r) {
+        if (!r.ok) return [];
+        return r.json().then(function(d) {
+          if (!d || !d.content) return [];
+          return JSON.parse(decodeURIComponent(escape(atob(d.content.split('\n').join('')))));
+        });
+      })
+    : Promise.resolve([]);
+  fetchProm
     .then(function(history) {
       $('hload').style.display = 'none';
       if (!history || !history.length) {
