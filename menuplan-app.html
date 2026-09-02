@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=yes">
-<title>Menüplan v5.36</title>
+<title>Menüplan v5.39</title>
 <style>
 :root{
   --red:#e8390e;--rl:#fff2ef;--grn:#2e7d32;--grl:#f0faf4;
@@ -152,7 +152,7 @@ input[type=password]{letter-spacing:2px}
 
 <!-- HOME -->
 <div class="scr on" id="sh">
-  <div class="hero"><h1>Menüplan</h1><p id="hsub">v5.36 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
+  <div class="hero"><h1>Menüplan</h1><p id="hsub">v5.39 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
 
   <!-- Active plan card -->
   <div id="active-plan" style="display:none;margin:10px 10px 0">
@@ -236,7 +236,7 @@ input[type=password]{letter-spacing:2px}
   </div>
 
   <!-- Login Card -->
-  <div class="card">
+  <div class="card" id="login-card">
     <div class="cp">
       <div id="login-section">
         <div id="login-invite-banner" style="display:none;background:var(--grl);border:.5px solid #a5d6a7;border-radius:8px;padding:10px 12px;margin-bottom:12px">
@@ -245,18 +245,11 @@ input[type=password]{letter-spacing:2px}
         </div>
         <div class="clbl" id="login-title">Anmelden</div>
         <div class="fld"><label>Benutzername</label><input id="login-user" placeholder="z.B. roman, anna..." autocomplete="username" onkeydown="if(event.key==='Enter')$('login-pw').focus()"></div>
-        <div class="fld"><label>Passwort</label><input type="password" id="login-pw" placeholder="Eigenes Passwort wählen..." autocomplete="new-password" onkeydown="if(event.key==='Enter')doLogin()"></div>
+        <div class="fld"><label>Passwort</label><input type="password" id="login-pw" placeholder="Passwort..." autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()"></div>
         <div id="login-err" style="font-size:12px;color:var(--red);margin-bottom:8px;display:none"></div>
         <button class="btn btn-red" id="login-btn" onclick="doLogin()" style="padding:11px">Anmelden</button>
-        <!-- Manual setup fallback -->
-        <div id="login-manual-setup" style="display:none;margin-top:12px;padding-top:12px;border-top:.5px solid var(--bdr)">
-          <div style="font-size:11px;color:var(--gr3);margin-bottom:8px;font-weight:600">Ersteinrichtung</div>
-          <div class="fld"><label>GitHub Token (ghp_...)</label><input type="password" id="setup-token" placeholder="ghp_..."></div>
-          <button class="btn btn-out" onclick="doManualSetup()" style="padding:9px;font-size:13px">Einrichten</button>
-        </div>
-        <div style="margin-top:12px;padding-top:12px;border-top:.5px solid var(--bdr);text-align:center">
-          <div style="font-size:11px;color:var(--gr3);margin-bottom:6px">Andere einladen</div>
-          <button class="btn btn-out" onclick="showInviteLink()" style="padding:9px;font-size:12px" id="invite-btn" style="display:none">Einladungslink erstellen</button>
+        <div style="margin-top:8px;text-align:center">
+          <button onclick="resetLocalUsers()" style="background:none;border:none;font-size:11px;color:var(--gr3);cursor:pointer;font-family:inherit;text-decoration:underline">Neues Gerät einrichten</button>
         </div>
       </div>
       <div id="loggedin-section" style="display:none">
@@ -265,17 +258,16 @@ input[type=password]{letter-spacing:2px}
             <div style="width:9px;height:9px;border-radius:50%;background:var(--grn)"></div>
             <div>
               <div style="font-size:13px;font-weight:600;color:var(--txt)" id="loggedin-name"></div>
-              <div style="font-size:11px;color:var(--gr3)">Eigener Bereich aktiv</div>
+              <div style="font-size:11px;color:var(--gr3)">Angemeldet</div>
             </div>
           </div>
           <button onclick="doLogout()" style="background:none;border:none;font-size:12px;color:var(--gr3);cursor:pointer;font-family:inherit">Abmelden</button>
         </div>
         <div id="token-refresh-section" style="display:none;padding-top:8px;border-top:.5px solid var(--bdr)">
-          <div style="font-size:11px;color:var(--red);margin-bottom:6px">&#x26A0; GitHub Token abgelaufen</div>
+          <div style="font-size:11px;color:var(--red);margin-bottom:6px">⚠ GitHub Token abgelaufen</div>
           <div class="fld"><label>Neuer GitHub Token</label><input type="password" id="new-token" placeholder="ghp_..."></div>
           <button class="btn btn-out" onclick="refreshToken()" style="padding:9px;font-size:12px">Token erneuern</button>
         </div>
-        <button onclick="showTokenRefresh()" style="background:none;border:none;font-size:11px;color:var(--gr3);cursor:pointer;font-family:inherit;margin-top:4px">Token erneuern</button>
       </div>
     </div>
   </div>
@@ -284,55 +276,87 @@ input[type=password]{letter-spacing:2px}
   <div class="card">
     <div class="cp">
       <div class="clbl">Diese Woche</div>
+
+      <!-- Personen Regler -->
       <div class="fld">
-        <label>Personen (Abendessen)</label>
-        <div class="chips" id="pchips">
-          <button class="chip" onclick="setP(1)">1 Person</button>
-          <button class="chip on" onclick="setP(2)">2 Personen</button>
-          <button class="chip" onclick="setP(3)">3 Personen</button>
-          <button class="chip" onclick="setP(4)">4 Personen</button>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+          <label style="margin:0">👤 Personen</label>
+          <div style="display:flex;align-items:center;gap:12px">
+            <button onclick="setP(Math.max(1,G.personen-1))" style="width:32px;height:32px;border-radius:50%;background:#f5f5f5;border:1.5px solid var(--bdr);font-size:18px;cursor:pointer;font-family:inherit;line-height:1;display:flex;align-items:center;justify-content:center">−</button>
+            <div style="min-width:80px;text-align:center">
+              <div id="p-display" style="font-size:24px;font-weight:800;color:var(--red)">2</div>
+              <div style="font-size:11px;color:var(--gr3)">Personen</div>
+            </div>
+            <button onclick="setP(Math.min(8,G.personen+1))" style="width:32px;height:32px;border-radius:50%;background:#f5f5f5;border:1.5px solid var(--bdr);font-size:18px;cursor:pointer;font-family:inherit;line-height:1;display:flex;align-items:center;justify-content:center">+</button>
+          </div>
         </div>
       </div>
-      <div class="fld" style="margin-top:10px">
-        <label>Fleisch-Modus</label>
+
+      <!-- Kochabende Regler -->
+      <div class="fld" style="margin-top:4px">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+          <label style="margin:0">🍳 Kochabende</label>
+          <div style="display:flex;align-items:center;gap:12px">
+            <button onclick="setN(Math.max(2,G.n-1))" style="width:32px;height:32px;border-radius:50%;background:#f5f5f5;border:1.5px solid var(--bdr);font-size:18px;cursor:pointer;font-family:inherit;line-height:1;display:flex;align-items:center;justify-content:center">−</button>
+            <div style="min-width:80px;text-align:center">
+              <div id="n-display" style="font-size:24px;font-weight:800;color:var(--red)">3</div>
+              <div style="font-size:11px;color:var(--gr3)">Abende</div>
+            </div>
+            <button onclick="setN(Math.min(5,G.n+1))" style="width:32px;height:32px;border-radius:50%;background:#f5f5f5;border:1.5px solid var(--bdr);font-size:18px;cursor:pointer;font-family:inherit;line-height:1;display:flex;align-items:center;justify-content:center">+</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Fleisch Modus -->
+      <div class="fld" style="margin-top:4px">
+        <label>🥩 Fleisch-Modus</label>
         <div class="chips" id="mchips">
-          <button class="chip" onclick="setM('vegi')">Vegetarisch</button>
-          <button class="chip on" onclick="setM('optional')">Optional Fleisch</button>
-          <button class="chip" onclick="setM('fleisch')">Alle mit Fleisch</button>
+          <button class="chip" onclick="setM('vegi')">🥦 Vegetarisch</button>
+          <button class="chip on" onclick="setM('optional')">🥩 Optional</button>
+          <button class="chip" onclick="setM('fleisch')">🍗 Alle</button>
         </div>
       </div>
+
+      <!-- Resteverwertung -->
       <div class="fld" style="margin-top:10px">
-        <label>Kochabende</label>
-        <div class="chips">
-          <button class="chip" onclick="setN(2)">2 Abende</button>
-          <button class="chip on" onclick="setN(3)">3 Abende</button>
-          <button class="chip" onclick="setN(4)">4 Abende</button>
+        <label>♻️ Resteverwertung</label>
+        <div style="display:flex;flex-direction:column;gap:6px" id="rchips">
+          <button class="chip-card on" id="rc-mikro" onclick="setR(1,'mikro')" style="text-align:left;padding:10px 14px;border-radius:10px;background:#fff;border:2px solid var(--red);cursor:pointer;font-family:inherit">
+            <div style="font-size:13px;font-weight:700;color:var(--red)">✅ Ja – Mittag aus Resten</div>
+            <div style="font-size:11px;color:var(--gr3);margin-top:2px">Nur Mikrowelle, kein Herd. Reste für nächsten Tag einplanen.</div>
+          </button>
+          <button class="chip-card" id="rc-nein" onclick="setR(0,'nein')" style="text-align:left;padding:10px 14px;border-radius:10px;background:#fff;border:1.5px solid var(--bdr);cursor:pointer;font-family:inherit">
+            <div style="font-size:13px;font-weight:700;color:var(--txt)">❌ Nein – nur Abendessen</div>
+            <div style="font-size:11px;color:var(--gr3);margin-top:2px">Jeder Abend für sich, kein Mittagessen eingeplant.</div>
+          </button>
         </div>
       </div>
+
+      <!-- Einfrieren -->
       <div class="fld" style="margin-top:10px">
-        <label>Resteverwertung am Folgetag?</label>
-        <div class="chips" id="rchips">
-          <button class="chip on" onclick="setR(1)">Ja - Mittag aus Resten</button>
-          <button class="chip" onclick="setR(0)">Nein - nur Abendessen</button>
+        <label>🧊 Einfrierportionen</label>
+        <div style="display:flex;flex-direction:column;gap:6px">
+          <button class="chip-card on" id="fc-ja" onclick="setF(1)" style="text-align:left;padding:10px 14px;border-radius:10px;background:#fff;border:2px solid var(--red);cursor:pointer;font-family:inherit">
+            <div style="font-size:13px;font-weight:700;color:var(--red)">🧊 Ja – +2 Portionen einfrieren</div>
+            <div style="font-size:11px;color:var(--gr3);margin-top:2px">Pro Gericht 2 Extra-Portionen für den Tiefkühler mitkochen.</div>
+          </button>
+          <button class="chip-card" id="fc-nein" onclick="setF(0)" style="text-align:left;padding:10px 14px;border-radius:10px;background:#fff;border:1.5px solid var(--bdr);cursor:pointer;font-family:inherit">
+            <div style="font-size:13px;font-weight:700;color:var(--txt)">❌ Nein – exakte Menge</div>
+            <div style="font-size:11px;color:var(--gr3);margin-top:2px">Nur die benötigte Menge kochen, nichts einfrieren.</div>
+          </button>
         </div>
       </div>
-      <div class="fld" style="margin-top:10px">
-        <label>Einfrierportionen mitkochen?</label>
-        <div class="chips" id="fchips">
-          <button class="chip on" onclick="setF(1)">Ja - +2 Portionen einfrieren</button>
-          <button class="chip" onclick="setF(0)">Nein - nur für heute</button>
-        </div>
-      </div>
-      <div class="fld" style="margin-top:10px"><label>Thema (optional)</label><input id="theme" placeholder="mediterran, asiatisch..."></div>
-      <div class="fld"><label>Vorhandenes (optional)</label><input id="exist" placeholder="z.B. Kartoffeln 2kg"></div>
+
+      <!-- Thema & Vorhandenes -->
+      <div class="fld" style="margin-top:10px"><label>🌍 Thema (optional)</label><input id="theme" placeholder="mediterran, asiatisch, mexikanisch..."></div>
+      <div class="fld"><label>🥕 Vorhandenes (optional)</label><input id="exist" placeholder="z.B. Kichererbsen, Kartoffeln 1kg..."></div>
     </div>
   </div>
 
-  <div style="padding:10px 10px 0">
-    <button class="btn btn-red" onclick="goSuggest()">Menüvorschläge generieren</button>
-
+  <!-- Generieren Button -->
+  <div style="padding:0 10px 10px">
+    <button class="btn btn-red" onclick="goSuggest()" style="font-size:15px;padding:14px;font-weight:700">✨ Menüvorschläge generieren</button>
   </div>
-</div>
 
 <!-- VORSCHLAEGE -->
 <div class="scr" id="ss">
@@ -588,7 +612,7 @@ var BH = {
 
 // ─── STATE ─────────────────────────────────────────────────
 var G = {
-  n: 3, personen: 2, modus: 'optional', reste: 1, freeze: 1, sugsPartial: false,
+  n: 3, personen: 2, modus: 'optional', reste: 1, freeze: 1, resteMode: 'mikro', sugsPartial: false,
   sugs: [], sel: null,
   steps: [], cur: 0, act: 0, done: {},
   tiv: null, tl: 0, tt: 0,
@@ -617,14 +641,7 @@ function showSt(id, msg, type) {
 // ─── OPTION SETTERS ────────────────────────────────────────
 function setN(n) {
   G.n = n;
-  // Find the Kochabende chips specifically
-  var allChips = document.querySelectorAll('.chips');
-  for (var c = 0; c < allChips.length; c++) {
-    var chips = allChips[c].querySelectorAll('.chip');
-    if (chips.length === 3 && chips[0].textContent.indexOf('Abende') > -1) {
-      for (var i = 0; i < chips.length; i++) chips[i].classList.toggle('on', chips[i].textContent.indexOf(n) === 0);
-    }
-  }
+  if ($('n-display')) $('n-display').textContent = n;
 }
 function setP(p) {
   G.personen = p;
@@ -638,12 +655,60 @@ function setM(m) {
   chips[1].classList.toggle('on', m === 'optional');
   chips[2].classList.toggle('on', m === 'fleisch');
 }
-function setR(v) {
+function setR(v, mode) {
   G.reste = v;
-  var chips = $('rchips').querySelectorAll('.chip');
-  chips[0].classList.toggle('on', v === 1);
-  chips[1].classList.toggle('on', v === 0);
+  G.resteMode = mode || (v ? 'mikro' : 'nein');
+  var cards = ['rc-mikro', 'rc-nein'];
+  var active = v ? 'rc-mikro' : 'rc-nein';
+  cards.forEach(function(id) {
+    var el = $(id); if (!el) return;
+    var isActive = id === active;
+    el.style.borderColor = isActive ? 'var(--red)' : 'var(--bdr)';
+    el.style.borderWidth = isActive ? '2px' : '1.5px';
+    el.querySelector('div').style.color = isActive ? 'var(--red)' : 'var(--txt)';
+  });
+  // Legacy chip support
+  var chips = $('rchips') ? [] : document.querySelectorAll('#rchips .chip');
+  chips.forEach && chips.forEach(function(c) { c.classList.toggle('on', !!v); });
 }
+
+function setF(v) {
+  G.freeze = v;
+  var cards = ['fc-ja', 'fc-nein'];
+  var active = v ? 'fc-ja' : 'fc-nein';
+  cards.forEach(function(id) {
+    var el = $(id); if (!el) return;
+    var isActive = id === active;
+    el.style.borderColor = isActive ? 'var(--red)' : 'var(--bdr)';
+    el.style.borderWidth = isActive ? '2px' : '1.5px';
+    el.querySelector('div').style.color = isActive ? 'var(--red)' : 'var(--txt)';
+  });
+}
+
+function setM(m) {
+  G.modus = m;
+  var chips = $('mchips').querySelectorAll('.chip');
+  chips[0].classList.toggle('on', m === 'vegi');
+  chips[1].classList.toggle('on', m === 'optional');
+  chips[2].classList.toggle('on', m === 'fleisch');
+}
+function setR(v, mode) {
+  G.reste = v;
+  G.resteMode = mode || (v ? 'mikro' : 'nein');
+  var cards = ['rc-mikro', 'rc-nein'];
+  var active = v ? 'rc-mikro' : 'rc-nein';
+  cards.forEach(function(id) {
+    var el = $(id); if (!el) return;
+    var isActive = id === active;
+    el.style.borderColor = isActive ? 'var(--red)' : 'var(--bdr)';
+    el.style.borderWidth = isActive ? '2px' : '1.5px';
+    el.querySelector('div').style.color = isActive ? 'var(--red)' : 'var(--txt)';
+  });
+  // Legacy chip support
+  var chips = $('rchips') ? [] : document.querySelectorAll('#rchips .chip');
+  chips.forEach && chips.forEach(function(c) { c.classList.toggle('on', !!v); });
+}
+
 function setF(v) {
   G.freeze = v;
   var chips = $('fchips').querySelectorAll('.chip');
@@ -857,390 +922,24 @@ function showInviteLink() {
 
 
 function updateGHUI() {
-  if (getSession()) {
-    showLoggedIn();
-    return;
-  }
+  if (getSession()) { showLoggedIn(); return; }
   var params = new URLSearchParams(window.location.search);
-
-  // Invite link: ?invite=1
+  // Invite link
   var invite = params.get('invite');
   if (invite) {
     if ($('login-invite-banner')) $('login-invite-banner').style.display = 'block';
     if ($('login-title')) $('login-title').textContent = 'Konto erstellen';
     if ($('login-btn')) $('login-btn').textContent = 'Konto erstellen';
     if ($('login-pw')) $('login-pw').placeholder = 'Eigenes Passwort wählen...';
-    if ($('login-manual-setup')) $('login-manual-setup').style.display = 'none';
-    // Pre-fill username if ref given
     var ref = params.get('ref');
     if (ref && $('login-user')) $('login-user').placeholder = 'z.B. ' + ref + '_2, anna...';
     return;
   }
-
-  // Setup URL param
-  var setup = params.get('setup');
-  if (setup) {
-    if ($('login-manual-setup')) $('login-manual-setup').style.display = 'block';
-    if ($('login-pw')) $('login-pw').placeholder = 'Passwort festlegen...';
-    if ($('login-btn')) $('login-btn').textContent = 'Einrichten';
-    return;
-  }
-
-  // Admin reset: ?reset=USERNAME&pw=ADMINPASSWORT
-  var resetUser = params.get('reset');
-  var resetPw = params.get('pw');
-  if (resetUser && resetPw) {
-    // Verify admin password
-    var users = getUsers();
-    var admin = users.find(function(u){ return u.isAdmin; });
-    if (admin) {
-      try {
-        var dec = decodeURIComponent(escape(atob(admin.enc)));
-        var adminPw = dec.split('|||')[1];
-        if (adminPw === resetPw) {
-          // Remove the user
-          var filtered = users.filter(function(u){ return u.username !== resetUser; });
-          saveUsers(filtered);
-          if ($('login-user')) $('login-user').value = resetUser;
-          if ($('login-invite-banner')) {
-            $('login-invite-banner').style.display = 'block';
-            $('login-invite-banner').querySelector('div:last-child').textContent =
-              'Passwort fuer "' + resetUser + '" wurde zurückgesetzt. Bitte neues Passwort wählen.';
-          }
-          if ($('login-title')) $('login-title').textContent = 'Neues Passwort setzen';
-          if ($('login-btn')) $('login-btn').textContent = 'Passwort setzen';
-          // Need token to re-register - get from admin
-          var adminTok = dec.split('|||')[0];
-          window._inviteToken = adminTok;
-          if ($('login-manual-setup')) $('login-manual-setup').style.display = 'none';
-          return;
-        }
-      } catch(e) {}
-    }
-    if ($('login-err')) {
-      $('login-err').textContent = 'Reset fehlgeschlagen - falsches Admin-Passwort.';
-      $('login-err').style.display = 'block';
-    }
-    return;
-  }
-
-  // Show manual setup only if NO users exist yet
-  var users = getUsers();
-  if (users.length === 0) {
-    if ($('login-manual-setup')) $('login-manual-setup').style.display = 'block';
-    if ($('login-title')) $('login-title').textContent = 'Ersteinrichtung';
-    if ($('login-btn')) $('login-btn').textContent = 'Einrichten';
-  } else {
-    // Normal login - hide token field
-    if ($('login-manual-setup')) $('login-manual-setup').style.display = 'none';
-    if ($('login-title')) $('login-title').textContent = 'Anmelden';
-    if ($('login-btn')) $('login-btn').textContent = 'Anmelden';
-
-  }
+  // Normal login
+  if ($('login-title')) $('login-title').textContent = 'Anmelden';
+  if ($('login-btn')) $('login-btn').textContent = 'Anmelden';
 }
 
-function doManualSetup() {
-  var username = ($('login-user').value || '').trim().toLowerCase().replace(/[^a-z0-9_.@-]/g, '').replace(/[.@-]+$/, '');
-  var pw = $('login-pw').value;
-  var tok = ($('setup-token').value || '').trim();
-  var err = $('login-err');
-  if (!username) { err.textContent = 'Bitte Benutzernamen eingeben'; err.style.display = 'block'; return; }
-  if (!pw) { err.textContent = 'Bitte Passwort eingeben'; err.style.display = 'block'; return; }
-  if (!tok || !tok.startsWith('ghp_')) { err.textContent = 'Bitte gueltigen GitHub Token eingeben (ghp_...)'; err.style.display = 'block'; return; }
-  var enc = btoa(unescape(encodeURIComponent(tok + '|||' + pw)));
-  var users = getUsers();
-  users.push({ username: username, enc: enc, isAdmin: true });
-  saveUsers(users);
-  startSession(username, pw);
-}
-
-function showTokenRefresh() {
-  var s = $('token-refresh-section');
-  if (s) s.style.display = s.style.display === 'none' ? 'block' : 'none';
-}
-
-function refreshToken() {
-  var tok = ($('new-token') ? $('new-token').value.trim() : '');
-  if (!tok || !tok.startsWith('ghp_')) {
-    alert('Bitte gueltigen GitHub Token eingeben (beginnt mit ghp_)');
-    return;
-  }
-  var session = getSession();
-  if (!session) return;
-  var users = getUsers();
-  var user = users.find(function(u) { return u.username === session.username; });
-  if (!user) return;
-  // Update token keeping same password
-  var newEnc = btoa(unescape(encodeURIComponent(tok + '|||' + session.pw)));
-  user.enc = newEnc;
-  saveUsers(users);
-  if ($('new-token')) $('new-token').value = '';
-  if ($('token-refresh-section')) $('token-refresh-section').style.display = 'none';
-  alert('Token erneuert! GitHub-Sync aktiv.');
-}
-
-// ─── USER MENU ─────────────────────────────────────────────
-function toggleUserMenu() {
-  var menu = $('user-menu');
-  if (!menu) return;
-  var isVisible = menu.style.display !== 'none';
-  menu.style.display = isVisible ? 'none' : 'block';
-  if (!isVisible) {
-    // Update username display
-    var session = getSession();
-    if ($('um-username')) $('um-username').textContent = session ? session.username : '';
-    // Close on outside click
-    setTimeout(function() {
-      document.addEventListener('click', function closeMenu(e) {
-        if (!menu.contains(e.target) && e.target.id !== 'user-menu-btn') {
-          menu.style.display = 'none';
-          document.removeEventListener('click', closeMenu);
-        }
-      });
-    }, 100);
-  }
-}
-
-// Only show user menu button when logged in
-function showLoggedIn() {
-  var session = getSession();
-  if ($('login-section')) $('login-section').style.display = 'none';
-  if ($('loggedin-section')) $('loggedin-section').style.display = 'block';
-  if ($('login-err')) $('login-err').style.display = 'none';
-  if ($('loggedin-name')) $('loggedin-name').textContent = session ? session.username : '';
-  if ($('login-pw')) $('login-pw').value = '';
-  if ($('invite-btn')) $('invite-btn').style.display = 'block';
-  if ($('user-menu-btn')) $('user-menu-btn').style.display = 'flex';
-  // Load preferences
-  loadPrefs();
-}
-
-// ─── PREFERENCES ───────────────────────────────────────────
-function getPrefKey() {
-  var session = getSession();
-  return session ? 'prefs_' + session.username : 'prefs_default';
-}
-
-function loadPrefs() {
-  try {
-    var prefs = JSON.parse(localStorage.getItem(getPrefKey()) || '{}');
-    // Apply to G state
-    if (prefs.personen !== undefined) { G.personen = prefs.personen; setP(prefs.personen); }
-    if (prefs.modus !== undefined) { G.modus = prefs.modus; setM(prefs.modus); }
-    if (prefs.n !== undefined) { G.n = prefs.n; setN(prefs.n); }
-    if (prefs.reste !== undefined) { G.reste = prefs.reste; setR(prefs.reste); }
-    if (prefs.freeze !== undefined) { G.freeze = prefs.freeze; setF(prefs.freeze); }
-    if (prefs.kuechen && $('theme')) $('theme').placeholder = prefs.kuechen ? 'Pref: ' + prefs.kuechen : 'mediterran, asiatisch...';
-    return prefs;
-  } catch(e) { return {}; }
-}
-
-function openPrefs() {
-  var session = getSession();
-  if ($('prefs-username')) $('prefs-username').textContent = session ? session.username : '';
-  var prefs = loadPrefs();
-  // Update chips
-  var p = prefs.personen || G.personen || 2;
-  var m = prefs.modus || G.modus || 'optional';
-  var n = prefs.n || G.n || 3;
-  var r = prefs.reste !== undefined ? prefs.reste : G.reste;
-  var f = prefs.freeze !== undefined ? prefs.freeze : G.freeze;
-  var chips;
-  chips = document.querySelectorAll('#pref-pchips .chip');
-  chips.forEach(function(c,i){ c.classList.toggle('on', i+1===p); });
-  chips = document.querySelectorAll('#pref-mchips .chip');
-  chips[0].classList.toggle('on', m==='vegi');
-  chips[1].classList.toggle('on', m==='optional');
-  chips[2].classList.toggle('on', m==='fleisch');
-  chips = document.querySelectorAll('#pref-nchips .chip');
-  chips.forEach(function(c,i){ c.classList.toggle('on', i+2===n); });
-  chips = document.querySelectorAll('#pref-rchips .chip');
-  chips[0].classList.toggle('on', r===1); chips[1].classList.toggle('on', r===0);
-  chips = document.querySelectorAll('#pref-fchips .chip');
-  chips[0].classList.toggle('on', f===1); chips[1].classList.toggle('on', f===0);
-  if ($('pref-kuechen')) $('pref-kuechen').value = prefs.kuechen || '';
-  if ($('pref-avoid')) $('pref-avoid').value = prefs.avoid || '';
-  if ($('prefs-saved')) $('prefs-saved').style.display = 'none';
-  go('sprefs');
-  setTimeout(updateProfileDisplay, 100);
-}
-
-function setPref(key, val) {
-  // Update chip UI
-  var chipMap = { personen:'pref-pchips', modus:'pref-mchips', n:'pref-nchips', reste:'pref-rchips', freeze:'pref-fchips' };
-  var chipId = chipMap[key];
-  if (chipId) {
-    var chips = document.querySelectorAll('#' + chipId + ' .chip');
-    if (key === 'personen') chips.forEach(function(c,i){ c.classList.toggle('on', i+1===val); });
-    else if (key === 'n') chips.forEach(function(c,i){ c.classList.toggle('on', i+2===val); });
-    else if (key === 'modus') { chips[0].classList.toggle('on',val==='vegi'); chips[1].classList.toggle('on',val==='optional'); chips[2].classList.toggle('on',val==='fleisch'); }
-    else if (key === 'reste' || key === 'freeze') { chips[0].classList.toggle('on',val===1); chips[1].classList.toggle('on',val===0); }
-  }
-  // Save to temp
-  if (!window._tempPrefs) window._tempPrefs = {};
-  window._tempPrefs[key] = val;
-}
-
-function savePrefs() {
-  var prefs = JSON.parse(localStorage.getItem(getPrefKey()) || '{}');
-  // Merge temp prefs
-  if (window._tempPrefs) {
-    Object.keys(window._tempPrefs).forEach(function(k){ prefs[k] = window._tempPrefs[k]; });
-    window._tempPrefs = {};
-  }
-  prefs.kuechen = $('pref-kuechen') ? $('pref-kuechen').value.trim() : '';
-  prefs.avoid = $('pref-avoid') ? $('pref-avoid').value.trim() : '';
-  localStorage.setItem(getPrefKey(), JSON.stringify(prefs));
-  // Apply immediately
-  if (prefs.personen) { G.personen = prefs.personen; setP(prefs.personen); }
-  if (prefs.modus) { G.modus = prefs.modus; setM(prefs.modus); }
-  if (prefs.n) { G.n = prefs.n; setN(prefs.n); }
-  if (prefs.reste !== undefined) { G.reste = prefs.reste; setR(prefs.reste); }
-  if (prefs.freeze !== undefined) { G.freeze = prefs.freeze; setF(prefs.freeze); }
-  // Show confirmation
-  if ($('prefs-saved')) {
-    $('prefs-saved').style.display = 'block';
-    setTimeout(function(){ $('prefs-saved').style.display = 'none'; go('sh'); }, 1500);
-  }
-}
-
-// ─── DYNAMIC LEARNING PROFILE ──────────────────────────────
-function buildLearningProfile() {
-  // Collect all ratings from local sources
-  var ratings = [];
-  try {
-    var lr = JSON.parse(localStorage.getItem('local_ratings') || '[]');
-    var hist = JSON.parse(localStorage.getItem('local_history') || '[]');
-    var fotos = JSON.parse(localStorage.getItem('foto_rezepte') || '[]');
-    var prefs = JSON.parse(localStorage.getItem(getPrefKey()) || '{}');
-
-    lr.forEach(function(r) { if (r.stars) ratings.push({ name: r.gericht, stars: r.stars, feedback: r.feedback||'' }); });
-    hist.forEach(function(h) { if (h.stars) ratings.push({ name: h.thema, stars: h.stars, feedback: h.ratingFeedback||'' }); });
-    fotos.forEach(function(f) { if (f.stars) ratings.push({ name: f.name, stars: f.stars, feedback: f.ratingFeedback||'' }); });
-  } catch(e) {}
-
-  if (!ratings.length) return '';
-
-  // Cluster by stars
-  var loved = ratings.filter(function(r){ return r.stars >= 4; });
-  var disliked = ratings.filter(function(r){ return r.stars <= 2; });
-  var feedbacks = ratings.filter(function(r){ return r.feedback && r.feedback.length > 3; });
-
-  var profile = '';
-  if (loved.length) {
-    profile += 'Gut bewertet (' + loved.length + 'x, aehnlichen Stil bevorzugen): ' +
-      loved.slice(0,4).map(function(r){ return r.name + '(' + r.stars + '&#9733;)'; }).join(', ') + '. ';
-  }
-  if (disliked.length) {
-    profile += 'Schlecht bewertet (' + disliked.length + 'x, Küche/Stil vermeiden): ' +
-      disliked.slice(0,3).map(function(r){ return r.name; }).join(', ') + '. ';
-  }
-  if (feedbacks.length) {
-    profile += 'Feedback aus Bewertungen: ' +
-      feedbacks.slice(0,3).map(function(r){ return r.feedback; }).join('; ') + '. ';
-  }
-  return profile;
-}
-
-// Show learning profile in preferences screen
-function updateProfileDisplay() {
-  var el = $('prefs-profile');
-  if (!el) return;
-  var profile = buildLearningProfile();
-  if (!profile) {
-    el.innerHTML = '<div style="font-size:12px;color:var(--gr3);font-style:italic">Noch keine Bewertungen vorhanden. Koche und bewerte Gerichte um personalisierte Vorschläge zu erhalten.</div>';
-  } else {
-    el.innerHTML = '<div style="font-size:12px;color:var(--txt2);line-height:1.6">' + profile + '</div>';
-  }
-}
-
-function resetLearningProfile() {
-  if (!confirm('Lernprofil zurücksetzen? Alle Bewertungen bleiben erhalten, werden aber nicht mehr fuer Vorschläge genutzt.')) return;
-  var prefs = JSON.parse(localStorage.getItem(getPrefKey()) || '{}');
-  prefs.profileReset = new Date().toISOString();
-  localStorage.setItem(getPrefKey(), JSON.stringify(prefs));
-  updateProfileDisplay();
-}
-
-function saveHistoryToGH(hist) {
-  ghPut('history.json', hist, 'History aktualisiert').catch(function(){});
-}
-
-function resetLocalUsers() {
-  if (confirm('Lokale Anmeldedaten löschen? Du kannst dich danach mit Einladungslink oder Token neu einrichten.')) {
-    localStorage.removeItem('gh_users');
-    localStorage.removeItem('gh_session');
-    localStorage.removeItem('gh_enc');
-    updateGHUI();
-  }
-}
-
-function showChangePassword() {
-  if ($('pw-old')) $('pw-old').value = '';
-  if ($('pw-new')) $('pw-new').value = '';
-  if ($('pw-new2')) $('pw-new2').value = '';
-  if ($('pw-err')) $('pw-err').style.display = 'none';
-  $('pw-modal').style.display = 'flex';
-}
-
-function doChangePassword() {
-  var oldPw = $('pw-old').value;
-  var newPw = $('pw-new').value;
-  var newPw2 = $('pw-new2').value;
-  var err = $('pw-err');
-
-  if (!oldPw) { err.textContent = 'Bitte aktuelles Passwort eingeben'; err.style.display = 'block'; return; }
-  if (!newPw) { err.textContent = 'Bitte neues Passwort eingeben'; err.style.display = 'block'; return; }
-  if (newPw !== newPw2) { err.textContent = 'Passwoerter stimmen nicht ueberein'; err.style.display = 'block'; return; }
-
-  var session = getSession();
-  if (!session) return;
-
-  // Verify old password
-  var users = getUsers();
-  var user = users.find(function(u){ return u.username === session.username; });
-  if (!user) return;
-
-  // Verify against current session
-  try {
-    var parts = [null, session.pw]; // use session password as truth
-    var dec = user ? decodeURIComponent(escape(atob(user.enc))) : null;
-    if (dec) parts = dec.split('|||');
-    if (parts[1] !== oldPw) {
-      err.textContent = 'Falsches aktuelles Passwort';
-      err.style.display = 'block';
-      return;
-    }
-    // Update session with new password (Worker MP_USERS must be updated separately by admin)
-    localStorage.setItem('gh_session', JSON.stringify({ username: session.username, pw: newPw }));
-    // Also update local users store if it exists
-    if (user) {
-      var tok = parts[0];
-      user.enc = btoa(unescape(encodeURIComponent(tok + '|||' + newPw)));
-      saveUsers(users);
-    }
-    $('pw-modal').style.display = 'none';
-    // Show success
-    var ind = document.createElement('div');
-    ind.textContent = 'Passwort erfolgreich geaendert';
-    ind.style.cssText = 'position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--grn);color:#fff;padding:10px 16px;border-radius:8px;font-size:13px;font-weight:600;z-index:999';
-    document.body.appendChild(ind);
-    setTimeout(function(){ ind.remove(); }, 3000);
-  } catch(e) {
-    err.textContent = 'Fehler: ' + e.message;
-    err.style.display = 'block';
-  }
-}
-
-function copyInviteLink() {
-  var btn = $('copy-invite-btn');
-  if (window._inviteUrl) {
-    navigator.clipboard.writeText(window._inviteUrl).then(function() {
-      if (btn) btn.textContent = 'Kopiert!';
-      setTimeout(function(){ if (btn) btn.textContent = 'Link kopieren'; }, 2000);
-    });
-  }
-}
 function saveGHToken() {} // legacy noop
 function disconnectGH() { doLogout(); }
 
@@ -1918,8 +1617,16 @@ function buildSYS_overview() {
   var mittag = G.reste ? ',"mittag_nächster_tag":"Linsensuppe als Rest"' : '';
   var json = '{"vorschlaege":[{"id":1,"thema":"Asiatisch","kochabende":["Mo","Mi","Fr"],"gerichte":[{"tag":"Mo","abend":"Tofu-Gemu\u00ecsecurry","zeit_aktiv":"20m","zeit_total":"35m"' + mittag + '},{"tag":"Mi","abend":"Glasnudelsalat","zeit_aktiv":"15m","zeit_total":"15m"' + mittag + '}]}]}';
 
+  var resteModeText = G.resteMode === 'mikro' ? 'Reste werden am nächsten Tag NUR in der Mikrowelle aufgewärmt (kein Herd, kein Toaster). Gerichte wählen die als Mikrowellen-Reste gut schmecken: Suppen, Currys, Eintöpfe, Pasta mit Sauce, Reisgerichte.' : '';
+  var resteHinweis = G.reste ?
+    'RESTE-PLANUNG (wichtig): Jedes Abendgericht muss so portioniert sein dass am nächsten Mittag Reste aufgewärmt werden können. ' +
+    'Wähle Gerichte die als Reste gut schmecken: Suppen, Currys, Eintöpfe, Pasta mit Sauce, Reisgerichte. ' +
+    'KEINE kalten Salate, Omeletts oder Gerichte die nur frisch gut sind als Reste. ' +
+    'Das Feld mittag_nächster_tag = kurzer Name der Reste-Variante (z.B. "Curry-Reste", "Pasta aufgewärmt"). ' : '';
+
   return 'Antworte NUR mit JSON, kein Text, keine Markdown-Backticks. Keine Apostrophe. ' +
     'Generiere 3 Menüvorschläge a ' + G.n + ' Gerichte fuer ' + p + ' Personen (' + modusText + '). ' +
+    resteHinweis + (G.resteMode === 'mikro' ? resteModeText : '') +
     'Felder pro Gericht: tag, abend (richtiger Gerichtsname!), zeit_aktiv, zeit_total' + (G.reste ? ', mittag_nächster_tag (kurzer Restename)' : '') + '. ' +
     'KEINE anderen Felder, KEINE Zutaten. Kompakt. ' +
     'Format-Beispiel: ' + json;
@@ -1933,14 +1640,14 @@ function buildSYS_full(sug) {
   var portFreeze = G.freeze ? 2 : 0;
   var portTotal = portAbend + portMittag + portFreeze;
   var mittag = G.reste ? '"mittag_nächster_tag":"Name","mittag_tag":"Dienstag",' : '';
-  var prep = G.reste ? ',"prep_next":["Reste abfuellen","Mittags aufwaermen"]' : '';
+  var prep = G.reste ? ',"prep_next":["'+portMittag+' Portionen abkuehlen lassen und einpacken","Morgen in Mikrowelle '+Math.round(portMittag*2)+' Min. aufwaermen"]' : '';
   var frz = G.freeze ? ',"einfrieren":["2 Port. einfrieren","Beschriften"]' : '';
   var json = '{"gerichte":[{"tag":"Montag","abend":"Name",' + mittag + '"zutaten":[{"name":"X","menge":"Y"}],"schritte_vegi":[{"titel":"Sauce","text":"Detaillierter Schritt","timer_min":0,"zutaten_schritt":["X"]}],"schritte_fleisch":[{"titel":"Fleisch anbraten","text":"Detaillierter Schritt","timer_min":0,"zutaten_schritt":["X"]}]' + prep + frz + ',"tipp":"Tipp","zeit_aktiv":"X","zeit_total":"Y"}]}';
   var dishes = sug.gerichte.map(function(g) { return g.tag + ': ' + g.abend; }).join(', ');
   return 'NUR valides JSON, kein Text. Keine Apostrophe. ' +
     'Generiere vollstaendige Kochschritte fuer diese Gerichte: ' + dishes + '. ' +
     'Fuer ' + portTotal + ' Portionen (' + portAbend + ' Abend' + (portMittag?' + '+portMittag+' Mittag':'') + (portFreeze?' + 2 Einfrieren':'') + '). ' +
-    (G.reste ? 'Reste vom Abend werden am nächsten Mittag verwendet.' : 'Keine Reste.') + ' ' +
+    (G.reste ? 'Reste vom Abend werden am nächsten Mittag mikrogewellt (keine Stovetop-Zubereitung). Doppelte Portionen kochen: '+portAbend+' Abend + '+portMittag+' Mittag-Portionen.' : 'Keine Reste, nur '+portAbend+' Portionen.') + ' ' +
     (G.freeze ? '+2 Einfrierportionen mitkochen.' : 'Keine Einfrierportionen.') + ' ' +
     'WICHTIG: Das Zutaten-Array (zutaten) muss EXAKT die Zutaten enthalten die im Rezept verwendet werden - nicht mehr, nicht weniger. ' +
     'Keine Zutaten in der Liste die nicht explizit in einem Kochschritt vorkommen. ' +
