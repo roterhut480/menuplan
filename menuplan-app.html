@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=yes">
-<title>Menüplan v5.50</title>
+<title>Menüplan v5.51</title>
 <style>
 :root{
   --red:#e8390e;--rl:#fff2ef;--grn:#2e7d32;--grl:#f0faf4;
@@ -153,7 +153,7 @@ input[type=password]{letter-spacing:2px}
 
 <!-- HOME -->
 <div class="scr on" id="sh">
-  <div class="hero"><h1>Menüplan</h1><p id="hsub">v5.50 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
+  <div class="hero"><h1>Menüplan</h1><p id="hsub">v5.51 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
 
   <!-- Active plan card -->
   <div id="active-plan" style="display:none;margin:10px 10px 0">
@@ -1533,17 +1533,18 @@ function goSuggest() {
             var exists = G.sugs.some(function(s){ return s.thema === sugs[0].thema; });
             if (!exists) G.sugs.push(sugs[0]);
             G.sugs.sort(function(a,b){ return a.id - b.id; });
+            // Apply fixed dishes back after render
+            var fixed = getFixedDishes();
+            if (fixed.length && G.sugs.length > 0) {
+              var ng = G.sugs[G.sugs.length - 1];
+              if (ng && ng.gerichte) {
+                fixed.forEach(function(f) {
+                  if (f.j < ng.gerichte.length) ng.gerichte[f.j] = f.gericht;
+                });
+              }
+            }
             renderSugs();
-            // Apply fixed dishes from current selection if any
-      if (G.sel !== null && ng) {
-        var gerichte = ng.gerichte || [];
-        fixed.forEach(function(f) {
-          if (f.j < gerichte.length) {
-            gerichte[f.j] = f.gericht;
-          }
-        });
-      }
-      if (G.sugs.length === 1) {
+            if (G.sugs.length === 1) {
               $('sload').style.display = 'none';
               $('scta').style.display = 'block';
               if (G._loadIv) { clearInterval(G._loadIv); G._loadIv = null; }
