@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=yes">
-<title>Menüplan v5.52</title>
+<title>Menüplan v5.53</title>
 <style>
 :root{
   --red:#e8390e;--rl:#fff2ef;--grn:#2e7d32;--grl:#f0faf4;
@@ -153,127 +153,9 @@ input[type=password]{letter-spacing:2px}
 
 <!-- HOME -->
 <div class="scr on" id="sh">
-  <div class="hero"><h1>Menüplan</h1><p id="hsub">v5.52 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
+  <div class="hero"><h1>Menüplan</h1><p id="hsub">v5.53 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
 
   <!-- Active plan card -->
-  <div id="active-plan" style="display:none;margin:10px 10px 0">
-    <div style="background:var(--red);border-radius:var(--rlg);padding:14px 16px;color:#fff;margin-bottom:1px">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
-        <div style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;opacity:.75">Aktiver Menüplan</div>
-        <div style="display:flex;gap:6px;align-items:center">
-          <button onclick="syncGH(this)" style="background:rgba(255,255,255,.2);border:none;border-radius:6px;padding:4px 8px;font-size:11px;color:#fff;cursor:pointer;font-family:inherit">&#x1F504;</button>
-          <button onclick="clearActivePlan()" style="background:rgba(255,255,255,.15);border:none;border-radius:6px;padding:4px 8px;font-size:11px;color:#fff;cursor:pointer;font-family:inherit">&#x2715; Beenden</button>
-        </div>
-      </div>
-      <div id="ap-title" style="font-size:18px;font-weight:700;margin-bottom:2px"></div>
-      <div id="ap-sub" style="font-size:12px;opacity:.8"></div>
-    </div>
-    <div style="background:#fff;border-radius:0 0 var(--rlg) var(--rlg);border:.5px solid var(--bdr);border-top:none">
-      <!-- Status row -->
-      <div style="display:flex;border-bottom:.5px solid var(--gr)">
-        <div id="ap-einkauf-status" style="flex:1;padding:10px 14px;display:flex;align-items:center;gap:8px;cursor:pointer" onclick="openActivePlan('e')">
-          <div id="ap-einkauf-dot" style="width:10px;height:10px;border-radius:50%;background:var(--gr2);flex-shrink:0"></div>
-          <div>
-            <div style="font-size:12px;font-weight:600;color:var(--txt)">Einkauf</div>
-            <div id="ap-einkauf-lbl" style="font-size:11px;color:var(--gr3)">Noch nicht importiert</div>
-          </div>
-        </div>
-        <div style="width:.5px;background:var(--gr)"></div>
-        <div style="flex:1;padding:10px 14px;display:flex;align-items:center;gap:8px;cursor:pointer" onclick="openActivePlan('r')">
-          <div style="width:10px;height:10px;border-radius:50%;background:var(--gr2);flex-shrink:0"></div>
-          <div>
-            <div style="font-size:12px;font-weight:600;color:var(--txt)">Rezepte</div>
-            <div style="font-size:11px;color:var(--gr3)">Tippen zum Kochen</div>
-          </div>
-        </div>
-      </div>
-      <!-- Dish list -->
-      <div id="ap-dishes" style="padding:10px 14px"></div>
-      <div style="padding:0 14px 12px">
-        <button class="btn btn-out" onclick="openActivePlan('e')" style="font-size:13px;padding:10px">Plan öffnen</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- History button -->
-  <div style="padding:10px 10px 0;display:flex;gap:8px">
-    <button class="btn btn-out" onclick="openFotoScreen()" style="flex:1;font-size:13px;padding:10px">&#128247; Foto-Rezept</button>
-    <button class="btn btn-out" onclick="toggleUserMenu()" id="user-menu-btn" style="display:none;width:auto;padding:10px 14px;font-size:13px" title="Benutzermenü">&#128100;</button>
-  </div>
-
-  <!-- User Menu Dropdown -->
-  <div id="user-menu" style="display:none;margin:6px 10px 0;background:#fff;border-radius:var(--rlg);border:.5px solid var(--bdr);overflow:hidden;box-shadow:0 4px 16px rgba(0,0,0,.1)">
-    <!-- User info -->
-    <div style="padding:14px 16px;background:var(--red);color:#fff">
-      <div style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;opacity:.75;margin-bottom:4px">Angemeldet als</div>
-      <div id="um-username" style="font-size:16px;font-weight:700"></div>
-    </div>
-    <!-- Menu items -->
-    <div style="padding:8px 0">
-      <button onclick="openHistory();toggleUserMenu()" style="width:100%;text-align:left;padding:12px 16px;background:none;border:none;font-size:14px;color:var(--txt);cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:10px">
-        <span style="font-size:18px">&#128197;</span> Verlauf
-      </button>
-      <div style="height:.5px;background:var(--bdr);margin:0 16px"></div>
-      <button onclick="openPrefs();toggleUserMenu()" style="width:100%;text-align:left;padding:12px 16px;background:none;border:none;font-size:14px;color:var(--txt);cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:10px">
-        <span style="font-size:18px">&#9881;</span> Präferenzen
-      </button>
-      <div style="height:.5px;background:var(--bdr);margin:0 16px"></div>
-      <button onclick="showInviteLink();toggleUserMenu()" style="width:100%;text-align:left;padding:12px 16px;background:none;border:none;font-size:14px;color:var(--txt);cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:10px">
-        <span style="font-size:18px">&#128279;</span> Einladungslink
-      </button>
-      <div style="height:.5px;background:var(--bdr);margin:0 16px"></div>
-      <button onclick="showChangePassword();toggleUserMenu()" style="width:100%;text-align:left;padding:12px 16px;background:none;border:none;font-size:14px;color:var(--txt);cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:10px">
-        <span style="font-size:18px">&#128274;</span> Passwort ändern
-      </button>
-      <div style="height:.5px;background:var(--bdr);margin:0 16px"></div>
-      <button onclick="showTokenRefresh();toggleUserMenu()" style="width:100%;text-align:left;padding:12px 16px;background:none;border:none;font-size:14px;color:var(--txt);cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:10px">
-        <span style="font-size:18px">&#128273;</span> GitHub Token erneuern
-      </button>
-      <div style="height:.5px;background:var(--bdr);margin:0 16px"></div>
-      <button onclick="doLogout();toggleUserMenu()" style="width:100%;text-align:left;padding:12px 16px;background:none;border:none;font-size:14px;color:var(--red);cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:10px">
-        <span style="font-size:18px">&#x2192;</span> Abmelden
-      </button>
-    </div>
-  </div>
-
-  <!-- Login Card -->
-  <div class="card" id="login-card">
-    <div class="cp">
-      <div id="login-section">
-        <div id="login-invite-banner" style="display:none;background:var(--grl);border:.5px solid #a5d6a7;border-radius:8px;padding:10px 12px;margin-bottom:12px">
-          <div style="font-size:12px;font-weight:700;color:var(--grn);margin-bottom:2px">Einladung erhalten!</div>
-          <div style="font-size:12px;color:var(--grn)">Wähle einen Benutzernamen und ein eigenes Passwort.</div>
-        </div>
-        <div class="clbl" id="login-title">Anmelden</div>
-        <div class="fld"><label>Benutzername</label><input id="login-user" placeholder="z.B. roman, anna..." autocomplete="username" onkeydown="if(event.key==='Enter')$('login-pw').focus()"></div>
-        <div class="fld"><label>Passwort</label><input type="password" id="login-pw" placeholder="Passwort..." autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()"></div>
-        <div id="login-err" style="font-size:12px;color:var(--red);margin-bottom:8px;display:none"></div>
-        <button class="btn btn-red" id="login-btn" onclick="doLogin()" style="padding:11px">Anmelden</button>
-        <div style="margin-top:8px;text-align:center">
-          <button onclick="resetLocalUsers()" style="background:none;border:none;font-size:11px;color:var(--gr3);cursor:pointer;font-family:inherit;text-decoration:underline">Neues Gerät einrichten</button>
-        </div>
-      </div>
-      <div id="loggedin-section" style="display:none">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
-          <div style="display:flex;align-items:center;gap:8px">
-            <div style="width:9px;height:9px;border-radius:50%;background:var(--grn)"></div>
-            <div>
-              <div style="font-size:13px;font-weight:600;color:var(--txt)" id="loggedin-name"></div>
-              <div style="font-size:11px;color:var(--gr3)">Angemeldet</div>
-            </div>
-          </div>
-          <button onclick="doLogout()" style="background:none;border:none;font-size:12px;color:var(--gr3);cursor:pointer;font-family:inherit">Abmelden</button>
-        </div>
-        <button id="invite-btn" onclick="showInviteLink()" style="display:none;background:none;border:none;font-size:11px;color:var(--gr3);cursor:pointer;font-family:inherit;margin-top:4px;text-decoration:underline">Einladungslink erstellen</button>
-        <div id="login-manual-setup" style="display:none"></div>
-        <div id="token-refresh-section" style="display:none;padding-top:8px;border-top:.5px solid var(--bdr)">
-          <div style="font-size:11px;color:var(--red);margin-bottom:6px">⚠ GitHub Token abgelaufen</div>
-          <div class="fld"><label>Neuer GitHub Token</label><input type="password" id="new-token" placeholder="ghp_..."></div>
-          <button class="btn btn-out" onclick="refreshToken()" style="padding:9px;font-size:12px">Token erneuern</button>
-        </div>
-      </div>
-    </div>
-  </div>
 
   <!-- Cook options -->
   <div class="card">
@@ -2158,7 +2040,7 @@ function setActivePlanAndGo() {
     sugs: G.sugs, n: G.n, personen: G.personen,
     reste: G.reste, freeze: G.freeze, saved: planData.saved
   }));
-  renderActivePlan();
+  updateDashboard();
   var spb = $('set-plan-btn');
   if (spb) { spb.innerHTML = 'Als aktiven Plan setzen'; spb.disabled = false; }
   goWeek();
@@ -2189,26 +2071,7 @@ function clearActivePlan() {
 }
 
 function renderActivePlan() {
-  var ap = G.activePlan;
-  if (!ap || !ap.sug) { if ($('active-plan')) $('active-plan').style.display = 'none'; return; }
-  if ($('active-plan')) $('active-plan').style.display = 'block';
-  if ($('ap-title')) $('ap-title').textContent = ap.sug.thema;
-  if ($('ap-sub')) $('ap-sub').textContent = 'Gesetzt am ' + (ap.saved||'') + ' · ' + (ap.personen||2) + ' Personen';
-  var dishes = '';
-  var gerichte = ap.sug.gerichte || [];
-  for (var i = 0; i < gerichte.length; i++) {
-    var g = gerichte[i];
-    dishes += '<div style="display:flex;align-items:center;gap:8px;padding:3px 0">' +
-      '<span style="font-size:11px;font-weight:700;color:var(--red);min-width:24px">' + (g.tag||'').slice(0,2) + '</span>' +
-      '<span style="font-size:13px;color:var(--txt)">' + g.abend + '</span></div>';
-  }
-  if ($('ap-dishes')) $('ap-dishes').innerHTML = dishes;
-  var dot = $('ap-einkauf-dot');
-  var lbl = $('ap-einkauf-lbl');
-  if (dot && lbl) {
-    dot.style.background = ap.einkaufDone ? 'var(--grn)' : 'var(--gr2)';
-    lbl.textContent = ap.einkaufDone ? 'In Bring! importiert' : 'Noch nicht importiert';
-  }
+  updateDashboard();
 }
 
 
@@ -2561,8 +2424,8 @@ function showLoggedIn() {
   var session = getSession();
   if ($('login-section')) $('login-section').style.display = 'none';
   if ($('loggedin-section')) $('loggedin-section').style.display = 'block';
+  if ($('login-card')) $('login-card').style.display = 'block';
   if ($('login-err')) $('login-err').style.display = 'none';
-  if ($('loggedin-name')) $('loggedin-name').textContent = session ? session.username : '';
   if ($('login-pw')) $('login-pw').value = '';
   if ($('invite-btn')) $('invite-btn').style.display = 'block';
   if ($('user-menu-btn')) $('user-menu-btn').style.display = 'flex';
@@ -2571,8 +2434,10 @@ function showLoggedIn() {
   // Load active plan from localStorage
   try {
     var ap = JSON.parse(localStorage.getItem('active_plan') || 'null');
-    if (ap) { G.activePlan = ap; renderActivePlan(); }
+    if (ap && ap.sug) { G.activePlan = ap; }
   } catch(e) {}
+  // Show dashboard
+  updateDashboard();
 }
 
 function doManualSetup() {
@@ -2646,6 +2511,72 @@ function copyInviteLink() {
     });
   }
 }
+
+// ─── DASHBOARD ─────────────────────────────────────────────
+function updateDashboard() {
+  var session = getSession();
+  if (!session) return;
+
+  // Greeting by time of day
+  var h = new Date().getHours();
+  var greeting = h < 12 ? 'Guten Morgen' : h < 18 ? 'Guten Tag' : 'Guten Abend';
+  if ($('dash-greeting')) $('dash-greeting').textContent = greeting + ', ' + session.username + '!';
+  if ($('dash-user')) $('dash-user').textContent = 'Dein persönlicher Küchenassistent';
+
+  var plan = G.activePlan;
+  var hasPlan = plan && plan.sug && !plan.cleared;
+
+  // Plan card
+  if ($('dash-plan-card')) $('dash-plan-card').style.display = hasPlan ? 'block' : 'none';
+  if ($('dash-no-plan')) $('dash-no-plan').style.display = hasPlan ? 'none' : 'block';
+
+  if (hasPlan && plan.sug) {
+    if ($('dash-plan-thema')) $('dash-plan-thema').textContent = plan.sug.thema || 'Menüplan';
+    // Render day overview
+    var gerichte = plan.sug.gerichte || [];
+    var daysHtml = gerichte.map(function(g) {
+      var hasReste = g.mittag_naechster_tag && g.mittag_naechster_tag !== 'Restename';
+      return '<div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:6px">' +
+        '<span style="font-size:11px;font-weight:700;opacity:.7;min-width:22px;margin-top:1px">' + (g.tag||'').slice(0,2) + '</span>' +
+        '<div><div style="font-size:13px;font-weight:600">' + (g.abend||'') + '</div>' +
+        (hasReste ? '<div style="font-size:11px;opacity:.65">↳ ' + g.mittag_naechster_tag + '</div>' : '') +
+        '</div></div>';
+    }).join('');
+    if ($('dash-plan-days')) $('dash-plan-days').innerHTML = daysHtml;
+
+    // Einkauf progress
+    var checked = G.checked || {};
+    var checkedCount = Object.values(checked).filter(Boolean).length;
+    // Estimate total items
+    var totalItems = gerichte.reduce(function(sum, g) { return sum + (g.zutaten||[]).length; }, 0);
+    if (totalItems > 0) {
+      if ($('dash-einkauf-card')) $('dash-einkauf-card').style.display = 'block';
+      var pct = Math.min(100, Math.round(checkedCount / totalItems * 100));
+      if ($('dash-einkauf-status')) $('dash-einkauf-status').textContent = checkedCount + ' / ' + totalItems + ' Artikel';
+      if ($('dash-einkauf-bar')) $('dash-einkauf-bar').style.width = pct + '%';
+    }
+
+    // Next cook – find next uncompleted dish based on day
+    var DAYS = ['Mo','Di','Mi','Do','Fr','Sa','So'];
+    var today = DAYS[new Date().getDay() === 0 ? 6 : new Date().getDay() - 1];
+    var todayIdx = DAYS.indexOf(today);
+    var next = null;
+    for (var i = 0; i < gerichte.length; i++) {
+      var gTag = (gerichte[i].tag||'').slice(0,2);
+      var gIdx = DAYS.indexOf(gTag);
+      if (gIdx >= todayIdx) { next = gerichte[i]; break; }
+    }
+    if (!next && gerichte.length) next = gerichte[0];
+    if (next) {
+      if ($('dash-next-cook')) $('dash-next-cook').style.display = 'block';
+      if ($('dash-next-name')) $('dash-next-name').textContent = next.abend;
+      if ($('dash-next-meta')) $('dash-next-meta').textContent =
+        [(next.tag||''), next.zeit_aktiv ? '✏ ' + next.zeit_aktiv + ' aktiv' : '', next.zeit_total ? '⏰ ' + next.zeit_total + ' total' : '']
+        .filter(Boolean).join(' · ');
+    }
+  }
+}
+
 </script>
 
 <!-- REPLACE DISH MODAL -->
