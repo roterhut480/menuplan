@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=yes">
-<title>Menüplan v5.51</title>
+<title>Menüplan v5.52</title>
 <style>
 :root{
   --red:#e8390e;--rl:#fff2ef;--grn:#2e7d32;--grl:#f0faf4;
@@ -153,7 +153,7 @@ input[type=password]{letter-spacing:2px}
 
 <!-- HOME -->
 <div class="scr on" id="sh">
-  <div class="hero"><h1>Menüplan</h1><p id="hsub">v5.51 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
+  <div class="hero"><h1>Menüplan</h1><p id="hsub">v5.52 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
 
   <!-- Active plan card -->
   <div id="active-plan" style="display:none;margin:10px 10px 0">
@@ -360,6 +360,7 @@ input[type=password]{letter-spacing:2px}
   <div style="padding:0 10px 10px">
     <button class="btn btn-red" onclick="goSuggest()" style="font-size:15px;padding:14px;font-weight:700">✨ Menüvorschläge generieren</button>
   </div>
+</div><!-- END #sh -->
 
 <!-- VORSCHLAEGE -->
 <div class="scr" id="ss">
@@ -758,11 +759,13 @@ function doLogin() {
       err.textContent = 'Falscher Benutzername oder Passwort.';
       err.style.display = 'block';
       $('login-pw').value = '';
-    } else {
-      // 200 or any non-401 = credentials accepted by worker
+    } else if (r.ok) {
       localStorage.setItem('gh_session', JSON.stringify({ username: username, pw: pw }));
       showLoggedIn();
       syncAllFromGH();
+    } else {
+      err.textContent = 'Login fehlgeschlagen (Status ' + r.status + ').';
+      err.style.display = 'block';
     }
   }).catch(function() {
     // Worker unreachable - save session and continue offline
@@ -854,6 +857,14 @@ function getGHToken() {
   return null;
 }
 
+function nsKey(key) {
+  var s = getSession();
+  return s ? key + '_' + s.username : key;
+}
+function nsGet(key) { try { return JSON.parse(localStorage.getItem(nsKey(key)) || localStorage.getItem(key) || 'null'); } catch(e) { return null; } }
+function nsSet(key, val) { var s = getSession(); if(s) localStorage.setItem(key+'_'+s.username, JSON.stringify(val)); localStorage.setItem(key, JSON.stringify(val)); }
+function nsRemove(key) { var s = getSession(); if(s) localStorage.removeItem(key+'_'+s.username); localStorage.removeItem(key); }
+
 function getSession() {
   try { return JSON.parse(localStorage.getItem('gh_session')); } catch(e) { return null; }
 }
@@ -924,169 +935,46 @@ function saveGHToken() {} // legacy noop
 function disconnectGH() { doLogout(); }
 
 
+function decodeGHContent(d) {
+  if (!d || !d.content) return null;
+  try { return JSON.parse(decodeURIComponent(escape(atob(d.content.replace(/\n/g, ''))))); } catch(e) { return null; }
+}
+
 function syncAllFromGH() {
-  // Load active plan
-  fetch(PROXY + '/gh/' + ghFile('active-plan.json'), { headers: getAuthHeaders() || {} })
+  var h = getAuthHeaders();
+  if (!h) return;
+  var sess = getSession();
+  var user = sess ? sess.username : null;
+  if (!user) return;
+  fetch(PROXY + '/gh/' + ghFile('active-plan.json'), { headers: h })
     .then(function(r) { return r.ok ? r.json() : null; })
     .then(function(d) {
-      if (d && d.sug) {
-        G.activePlan = d;
-        localStorage.setItem('active_plan', JSON.stringify(d));
+      var plan = decodeGHContent(d);
+      if (plan && plan.sug && !plan.cleared) {
+        G.activePlan = plan;
+        localStorage.setItem('active_plan', JSON.stringify(plan));
         renderActivePlan();
       }
     }).catch(function(){});
-  // Load foto rezepte from GH (authoritative)
-  fetch(PROXY + '/gh/' + ghFile('foto-rezepte.json'), { headers: getAuthHeaders() || {} })
+  fetch(PROXY + '/gh/' + ghFile('foto-rezepte.json'), { headers: h })
     .then(function(r) { return r.ok ? r.json() : null; })
-    .then(function(fr) {
+    .then(function(d) {
+      var fr = decodeGHContent(d);
       if (!Array.isArray(fr)) return;
-      // GH is authoritative - merge local-only entries
       var local = JSON.parse(localStorage.getItem('foto_rezepte') || '[]');
       var merged = fr.slice();
       local.forEach(function(l) {
         if (!merged.find(function(g){ return g.name === l.name; })) merged.push(l);
       });
       localStorage.setItem('foto_rezepte', JSON.stringify(merged));
-      console.log('Foto-Rezepte von GH geladen:', merged.length);
+    }).catch(function(){});
+  fetch(PROXY + '/gh/' + ghFile('history.json'), { headers: h })
+    .then(function(r) { return r.ok ? r.json() : null; })
+    .then(function(d) {
+      var hist = decodeGHContent(d);
+      if (Array.isArray(hist)) localStorage.setItem('local_history', JSON.stringify(hist));
     }).catch(function(){});
 }
-
-
-function getAuthHeaders() {
-  var session = getSession();
-  if (!session) return null;
-  return { 'X-MP-User': session.username, 'X-MP-Pass': session.pw, 'Content-Type': 'application/json' };
-}
-
-function ghGet(filepath) {
-  var h = getAuthHeaders();
-  if (!h) return Promise.resolve(null);
-  return fetch(PROXY + '/gh/' + filepath, { headers: h })
-    .then(function(r) { return r.ok ? r.json() : null; });
-}
-
-function ghPut(filename, data, message) {
-  var h = getAuthHeaders();
-  if (!h) return Promise.resolve(null);
-  var encoded = btoa(unescape(encodeURIComponent(JSON.stringify(data, null, 2))));
-  var filepath = ghFile(filename);
-  // Get current SHA first
-  return fetch(PROXY + '/gh/' + filepath, { headers: h })
-    .then(function(r) { return r.ok ? r.json() : null; })
-    .then(function(existing) {
-      var body = { message: message || 'Update', content: encoded };
-      if (existing && existing.sha) body.sha = existing.sha;
-      return fetch(PROXY + '/gh/' + filepath, {
-        method: 'PUT', headers: h, body: JSON.stringify(body)
-      });
-    })
-    .then(function(r) {
-      if (r && r.ok) return r;
-      if (r && r.status === 409) {
-        return fetch(PROXY + '/gh/' + filepath, { headers: h })
-          .then(function(r2) { return r2.ok ? r2.json() : null; })
-          .then(function(fresh) {
-            var body2 = { message: message || 'Update', content: encoded };
-            if (fresh && fresh.sha) body2.sha = fresh.sha;
-            return fetch(PROXY + '/gh/' + filepath, {
-              method: 'PUT', headers: h, body: JSON.stringify(body2)
-            });
-          });
-      }
-      return r;
-    });
-}
-
-function saveToGH(data) {
-  ghPut('active-plan.json', data, 'Aktiver Plan').catch(function(){});
-}
-
-
-function saveHistoryToGH(hist) {
-  ghPut('history.json', hist, 'History aktualisiert').catch(function(){});
-}
-
-function resetLocalUsers() {
-  if (confirm('Lokale Anmeldedaten löschen? Du kannst dich danach mit Einladungslink oder Token neu einrichten.')) {
-    localStorage.removeItem('gh_users');
-    localStorage.removeItem('gh_session');
-    localStorage.removeItem('gh_enc');
-    updateGHUI();
-  }
-}
-
-function showChangePassword() {
-  if ($('pw-old')) $('pw-old').value = '';
-  if ($('pw-new')) $('pw-new').value = '';
-  if ($('pw-new2')) $('pw-new2').value = '';
-  if ($('pw-err')) $('pw-err').style.display = 'none';
-  $('pw-modal').style.display = 'flex';
-}
-
-function doChangePassword() {
-  var oldPw = $('pw-old').value;
-  var newPw = $('pw-new').value;
-  var newPw2 = $('pw-new2').value;
-  var err = $('pw-err');
-
-  if (!oldPw) { err.textContent = 'Bitte aktuelles Passwort eingeben'; err.style.display = 'block'; return; }
-  if (!newPw) { err.textContent = 'Bitte neues Passwort eingeben'; err.style.display = 'block'; return; }
-  if (newPw !== newPw2) { err.textContent = 'Passwoerter stimmen nicht ueberein'; err.style.display = 'block'; return; }
-
-  var session = getSession();
-  if (!session) return;
-
-  // Verify old password
-  var users = getUsers();
-  var user = users.find(function(u){ return u.username === session.username; });
-  if (!user) return;
-
-  // Verify against current session
-  try {
-    var parts = [null, session.pw]; // use session password as truth
-    var dec = user ? decodeURIComponent(escape(atob(user.enc))) : null;
-    if (dec) parts = dec.split('|||');
-    if (parts[1] !== oldPw) {
-      err.textContent = 'Falsches aktuelles Passwort';
-      err.style.display = 'block';
-      return;
-    }
-    // Update session with new password (Worker MP_USERS must be updated separately by admin)
-    localStorage.setItem('gh_session', JSON.stringify({ username: session.username, pw: newPw }));
-    // Also update local users store if it exists
-    if (user) {
-      var tok = parts[0];
-      user.enc = btoa(unescape(encodeURIComponent(tok + '|||' + newPw)));
-      saveUsers(users);
-    }
-    $('pw-modal').style.display = 'none';
-    // Show success
-    var ind = document.createElement('div');
-    ind.textContent = 'Passwort erfolgreich geaendert';
-    ind.style.cssText = 'position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--grn);color:#fff;padding:10px 16px;border-radius:8px;font-size:13px;font-weight:600;z-index:999';
-    document.body.appendChild(ind);
-    setTimeout(function(){ ind.remove(); }, 3000);
-  } catch(e) {
-    err.textContent = 'Fehler: ' + e.message;
-    err.style.display = 'block';
-  }
-}
-
-function copyInviteLink() {
-  var btn = $('copy-invite-btn');
-  if (window._inviteUrl) {
-    navigator.clipboard.writeText(window._inviteUrl).then(function() {
-      if (btn) btn.textContent = 'Kopiert!';
-      setTimeout(function(){ if (btn) btn.textContent = 'Link kopieren'; }, 2000);
-    });
-  }
-} // legacy noop
-
-
-
-
-
-
 
 
 function syncGH(btn) {
@@ -1768,8 +1656,10 @@ function renderEink(sug) {
 function togItem(i) {
   G.checked = G.checked || {};
   G.checked[i] = !G.checked[i];
-  var el = document.querySelectorAll('.irow')[i];
-  if (el) el.classList.toggle('checked', !!G.checked[i]);
+  var row = document.getElementById('ir' + i);
+  var chk = document.getElementById('ic' + i);
+  if (row) row.classList.toggle('done', !!G.checked[i]);
+  if (chk) { chk.classList.toggle('on', !!G.checked[i]); chk.textContent = G.checked[i] ? '✓' : ''; }
   try { localStorage.setItem('einkauf_checked', JSON.stringify(G.checked)); } catch(e) {}
 }
 
@@ -1900,7 +1790,7 @@ function showIngOverview(g) {
       '<span class="zutat-menge" style="font-size:13px;color:var(--gr3);font-weight:500">' + zutaten[i].menge + '</span></div>';
   }
 
-  var html = '<div class="badge bv">Vor dem Kochen</div>' +
+  var html = '<div id="cing"><div class="badge bv">Vor dem Kochen</div>' +
     '<div style="font-size:16px;font-weight:700;margin-bottom:4px">' + g.abend + '</div>' +
     (g.mittag_nächster_tag ? '<div style="font-size:13px;color:var(--gr3);margin-bottom:8px">Morgen: ' + g.mittag_nächster_tag + '</div>' : '') +
     ((g.zeit_aktiv || g.zeit_total) ? '<div style="display:flex;gap:12px;margin-bottom:16px">' +
@@ -1921,6 +1811,14 @@ function showIngOverview(g) {
     '<button class="btn btn-red" onclick="beginCook()">Los geht\'s</button>';
 
   $('cbody').innerHTML = html;
+}
+
+function requestWakeLock() {
+  if (!navigator.wakeLock) return;
+  navigator.wakeLock.request('screen').then(function(lock){ G._wakeLock = lock; }).catch(function(){});
+}
+function releaseWakeLock() {
+  if (G._wakeLock) { G._wakeLock.release(); G._wakeLock = null; }
 }
 
 function beginCook() {
@@ -2282,10 +2180,12 @@ function openActivePlan(tab) {
 function clearActivePlan() {
   if (!confirm('Aktiven Plan beenden?')) return;
   G.activePlan = null;
-  localStorage.removeItem('active_plan');
+  nsRemove('active_plan');
   localStorage.removeItem('einkauf_checked');
   G.checked = {};
   if ($('active-plan')) $('active-plan').style.display = 'none';
+  // Also clear on GH by saving empty plan marker
+  ghPut('active-plan.json', { cleared: true, date: new Date().toISOString() }, 'Plan beendet').catch(function(){});
 }
 
 function renderActivePlan() {
@@ -2702,6 +2602,50 @@ function saveRatingToGH(entry) {
     ghPut('ratings.json', ratings, 'Bewertung ' + entry.date);
   }).catch(function(){});
 }
+
+function showChangePassword() {
+  if ($('pw-old')) $('pw-old').value = '';
+  if ($('pw-new')) $('pw-new').value = '';
+  if ($('pw-new2')) $('pw-new2').value = '';
+  if ($('pw-err')) $('pw-err').style.display = 'none';
+  if ($('pw-modal')) $('pw-modal').style.display = 'flex';
+}
+
+function doChangePassword() {
+  var oldPw = $('pw-old').value;
+  var newPw = $('pw-new').value;
+  var newPw2 = $('pw-new2').value;
+  var err = $('pw-err');
+  if (!oldPw) { err.textContent = 'Bitte aktuelles Passwort eingeben'; err.style.display = 'block'; return; }
+  if (!newPw) { err.textContent = 'Bitte neues Passwort eingeben'; err.style.display = 'block'; return; }
+  if (newPw !== newPw2) { err.textContent = 'Passwörter stimmen nicht überein'; err.style.display = 'block'; return; }
+  var session = getSession();
+  if (!session) return;
+  if (session.pw !== oldPw) { err.textContent = 'Falsches aktuelles Passwort'; err.style.display = 'block'; return; }
+  localStorage.setItem('gh_session', JSON.stringify({ username: session.username, pw: newPw }));
+  $('pw-modal').style.display = 'none';
+  var ind = document.createElement('div');
+  ind.textContent = 'Passwort geändert';
+  ind.style.cssText = 'position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--grn);color:#fff;padding:10px 16px;border-radius:8px;font-size:13px;font-weight:600;z-index:999';
+  document.body.appendChild(ind);
+  setTimeout(function(){ ind.remove(); }, 3000);
+}
+
+function resetLocalUsers() {
+  if (!confirm('Lokale Anmeldedaten löschen? Du kannst dich danach neu anmelden.')) return;
+  localStorage.removeItem('gh_session');
+  location.reload();
+}
+
+function copyInviteLink() {
+  var btn = $('copy-invite-btn');
+  if (window._inviteUrl) {
+    navigator.clipboard.writeText(window._inviteUrl).then(function() {
+      if (btn) btn.textContent = 'Kopiert!';
+      setTimeout(function(){ if (btn) btn.textContent = 'Link kopieren'; }, 2000);
+    });
+  }
+}
 </script>
 
 <!-- REPLACE DISH MODAL -->
@@ -2777,8 +2721,7 @@ function saveRatingToGH(entry) {
   </div>
 </div>
 
-</body>
-</html><script>
+<script>
 // ─── RATING ────────────────────────────────────────────────
 var GH_RATINGS = 'ratings.json';
 var G_rating = { gerichtIdx: null, stars: 0, historyIdx: null, fotoIdx: null };
@@ -2993,7 +2936,11 @@ function loadSavedFotoRezeptDetail(i){
   renderFotoRezept(r);setTimeout(function(){var el=$('foto-result');if(el)el.scrollIntoView({behavior:'smooth',block:'start'});},150);
 }
 function deleteSavedFotoRezept(i){
-  var saved=JSON.parse(localStorage.getItem('foto_rezepte')||'[]');saved.splice(i,1);localStorage.setItem('foto_rezepte',JSON.stringify(saved));loadSavedFotoRezepte();
+  var saved=JSON.parse(localStorage.getItem('foto_rezepte')||'[]');
+  saved.splice(i,1);
+  localStorage.setItem('foto_rezepte',JSON.stringify(saved));
+  saveFotoRezepteToGH(saved);
+  loadSavedFotoRezepte();
 }
 function analyzeFoto(){
   if(!G_foto.base64)return;
@@ -3143,3 +3090,5 @@ function refreshToken(){
   alert('Token erneuert!');
 }
 </script>
+</body>
+</html>
