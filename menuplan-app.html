@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=yes">
-<title>Menüplan v5.55</title>
+<title>Menüplan v5.56</title>
 <style>
 :root{
   --red:#e8390e;--rl:#fff2ef;--grn:#2e7d32;--grl:#f0faf4;
@@ -153,7 +153,7 @@ input[type=password]{letter-spacing:2px}
 
 <!-- HOME -->
 <div class="scr on" id="sh">
-  <div class="hero"><h1>Menüplan</h1><p id="hsub">v5.55 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
+  <div class="hero"><h1>Menüplan</h1><p id="hsub">v5.56 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
 
   <!-- Active plan card -->
 
@@ -248,19 +248,10 @@ input[type=password]{letter-spacing:2px}
         </div>
       </div>
 
-      <!-- Kochabende Regler -->
+      <!-- Tagesplanung -->
       <div class="fld" style="margin-top:4px">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
-          <label style="margin:0">🍳 Kochabende</label>
-          <div style="display:flex;align-items:center;gap:12px">
-            <button onclick="setN(G.n-1)" style="width:32px;height:32px;border-radius:50%;background:#f5f5f5;border:1.5px solid var(--bdr);font-size:18px;cursor:pointer;font-family:inherit;line-height:1;display:flex;align-items:center;justify-content:center">−</button>
-            <div style="min-width:80px;text-align:center">
-              <div id="n-display" style="font-size:24px;font-weight:800;color:var(--red)">3</div>
-              <div style="font-size:11px;color:var(--gr3)">Abende (1–7)</div>
-            </div>
-            <button onclick="setN(G.n+1)" style="width:32px;height:32px;border-radius:50%;background:#f5f5f5;border:1.5px solid var(--bdr);font-size:18px;cursor:pointer;font-family:inherit;line-height:1;display:flex;align-items:center;justify-content:center">+</button>
-          </div>
-        </div>
+        <label>🍳 Welche Tage kochen?</label>
+        <div id="day-picker" style="display:flex;flex-direction:column;gap:6px;margin-top:6px"></div>
       </div>
 
       <!-- Fleisch Modus -->
@@ -594,6 +585,9 @@ var BH = {
 // ─── STATE ─────────────────────────────────────────────────
 var G = {
   n: 3, personen: 2, modus: 'optional', reste: 1, freeze: 1, resteMode: 'mikro', sugsPartial: false, fixedDishes: {},
+  days: { Mo: null, Di: null, Mi: null, Do: null, Fr: null, Sa: null, So: null },
+  // null=kein Kochen, 'schnell'=<20min, 'normal'=normal, 'aufwendig'=darf länger dauern
+
   sugs: [], sel: null,
   steps: [], cur: 0, act: 0, done: {},
   tiv: null, tl: 0, tt: 0,
@@ -610,6 +604,7 @@ function go(id) {
   for (var i = 0; i < screens.length; i++) screens[i].classList.remove('on');
   $(id).classList.add('on');
   window.scrollTo(0, 0);
+  if (id === 'sh') setTimeout(initDayPicker, 50);
 }
 
 function showSt(id, msg, type) {
@@ -620,6 +615,77 @@ function showSt(id, msg, type) {
 }
 
 // ─── OPTION SETTERS ────────────────────────────────────────
+// ─── TAGESPLANUNG ──────────────────────────────────────────
+var DAY_MODES = [
+  { key: 'schnell',   label: '⚡ Schnell',    hint: 'max. ~20 Min.' },
+  { key: 'normal',    label: '🍳 Normal',      hint: '30–45 Min.' },
+  { key: 'aufwendig', label: '👨‍🍳 Aufwendig',  hint: 'darf länger dauern' },
+  { key: 'auswaerts', label: '🍽 Auswärts',    hint: 'kein Kochen' },
+];
+var DAYS_ORDER = ['Mo','Di','Mi','Do','Fr','Sa','So'];
+
+function initDayPicker() {
+  var dp = $('day-picker');
+  if (!dp) return;
+  dp.innerHTML = DAYS_ORDER.map(function(d) {
+    var isOn = G.days[d] !== null && G.days[d] !== undefined && G.days[d] !== 'auswaerts';
+    return '<div class="day-row" id="dr-' + d + '" style="display:flex;align-items:center;gap:8px;padding:4px 0">' +
+      '<label style="display:flex;align-items:center;gap:8px;flex:1;cursor:pointer">' +
+        '<input type="checkbox" id="dc-' + d + '" onchange="toggleDay(\'' + d + '\')" ' + (isOn?'checked':'') + ' style="width:18px;height:18px;accent-color:var(--red);cursor:pointer">' +
+        '<span style="font-size:14px;font-weight:700;min-width:24px">' + d + '</span>' +
+      '</label>' +
+      '<select id="dm-' + d + '" onchange="setDayMode(\'' + d + '\',this.value)" ' + (!isOn?'disabled style="opacity:.3"':'') + ' style="font-size:12px;padding:4px 8px;border-radius:6px;border:.5px solid var(--bdr);background:#fff;font-family:inherit;color:var(--txt)">' +
+        DAY_MODES.filter(function(m){ return m.key !== 'auswaerts'; }).map(function(m) {
+          return '<option value="' + m.key + '" ' + (G.days[d]===m.key?'selected':'') + '>' + m.label + ' – ' + m.hint + '</option>';
+        }).join('') +
+      '</select>' +
+    '</div>';
+  }).join('');
+  updateNFromDays();
+}
+
+function toggleDay(d) {
+  var cb = $('dc-' + d);
+  var sel = $('dm-' + d);
+  if (!cb) return;
+  if (cb.checked) {
+    G.days[d] = 'normal';
+    if (sel) { sel.disabled = false; sel.style.opacity = '1'; }
+  } else {
+    G.days[d] = null;
+    if (sel) { sel.disabled = true; sel.style.opacity = '.3'; }
+  }
+  updateNFromDays();
+}
+
+function setDayMode(d, mode) {
+  G.days[d] = mode;
+}
+
+function updateNFromDays() {
+  var count = DAYS_ORDER.filter(function(d){ return G.days[d] && G.days[d] !== 'auswaerts'; }).length;
+  G.n = Math.max(1, count);
+  if ($('n-display')) $('n-display').textContent = G.n;
+}
+
+function getDayPlanText() {
+  // Build text for Claude prompt
+  var cooking = DAYS_ORDER.filter(function(d){ return G.days[d] && G.days[d] !== 'auswaerts'; });
+  if (!cooking.length) return '';
+  var parts = cooking.map(function(d) {
+    var mode = G.days[d];
+    var hint = mode === 'schnell' ? 'max. 20 Min. aktiv' : mode === 'aufwendig' ? 'darf aufwendiger sein' : 'normal';
+    return d + ' (' + hint + ')';
+  });
+  return 'Koche an diesen Tagen: ' + parts.join(', ') + '. Weise jedem Gericht den passenden Tag zu.';
+}
+
+function setN(n) {
+  n = Math.max(1, Math.min(7, n));
+  G.n = n;
+  if ($('n-display')) $('n-display').textContent = n;
+}
+
 function setN(n) {
   n = Math.max(1, Math.min(7, n));
   G.n = n;
@@ -1321,6 +1387,8 @@ function goSuggest() {
 
   // Ultra-simple message
   var theme = ($('theme') ? $('theme').value.trim() : '');
+  // Init day picker if not done
+  if (!$('dc-Mo')) initDayPicker();
   var exist = ($('exist') ? $('exist').value.trim() : '');
   var feedback = ($('feedback') ? $('feedback').value.trim() : '');
   // Load user preferences for generation
@@ -1627,8 +1695,13 @@ function renderRez(sug) {
       zeitHtml +
       (next ? '<div class="rnext">' + next + '</div>' : '') + '</div>' +
       '<div class="ract">' +
-      '<button class="btn btn-red" onclick="startCook(' + i + ')">Jetzt kochen</button>' +
-      '<button class="btn btn-out" onclick="showReplaceGericht(' + i + ')" style="display:flex;align-items:center;justify-content:center;gap:6px">&#x21BA; Gericht austauschen</button>' +
+      '<button class="btn btn-red" onclick="startCook(' + i + ')">👨‍🍳 Jetzt kochen</button>' +
+      '<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">' +
+        '<button class="btn btn-out" onclick="showReplaceGericht(' + i + ')" style="font-size:13px">↺ Austauschen</button>' +
+        '<button class="btn btn-out" onclick="showRescheduleGericht(' + i + ')" style="font-size:13px">📅 Verschieben</button>' +
+        '<button class="btn btn-out" onclick="cancelGericht(' + i + ')" style="font-size:13px">❌ Fällt aus</button>' +
+        '<button class="btn btn-out" onclick="auswaartsGericht(' + i + ')" style="font-size:13px">🍽 Auswärts</button>' +
+      '</div>' +
       '<button class="btn btn-out" onclick="showRatingModal(' + i + ')" style="display:flex;align-items:center;justify-content:center;gap:6px"><span style="color:#f59e0b;font-size:16px">&#9733;</span> Bewerten</button>' +
       '<button class="btn btn-out" onclick="showPrint(' + i + ')" style="font-size:13px">Als PDF</button>' +
       '</div></div>';
@@ -2186,6 +2259,70 @@ function clearFixedDishes() {
   G.fixedDishes = {};
   // Re-render to reset lock icons
   if (G.sugs && G.sugs.length) renderSugs();
+}
+
+
+// ─── FLEXIBLES UMPLANEN ────────────────────────────────────
+var G_replan = { gerichtIdx: null };
+
+function showRescheduleGericht(ri) {
+  if (!G.sugs || G.sel === null) return;
+  var gerichte = G.sugs[G.sel].gerichte;
+  var g = gerichte[ri];
+  G_replan.gerichtIdx = ri;
+  $('rsch-title').textContent = g.abend;
+  // Show other days as targets
+  var html = gerichte.map(function(tg, ti) {
+    if (ti === ri) return '';
+    return '<button onclick="doReschedule(' + ri + ',' + ti + ')" class="btn btn-out" style="text-align:left;padding:12px 16px;font-size:14px">' +
+      '<b style="color:var(--red);margin-right:8px">' + (tg.tag||'').slice(0,2) + '</b>' + tg.abend +
+      '</button>';
+  }).join('');
+  $('rsch-days').innerHTML = html;
+  $('reschedule-modal').style.display = 'flex';
+}
+
+function doReschedule(fromIdx, toIdx) {
+  $('reschedule-modal').style.display = 'none';
+  // Swap the dishes (same as drag & drop swap)
+  swapGerichte(G.sel, fromIdx, toIdx);
+}
+
+function cancelGericht(ri) {
+  if (!G.sugs || G.sel === null) return;
+  if (!confirm('Diesen Kochabend ausfallen lassen?')) return;
+  var sug = G.sugs[G.sel];
+  var g = sug.gerichte[ri];
+  // Mark as cancelled
+  g._cancelled = true;
+  g._origAbend = g.abend;
+  g.abend = '❌ ' + g.abend + ' (ausgefallen)';
+  goWeekRender(sug);
+  if (G.activePlan) {
+    G.activePlan.sug = sug;
+    localStorage.setItem('active_plan', JSON.stringify(G.activePlan));
+    saveToGH(G.activePlan);
+  }
+  updateDashboard();
+  showSwapToast('Kochabend ausgefallen – kein Einkauf nötig.', '#555');
+}
+
+function auswaartsGericht(ri) {
+  if (!G.sugs || G.sel === null) return;
+  var sug = G.sugs[G.sel];
+  var g = sug.gerichte[ri];
+  var origName = g._origAbend || g.abend;
+  g._cancelled = true;
+  g._origAbend = origName;
+  g.abend = '🍽 Auswärts (' + (g.tag||'').slice(0,2) + ')';
+  goWeekRender(sug);
+  if (G.activePlan) {
+    G.activePlan.sug = sug;
+    localStorage.setItem('active_plan', JSON.stringify(G.activePlan));
+    saveToGH(G.activePlan);
+  }
+  updateDashboard();
+  showSwapToast('Auswärts markiert', '#555');
 }
 
 
@@ -2749,13 +2886,16 @@ function renderHistoryList(history) {
   for(var i=0;i<history.length;i++){
     var e=history[i]; var status=e.status||'geplant'; var stars=e.stars?'<span style="color:#f59e0b">'+('★'.repeat(e.stars))+'</span>':'';
     var dishes=(e.gerichte||[]).map(function(g){return '<div style="display:flex;gap:6px;padding:2px 0"><span style="font-size:11px;font-weight:700;color:var(--red);min-width:20px">'+(g.tag||'').slice(0,2)+'</span><span style="font-size:13px;color:var(--txt2)">'+(g.abend||'')+'</span></div>';}).join('');
+    var isLoved = (e.stars || 0) >= 4;
     html+='<div style="background:#fff;border-radius:var(--rlg);border:.5px solid var(--bdr);margin-bottom:8px;overflow:hidden">'
       +'<div style="padding:10px 14px;border-bottom:.5px solid var(--gr)">'
         +'<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:6px"><div style="font-size:15px;font-weight:700;color:var(--txt);flex:1">'+(e.thema||'Menüplan')+stars+'</div>'+statusBadge(status)+'</div>'
+        +(isLoved && e.tags && e.tags.includes && e.tags.includes('unbedingt wieder') ? '<div style="font-size:11px;color:var(--red);font-weight:600;margin-bottom:4px">♥ unbedingt wieder</div>' : '')
         +'<div style="font-size:11px;color:var(--gr3)">'+(e.saved||e.date||'')+' · '+(e.personen||2)+' Pers. · '+(e.kochabende||3)+' Abende</div>'
       +'</div>'
       +'<div style="padding:8px 14px">'+dishes+'</div>'
       +'<div style="padding:0 14px 10px;display:flex;flex-direction:column;gap:6px">'
+        +(isLoved ? '<button class="btn btn-red" onclick="nochmalKochen('+i+')" style="padding:9px;font-size:13px;font-weight:700">🔁 Nochmal kochen</button>' : '')
         +'<div style="display:flex;gap:6px"><button class="btn btn-out" onclick="loadHistoryEntry('+i+')" style="flex:1;padding:9px;font-size:12px">Plan laden</button><button class="btn btn-out" onclick="showHistoryRating('+i+')" style="flex:1;padding:9px;font-size:12px">★ Bewerten</button></div>'
         +'<div style="display:flex;gap:6px">'+(status!=='gekocht'?'<button class="btn btn-out" onclick="markHistoryKekocht('+i+')" style="flex:1;padding:9px;font-size:12px">🍽 Gekocht</button>':'')+(status!=='geplant'?'<button class="btn btn-out" onclick="resetHistoryStatus('+i+')" style="padding:9px;font-size:12px">✕ Reset</button>':'')+'</div>'
       +'</div>'
@@ -2769,6 +2909,38 @@ function loadHistoryEntry(i) {
   var plan=e[i].plan; G.activePlan=plan; localStorage.setItem('active_plan',JSON.stringify(plan));
   if(plan.sug){G.sugs=[plan.sug];G.sel=0;G.n=plan.n||3;G.personen=plan.personen||2;G.reste=plan.reste!==undefined?plan.reste:1;G.freeze=plan.freeze!==undefined?plan.freeze:1;G.sugsPartial=false;renderActivePlan();goWeekRender(G.sugs[G.sel]);}
 }
+
+function nochmalKochen(i) {
+  var e = window._history;
+  if (!e || !e[i] || !e[i].plan) return;
+  var plan = e[i].plan;
+  // Option: add to current plan or start fresh
+  var choice = confirm(
+    '"' + (e[i].thema||'Menüplan') + '" wieder kochen?\n\n' +
+    'OK = Als neuen aktiven Plan setzen\n' +
+    'Abbrechen = Nur ansehen'
+  );
+  if (choice) {
+    // Set as new active plan with fresh date
+    var newPlan = JSON.parse(JSON.stringify(plan));
+    newPlan.saved = new Date().toLocaleDateString('de-CH');
+    newPlan.einkaufDone = false;
+    G.activePlan = newPlan;
+    G.checked = {};
+    localStorage.setItem('active_plan', JSON.stringify(newPlan));
+    localStorage.removeItem('einkauf_checked');
+    saveToGH(newPlan);
+    saveToHistory(newPlan);
+    updateDashboard();
+    go('sh');
+    showSwapToast('🔁 Plan wieder aktiv gesetzt!');
+  } else {
+    // Load for viewing
+    loadHistoryEntry(i);
+    go('sw');
+  }
+}
+
 function markHistoryKekocht(i) {
   var hist=window._history; if(!hist||!hist[i])return;
   hist[i].status='gekocht'; localStorage.setItem('local_history',JSON.stringify(hist)); saveHistoryToGH(hist); renderHistoryList(hist);
@@ -2810,6 +2982,16 @@ function importHistoryRecipeToBring(i) {
   var saved=JSON.parse(localStorage.getItem('foto_rezepte')||'[]'); var r=saved[i]; if(!r)return;
   window._fotoRezept=r; G_foto.portionen=r.portionen||2; importFotoFromResult();
 }
+function nochmalKochenFoto(i) {
+  var saved = JSON.parse(localStorage.getItem('foto_rezepte') || '[]');
+  var r = saved[i]; if (!r) return;
+  window._fotoRezept = r;
+  G_foto.portionen = r.portionen || 2;
+  go('sf');
+  renderFotoRezept(r);
+  showSwapToast('🔁 ' + r.name + ' – bereit zum Kochen!');
+}
+
 function markFotoRezeptGekocht(i) {
   var saved=JSON.parse(localStorage.getItem('foto_rezepte')||'[]'); if(!saved[i])return;
   saved[i].status='gekocht'; localStorage.setItem('foto_rezepte',JSON.stringify(saved)); saveFotoRezepteToGH(saved); loadHistoryRecipes(); loadSavedFotoRezepte();
