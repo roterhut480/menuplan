@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=yes">
-<title>Menüplan v5.53</title>
+<title>Menüplan v5.55</title>
 <style>
 :root{
   --red:#e8390e;--rl:#fff2ef;--grn:#2e7d32;--grl:#f0faf4;
@@ -153,9 +153,80 @@ input[type=password]{letter-spacing:2px}
 
 <!-- HOME -->
 <div class="scr on" id="sh">
-  <div class="hero"><h1>Menüplan</h1><p id="hsub">v5.53 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
+  <div class="hero"><h1>Menüplan</h1><p id="hsub">v5.55 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
 
   <!-- Active plan card -->
+
+  <!-- Dashboard (shown when logged in) -->
+  <div id="loggedin-section" style="display:none;padding:0 10px">
+    <div id="dashboard">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+        <div id="dash-greeting" style="font-size:20px;font-weight:800;color:var(--txt)">Guten Abend</div>
+        <button onclick="toggleUserMenu()" id="user-menu-btn" style="display:none;width:38px;height:38px;border-radius:50%;background:var(--red);color:#fff;border:none;font-size:16px;cursor:pointer">👤</button>
+      </div>
+      <div id="dash-no-plan" style="display:none;background:#fff;border-radius:var(--rlg);border:.5px solid var(--bdr);padding:24px;text-align:center;margin-bottom:12px">
+        <div style="font-size:40px;margin-bottom:10px">📅</div>
+        <div style="font-size:16px;font-weight:700;color:var(--txt);margin-bottom:6px">Noch kein Menüplan</div>
+        <div style="font-size:13px;color:var(--gr3);margin-bottom:16px">Generiere deinen ersten Wochenplan</div>
+        <button onclick="showPlanSettings()" style="background:var(--red);color:#fff;border:none;border-radius:10px;padding:13px;font-size:15px;font-weight:700;cursor:pointer;width:100%">✨ Menüplan erstellen</button>
+      </div>
+      <div id="dash-has-plan" style="display:none">
+        <div id="dash-today-card" style="display:none;background:var(--red);border-radius:var(--rlg);color:#fff;padding:18px;margin-bottom:12px">
+          <div id="dash-today-label" style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;opacity:.7;margin-bottom:6px">Heute</div>
+          <div id="dash-today-name" style="font-size:20px;font-weight:800;margin-bottom:4px"></div>
+          <div id="dash-today-meta" style="font-size:13px;opacity:.75;margin-bottom:14px"></div>
+          <button id="dash-today-btn" style="width:100%;background:#fff;color:var(--red);border:none;border-radius:10px;padding:12px;font-size:15px;font-weight:700;cursor:pointer">👨‍🍳 Jetzt kochen</button>
+        </div>
+        <div style="background:#fff;border-radius:var(--rlg);border:.5px solid var(--bdr);padding:14px 16px;margin-bottom:12px">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+            <div style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--gr3)">Diese Woche</div>
+            <div id="dash-thema" style="font-size:12px;color:var(--gr3);font-style:italic"></div>
+          </div>
+          <div id="dash-week-days"></div>
+          <button onclick="openActivePlan('r')" style="width:100%;margin-top:12px;background:#f5f5f5;border:none;border-radius:8px;padding:10px;font-size:13px;font-weight:600;color:var(--txt);cursor:pointer">Alle Rezepte öffnen →</button>
+        </div>
+        <div id="dash-einkauf-card" style="display:none;background:#fff;border-radius:var(--rlg);border:.5px solid var(--bdr);padding:14px 16px;margin-bottom:12px">
+          <div style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--gr3);margin-bottom:8px">Einkauf</div>
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+            <div id="dash-einkauf-txt" style="font-size:14px;font-weight:600;color:var(--txt)"></div>
+            <div id="dash-einkauf-pct" style="font-size:13px;color:var(--gr3)"></div>
+          </div>
+          <div style="background:#f0f0f0;border-radius:100px;height:7px;overflow:hidden;margin-bottom:12px">
+            <div id="dash-einkauf-bar" style="height:7px;background:var(--grn);border-radius:100px;width:0%;transition:width .6s"></div>
+          </div>
+          <button onclick="openActivePlan('e')" style="width:100%;background:#f5f5f5;border:none;border-radius:8px;padding:10px;font-size:13px;font-weight:600;color:var(--txt);cursor:pointer">Einkaufsliste öffnen →</button>
+        </div>
+        <button onclick="showPlanSettings()" style="width:100%;background:#fff;border:.5px solid var(--bdr);border-radius:var(--rlg);padding:14px;font-size:14px;font-weight:600;color:var(--gr3);cursor:pointer;margin-bottom:8px">📅 Neue Woche planen</button>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:4px">
+        <button onclick="openFotoScreen()" style="background:#fff;border:.5px solid var(--bdr);border-radius:var(--rlg);padding:14px;text-align:left;cursor:pointer;font-family:inherit"><div style="font-size:22px;margin-bottom:4px">📷</div><div style="font-size:13px;font-weight:700;color:var(--txt)">Foto-Rezept</div><div style="font-size:11px;color:var(--gr3)">Foto analysieren</div></button>
+        <button onclick="openHistory()" style="background:#fff;border:.5px solid var(--bdr);border-radius:var(--rlg);padding:14px;text-align:left;cursor:pointer;font-family:inherit"><div style="font-size:22px;margin-bottom:4px">📖</div><div style="font-size:13px;font-weight:700;color:var(--txt)">Verlauf</div><div style="font-size:11px;color:var(--gr3)">Pläne & Rezepte</div></button>
+      </div>
+    </div>
+    <div id="invite-btn" style="display:none"></div>
+    <div id="login-manual-setup" style="display:none"></div>
+    <div id="token-refresh-section" style="display:none"></div>
+  </div>
+
+  <!-- Login Card -->
+  <div class="card" id="login-card">
+    <div class="cp">
+      <div id="login-section">
+        <div id="login-invite-banner" style="display:none;background:var(--grl);border:.5px solid #a5d6a7;border-radius:8px;padding:10px 12px;margin-bottom:12px">
+          <div style="font-size:12px;font-weight:700;color:var(--grn);margin-bottom:2px">Einladung erhalten!</div>
+          <div style="font-size:12px;color:var(--grn)">Wähle einen Benutzernamen und ein eigenes Passwort.</div>
+        </div>
+        <div class="clbl" id="login-title">Anmelden</div>
+        <div class="fld"><label>Benutzername</label><input id="login-user" placeholder="z.B. roman, anna..." autocomplete="username" onkeydown="if(event.key==='Enter')$('login-pw').focus()"></div>
+        <div class="fld"><label>Passwort</label><input type="password" id="login-pw" placeholder="Passwort..." autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()"></div>
+        <div id="login-err" style="font-size:12px;color:var(--red);margin-bottom:8px;display:none"></div>
+        <button class="btn btn-red" id="login-btn" onclick="doLogin()" style="padding:11px">Anmelden</button>
+        <div style="margin-top:8px;text-align:center">
+          <button onclick="resetLocalUsers()" style="background:none;border:none;font-size:11px;color:var(--gr3);cursor:pointer;font-family:inherit;text-decoration:underline">Neues Gerät einrichten</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <!-- Cook options -->
   <div class="card">
@@ -484,6 +555,30 @@ input[type=password]{letter-spacing:2px}
 <script>
 // ─── CONFIG ────────────────────────────────────────────────
 var PROXY = 'https://menuplan-proxy.shop-242.workers.dev';
+
+// ─── USER STORAGE ──────────────────────────────────────────
+// All per-user data uses these keys in localStorage:
+//   prefs_<username>      User preferences & learning profile
+//   active_plan_<username> Current week's menu plan
+//   history_<username>    Past plans with ratings
+//   ratings_<username>    Individual dish ratings
+//   foto_<username>       Photo recipes
+//   pantry_<username>     Pantry / available ingredients
+//   einkauf_<username>    Shopping list checked state
+function userKey(name) {
+  var s = getSession();
+  return s ? name + '_' + s.username : name + '_guest';
+}
+function loadLocal(name, fallback) {
+  try { var r = localStorage.getItem(userKey(name)); return r ? JSON.parse(r) : fallback; } catch(e) { return fallback; }
+}
+function saveLocal(name, val) {
+  try { localStorage.setItem(userKey(name), JSON.stringify(val)); } catch(e) {}
+}
+function removeLocal(name) {
+  try { localStorage.removeItem(userKey(name)); } catch(e) {}
+}
+
 var BAPI  = PROXY + '/bring';
 var GH_REPO = 'roterhut480/menuplan';
 var GH_FILE = 'saved-week.json'; // legacy, use ghFile() instead
@@ -610,13 +705,7 @@ window.addEventListener('DOMContentLoaded', function() {
 // enc = btoa(token + '|||' + password)
 // Current session: gh_session = {username, password}
 
-function getUsers() {
-  try { return JSON.parse(localStorage.getItem('gh_users') || '[]'); } catch(e) { return []; }
-}
 
-function saveUsers(users) {
-  localStorage.setItem('gh_users', JSON.stringify(users));
-}
 
 function doLogin() {
   var username = ($('login-user').value || '').trim().toLowerCase().replace(/[^a-z0-9_.@-]/g, '').replace(/[.@-]+$/, '');
@@ -658,66 +747,6 @@ function doLogin() {
 }
 
 
-function localLogin(username, pw) {
-  var err = $('login-err');
-  var users = getUsers();
-  var user = users.find(function(u) { return u.username === username; });
-
-  if (!user) {
-    // New user - check URL for setup token
-    var params = new URLSearchParams(window.location.search);
-    var setupTok = params.get('setup');
-    var setupPw = params.get('pw');
-    if (setupTok && setupPw && pw === setupPw) {
-      // Admin setup: create first user or add user with shared token
-      var enc = btoa(unescape(encodeURIComponent(setupTok + '|||' + setupPw)));
-      users.push({ username: username, enc: enc, isAdmin: users.length === 0 });
-      saveUsers(users);
-      startSession(username, pw);
-      return;
-    }
-    // Check for invite token in memory
-    var tok = window._inviteToken || null;
-    // Or check if admin token exists
-    if (!tok) {
-      var adminUser = users.find(function(u) { return u.isAdmin; });
-      if (adminUser) {
-        try {
-          var adminDec = decodeURIComponent(escape(atob(adminUser.enc)));
-          tok = adminDec.split('|||')[0];
-        } catch(e) {}
-      }
-    }
-    if (tok) {
-      var newEnc = btoa(unescape(encodeURIComponent(tok + '|||' + pw)));
-      users.push({ username: username, enc: newEnc, isAdmin: users.length === 0 });
-      saveUsers(users);
-      window._inviteToken = null;
-      startSession(username, pw);
-      return;
-    }
-    if ($('login-manual-setup')) $('login-manual-setup').style.display = 'block';
-    err.textContent = 'Kein Konto gefunden. Einladungslink verwenden oder unten einrichten.';
-    err.style.display = 'block';
-    return;
-  }
-
-  // Existing user - verify password
-  try {
-    var dec = decodeURIComponent(escape(atob(user.enc)));
-    var parts = dec.split('|||');
-    if (parts[1] === pw) {
-      startSession(username, pw);
-    } else {
-      err.textContent = 'Falsches Passwort';
-      err.style.display = 'block';
-      $('login-pw').value = '';
-    }
-  } catch(e) {
-    err.textContent = 'Fehler: ' + e.message;
-    err.style.display = 'block';
-  }
-}
 
 function startSession(username, pw) {
   localStorage.setItem('gh_session', JSON.stringify({ username: username, pw: pw }));
@@ -728,11 +757,11 @@ function startSession(username, pw) {
 function getGHToken() {
   var session = getSession();
   if (!session) return null;
-  var users = getUsers();
+  var users = [];
   var user = users.find(function(u) { return u.username === session.username; });
   if (!user) return null;
   try {
-    var dec = decodeURIComponent(escape(atob(user.enc)));
+    var dec = decodeURIComponent(escape(atob(null)));
     var parts = dec.split('|||');
     if (parts[1] === session.pw) return parts[0];
   } catch(e) {}
@@ -812,9 +841,7 @@ function updateGHUI() {
   if ($('login-title')) $('login-title').textContent = 'Anmelden';
   if ($('login-btn')) $('login-btn').textContent = 'Anmelden';
 }
-
-function saveGHToken() {} // legacy noop
-function disconnectGH() { doLogout(); }
+ // legacy noop
 
 
 function decodeGHContent(d) {
@@ -1163,6 +1190,32 @@ function validateIngredients(gerichte) {
   return gerichte;
 }
 
+function validateOverview(data) {
+  if (!data || !Array.isArray(data.vorschlaege)) return 'Feld "vorschlaege" fehlt';
+  if (!data.vorschlaege.length) return 'Keine Vorschläge erhalten';
+  for (var i = 0; i < data.vorschlaege.length; i++) {
+    var v = data.vorschlaege[i];
+    if (!v.thema) return 'Vorschlag ' + (i+1) + ': Thema fehlt';
+    if (!Array.isArray(v.gerichte) || !v.gerichte.length) return 'Vorschlag ' + (i+1) + ': Gerichte fehlen';
+    for (var j = 0; j < v.gerichte.length; j++) {
+      if (!v.gerichte[j].abend) return 'Vorschlag ' + (i+1) + ', Gericht ' + (j+1) + ': Name fehlt';
+    }
+  }
+  return null;
+}
+
+function validateFullRecipe(data) {
+  if (!data || !Array.isArray(data.gerichte)) return 'Feld "gerichte" fehlt';
+  if (!data.gerichte.length) return 'Keine Gerichte enthalten';
+  for (var i = 0; i < data.gerichte.length; i++) {
+    var g = data.gerichte[i];
+    if (!g.abend) return 'Gericht ' + (i+1) + ': Name fehlt';
+    if (!Array.isArray(g.zutaten) || !g.zutaten.length) return 'Gericht ' + (i+1) + ': Zutaten fehlen';
+    if (!Array.isArray(g.schritte_vegi) || !g.schritte_vegi.length) return 'Gericht ' + (i+1) + ': Kochschritte fehlen';
+  }
+  return null;
+}
+
 function parseJSON(raw) {
   // Strip markdown code blocks if present
   var cleaned = raw.replace(/^```[a-z]*\n?/,'').replace(/\n?```$/,'').trim();
@@ -1296,6 +1349,8 @@ function goSuggest() {
       .then(function(raw) {
         try {
           var parsed = parseJSON(raw);
+          var validErr = validateOverview(parsed);
+          if (validErr) throw new Error(validErr);
           var sugs = parsed.vorschlaege || [];
           if (sugs.length > 0) {
             sugs[0].id = id;
@@ -2422,21 +2477,17 @@ function applyReplace() {
 
 function showLoggedIn() {
   var session = getSession();
-  if ($('login-section')) $('login-section').style.display = 'none';
+  // Hide login, show dashboard
+  if ($('login-card')) $('login-card').style.display = 'none';
   if ($('loggedin-section')) $('loggedin-section').style.display = 'block';
-  if ($('login-card')) $('login-card').style.display = 'block';
   if ($('login-err')) $('login-err').style.display = 'none';
   if ($('login-pw')) $('login-pw').value = '';
-  if ($('invite-btn')) $('invite-btn').style.display = 'block';
   if ($('user-menu-btn')) $('user-menu-btn').style.display = 'flex';
-  // Load user preferences
   loadPrefs();
-  // Load active plan from localStorage
   try {
     var ap = JSON.parse(localStorage.getItem('active_plan') || 'null');
     if (ap && ap.sug) { G.activePlan = ap; }
   } catch(e) {}
-  // Show dashboard
   updateDashboard();
 }
 
@@ -2481,19 +2532,18 @@ function doChangePassword() {
   var newPw = $('pw-new').value;
   var newPw2 = $('pw-new2').value;
   var err = $('pw-err');
-  if (!oldPw) { err.textContent = 'Bitte aktuelles Passwort eingeben'; err.style.display = 'block'; return; }
-  if (!newPw) { err.textContent = 'Bitte neues Passwort eingeben'; err.style.display = 'block'; return; }
-  if (newPw !== newPw2) { err.textContent = 'Passwörter stimmen nicht überein'; err.style.display = 'block'; return; }
+  if (!oldPw) { err.textContent = 'Bitte aktuelles Passwort eingeben'; err.style.display='block'; return; }
+  if (!newPw || newPw.length < 4) { err.textContent = 'Passwort muss mindestens 4 Zeichen haben'; err.style.display='block'; return; }
+  if (newPw !== newPw2) { err.textContent = 'Passwörter stimmen nicht überein'; err.style.display='block'; return; }
   var session = getSession();
-  if (!session) return;
-  if (session.pw !== oldPw) { err.textContent = 'Falsches aktuelles Passwort'; err.style.display = 'block'; return; }
+  if (!session || session.pw !== oldPw) { err.textContent = 'Falsches aktuelles Passwort'; err.style.display='block'; return; }
+  // Update session only (Worker MP_USERS must be updated by admin in Cloudflare)
   localStorage.setItem('gh_session', JSON.stringify({ username: session.username, pw: newPw }));
   $('pw-modal').style.display = 'none';
   var ind = document.createElement('div');
-  ind.textContent = 'Passwort geändert';
-  ind.style.cssText = 'position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--grn);color:#fff;padding:10px 16px;border-radius:8px;font-size:13px;font-weight:600;z-index:999';
-  document.body.appendChild(ind);
-  setTimeout(function(){ ind.remove(); }, 3000);
+  ind.textContent = '✓ Passwort geändert – bitte Admin bitten MP_USERS in Cloudflare zu aktualisieren';
+  ind.style.cssText = 'position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--grn);color:#fff;padding:12px 16px;border-radius:8px;font-size:13px;font-weight:600;z-index:999;max-width:90vw;text-align:center';
+  document.body.appendChild(ind); setTimeout(function(){ ind.remove(); }, 5000);
 }
 
 function resetLocalUsers() {
@@ -2513,150 +2563,89 @@ function copyInviteLink() {
 }
 
 // ─── DASHBOARD ─────────────────────────────────────────────
+function showPlanSettings() {
+  // Hide dashboard, show cook options
+  if ($('loggedin-section')) $('loggedin-section').style.display = 'none';
+  if ($('login-card')) $('login-card').style.display = 'none';
+}
+
 function updateDashboard() {
   var session = getSession();
   if (!session) return;
-
-  // Greeting by time of day
   var h = new Date().getHours();
   var greeting = h < 12 ? 'Guten Morgen' : h < 18 ? 'Guten Tag' : 'Guten Abend';
   if ($('dash-greeting')) $('dash-greeting').textContent = greeting + ', ' + session.username + '!';
-  if ($('dash-user')) $('dash-user').textContent = 'Dein persönlicher Küchenassistent';
-
   var plan = G.activePlan;
   var hasPlan = plan && plan.sug && !plan.cleared;
-
-  // Plan card
-  if ($('dash-plan-card')) $('dash-plan-card').style.display = hasPlan ? 'block' : 'none';
   if ($('dash-no-plan')) $('dash-no-plan').style.display = hasPlan ? 'none' : 'block';
-
-  if (hasPlan && plan.sug) {
-    if ($('dash-plan-thema')) $('dash-plan-thema').textContent = plan.sug.thema || 'Menüplan';
-    // Render day overview
-    var gerichte = plan.sug.gerichte || [];
-    var daysHtml = gerichte.map(function(g) {
-      var hasReste = g.mittag_naechster_tag && g.mittag_naechster_tag !== 'Restename';
-      return '<div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:6px">' +
-        '<span style="font-size:11px;font-weight:700;opacity:.7;min-width:22px;margin-top:1px">' + (g.tag||'').slice(0,2) + '</span>' +
-        '<div><div style="font-size:13px;font-weight:600">' + (g.abend||'') + '</div>' +
-        (hasReste ? '<div style="font-size:11px;opacity:.65">↳ ' + g.mittag_naechster_tag + '</div>' : '') +
-        '</div></div>';
-    }).join('');
-    if ($('dash-plan-days')) $('dash-plan-days').innerHTML = daysHtml;
-
-    // Einkauf progress
-    var checked = G.checked || {};
-    var checkedCount = Object.values(checked).filter(Boolean).length;
-    // Estimate total items
-    var totalItems = gerichte.reduce(function(sum, g) { return sum + (g.zutaten||[]).length; }, 0);
-    if (totalItems > 0) {
-      if ($('dash-einkauf-card')) $('dash-einkauf-card').style.display = 'block';
-      var pct = Math.min(100, Math.round(checkedCount / totalItems * 100));
-      if ($('dash-einkauf-status')) $('dash-einkauf-status').textContent = checkedCount + ' / ' + totalItems + ' Artikel';
-      if ($('dash-einkauf-bar')) $('dash-einkauf-bar').style.width = pct + '%';
+  if ($('dash-has-plan')) $('dash-has-plan').style.display = hasPlan ? 'block' : 'none';
+  if (!hasPlan) return;
+  var gerichte = plan.sug.gerichte || [];
+  if ($('dash-thema')) $('dash-thema').textContent = plan.sug.thema || '';
+  var DAYS = ['Mo','Di','Mi','Do','Fr','Sa','So'];
+  var dow = new Date().getDay();
+  var todayIdx = dow === 0 ? 6 : dow - 1;
+  var todayTag = DAYS[todayIdx];
+  // Diese Woche
+  var weekHtml = gerichte.map(function(g) {
+    var tag = (g.tag||'').slice(0,2);
+    var gIdx = DAYS.indexOf(tag);
+    var isToday = tag === todayTag;
+    var isPast = gIdx < todayIdx;
+    var hasReste = g.mittag_naechster_tag && g.mittag_naechster_tag !== 'Restename';
+    return '<div style="display:flex;align-items:flex-start;gap:10px;padding:6px 0;border-bottom:.5px solid #f5f5f5">' +
+      '<span style="font-size:11px;font-weight:700;min-width:22px;margin-top:2px;color:' + (isToday?'var(--red)':isPast?'#ccc':'var(--gr3)') + '">' + tag + '</span>' +
+      '<div style="flex:1"><div style="font-size:14px;font-weight:' + (isToday?'700':'500') + ';color:' + (isPast?'#ccc':'var(--txt)') + ';' + (isPast?'text-decoration:line-through':'') + '">' + (isPast?'✓ ':'') + (g.abend||'') + '</div>' +
+      (hasReste && !isPast ? '<div style="font-size:11px;color:var(--gr3)">↳ ' + g.mittag_naechster_tag + '</div>' : '') + '</div></div>';
+  }).join('');
+  if ($('dash-week-days')) $('dash-week-days').innerHTML = weekHtml;
+  // Heute / Nächstes
+  var todayDish = null, nextDish = null;
+  for (var i = 0; i < gerichte.length; i++) {
+    var gTag = (gerichte[i].tag||'').slice(0,2);
+    var gIdx2 = DAYS.indexOf(gTag);
+    if (gTag === todayTag) { todayDish = gerichte[i]; break; }
+    if (gIdx2 > todayIdx && !nextDish) nextDish = gerichte[i];
+  }
+  var featured = todayDish || nextDish;
+  if (featured && $('dash-today-card')) {
+    $('dash-today-card').style.display = 'block';
+    if ($('dash-today-label')) $('dash-today-label').textContent = todayDish ? 'Heute' : 'Nächstes – ' + (featured.tag||'').slice(0,2);
+    if ($('dash-today-name')) $('dash-today-name').textContent = featured.abend || '';
+    if ($('dash-today-meta')) {
+      var parts = [];
+      if (featured.zeit_aktiv) parts.push('✏ ' + featured.zeit_aktiv);
+      if (featured.zeit_total) parts.push('⏰ ' + featured.zeit_total);
+      parts.push((plan.personen||2) + ' Personen');
+      $('dash-today-meta').textContent = parts.join(' · ');
     }
-
-    // Next cook – find next uncompleted dish based on day
-    var DAYS = ['Mo','Di','Mi','Do','Fr','Sa','So'];
-    var today = DAYS[new Date().getDay() === 0 ? 6 : new Date().getDay() - 1];
-    var todayIdx = DAYS.indexOf(today);
-    var next = null;
-    for (var i = 0; i < gerichte.length; i++) {
-      var gTag = (gerichte[i].tag||'').slice(0,2);
-      var gIdx = DAYS.indexOf(gTag);
-      if (gIdx >= todayIdx) { next = gerichte[i]; break; }
+    var btn = $('dash-today-btn');
+    if (btn) {
+      var gi = gerichte.indexOf(featured);
+      if (todayDish) {
+        btn.textContent = '👨‍🍳 Jetzt kochen';
+        btn.onclick = function() { openActivePlan('r'); setTimeout(function(){ startCook(gi); }, 350); };
+      } else {
+        btn.textContent = '📖 Rezept ansehen';
+        btn.onclick = function() { openActivePlan('r'); };
+      }
     }
-    if (!next && gerichte.length) next = gerichte[0];
-    if (next) {
-      if ($('dash-next-cook')) $('dash-next-cook').style.display = 'block';
-      if ($('dash-next-name')) $('dash-next-name').textContent = next.abend;
-      if ($('dash-next-meta')) $('dash-next-meta').textContent =
-        [(next.tag||''), next.zeit_aktiv ? '✏ ' + next.zeit_aktiv + ' aktiv' : '', next.zeit_total ? '⏰ ' + next.zeit_total + ' total' : '']
-        .filter(Boolean).join(' · ');
-    }
+  } else if ($('dash-today-card')) {
+    $('dash-today-card').style.display = 'none';
+  }
+  // Einkauf
+  var checked = G.checked || {};
+  var checkedCount = Object.values(checked).filter(Boolean).length;
+  var totalItems = gerichte.reduce(function(s,g){ return s+(g.zutaten||[]).length; }, 0);
+  if (totalItems > 0 && $('dash-einkauf-card')) {
+    $('dash-einkauf-card').style.display = 'block';
+    var pct = Math.min(100, Math.round(checkedCount/totalItems*100));
+    var done = pct === 100;
+    if ($('dash-einkauf-txt')) $('dash-einkauf-txt').textContent = done ? '✅ Alles eingekauft!' : checkedCount + ' von ' + totalItems + ' Artikeln erledigt';
+    if ($('dash-einkauf-pct')) $('dash-einkauf-pct').textContent = pct + '%';
+    if ($('dash-einkauf-bar')) { $('dash-einkauf-bar').style.width=pct+'%'; $('dash-einkauf-bar').style.background=done?'var(--grn)':pct>60?'#66bb6a':'var(--red)'; }
   }
 }
-
-</script>
-
-<!-- REPLACE DISH MODAL -->
-<div id="replace-modal" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);z-index:100;align-items:flex-end;justify-content:center">
-  <div style="background:#fff;border-radius:20px 20px 0 0;padding:24px 20px 36px;width:100%;max-width:480px">
-    <div style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--gr3);margin-bottom:4px">Gericht austauschen</div>
-    <div id="rep-title" style="font-size:17px;font-weight:700;color:var(--txt);margin-bottom:16px"></div>
-    <div class="fld">
-      <label>Warum austauschen? (optional)</label>
-      <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px" id="rep-tags">
-        <button class="chip" onclick="toggleRepTag(this,'zu aufwendig')">zu aufwendig</button>
-        <button class="chip" onclick="toggleRepTag(this,'mag ich nicht')">mag ich nicht</button>
-        <button class="chip" onclick="toggleRepTag(this,'Zutaten fehlen')">Zutaten fehlen</button>
-        <button class="chip" onclick="toggleRepTag(this,'zu ähnlich')">zu ähnlich</button>
-        <button class="chip" onclick="toggleRepTag(this,'zu viele Zutaten')">zu viele Zutaten</button>
-        <button class="chip" onclick="toggleRepTag(this,'anderes gewünscht')">anderes gewünscht</button>
-      </div>
-      <input id="rep-hint" placeholder="Oder eigener Wunsch: z.B. etwas Asiatisches, schnell...">
-    </div>
-    <div id="rep-load" style="display:none;text-align:center;padding:20px 0">
-      <div class="spin" style="width:22px;height:22px;margin:0 auto 8px;border-width:2px"></div>
-      <div style="font-size:13px;color:var(--gr3)">Neues Gericht wird generiert...</div>
-    </div>
-    <div id="rep-result" style="display:none;background:var(--grl);border:.5px solid #a5d6a7;border-radius:10px;padding:12px 14px;margin-bottom:12px">
-      <div style="font-size:11px;color:var(--grn);font-weight:700;margin-bottom:4px">Vorschlag</div>
-      <div id="rep-name" style="font-size:15px;font-weight:700;color:var(--txt);margin-bottom:2px"></div>
-      <div id="rep-meta" style="font-size:12px;color:var(--gr3)"></div>
-    </div>
-    <div style="display:flex;gap:8px">
-      <button class="btn btn-out" onclick="closeReplace()" id="rep-cancel" style="flex:1;padding:11px;font-size:13px">Abbrechen</button>
-      <button class="btn btn-out" onclick="generateReplace()" id="rep-gen-btn" style="flex:1;padding:11px;font-size:13px">↺ Neu generieren</button>
-      <button class="btn btn-red" onclick="applyReplace()" id="rep-apply" style="display:none;flex:1;padding:11px;font-size:13px">Übernehmen</button>
-    </div>
-  </div>
-</div>
-
-<!-- RATING MODAL -->
-<div id="rating-modal" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);z-index:100;align-items:flex-end;justify-content:center">
-  <div style="background:#fff;border-radius:20px 20px 0 0;padding:24px 20px 40px;width:100%;max-width:480px">
-    <div style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--gr3);margin-bottom:6px">Gericht bewerten</div>
-    <div id="rm-title" style="font-size:18px;font-weight:700;color:var(--txt);margin-bottom:16px"></div>
-    <div style="display:flex;gap:8px;margin-bottom:16px" id="rm-stars">
-      <button onclick="setStar(1)" class="star-btn" style="font-size:32px;background:none;border:none;cursor:pointer;padding:4px;opacity:.3">&#9733;</button>
-      <button onclick="setStar(2)" class="star-btn" style="font-size:32px;background:none;border:none;cursor:pointer;padding:4px;opacity:.3">&#9733;</button>
-      <button onclick="setStar(3)" class="star-btn" style="font-size:32px;background:none;border:none;cursor:pointer;padding:4px;opacity:.3">&#9733;</button>
-      <button onclick="setStar(4)" class="star-btn" style="font-size:32px;background:none;border:none;cursor:pointer;padding:4px;opacity:.3">&#9733;</button>
-      <button onclick="setStar(5)" class="star-btn" style="font-size:32px;background:none;border:none;cursor:pointer;padding:4px;opacity:.3">&#9733;</button>
-    </div>
-    <div id="rm-starlbl" style="font-size:13px;color:var(--gr3);margin-bottom:14px;min-height:18px"></div>
-    <div class="fld">
-      <label>Kommentar (optional)</label>
-      <textarea id="rm-feedback" placeholder="Was hat gefallen? Was würde ich ändern?" style="width:100%;background:#fff;border:1px solid var(--bdr);border-radius:7px;color:var(--txt);font-size:14px;padding:10px 12px;font-family:inherit;resize:none;height:80px;outline:none" onfocus="this.style.borderColor='var(--red)'" onblur="this.style.borderColor='var(--bdr)'"></textarea>
-    </div>
-    <div style="display:flex;gap:8px;margin-top:4px">
-      <button class="btn btn-out" onclick="closeRating()" style="flex:1;padding:11px;font-size:13px">Überspringen</button>
-      <button class="btn btn-red" onclick="submitRating()" style="flex:1;padding:11px;font-size:13px" id="rm-submit" disabled>Speichern</button>
-    </div>
-  </div>
-</div>
-
-<!-- PASSWORD CHANGE MODAL -->
-<div id="pw-modal" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);z-index:100;align-items:flex-end;justify-content:center">
-  <div style="background:#fff;border-radius:20px 20px 0 0;padding:24px 20px 40px;width:100%;max-width:480px">
-    <div style="font-size:16px;font-weight:700;color:var(--txt);margin-bottom:16px">Passwort ändern</div>
-    <div class="fld"><label>Aktuelles Passwort</label><input type="password" id="pw-old" autocomplete="current-password"></div>
-    <div class="fld"><label>Neues Passwort</label><input type="password" id="pw-new" autocomplete="new-password"></div>
-    <div class="fld"><label>Neues Passwort wiederholen</label><input type="password" id="pw-new2" autocomplete="new-password"></div>
-    <div id="pw-err" style="font-size:12px;color:var(--red);margin-bottom:8px;display:none"></div>
-    <div style="display:flex;gap:8px">
-      <button class="btn btn-out" onclick="$('pw-modal').style.display='none'" style="flex:1;padding:11px;font-size:13px">Abbrechen</button>
-      <button class="btn btn-red" onclick="doChangePassword()" style="flex:1;padding:11px;font-size:13px">Ändern</button>
-    </div>
-  </div>
-</div>
-
-<script>
-// ─── RATING ────────────────────────────────────────────────
-var GH_RATINGS = 'ratings.json';
-var G_rating = { gerichtIdx: null, stars: 0, historyIdx: null, fotoIdx: null };
-var STAR_LABELS = ['', 'Nicht so gut', 'Geht so', 'Gut', 'Sehr gut', 'Ausgezeichnet!'];
 
 function showRatingModal(ri) {
   if (!G.sugs || G.sel === null) return;
@@ -2665,8 +2654,10 @@ function showRatingModal(ri) {
   G_rating.historyIdx = null;
   G_rating.fotoIdx = null;
   G_rating.stars = 0;
+  G_rating.tags = [];
   $('rm-title').textContent = g.abend;
   $('rm-feedback').value = '';
+  if ($('rm-tags')) $('rm-tags').querySelectorAll('.chip').forEach(function(c){ c.classList.remove('on'); });
   $('rm-starlbl').textContent = '';
   $('rm-submit').disabled = true;
   var stars = $('rm-stars').querySelectorAll('.star-btn');
@@ -2696,7 +2687,7 @@ function submitRating() {
   }
   var g = G.sugs&&G.sel!==null ? G.sugs[G.sel].gerichte[G_rating.gerichtIdx] : null;
   if (g) {
-    var entry = { date:new Date().toISOString().slice(0,10), saved:new Date().toLocaleDateString('de-CH'), thema:G.sugs[G.sel].thema, gericht:g.abend, tag:g.tag, stars:G_rating.stars, label:STAR_LABELS[G_rating.stars], feedback:feedback, personen:G.personen||2, zutaten:(g.zutaten||[]).map(function(z){return z.name;}).join(', ') };
+    var entry = { date:new Date().toISOString().slice(0,10), saved:new Date().toLocaleDateString('de-CH'), thema:G.sugs[G.sel].thema, gericht:g.abend, tag:g.tag, stars:G_rating.stars, label:STAR_LABELS[G_rating.stars], feedback:feedback, tags:G_rating.tags.slice(), personen:G.personen||2, zutaten:(g.zutaten||[]).map(function(z){return z.name;}).join(', ') };
     saveRatingToGH(entry);
     var hist2=JSON.parse(localStorage.getItem('local_history')||'[]');
     if (hist2.length){hist2[0].stars=G_rating.stars;hist2[0].ratingFeedback=feedback;}
@@ -2989,9 +2980,12 @@ function buildLearningProfile(){
   if(!ratings.length)return'';
   var loved=ratings.filter(function(r){return r.stars>=4;});var disliked=ratings.filter(function(r){return r.stars<=2;});var feedbacks=ratings.filter(function(r){return r.feedback&&r.feedback.length>3;});
   var profile='';
-  if(loved.length)profile+='Gut bewertet (ähnlichen Stil bevorzugen): '+loved.slice(0,4).map(function(r){return r.name+'('+r.stars+'★)';}).join(', ')+'. ';
-  if(disliked.length)profile+='Schlecht bewertet (vermeiden): '+disliked.slice(0,3).map(function(r){return r.name;}).join(', ')+'. ';
-  if(feedbacks.length)profile+='Feedback: '+feedbacks.slice(0,3).map(function(r){return r.feedback;}).join('; ')+'. ';
+  if(loved.length)profile+='Gut bewertet (ähnlichen Stil): '+loved.slice(0,4).map(function(r){return r.name+(r.tags&&r.tags.length?' ['+r.tags.join(',')+']':'')+'('+r.stars+'★)';}).join(', ')+'. ';
+  if(disliked.length)profile+='Schlecht bewertet (vermeiden): '+disliked.slice(0,3).map(function(r){return r.name+(r.tags&&r.tags.length?' ['+r.tags.join(',')+']':'');}).join(', ')+'. ';
+  if(feedbacks.length)profile+='Feedback: '+feedbacks.slice(0,3).map(function(r){return (r.tags&&r.tags.length?r.tags.join(', ')+': ':'')+r.feedback;}).join('; ')+'. ';
+  // Positive tags summary
+  var positiveTags = ratings.filter(function(r){return r.tags&&r.tags.some(function(t){return t==='unbedingt wieder'||t==='gut zum Einfrieren'||t==='gute Reste';});});
+  if(positiveTags.length)profile+='Besonders beliebt: '+positiveTags.slice(0,3).map(function(r){return r.name;}).join(', ')+'. ';
   return profile;
 }
 function updateProfileDisplay(){
@@ -3015,11 +3009,41 @@ function refreshToken(){
   var tok=$('new-token')?$('new-token').value.trim():'';
   if(!tok||!tok.startsWith('ghp_')){alert('Bitte gültigen GitHub Token eingeben (ghp_...)');return;}
   var session=getSession();if(!session)return;
-  var users=getUsers();var user=users.find(function(u){return u.username===session.username;});
-  if(user){var newEnc=btoa(unescape(encodeURIComponent(tok+'|||'+session.pw)));user.enc=newEnc;saveUsers(users);}
+  var users=[];var user=users.find(function(u){return u.username===session.username;});
+  /* legacy token update removed */
   if($('new-token'))$('new-token').value='';if($('token-refresh-section'))$('token-refresh-section').style.display='none';
   alert('Token erneuert!');
 }
+</script>
+<script>
+// ─── RATING ────────────────────────────────────────────────
+var GH_RATINGS = 'ratings.json';
+var G_rating = { gerichtIdx: null, stars: 0, historyIdx: null, fotoIdx: null, tags: [] };
+
+function toggleRmTag(btn, tag) {
+  btn.classList.toggle('on');
+  var idx = G_rating.tags.indexOf(tag);
+  if (idx >= 0) G_rating.tags.splice(idx, 1);
+  else G_rating.tags.push(tag);
+}
+var STAR_LABELS = ['', 'Nicht so gut', 'Geht so', 'Gut', 'Sehr gut', 'Ausgezeichnet!'];
+
+
+// ─── STATUS BADGE ───────────────────────────────────────────
+var STATUS_CFG = {
+  'geplant': {label:'Geplant', bg:'#f5f5f5', color:'#888', icon:'&#128197;'},
+  'einkauf': {label:'Eingekauft', bg:'#e3f2fd', color:'#1565c0', icon:'&#9989;'},
+  'gekocht': {label:'Gekocht', bg:'#e8f5e9', color:'#2e7d32', icon:'&#127859;'}
+};
+
+// ─── HISTORY ───────────────────────────────────────────────
+
+// ─── FOTO REZEPT ───────────────────────────────────────────
+var G_foto={base64:null,mime:null,portionen:2};
+
+// ─── PRÄFERENZEN & USER MENU ────────────────────────────────
+
+// ─── TOKEN & PASSWORT ──────────────────────────────────────
 </script>
 </body>
 </html>
