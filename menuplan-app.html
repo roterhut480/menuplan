@@ -585,7 +585,7 @@ var BH = {
 // ─── STATE ─────────────────────────────────────────────────
 var G = {
   n: 3, personen: 2, modus: 'optional', reste: 1, freeze: 1, resteMode: 'mikro', sugsPartial: false, fixedDishes: {},
-  days: { Mo: null, Di: null, Mi: null, Do: null, Fr: null, Sa: null, So: null },
+  days: { Mo: 'normal', Di: null, Mi: 'normal', Do: null, Fr: 'normal', Sa: null, So: null },
   // null=kein Kochen, 'schnell'=<20min, 'normal'=normal, 'aufwendig'=darf länger dauern
 
   sugs: [], sel: null,
@@ -606,6 +606,8 @@ function go(id) {
   window.scrollTo(0, 0);
   if (id === 'sh') setTimeout(initDayPicker, 50);
 }
+
+document.addEventListener('DOMContentLoaded', function() { setTimeout(initDayPicker, 100); });
 
 function showSt(id, msg, type) {
   var el = $(id);
