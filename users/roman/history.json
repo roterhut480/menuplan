@@ -2,30 +2,30 @@
   {
     "date": "2026-09-05",
     "saved": "5.9.2026",
-    "thema": "Mittelmeer",
+    "thema": "Orientalisch (Variante 2)",
     "personen": 2,
     "kochabende": 3,
     "reste": 0,
-    "freeze": 1,
+    "freeze": 0,
     "gerichte": [
       {
         "tag": "Mo",
-        "abend": "Auberginen-Linsen-Moussaka"
+        "abend": "Gefuellte Auberginen mit Kichererbsen und Joghurt"
       },
       {
         "tag": "Mi",
-        "abend": "Spanischer Tortilla mit Salat"
+        "abend": "Hummus-Plate mit Roestgemuese"
       },
       {
         "tag": "Fr",
-        "abend": "Zorba-Salat mit Halloumi"
+        "abend": "Tabbouleh mit Feta und Granatapfel"
       }
     ],
     "status": "geplant",
     "plan": {
       "sug": {
-        "id": 1,
-        "thema": "Mittelmeer",
+        "id": 2,
+        "thema": "Orientalisch (Variante 2)",
         "kochabende": [
           "Mo",
           "Mi",
@@ -34,29 +34,29 @@
         "gerichte": [
           {
             "tag": "Mo",
-            "abend": "Auberginen-Linsen-Moussaka",
-            "zeit_aktiv": "35m",
-            "zeit_total": "70m"
+            "abend": "Gefuellte Auberginen mit Kichererbsen und Joghurt",
+            "zeit_aktiv": "30m",
+            "zeit_total": "50m"
           },
           {
             "tag": "Mi",
-            "abend": "Spanischer Tortilla mit Salat",
-            "zeit_aktiv": "25m",
-            "zeit_total": "40m"
+            "abend": "Hummus-Plate mit Roestgemuese",
+            "zeit_aktiv": "18m",
+            "zeit_total": "28m"
           },
           {
             "tag": "Fr",
-            "abend": "Zorba-Salat mit Halloumi",
-            "zeit_aktiv": "15m",
-            "zeit_total": "15m"
+            "abend": "Tabbouleh mit Feta und Granatapfel",
+            "zeit_aktiv": "20m",
+            "zeit_total": "20m"
           }
         ]
       },
-      "sel": 0,
+      "sel": 1,
       "n": 3,
       "personen": 2,
       "reste": 0,
-      "freeze": 1,
+      "freeze": 0,
       "modus": "vegi",
       "days": {
         "Mo": "aufwendig",
@@ -74,7 +74,7 @@
       "sugsAll": [
         {
           "id": 1,
-          "thema": "Mittelmeer",
+          "thema": "Indisch",
           "kochabende": [
             "Mo",
             "Mi",
@@ -83,27 +83,27 @@
           "gerichte": [
             {
               "tag": "Mo",
-              "abend": "Auberginen-Linsen-Moussaka",
+              "abend": "Paneer Tikka Masala mit Basmatireis",
               "zeit_aktiv": "35m",
-              "zeit_total": "70m"
+              "zeit_total": "50m"
             },
             {
               "tag": "Mi",
-              "abend": "Spanischer Tortilla mit Salat",
-              "zeit_aktiv": "25m",
-              "zeit_total": "40m"
+              "abend": "Linsensuppe Dal",
+              "zeit_aktiv": "15m",
+              "zeit_total": "30m"
             },
             {
               "tag": "Fr",
-              "abend": "Zorba-Salat mit Halloumi",
-              "zeit_aktiv": "15m",
-              "zeit_total": "15m"
+              "abend": "Gemüse-Samosas mit Joghurt-Dip",
+              "zeit_aktiv": "25m",
+              "zeit_total": "40m"
             }
           ]
         },
         {
           "id": 2,
-          "thema": "Levantinisch",
+          "thema": "Orientalisch (Variante 2)",
           "kochabende": [
             "Mo",
             "Mi",
@@ -112,27 +112,27 @@
           "gerichte": [
             {
               "tag": "Mo",
-              "abend": "Auberginen-Linsen-Moussaka",
-              "zeit_aktiv": "35m",
-              "zeit_total": "70m"
+              "abend": "Gefuellte Auberginen mit Kichererbsen und Joghurt",
+              "zeit_aktiv": "30m",
+              "zeit_total": "50m"
             },
             {
               "tag": "Mi",
-              "abend": "Kichererbsen-Taboulé mit Feta",
-              "zeit_aktiv": "20m",
-              "zeit_total": "20m"
+              "abend": "Hummus-Plate mit Roestgemuese",
+              "zeit_aktiv": "18m",
+              "zeit_total": "28m"
             },
             {
               "tag": "Fr",
-              "abend": "Zorba-Salat mit Halloumi",
-              "zeit_aktiv": "15m",
-              "zeit_total": "15m"
+              "abend": "Tabbouleh mit Feta und Granatapfel",
+              "zeit_aktiv": "20m",
+              "zeit_total": "20m"
             }
           ]
         },
         {
           "id": 3,
-          "thema": "Nordafrikanisch",
+          "thema": "Orientalisch",
           "kochabende": [
             "Mo",
             "Mi",
@@ -141,21 +141,21 @@
           "gerichte": [
             {
               "tag": "Mo",
-              "abend": "Auberginen-Linsen-Moussaka",
-              "zeit_aktiv": "35m",
-              "zeit_total": "70m"
+              "abend": "Shakshuka mit Kichererbsen und Spinat",
+              "zeit_aktiv": "25m",
+              "zeit_total": "40m"
             },
             {
               "tag": "Mi",
-              "abend": "Shakshuka mit Kichererbsen",
-              "zeit_aktiv": "20m",
+              "abend": "Falafel-Wrap mit Tahini-Sauce",
+              "zeit_aktiv": "18m",
               "zeit_total": "25m"
             },
             {
               "tag": "Fr",
-              "abend": "Zorba-Salat mit Halloumi",
+              "abend": "Linsen-Tabbouleh mit Feta",
               "zeit_aktiv": "15m",
-              "zeit_total": "15m"
+              "zeit_total": "20m"
             }
           ]
         }
