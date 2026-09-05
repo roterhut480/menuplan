@@ -12,19 +12,464 @@
         "tag": "Mo",
         "abend": "Gefuellte Auberginen mit Kichererbsen und Joghurt",
         "zeit_aktiv": "30m",
-        "zeit_total": "50m"
+        "zeit_total": "50m",
+        "schritte_vegi": [
+          {
+            "titel": "Auberginen vorbereiten",
+            "text": "Auberginen laengs halbieren. Mit einem Loeffel das Fleisch aushoehlen und in 1 cm grosse Wuerfel schneiden. Die Auberginen-Haelften in eine Backform legen.",
+            "timer_min": 0,
+            "zutaten_schritt": [
+              "Auberginen"
+            ]
+          },
+          {
+            "titel": "Zwiebeln und Knoblauch hacken",
+            "text": "Zwiebeln in kleine Wuerfel schneiden. Knoblauch fein hacken.",
+            "timer_min": 0,
+            "zutaten_schritt": [
+              "Zwiebeln",
+              "Knoblauch"
+            ]
+          },
+          {
+            "titel": "Fuellungsmischung anbraten",
+            "text": "20 ml Olivenoel in einer Pfanne erwaermen. Zwiebeln und Knoblauch darin 2 Minuten anbraten bis dueftig.",
+            "timer_min": 2,
+            "zutaten_schritt": [
+              "Olivenoel",
+              "Zwiebeln",
+              "Knoblauch"
+            ]
+          },
+          {
+            "titel": "Auberginen und Gewuerze",
+            "text": "Auberginen-Wuerfel in die Pfanne geben. Kreuzkuemmel und Paprikapulver hinzufuegen. 3 Minuten braeten.",
+            "timer_min": 3,
+            "zutaten_schritt": [
+              "Auberginen",
+              "Kreuzkuemmel",
+              "Paprikapulver"
+            ]
+          },
+          {
+            "titel": "Kichererbsen einarbeiten",
+            "text": "Kichererbsen abgiessen und in die Pfanne geben. Tomatenmark hinzufuegen und gut vermischen. 2 Minuten kochen lassen.",
+            "timer_min": 2,
+            "zutaten_schritt": [
+              "Kichererbsen Dose",
+              "Tomatenmark"
+            ]
+          },
+          {
+            "titel": "Fuelling in Auberginen",
+            "text": "Fuellungsmischung auf den Auberginen-Haelften verteilen. Mit 20 ml Olivenoel betraeufel und mit Salz und Pfeffer wuerzen.",
+            "timer_min": 0,
+            "zutaten_schritt": [
+              "Olivenoel",
+              "Salz",
+              "Pfeffer"
+            ]
+          },
+          {
+            "titel": "Auberginen backen",
+            "text": "Im vorgeheizten Backofen bei 200 Grad Celsius 25 Minuten backen bis die Auberginen weich sind.",
+            "timer_min": 25,
+            "zutaten_schritt": [
+              "Auberginen"
+            ]
+          },
+          {
+            "titel": "Joghurt-Dressing machen",
+            "text": "Joghurt in eine Schuessel geben. Zitrone ausdrucken und 30 ml Saft hinzufuegen. Mit Salz und Pfeffer abschmecken.",
+            "timer_min": 0,
+            "zutaten_schritt": [
+              "Joghurt",
+              "Zitrone",
+              "Salz",
+              "Pfeffer"
+            ]
+          },
+          {
+            "titel": "Petersilie schneiden",
+            "text": "Petersilie fein hacken.",
+            "timer_min": 0,
+            "zutaten_schritt": [
+              "Petersilie frisch"
+            ]
+          },
+          {
+            "titel": "Anrichten",
+            "text": "Gefuellte Auberginen auf Teller verteilen. Joghurt-Dressing ueber die Auberginen loeffeln. Mit Petersilie garnieren und sofort servieren.",
+            "timer_min": 0,
+            "zutaten_schritt": [
+              "Joghurt",
+              "Petersilie frisch"
+            ]
+          }
+        ],
+        "schritte_fleisch": [],
+        "zutaten": [
+          {
+            "name": "Auberginen",
+            "menge": "600 g"
+          },
+          {
+            "name": "Kichererbsen Dose",
+            "menge": "240 g"
+          },
+          {
+            "name": "Zwiebeln",
+            "menge": "150 g"
+          },
+          {
+            "name": "Knoblauch",
+            "menge": "10 g"
+          },
+          {
+            "name": "Tomatenmark",
+            "menge": "30 g"
+          },
+          {
+            "name": "Olivenoel",
+            "menge": "40 ml"
+          },
+          {
+            "name": "Joghurt",
+            "menge": "200 g"
+          },
+          {
+            "name": "Zitrone",
+            "menge": "1 Stueck"
+          },
+          {
+            "name": "Kreuzkuemmel",
+            "menge": "3 g"
+          },
+          {
+            "name": "Paprikapulver",
+            "menge": "2 g"
+          },
+          {
+            "name": "Salz",
+            "menge": "4 g"
+          },
+          {
+            "name": "Pfeffer",
+            "menge": "1 g"
+          },
+          {
+            "name": "Petersilie frisch",
+            "menge": "10 g"
+          }
+        ]
       },
       {
         "tag": "Mi",
         "abend": "Hummus-Plate mit Roestgemuese",
         "zeit_aktiv": "18m",
-        "zeit_total": "28m"
+        "zeit_total": "28m",
+        "schritte_vegi": [
+          {
+            "titel": "Gemuesesortierer",
+            "text": "Paprika in 2 cm grosse Stuecke schneiden. Zucchini in 1,5 cm dicke Scheiben schneiden. Brokkoli aus dem Gefrierfach entnehmen und abtropfen lassen.",
+            "timer_min": 0,
+            "zutaten_schritt": [
+              "Paprika rot",
+              "Zucchini",
+              "Brokkoli TK"
+            ]
+          },
+          {
+            "titel": "Gemuese roesten",
+            "text": "Paprika und Zucchini mit 20 ml Olivenoel, Paprikapulver, Kreuzkuemmel, Salz und Pfeffer in einer Schuessel vermischen. Auf ein Backblech verteilen. Im vorgeheizten Backofen bei 210 Grad Celsius 12 Minuten roesten.",
+            "timer_min": 3,
+            "zutaten_schritt": [
+              "Paprika rot",
+              "Zucchini",
+              "Olivenoel",
+              "Paprikapulver",
+              "Kreuzkuemmel",
+              "Salz",
+              "Pfeffer"
+            ]
+          },
+          {
+            "titel": "Brokkoli hinzufuegen",
+            "text": "Nach 3 Minuten Brokkoli zum Gemuese auf das Blech geben. Mit 5 ml Olivenoel und Salz betraeufel. Weitere 9 Minuten roesten.",
+            "timer_min": 9,
+            "zutaten_schritt": [
+              "Brokkoli TK",
+              "Olivenoel",
+              "Salz"
+            ]
+          },
+          {
+            "titel": "Hummus-Basis",
+            "text": "Kichererbsen in ein Sieb geben und gruendlich abspuelen. In einen Mixer geben.",
+            "timer_min": 0,
+            "zutaten_schritt": [
+              "Kichererbsen Dose"
+            ]
+          },
+          {
+            "titel": "Hummus mixen",
+            "text": "Tahini, Knoblauch, 60 ml Wasser, 20 ml Olivenoel und Saft von 0,5 Zitrone zu den Kichererbsen geben. Mit 2 g Salz wuerzen. Alle Zutaten 3 Minuten puerieren bis cremig glatt.",
+            "timer_min": 0,
+            "zutaten_schritt": [
+              "Tahini",
+              "Knoblauch",
+              "Wasser",
+              "Olivenoel",
+              "Zitrone",
+              "Salz"
+            ]
+          },
+          {
+            "titel": "Hummus abschmecken",
+            "text": "Hummus mit Saft von 0,5 Zitrone und Pfeffer abschmecken. Falls zu dick, mit etwas Wasser verduennen.",
+            "timer_min": 0,
+            "zutaten_schritt": [
+              "Zitrone",
+              "Pfeffer",
+              "Wasser"
+            ]
+          },
+          {
+            "titel": "Pita waermen",
+            "text": "Pita-Brot im Backofen bei 150 Grad Celsius 3 Minuten waermen.",
+            "timer_min": 3,
+            "zutaten_schritt": [
+              "Pita-Brot"
+            ]
+          },
+          {
+            "titel": "Petersilie vorbereiten",
+            "text": "Petersilie fein hacken.",
+            "timer_min": 0,
+            "zutaten_schritt": [
+              "Petersilie frisch"
+            ]
+          },
+          {
+            "titel": "Anrichten",
+            "text": "Hummus auf zwei Tellern verteilen und mit dem Ruecken eines Loeffels leicht verteilen. Roestgemuese auf dem Hummus verteilen. Mit Petersilie bestreuen. Pita-Brot neben den Hummus legen.",
+            "timer_min": 0,
+            "zutaten_schritt": [
+              "Hummus",
+              "Gemuese",
+              "Petersilie frisch",
+              "Pita-Brot"
+            ]
+          }
+        ],
+        "schritte_fleisch": [],
+        "zutaten": [
+          {
+            "name": "Kichererbsen Dose",
+            "menge": "240 g"
+          },
+          {
+            "name": "Tahini",
+            "menge": "30 g"
+          },
+          {
+            "name": "Knoblauch",
+            "menge": "8 g"
+          },
+          {
+            "name": "Zitrone",
+            "menge": "1 Stueck"
+          },
+          {
+            "name": "Olivenoel",
+            "menge": "45 ml"
+          },
+          {
+            "name": "Wasser",
+            "menge": "60 ml"
+          },
+          {
+            "name": "Salz",
+            "menge": "3 g"
+          },
+          {
+            "name": "Paprika rot",
+            "menge": "250 g"
+          },
+          {
+            "name": "Zucchini",
+            "menge": "250 g"
+          },
+          {
+            "name": "Brokkoli TK",
+            "menge": "150 g"
+          },
+          {
+            "name": "Paprikapulver",
+            "menge": "3 g"
+          },
+          {
+            "name": "Kreuzkuemmel",
+            "menge": "2 g"
+          },
+          {
+            "name": "Pfeffer",
+            "menge": "1 g"
+          },
+          {
+            "name": "Petersilie frisch",
+            "menge": "8 g"
+          },
+          {
+            "name": "Pita-Brot",
+            "menge": "150 g"
+          }
+        ]
       },
       {
         "tag": "Fr",
         "abend": "Tabbouleh mit Feta und Granatapfel",
         "zeit_aktiv": "20m",
-        "zeit_total": "20m"
+        "zeit_total": "20m",
+        "schritte_vegi": [
+          {
+            "titel": "Bulgur quellen",
+            "text": "Bulgur in eine Schuessel geben. Heisses Wasser darueber giessen und mit Salz wuerzen. Mit Plastikfolie abdecken und 15 Minuten quellen lassen.",
+            "timer_min": 15,
+            "zutaten_schritt": [
+              "Bulgur",
+              "heisses Wasser",
+              "Salz"
+            ]
+          },
+          {
+            "titel": "Kraeuter hacken",
+            "text": "Petersilie und Minze fein hacken. Beiseite stellen.",
+            "timer_min": 0,
+            "zutaten_schritt": [
+              "Petersilie frisch",
+              "Minze frisch"
+            ]
+          },
+          {
+            "titel": "Gemuese schneiden",
+            "text": "Tomate in kleine Wuerfel schneiden. Fruehlingsziebeln in Ringe schneiden.",
+            "timer_min": 0,
+            "zutaten_schritt": [
+              "Tomate",
+              "Fruehlingsziebeln"
+            ]
+          },
+          {
+            "titel": "Dressing vorbereiten",
+            "text": "Zitrone halbieren und 60 ml Saft ausdrucken. Mit 30 ml Olivenoel, 3 g Salz und Pfeffer in einer kleinen Schuessel verruehren.",
+            "timer_min": 0,
+            "zutaten_schritt": [
+              "Zitrone",
+              "Olivenoel",
+              "Salz",
+              "Pfeffer"
+            ]
+          },
+          {
+            "titel": "Bulgur aufflocken",
+            "text": "Nach 15 Minuten Bulgur mit einer Gabel aufflocken und leicht erkaelten lassen.",
+            "timer_min": 0,
+            "zutaten_schritt": [
+              "Bulgur"
+            ]
+          },
+          {
+            "titel": "Tabbouleh zusammenfuegen",
+            "text": "Aufgelockerten Bulgur in eine grosse Schuessel geben. Petersilie, Minze, Tomate und Fruehlingsziebeln hinzufuegen. Dressing darueber geben und alles gut vermischen. 5 Minuten ruhen lassen.",
+            "timer_min": 5,
+            "zutaten_schritt": [
+              "Bulgur",
+              "Petersilie frisch",
+              "Minze frisch",
+              "Tomate",
+              "Fruehlingsziebeln",
+              "Dressing"
+            ]
+          },
+          {
+            "titel": "Feta wuerfeln",
+            "text": "Feta-Kaese in 1 cm grosse Wuerfel schneiden.",
+            "timer_min": 0,
+            "zutaten_schritt": [
+              "Feta-Kaese"
+            ]
+          },
+          {
+            "titel": "Granatapfel oeffnen",
+            "text": "Granatapfel in der Haelfte durchschneiden. Keerne ueber einer Schuessel mit den Haenden ausdruecken oder mit einem Loeffel herausklopfen. Kerne durch ein Sieb sammeln.",
+            "timer_min": 0,
+            "zutaten_schritt": [
+              "Granatapfel"
+            ]
+          },
+          {
+            "titel": "Anrichten",
+            "text": "Tabbouleh auf zwei Tellern verteilen. Feta-Wuerfel und Granatapfelkeerne obendrauf verteilen. Sofort servieren.",
+            "timer_min": 0,
+            "zutaten_schritt": [
+              "Tabbouleh",
+              "Feta-Kaese",
+              "Granatapfel"
+            ]
+          }
+        ],
+        "schritte_fleisch": [],
+        "zutaten": [
+          {
+            "name": "Bulgur",
+            "menge": "100 g"
+          },
+          {
+            "name": "heisses Wasser",
+            "menge": "180 ml"
+          },
+          {
+            "name": "Petersilie frisch",
+            "menge": "60 g"
+          },
+          {
+            "name": "Minze frisch",
+            "menge": "20 g"
+          },
+          {
+            "name": "Tomate",
+            "menge": "200 g"
+          },
+          {
+            "name": "Fruehlingszwiebeln",
+            "menge": "60 g"
+          },
+          {
+            "name": "Zitrone",
+            "menge": "1 Stueck"
+          },
+          {
+            "name": "Olivenoel",
+            "menge": "30 ml"
+          },
+          {
+            "name": "Salz",
+            "menge": "4 g"
+          },
+          {
+            "name": "Pfeffer",
+            "menge": "1 g"
+          },
+          {
+            "name": "Feta-Kaese",
+            "menge": "120 g"
+          },
+          {
+            "name": "Granatapfel",
+            "menge": "1 Stueck"
+          }
+        ]
       }
     ]
   },
@@ -90,19 +535,464 @@
           "tag": "Mo",
           "abend": "Gefuellte Auberginen mit Kichererbsen und Joghurt",
           "zeit_aktiv": "30m",
-          "zeit_total": "50m"
+          "zeit_total": "50m",
+          "schritte_vegi": [
+            {
+              "titel": "Auberginen vorbereiten",
+              "text": "Auberginen laengs halbieren. Mit einem Loeffel das Fleisch aushoehlen und in 1 cm grosse Wuerfel schneiden. Die Auberginen-Haelften in eine Backform legen.",
+              "timer_min": 0,
+              "zutaten_schritt": [
+                "Auberginen"
+              ]
+            },
+            {
+              "titel": "Zwiebeln und Knoblauch hacken",
+              "text": "Zwiebeln in kleine Wuerfel schneiden. Knoblauch fein hacken.",
+              "timer_min": 0,
+              "zutaten_schritt": [
+                "Zwiebeln",
+                "Knoblauch"
+              ]
+            },
+            {
+              "titel": "Fuellungsmischung anbraten",
+              "text": "20 ml Olivenoel in einer Pfanne erwaermen. Zwiebeln und Knoblauch darin 2 Minuten anbraten bis dueftig.",
+              "timer_min": 2,
+              "zutaten_schritt": [
+                "Olivenoel",
+                "Zwiebeln",
+                "Knoblauch"
+              ]
+            },
+            {
+              "titel": "Auberginen und Gewuerze",
+              "text": "Auberginen-Wuerfel in die Pfanne geben. Kreuzkuemmel und Paprikapulver hinzufuegen. 3 Minuten braeten.",
+              "timer_min": 3,
+              "zutaten_schritt": [
+                "Auberginen",
+                "Kreuzkuemmel",
+                "Paprikapulver"
+              ]
+            },
+            {
+              "titel": "Kichererbsen einarbeiten",
+              "text": "Kichererbsen abgiessen und in die Pfanne geben. Tomatenmark hinzufuegen und gut vermischen. 2 Minuten kochen lassen.",
+              "timer_min": 2,
+              "zutaten_schritt": [
+                "Kichererbsen Dose",
+                "Tomatenmark"
+              ]
+            },
+            {
+              "titel": "Fuelling in Auberginen",
+              "text": "Fuellungsmischung auf den Auberginen-Haelften verteilen. Mit 20 ml Olivenoel betraeufel und mit Salz und Pfeffer wuerzen.",
+              "timer_min": 0,
+              "zutaten_schritt": [
+                "Olivenoel",
+                "Salz",
+                "Pfeffer"
+              ]
+            },
+            {
+              "titel": "Auberginen backen",
+              "text": "Im vorgeheizten Backofen bei 200 Grad Celsius 25 Minuten backen bis die Auberginen weich sind.",
+              "timer_min": 25,
+              "zutaten_schritt": [
+                "Auberginen"
+              ]
+            },
+            {
+              "titel": "Joghurt-Dressing machen",
+              "text": "Joghurt in eine Schuessel geben. Zitrone ausdrucken und 30 ml Saft hinzufuegen. Mit Salz und Pfeffer abschmecken.",
+              "timer_min": 0,
+              "zutaten_schritt": [
+                "Joghurt",
+                "Zitrone",
+                "Salz",
+                "Pfeffer"
+              ]
+            },
+            {
+              "titel": "Petersilie schneiden",
+              "text": "Petersilie fein hacken.",
+              "timer_min": 0,
+              "zutaten_schritt": [
+                "Petersilie frisch"
+              ]
+            },
+            {
+              "titel": "Anrichten",
+              "text": "Gefuellte Auberginen auf Teller verteilen. Joghurt-Dressing ueber die Auberginen loeffeln. Mit Petersilie garnieren und sofort servieren.",
+              "timer_min": 0,
+              "zutaten_schritt": [
+                "Joghurt",
+                "Petersilie frisch"
+              ]
+            }
+          ],
+          "schritte_fleisch": [],
+          "zutaten": [
+            {
+              "name": "Auberginen",
+              "menge": "600 g"
+            },
+            {
+              "name": "Kichererbsen Dose",
+              "menge": "240 g"
+            },
+            {
+              "name": "Zwiebeln",
+              "menge": "150 g"
+            },
+            {
+              "name": "Knoblauch",
+              "menge": "10 g"
+            },
+            {
+              "name": "Tomatenmark",
+              "menge": "30 g"
+            },
+            {
+              "name": "Olivenoel",
+              "menge": "40 ml"
+            },
+            {
+              "name": "Joghurt",
+              "menge": "200 g"
+            },
+            {
+              "name": "Zitrone",
+              "menge": "1 Stueck"
+            },
+            {
+              "name": "Kreuzkuemmel",
+              "menge": "3 g"
+            },
+            {
+              "name": "Paprikapulver",
+              "menge": "2 g"
+            },
+            {
+              "name": "Salz",
+              "menge": "4 g"
+            },
+            {
+              "name": "Pfeffer",
+              "menge": "1 g"
+            },
+            {
+              "name": "Petersilie frisch",
+              "menge": "10 g"
+            }
+          ]
         },
         {
           "tag": "Mi",
           "abend": "Hummus-Plate mit Roestgemuese",
           "zeit_aktiv": "18m",
-          "zeit_total": "28m"
+          "zeit_total": "28m",
+          "schritte_vegi": [
+            {
+              "titel": "Gemuesesortierer",
+              "text": "Paprika in 2 cm grosse Stuecke schneiden. Zucchini in 1,5 cm dicke Scheiben schneiden. Brokkoli aus dem Gefrierfach entnehmen und abtropfen lassen.",
+              "timer_min": 0,
+              "zutaten_schritt": [
+                "Paprika rot",
+                "Zucchini",
+                "Brokkoli TK"
+              ]
+            },
+            {
+              "titel": "Gemuese roesten",
+              "text": "Paprika und Zucchini mit 20 ml Olivenoel, Paprikapulver, Kreuzkuemmel, Salz und Pfeffer in einer Schuessel vermischen. Auf ein Backblech verteilen. Im vorgeheizten Backofen bei 210 Grad Celsius 12 Minuten roesten.",
+              "timer_min": 3,
+              "zutaten_schritt": [
+                "Paprika rot",
+                "Zucchini",
+                "Olivenoel",
+                "Paprikapulver",
+                "Kreuzkuemmel",
+                "Salz",
+                "Pfeffer"
+              ]
+            },
+            {
+              "titel": "Brokkoli hinzufuegen",
+              "text": "Nach 3 Minuten Brokkoli zum Gemuese auf das Blech geben. Mit 5 ml Olivenoel und Salz betraeufel. Weitere 9 Minuten roesten.",
+              "timer_min": 9,
+              "zutaten_schritt": [
+                "Brokkoli TK",
+                "Olivenoel",
+                "Salz"
+              ]
+            },
+            {
+              "titel": "Hummus-Basis",
+              "text": "Kichererbsen in ein Sieb geben und gruendlich abspuelen. In einen Mixer geben.",
+              "timer_min": 0,
+              "zutaten_schritt": [
+                "Kichererbsen Dose"
+              ]
+            },
+            {
+              "titel": "Hummus mixen",
+              "text": "Tahini, Knoblauch, 60 ml Wasser, 20 ml Olivenoel und Saft von 0,5 Zitrone zu den Kichererbsen geben. Mit 2 g Salz wuerzen. Alle Zutaten 3 Minuten puerieren bis cremig glatt.",
+              "timer_min": 0,
+              "zutaten_schritt": [
+                "Tahini",
+                "Knoblauch",
+                "Wasser",
+                "Olivenoel",
+                "Zitrone",
+                "Salz"
+              ]
+            },
+            {
+              "titel": "Hummus abschmecken",
+              "text": "Hummus mit Saft von 0,5 Zitrone und Pfeffer abschmecken. Falls zu dick, mit etwas Wasser verduennen.",
+              "timer_min": 0,
+              "zutaten_schritt": [
+                "Zitrone",
+                "Pfeffer",
+                "Wasser"
+              ]
+            },
+            {
+              "titel": "Pita waermen",
+              "text": "Pita-Brot im Backofen bei 150 Grad Celsius 3 Minuten waermen.",
+              "timer_min": 3,
+              "zutaten_schritt": [
+                "Pita-Brot"
+              ]
+            },
+            {
+              "titel": "Petersilie vorbereiten",
+              "text": "Petersilie fein hacken.",
+              "timer_min": 0,
+              "zutaten_schritt": [
+                "Petersilie frisch"
+              ]
+            },
+            {
+              "titel": "Anrichten",
+              "text": "Hummus auf zwei Tellern verteilen und mit dem Ruecken eines Loeffels leicht verteilen. Roestgemuese auf dem Hummus verteilen. Mit Petersilie bestreuen. Pita-Brot neben den Hummus legen.",
+              "timer_min": 0,
+              "zutaten_schritt": [
+                "Hummus",
+                "Gemuese",
+                "Petersilie frisch",
+                "Pita-Brot"
+              ]
+            }
+          ],
+          "schritte_fleisch": [],
+          "zutaten": [
+            {
+              "name": "Kichererbsen Dose",
+              "menge": "240 g"
+            },
+            {
+              "name": "Tahini",
+              "menge": "30 g"
+            },
+            {
+              "name": "Knoblauch",
+              "menge": "8 g"
+            },
+            {
+              "name": "Zitrone",
+              "menge": "1 Stueck"
+            },
+            {
+              "name": "Olivenoel",
+              "menge": "45 ml"
+            },
+            {
+              "name": "Wasser",
+              "menge": "60 ml"
+            },
+            {
+              "name": "Salz",
+              "menge": "3 g"
+            },
+            {
+              "name": "Paprika rot",
+              "menge": "250 g"
+            },
+            {
+              "name": "Zucchini",
+              "menge": "250 g"
+            },
+            {
+              "name": "Brokkoli TK",
+              "menge": "150 g"
+            },
+            {
+              "name": "Paprikapulver",
+              "menge": "3 g"
+            },
+            {
+              "name": "Kreuzkuemmel",
+              "menge": "2 g"
+            },
+            {
+              "name": "Pfeffer",
+              "menge": "1 g"
+            },
+            {
+              "name": "Petersilie frisch",
+              "menge": "8 g"
+            },
+            {
+              "name": "Pita-Brot",
+              "menge": "150 g"
+            }
+          ]
         },
         {
           "tag": "Fr",
           "abend": "Tabbouleh mit Feta und Granatapfel",
           "zeit_aktiv": "20m",
-          "zeit_total": "20m"
+          "zeit_total": "20m",
+          "schritte_vegi": [
+            {
+              "titel": "Bulgur quellen",
+              "text": "Bulgur in eine Schuessel geben. Heisses Wasser darueber giessen und mit Salz wuerzen. Mit Plastikfolie abdecken und 15 Minuten quellen lassen.",
+              "timer_min": 15,
+              "zutaten_schritt": [
+                "Bulgur",
+                "heisses Wasser",
+                "Salz"
+              ]
+            },
+            {
+              "titel": "Kraeuter hacken",
+              "text": "Petersilie und Minze fein hacken. Beiseite stellen.",
+              "timer_min": 0,
+              "zutaten_schritt": [
+                "Petersilie frisch",
+                "Minze frisch"
+              ]
+            },
+            {
+              "titel": "Gemuese schneiden",
+              "text": "Tomate in kleine Wuerfel schneiden. Fruehlingsziebeln in Ringe schneiden.",
+              "timer_min": 0,
+              "zutaten_schritt": [
+                "Tomate",
+                "Fruehlingsziebeln"
+              ]
+            },
+            {
+              "titel": "Dressing vorbereiten",
+              "text": "Zitrone halbieren und 60 ml Saft ausdrucken. Mit 30 ml Olivenoel, 3 g Salz und Pfeffer in einer kleinen Schuessel verruehren.",
+              "timer_min": 0,
+              "zutaten_schritt": [
+                "Zitrone",
+                "Olivenoel",
+                "Salz",
+                "Pfeffer"
+              ]
+            },
+            {
+              "titel": "Bulgur aufflocken",
+              "text": "Nach 15 Minuten Bulgur mit einer Gabel aufflocken und leicht erkaelten lassen.",
+              "timer_min": 0,
+              "zutaten_schritt": [
+                "Bulgur"
+              ]
+            },
+            {
+              "titel": "Tabbouleh zusammenfuegen",
+              "text": "Aufgelockerten Bulgur in eine grosse Schuessel geben. Petersilie, Minze, Tomate und Fruehlingsziebeln hinzufuegen. Dressing darueber geben und alles gut vermischen. 5 Minuten ruhen lassen.",
+              "timer_min": 5,
+              "zutaten_schritt": [
+                "Bulgur",
+                "Petersilie frisch",
+                "Minze frisch",
+                "Tomate",
+                "Fruehlingsziebeln",
+                "Dressing"
+              ]
+            },
+            {
+              "titel": "Feta wuerfeln",
+              "text": "Feta-Kaese in 1 cm grosse Wuerfel schneiden.",
+              "timer_min": 0,
+              "zutaten_schritt": [
+                "Feta-Kaese"
+              ]
+            },
+            {
+              "titel": "Granatapfel oeffnen",
+              "text": "Granatapfel in der Haelfte durchschneiden. Keerne ueber einer Schuessel mit den Haenden ausdruecken oder mit einem Loeffel herausklopfen. Kerne durch ein Sieb sammeln.",
+              "timer_min": 0,
+              "zutaten_schritt": [
+                "Granatapfel"
+              ]
+            },
+            {
+              "titel": "Anrichten",
+              "text": "Tabbouleh auf zwei Tellern verteilen. Feta-Wuerfel und Granatapfelkeerne obendrauf verteilen. Sofort servieren.",
+              "timer_min": 0,
+              "zutaten_schritt": [
+                "Tabbouleh",
+                "Feta-Kaese",
+                "Granatapfel"
+              ]
+            }
+          ],
+          "schritte_fleisch": [],
+          "zutaten": [
+            {
+              "name": "Bulgur",
+              "menge": "100 g"
+            },
+            {
+              "name": "heisses Wasser",
+              "menge": "180 ml"
+            },
+            {
+              "name": "Petersilie frisch",
+              "menge": "60 g"
+            },
+            {
+              "name": "Minze frisch",
+              "menge": "20 g"
+            },
+            {
+              "name": "Tomate",
+              "menge": "200 g"
+            },
+            {
+              "name": "Fruehlingszwiebeln",
+              "menge": "60 g"
+            },
+            {
+              "name": "Zitrone",
+              "menge": "1 Stueck"
+            },
+            {
+              "name": "Olivenoel",
+              "menge": "30 ml"
+            },
+            {
+              "name": "Salz",
+              "menge": "4 g"
+            },
+            {
+              "name": "Pfeffer",
+              "menge": "1 g"
+            },
+            {
+              "name": "Feta-Kaese",
+              "menge": "120 g"
+            },
+            {
+              "name": "Granatapfel",
+              "menge": "1 Stueck"
+            }
+          ]
         }
       ]
     },
@@ -136,5 +1026,5 @@
       ]
     }
   ],
-  "sugsPartial": true
+  "sugsPartial": false
 }
