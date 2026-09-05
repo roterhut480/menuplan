@@ -1,7 +1,7 @@
 {
   "sug": {
-    "id": 1,
-    "thema": "Mittelmeer",
+    "id": 2,
+    "thema": "Orientalisch (Variante 2)",
     "kochabende": [
       "Mo",
       "Mi",
@@ -10,414 +10,29 @@
     "gerichte": [
       {
         "tag": "Mo",
-        "abend": "Auberginen-Linsen-Moussaka",
-        "zeit_aktiv": "35m",
-        "zeit_total": "70m",
-        "schritte_vegi": [
-          {
-            "titel": "Gemüse vorbereiten",
-            "text": "Auberginen waschen, längs halbieren, Fleisch mit Messer auslösen, in 2 cm Würfel schneiden. Zwiebeln und Knoblauch fein hacken.",
-            "timer_min": 0,
-            "zutaten_schritt": [
-              "Auberginen",
-              "Zwiebeln",
-              "Knoblauch"
-            ]
-          },
-          {
-            "titel": "Auberginen rösten",
-            "text": "Auberginenstücke auf 2 Blechen mit 50 ml Olivenöl verteilen, bei 200°C Ober- und Unterhitze 25 Minuten rösten bis goldbraun.",
-            "timer_min": 25,
-            "zutaten_schritt": [
-              "Auberginen",
-              "Olivenöl"
-            ]
-          },
-          {
-            "titel": "Linsen-Sauce kochen",
-            "text": "In großem Topf 30 ml Olivenöl erhitzen, Zwiebeln und Knoblauch 3 Minuten darin anbraten. Tomatenmark einrühren, 1 Minute mitbraten. Linsen, Tomaten, Wasser, Oregano, Thymian, 4 g Salz, 1 g Pfeffer zugeben. Aufkochen, 25 Minuten köcheln lassen bis Linsen weich.",
-            "timer_min": 25,
-            "zutaten_schritt": [
-              "Olivenöl",
-              "Zwiebeln",
-              "Knoblauch",
-              "Tomatenmark",
-              "Linsen (rot)",
-              "Tomaten (Dose)",
-              "Wasser",
-              "Oregano",
-              "Thymian",
-              "Salz",
-              "Pfeffer"
-            ]
-          },
-          {
-            "titel": "Béchamel zubereiten",
-            "text": "Butter in Topf schmelzen, Mehl einstreuen, unter Rühren 2 Minuten anschwitzen. Milch graduell einrühren, ständig rühren, 5 Minuten köcheln bis cremig. Mit 4 g Salz, 1 g Pfeffer würzen.",
-            "timer_min": 5,
-            "zutaten_schritt": [
-              "Butter",
-              "Mehl",
-              "Milch",
-              "Salz",
-              "Pfeffer"
-            ]
-          },
-          {
-            "titel": "Schichten",
-            "text": "Auflaufform (ca. 3 L) mit wenig Butter ausstreichen. Ein Drittel Linsensauce einschichten, Hälfte der rösteten Auberginen darauf, nächstes Drittel Sauce, restliche Auberginen, letzte Sauce. Béchamel gleichmäßig oben verteilen, mit Parmesan bestreuen.",
-            "timer_min": 0,
-            "zutaten_schritt": [
-              "Linsen (rot)",
-              "Auberginen",
-              "Béchamel",
-              "Parmesan"
-            ]
-          },
-          {
-            "titel": "Backen",
-            "text": "Bei 180°C Ober- und Unterhitze 35 Minuten backen bis oben golden und leicht blubbernde Ränder.",
-            "timer_min": 35,
-            "zutaten_schritt": []
-          }
-        ],
-        "schritte_fleisch": [],
-        "einfrieren": [
-          "Nach 10 Minuten Ruhen: 2 Portionen in Behältern mit Deckel (je 500 g) mit Beschriftung 'Auberginen-Linsen-Moussaka + Datum' ins Eisfach"
-        ],
-        "zutaten": [
-          {
-            "name": "Auberginen",
-            "menge": "800 g"
-          },
-          {
-            "name": "Linsen (rot)",
-            "menge": "200 g"
-          },
-          {
-            "name": "Zwiebeln",
-            "menge": "300 g"
-          },
-          {
-            "name": "Knoblauch",
-            "menge": "20 g"
-          },
-          {
-            "name": "Tomatenmark",
-            "menge": "60 g"
-          },
-          {
-            "name": "Tomaten (Dose)",
-            "menge": "800 g"
-          },
-          {
-            "name": "Olivenöl",
-            "menge": "100 ml"
-          },
-          {
-            "name": "Oregano",
-            "menge": "3 g"
-          },
-          {
-            "name": "Thymian",
-            "menge": "2 g"
-          },
-          {
-            "name": "Salz",
-            "menge": "8 g"
-          },
-          {
-            "name": "Pfeffer",
-            "menge": "2 g"
-          },
-          {
-            "name": "Wasser",
-            "menge": "500 ml"
-          },
-          {
-            "name": "Butter",
-            "menge": "40 g"
-          },
-          {
-            "name": "Mehl",
-            "menge": "40 g"
-          },
-          {
-            "name": "Milch",
-            "menge": "400 ml"
-          },
-          {
-            "name": "Parmesan",
-            "menge": "80 g"
-          }
-        ]
+        "abend": "Gefuellte Auberginen mit Kichererbsen und Joghurt",
+        "zeit_aktiv": "30m",
+        "zeit_total": "50m"
       },
       {
         "tag": "Mi",
-        "abend": "Spanischer Tortilla mit Salat",
-        "zeit_aktiv": "25m",
-        "zeit_total": "40m",
-        "schritte_vegi": [
-          {
-            "titel": "Kartoffeln kochen",
-            "text": "Kartoffeln waschen, mit Schale in Salzwasser 12 Minuten köcheln bis gar aber noch fest. Abgießen, abkühlen lassen, schälen, in 5 mm dicke Scheiben schneiden. Zwiebeln in dünne Halbringe schneiden.",
-            "timer_min": 12,
-            "zutaten_schritt": [
-              "Kartoffeln",
-              "Zwiebeln",
-              "Salz"
-            ]
-          },
-          {
-            "titel": "Kartoffeln anbraten",
-            "text": "In großer Pfanne (28 cm) 40 ml Olivenöl erhitzen. Kartoffeln und Zwiebeln schichtweise einlegen, jede Schicht mit Salz und Pfeffer würzen. Bei mittlerer Hitze 8 Minuten braten bis Unterseite goldbraun.",
-            "timer_min": 8,
-            "zutaten_schritt": [
-              "Kartoffeln",
-              "Zwiebeln",
-              "Olivenöl",
-              "Salz",
-              "Pfeffer"
-            ]
-          },
-          {
-            "titel": "Eier aufschlagen",
-            "text": "Eier in Schüssel aufschlagen, mit 3 g Salz und Pfeffer verquirlen.",
-            "timer_min": 0,
-            "zutaten_schritt": [
-              "Eier",
-              "Salz",
-              "Pfeffer"
-            ]
-          },
-          {
-            "titel": "Eier gießen",
-            "text": "Verquirlte Eier gleichmäßig über Kartoffeln in Pfanne gießen. 1 Minute bei hoher Hitze braten, dann Hitze auf mittel reduzieren, 12 Minuten braten bis Rand fest ist und Oberfläche noch leicht wackelt.",
-            "timer_min": 13,
-            "zutaten_schritt": [
-              "Eier"
-            ]
-          },
-          {
-            "titel": "Wenden",
-            "text": "Teller auf Pfanne legen, Tortilla schnell umstürzen. Mit 10 ml Olivenöl zurück in Pfanne schieben, noch 3 Minuten braten bis Unterseite goldbraun.",
-            "timer_min": 3,
-            "zutaten_schritt": [
-              "Olivenöl"
-            ]
-          },
-          {
-            "titel": "Tortilla ruhen",
-            "text": "Tortilla aus Pfanne auf Schneidebrett legen, 5 Minuten ruhen lassen, dann in 8 Stücke schneiden.",
-            "timer_min": 5,
-            "zutaten_schritt": []
-          },
-          {
-            "titel": "Salat zubereiten",
-            "text": "Blattsalat waschen und trocknen. Kirschtomaten halbieren. Paprika in Streifen schneiden. Essig mit Senf und 30 ml Olivenöl verrühren, mit 3 g Salz würzen.",
-            "timer_min": 0,
-            "zutaten_schritt": [
-              "Roter Blattsalat",
-              "Kirschtomaten",
-              "Rote Paprika",
-              "Balsamico-Essig",
-              "Dijon-Senf",
-              "Olivenöl",
-              "Salz"
-            ]
-          },
-          {
-            "titel": "Salat anrichten",
-            "text": "Salat, Tomaten und Paprika in Schüssel mischen, Dressing darüber gießen, durchmischen.",
-            "timer_min": 0,
-            "zutaten_schritt": [
-              "Roter Blattsalat",
-              "Kirschtomaten",
-              "Rote Paprika"
-            ]
-          }
-        ],
-        "schritte_fleisch": [],
-        "einfrieren": [
-          "2 Tortilla-Stücke (à ca. 180 g) in Behälter mit Deckel legen, mit Beschriftung 'Tortilla + Datum' einfrieren",
-          "Salat NICHT einfrieren"
-        ],
-        "zutaten": [
-          {
-            "name": "Kartoffeln",
-            "menge": "600 g"
-          },
-          {
-            "name": "Zwiebeln",
-            "menge": "200 g"
-          },
-          {
-            "name": "Eier",
-            "menge": "8 Stück"
-          },
-          {
-            "name": "Olivenöl",
-            "menge": "80 ml"
-          },
-          {
-            "name": "Salz",
-            "menge": "6 g"
-          },
-          {
-            "name": "Pfeffer",
-            "menge": "1 g"
-          },
-          {
-            "name": "Roter Blattsalat",
-            "menge": "250 g"
-          },
-          {
-            "name": "Kirschtomaten",
-            "menge": "200 g"
-          },
-          {
-            "name": "Rote Paprika",
-            "menge": "150 g"
-          },
-          {
-            "name": "Balsamico-Essig",
-            "menge": "30 ml"
-          },
-          {
-            "name": "Dijon-Senf",
-            "menge": "5 g"
-          }
-        ]
+        "abend": "Hummus-Plate mit Roestgemuese",
+        "zeit_aktiv": "18m",
+        "zeit_total": "28m"
       },
       {
         "tag": "Fr",
-        "abend": "Zorba-Salat mit Halloumi",
-        "zeit_aktiv": "15m",
-        "zeit_total": "15m",
-        "schritte_vegi": [
-          {
-            "titel": "Salat vorbereiten",
-            "text": "Romana-Salat waschen, trocknen, in mundgerechte Stücke reißen. Kirschtomaten halbieren. Gurke in 5 mm dicke Scheiben schneiden. Rote Zwiebel in dünne Ringe schneiden. Oliven abtropfen lassen.",
-            "timer_min": 0,
-            "zutaten_schritt": [
-              "Romana-Salat",
-              "Kirschtomaten",
-              "Gurke",
-              "Rote Zwiebel",
-              "Schwarze Oliven (Dose)"
-            ]
-          },
-          {
-            "titel": "Dressing anrühren",
-            "text": "Zitrone auspressen, Saft mit Olivenöl, 6 g Salz, 2 g Pfeffer und gehacktem frischem Oregano in Schüssel verquirlen.",
-            "timer_min": 0,
-            "zutaten_schritt": [
-              "Zitrone",
-              "Olivenöl",
-              "Salz",
-              "Pfeffer",
-              "Oregano (frisch)"
-            ]
-          },
-          {
-            "titel": "Salat mischen",
-            "text": "Romana, Tomaten, Gurke, Zwiebel und Oliven in großer Schüssel vermischen. Dressing darüber gießen, durchmischen.",
-            "timer_min": 0,
-            "zutaten_schritt": [
-              "Romana-Salat",
-              "Kirschtomaten",
-              "Gurke",
-              "Rote Zwiebel",
-              "Schwarze Oliven (Dose)"
-            ]
-          },
-          {
-            "titel": "Feta zerkrümeln",
-            "text": "Feta mit Gabel zerkrümeln, über Salat verteilen.",
-            "timer_min": 0,
-            "zutaten_schritt": [
-              "Feta"
-            ]
-          },
-          {
-            "titel": "Halloumi braten",
-            "text": "Halloumi in 1 cm dicke Scheiben schneiden. Pfanne ohne Fett auf hohe Hitze erhitzen. Halloumi-Scheiben 2-3 Minuten pro Seite braten bis Oberfläche goldbraun und Käse leicht weich.",
-            "timer_min": 6,
-            "zutaten_schritt": [
-              "Halloumi"
-            ]
-          },
-          {
-            "titel": "Anrichten",
-            "text": "Salat auf 4 Tellern verteilen. Je 2 warme Halloumi-Scheiben oben auf die Portion legen.",
-            "timer_min": 0,
-            "zutaten_schritt": [
-              "Halloumi"
-            ]
-          }
-        ],
-        "schritte_fleisch": [],
-        "einfrieren": [
-          "Salat und Halloumi NICHT separat einfrieren - dieses Gericht nur frisch zubereiten"
-        ],
-        "zutaten": [
-          {
-            "name": "Halloumi",
-            "menge": "320 g"
-          },
-          {
-            "name": "Romana-Salat",
-            "menge": "300 g"
-          },
-          {
-            "name": "Kirschtomaten",
-            "menge": "250 g"
-          },
-          {
-            "name": "Rote Zwiebel",
-            "menge": "100 g"
-          },
-          {
-            "name": "Gurke",
-            "menge": "300 g"
-          },
-          {
-            "name": "Schwarze Oliven (Dose)",
-            "menge": "150 g"
-          },
-          {
-            "name": "Feta",
-            "menge": "200 g"
-          },
-          {
-            "name": "Oregano (frisch)",
-            "menge": "10 g"
-          },
-          {
-            "name": "Zitrone",
-            "menge": "1 Stück"
-          },
-          {
-            "name": "Olivenöl",
-            "menge": "60 ml"
-          },
-          {
-            "name": "Salz",
-            "menge": "6 g"
-          },
-          {
-            "name": "Pfeffer",
-            "menge": "2 g"
-          }
-        ]
+        "abend": "Tabbouleh mit Feta und Granatapfel",
+        "zeit_aktiv": "20m",
+        "zeit_total": "20m"
       }
     ]
   },
-  "sel": 0,
+  "sel": 1,
   "n": 3,
   "personen": 2,
   "reste": 0,
-  "freeze": 1,
+  "freeze": 0,
   "modus": "vegi",
   "days": {
     "Mo": "aufwendig",
@@ -435,7 +50,7 @@
   "sugsAll": [
     {
       "id": 1,
-      "thema": "Mittelmeer",
+      "thema": "Indisch",
       "kochabende": [
         "Mo",
         "Mi",
@@ -444,412 +59,27 @@
       "gerichte": [
         {
           "tag": "Mo",
-          "abend": "Auberginen-Linsen-Moussaka",
+          "abend": "Paneer Tikka Masala mit Basmatireis",
           "zeit_aktiv": "35m",
-          "zeit_total": "70m",
-          "schritte_vegi": [
-            {
-              "titel": "Gemüse vorbereiten",
-              "text": "Auberginen waschen, längs halbieren, Fleisch mit Messer auslösen, in 2 cm Würfel schneiden. Zwiebeln und Knoblauch fein hacken.",
-              "timer_min": 0,
-              "zutaten_schritt": [
-                "Auberginen",
-                "Zwiebeln",
-                "Knoblauch"
-              ]
-            },
-            {
-              "titel": "Auberginen rösten",
-              "text": "Auberginenstücke auf 2 Blechen mit 50 ml Olivenöl verteilen, bei 200°C Ober- und Unterhitze 25 Minuten rösten bis goldbraun.",
-              "timer_min": 25,
-              "zutaten_schritt": [
-                "Auberginen",
-                "Olivenöl"
-              ]
-            },
-            {
-              "titel": "Linsen-Sauce kochen",
-              "text": "In großem Topf 30 ml Olivenöl erhitzen, Zwiebeln und Knoblauch 3 Minuten darin anbraten. Tomatenmark einrühren, 1 Minute mitbraten. Linsen, Tomaten, Wasser, Oregano, Thymian, 4 g Salz, 1 g Pfeffer zugeben. Aufkochen, 25 Minuten köcheln lassen bis Linsen weich.",
-              "timer_min": 25,
-              "zutaten_schritt": [
-                "Olivenöl",
-                "Zwiebeln",
-                "Knoblauch",
-                "Tomatenmark",
-                "Linsen (rot)",
-                "Tomaten (Dose)",
-                "Wasser",
-                "Oregano",
-                "Thymian",
-                "Salz",
-                "Pfeffer"
-              ]
-            },
-            {
-              "titel": "Béchamel zubereiten",
-              "text": "Butter in Topf schmelzen, Mehl einstreuen, unter Rühren 2 Minuten anschwitzen. Milch graduell einrühren, ständig rühren, 5 Minuten köcheln bis cremig. Mit 4 g Salz, 1 g Pfeffer würzen.",
-              "timer_min": 5,
-              "zutaten_schritt": [
-                "Butter",
-                "Mehl",
-                "Milch",
-                "Salz",
-                "Pfeffer"
-              ]
-            },
-            {
-              "titel": "Schichten",
-              "text": "Auflaufform (ca. 3 L) mit wenig Butter ausstreichen. Ein Drittel Linsensauce einschichten, Hälfte der rösteten Auberginen darauf, nächstes Drittel Sauce, restliche Auberginen, letzte Sauce. Béchamel gleichmäßig oben verteilen, mit Parmesan bestreuen.",
-              "timer_min": 0,
-              "zutaten_schritt": [
-                "Linsen (rot)",
-                "Auberginen",
-                "Béchamel",
-                "Parmesan"
-              ]
-            },
-            {
-              "titel": "Backen",
-              "text": "Bei 180°C Ober- und Unterhitze 35 Minuten backen bis oben golden und leicht blubbernde Ränder.",
-              "timer_min": 35,
-              "zutaten_schritt": []
-            }
-          ],
-          "schritte_fleisch": [],
-          "einfrieren": [
-            "Nach 10 Minuten Ruhen: 2 Portionen in Behältern mit Deckel (je 500 g) mit Beschriftung 'Auberginen-Linsen-Moussaka + Datum' ins Eisfach"
-          ],
-          "zutaten": [
-            {
-              "name": "Auberginen",
-              "menge": "800 g"
-            },
-            {
-              "name": "Linsen (rot)",
-              "menge": "200 g"
-            },
-            {
-              "name": "Zwiebeln",
-              "menge": "300 g"
-            },
-            {
-              "name": "Knoblauch",
-              "menge": "20 g"
-            },
-            {
-              "name": "Tomatenmark",
-              "menge": "60 g"
-            },
-            {
-              "name": "Tomaten (Dose)",
-              "menge": "800 g"
-            },
-            {
-              "name": "Olivenöl",
-              "menge": "100 ml"
-            },
-            {
-              "name": "Oregano",
-              "menge": "3 g"
-            },
-            {
-              "name": "Thymian",
-              "menge": "2 g"
-            },
-            {
-              "name": "Salz",
-              "menge": "8 g"
-            },
-            {
-              "name": "Pfeffer",
-              "menge": "2 g"
-            },
-            {
-              "name": "Wasser",
-              "menge": "500 ml"
-            },
-            {
-              "name": "Butter",
-              "menge": "40 g"
-            },
-            {
-              "name": "Mehl",
-              "menge": "40 g"
-            },
-            {
-              "name": "Milch",
-              "menge": "400 ml"
-            },
-            {
-              "name": "Parmesan",
-              "menge": "80 g"
-            }
-          ]
+          "zeit_total": "50m"
         },
         {
           "tag": "Mi",
-          "abend": "Spanischer Tortilla mit Salat",
-          "zeit_aktiv": "25m",
-          "zeit_total": "40m",
-          "schritte_vegi": [
-            {
-              "titel": "Kartoffeln kochen",
-              "text": "Kartoffeln waschen, mit Schale in Salzwasser 12 Minuten köcheln bis gar aber noch fest. Abgießen, abkühlen lassen, schälen, in 5 mm dicke Scheiben schneiden. Zwiebeln in dünne Halbringe schneiden.",
-              "timer_min": 12,
-              "zutaten_schritt": [
-                "Kartoffeln",
-                "Zwiebeln",
-                "Salz"
-              ]
-            },
-            {
-              "titel": "Kartoffeln anbraten",
-              "text": "In großer Pfanne (28 cm) 40 ml Olivenöl erhitzen. Kartoffeln und Zwiebeln schichtweise einlegen, jede Schicht mit Salz und Pfeffer würzen. Bei mittlerer Hitze 8 Minuten braten bis Unterseite goldbraun.",
-              "timer_min": 8,
-              "zutaten_schritt": [
-                "Kartoffeln",
-                "Zwiebeln",
-                "Olivenöl",
-                "Salz",
-                "Pfeffer"
-              ]
-            },
-            {
-              "titel": "Eier aufschlagen",
-              "text": "Eier in Schüssel aufschlagen, mit 3 g Salz und Pfeffer verquirlen.",
-              "timer_min": 0,
-              "zutaten_schritt": [
-                "Eier",
-                "Salz",
-                "Pfeffer"
-              ]
-            },
-            {
-              "titel": "Eier gießen",
-              "text": "Verquirlte Eier gleichmäßig über Kartoffeln in Pfanne gießen. 1 Minute bei hoher Hitze braten, dann Hitze auf mittel reduzieren, 12 Minuten braten bis Rand fest ist und Oberfläche noch leicht wackelt.",
-              "timer_min": 13,
-              "zutaten_schritt": [
-                "Eier"
-              ]
-            },
-            {
-              "titel": "Wenden",
-              "text": "Teller auf Pfanne legen, Tortilla schnell umstürzen. Mit 10 ml Olivenöl zurück in Pfanne schieben, noch 3 Minuten braten bis Unterseite goldbraun.",
-              "timer_min": 3,
-              "zutaten_schritt": [
-                "Olivenöl"
-              ]
-            },
-            {
-              "titel": "Tortilla ruhen",
-              "text": "Tortilla aus Pfanne auf Schneidebrett legen, 5 Minuten ruhen lassen, dann in 8 Stücke schneiden.",
-              "timer_min": 5,
-              "zutaten_schritt": []
-            },
-            {
-              "titel": "Salat zubereiten",
-              "text": "Blattsalat waschen und trocknen. Kirschtomaten halbieren. Paprika in Streifen schneiden. Essig mit Senf und 30 ml Olivenöl verrühren, mit 3 g Salz würzen.",
-              "timer_min": 0,
-              "zutaten_schritt": [
-                "Roter Blattsalat",
-                "Kirschtomaten",
-                "Rote Paprika",
-                "Balsamico-Essig",
-                "Dijon-Senf",
-                "Olivenöl",
-                "Salz"
-              ]
-            },
-            {
-              "titel": "Salat anrichten",
-              "text": "Salat, Tomaten und Paprika in Schüssel mischen, Dressing darüber gießen, durchmischen.",
-              "timer_min": 0,
-              "zutaten_schritt": [
-                "Roter Blattsalat",
-                "Kirschtomaten",
-                "Rote Paprika"
-              ]
-            }
-          ],
-          "schritte_fleisch": [],
-          "einfrieren": [
-            "2 Tortilla-Stücke (à ca. 180 g) in Behälter mit Deckel legen, mit Beschriftung 'Tortilla + Datum' einfrieren",
-            "Salat NICHT einfrieren"
-          ],
-          "zutaten": [
-            {
-              "name": "Kartoffeln",
-              "menge": "600 g"
-            },
-            {
-              "name": "Zwiebeln",
-              "menge": "200 g"
-            },
-            {
-              "name": "Eier",
-              "menge": "8 Stück"
-            },
-            {
-              "name": "Olivenöl",
-              "menge": "80 ml"
-            },
-            {
-              "name": "Salz",
-              "menge": "6 g"
-            },
-            {
-              "name": "Pfeffer",
-              "menge": "1 g"
-            },
-            {
-              "name": "Roter Blattsalat",
-              "menge": "250 g"
-            },
-            {
-              "name": "Kirschtomaten",
-              "menge": "200 g"
-            },
-            {
-              "name": "Rote Paprika",
-              "menge": "150 g"
-            },
-            {
-              "name": "Balsamico-Essig",
-              "menge": "30 ml"
-            },
-            {
-              "name": "Dijon-Senf",
-              "menge": "5 g"
-            }
-          ]
+          "abend": "Linsensuppe Dal",
+          "zeit_aktiv": "15m",
+          "zeit_total": "30m"
         },
         {
           "tag": "Fr",
-          "abend": "Zorba-Salat mit Halloumi",
-          "zeit_aktiv": "15m",
-          "zeit_total": "15m",
-          "schritte_vegi": [
-            {
-              "titel": "Salat vorbereiten",
-              "text": "Romana-Salat waschen, trocknen, in mundgerechte Stücke reißen. Kirschtomaten halbieren. Gurke in 5 mm dicke Scheiben schneiden. Rote Zwiebel in dünne Ringe schneiden. Oliven abtropfen lassen.",
-              "timer_min": 0,
-              "zutaten_schritt": [
-                "Romana-Salat",
-                "Kirschtomaten",
-                "Gurke",
-                "Rote Zwiebel",
-                "Schwarze Oliven (Dose)"
-              ]
-            },
-            {
-              "titel": "Dressing anrühren",
-              "text": "Zitrone auspressen, Saft mit Olivenöl, 6 g Salz, 2 g Pfeffer und gehacktem frischem Oregano in Schüssel verquirlen.",
-              "timer_min": 0,
-              "zutaten_schritt": [
-                "Zitrone",
-                "Olivenöl",
-                "Salz",
-                "Pfeffer",
-                "Oregano (frisch)"
-              ]
-            },
-            {
-              "titel": "Salat mischen",
-              "text": "Romana, Tomaten, Gurke, Zwiebel und Oliven in großer Schüssel vermischen. Dressing darüber gießen, durchmischen.",
-              "timer_min": 0,
-              "zutaten_schritt": [
-                "Romana-Salat",
-                "Kirschtomaten",
-                "Gurke",
-                "Rote Zwiebel",
-                "Schwarze Oliven (Dose)"
-              ]
-            },
-            {
-              "titel": "Feta zerkrümeln",
-              "text": "Feta mit Gabel zerkrümeln, über Salat verteilen.",
-              "timer_min": 0,
-              "zutaten_schritt": [
-                "Feta"
-              ]
-            },
-            {
-              "titel": "Halloumi braten",
-              "text": "Halloumi in 1 cm dicke Scheiben schneiden. Pfanne ohne Fett auf hohe Hitze erhitzen. Halloumi-Scheiben 2-3 Minuten pro Seite braten bis Oberfläche goldbraun und Käse leicht weich.",
-              "timer_min": 6,
-              "zutaten_schritt": [
-                "Halloumi"
-              ]
-            },
-            {
-              "titel": "Anrichten",
-              "text": "Salat auf 4 Tellern verteilen. Je 2 warme Halloumi-Scheiben oben auf die Portion legen.",
-              "timer_min": 0,
-              "zutaten_schritt": [
-                "Halloumi"
-              ]
-            }
-          ],
-          "schritte_fleisch": [],
-          "einfrieren": [
-            "Salat und Halloumi NICHT separat einfrieren - dieses Gericht nur frisch zubereiten"
-          ],
-          "zutaten": [
-            {
-              "name": "Halloumi",
-              "menge": "320 g"
-            },
-            {
-              "name": "Romana-Salat",
-              "menge": "300 g"
-            },
-            {
-              "name": "Kirschtomaten",
-              "menge": "250 g"
-            },
-            {
-              "name": "Rote Zwiebel",
-              "menge": "100 g"
-            },
-            {
-              "name": "Gurke",
-              "menge": "300 g"
-            },
-            {
-              "name": "Schwarze Oliven (Dose)",
-              "menge": "150 g"
-            },
-            {
-              "name": "Feta",
-              "menge": "200 g"
-            },
-            {
-              "name": "Oregano (frisch)",
-              "menge": "10 g"
-            },
-            {
-              "name": "Zitrone",
-              "menge": "1 Stück"
-            },
-            {
-              "name": "Olivenöl",
-              "menge": "60 ml"
-            },
-            {
-              "name": "Salz",
-              "menge": "6 g"
-            },
-            {
-              "name": "Pfeffer",
-              "menge": "2 g"
-            }
-          ]
+          "abend": "Gemüse-Samosas mit Joghurt-Dip",
+          "zeit_aktiv": "25m",
+          "zeit_total": "40m"
         }
       ]
     },
     {
       "id": 2,
-      "thema": "Levantinisch",
+      "thema": "Orientalisch (Variante 2)",
       "kochabende": [
         "Mo",
         "Mi",
@@ -858,27 +88,27 @@
       "gerichte": [
         {
           "tag": "Mo",
-          "abend": "Auberginen-Linsen-Moussaka",
-          "zeit_aktiv": "35m",
-          "zeit_total": "70m"
+          "abend": "Gefuellte Auberginen mit Kichererbsen und Joghurt",
+          "zeit_aktiv": "30m",
+          "zeit_total": "50m"
         },
         {
           "tag": "Mi",
-          "abend": "Kichererbsen-Taboulé mit Feta",
-          "zeit_aktiv": "20m",
-          "zeit_total": "20m"
+          "abend": "Hummus-Plate mit Roestgemuese",
+          "zeit_aktiv": "18m",
+          "zeit_total": "28m"
         },
         {
           "tag": "Fr",
-          "abend": "Zorba-Salat mit Halloumi",
-          "zeit_aktiv": "15m",
-          "zeit_total": "15m"
+          "abend": "Tabbouleh mit Feta und Granatapfel",
+          "zeit_aktiv": "20m",
+          "zeit_total": "20m"
         }
       ]
     },
     {
       "id": 3,
-      "thema": "Nordafrikanisch",
+      "thema": "Orientalisch",
       "kochabende": [
         "Mo",
         "Mi",
@@ -887,24 +117,24 @@
       "gerichte": [
         {
           "tag": "Mo",
-          "abend": "Auberginen-Linsen-Moussaka",
-          "zeit_aktiv": "35m",
-          "zeit_total": "70m"
+          "abend": "Shakshuka mit Kichererbsen und Spinat",
+          "zeit_aktiv": "25m",
+          "zeit_total": "40m"
         },
         {
           "tag": "Mi",
-          "abend": "Shakshuka mit Kichererbsen",
-          "zeit_aktiv": "20m",
+          "abend": "Falafel-Wrap mit Tahini-Sauce",
+          "zeit_aktiv": "18m",
           "zeit_total": "25m"
         },
         {
           "tag": "Fr",
-          "abend": "Zorba-Salat mit Halloumi",
+          "abend": "Linsen-Tabbouleh mit Feta",
           "zeit_aktiv": "15m",
-          "zeit_total": "15m"
+          "zeit_total": "20m"
         }
       ]
     }
   ],
-  "sugsPartial": false
+  "sugsPartial": true
 }
