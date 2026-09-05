@@ -2,70 +2,73 @@
   {
     "date": "2026-09-05",
     "saved": "5.9.2026",
-    "thema": "Orientalisch (Variante 2)",
-    "personen": 2,
+    "thema": "Mediterran",
+    "personen": 1,
     "kochabende": 3,
-    "reste": 0,
-    "freeze": 0,
+    "reste": 1,
+    "freeze": 1,
     "gerichte": [
       {
         "tag": "Mo",
-        "abend": "Gefuellte Auberginen mit Kichererbsen und Joghurt"
+        "abend": "Linsenbolognese mit Pappardelle"
       },
       {
         "tag": "Mi",
-        "abend": "Hummus-Plate mit Roestgemuese"
+        "abend": "Minestrone-Suppe"
       },
       {
-        "tag": "Fr",
-        "abend": "Tabbouleh mit Feta und Granatapfel"
+        "tag": "So",
+        "abend": "Auberginen-Tomaten-Auflauf"
       }
     ],
     "status": "geplant",
     "plan": {
       "sug": {
-        "id": 2,
-        "thema": "Orientalisch (Variante 2)",
+        "id": 1,
+        "thema": "Mediterran",
         "kochabende": [
           "Mo",
           "Mi",
-          "Fr"
+          "So"
         ],
         "gerichte": [
           {
             "tag": "Mo",
-            "abend": "Gefuellte Auberginen mit Kichererbsen und Joghurt",
-            "zeit_aktiv": "30m",
-            "zeit_total": "50m"
+            "abend": "Linsenbolognese mit Pappardelle",
+            "zeit_aktiv": "25m",
+            "zeit_total": "40m",
+            "mittag_nächster_tag": "Pasta-Reste aufgewärmt"
           },
           {
             "tag": "Mi",
-            "abend": "Hummus-Plate mit Roestgemuese",
+            "abend": "Minestrone-Suppe",
             "zeit_aktiv": "18m",
-            "zeit_total": "28m"
+            "zeit_total": "25m",
+            "mittag_nächster_tag": "Minestrone aufgewärmt"
           },
           {
-            "tag": "Fr",
-            "abend": "Tabbouleh mit Feta und Granatapfel",
-            "zeit_aktiv": "20m",
-            "zeit_total": "20m"
+            "tag": "So",
+            "abend": "Auberginen-Tomaten-Auflauf",
+            "zeit_aktiv": "35m",
+            "zeit_total": "60m",
+            "mittag_nächster_tag": "Auflauf-Portion zum Einfrieren"
           }
         ]
       },
-      "sel": 1,
+      "sel": 0,
       "n": 3,
-      "personen": 2,
-      "reste": 0,
-      "freeze": 0,
+      "personen": 1,
+      "reste": 1,
+      "freeze": 1,
       "modus": "vegi",
       "days": {
-        "Mo": "aufwendig",
+        "Mo": "normal",
         "Di": null,
-        "Mi": "normal",
+        "Mi": "schnell",
         "Do": null,
-        "Fr": "normal",
+        "Fr": null,
         "Sa": null,
-        "So": null
+        "So": "aufwendig"
       },
       "weekStart": "2026-08-30",
       "saved": "5.9.2026",
@@ -74,88 +77,97 @@
       "sugsAll": [
         {
           "id": 1,
-          "thema": "Indisch",
+          "thema": "Mediterran",
           "kochabende": [
             "Mo",
             "Mi",
-            "Fr"
+            "So"
           ],
           "gerichte": [
             {
               "tag": "Mo",
-              "abend": "Paneer Tikka Masala mit Basmatireis",
-              "zeit_aktiv": "35m",
-              "zeit_total": "50m"
+              "abend": "Linsenbolognese mit Pappardelle",
+              "zeit_aktiv": "25m",
+              "zeit_total": "40m",
+              "mittag_nächster_tag": "Pasta-Reste aufgewärmt"
             },
             {
               "tag": "Mi",
-              "abend": "Linsensuppe Dal",
-              "zeit_aktiv": "15m",
-              "zeit_total": "30m"
+              "abend": "Minestrone-Suppe",
+              "zeit_aktiv": "18m",
+              "zeit_total": "25m",
+              "mittag_nächster_tag": "Minestrone aufgewärmt"
             },
             {
-              "tag": "Fr",
-              "abend": "Gemüse-Samosas mit Joghurt-Dip",
-              "zeit_aktiv": "25m",
-              "zeit_total": "40m"
+              "tag": "So",
+              "abend": "Auberginen-Tomaten-Auflauf",
+              "zeit_aktiv": "35m",
+              "zeit_total": "60m",
+              "mittag_nächster_tag": "Auflauf-Portion zum Einfrieren"
             }
           ]
         },
         {
           "id": 2,
-          "thema": "Orientalisch (Variante 2)",
+          "thema": "Mediterran (Variante 2)",
           "kochabende": [
             "Mo",
             "Mi",
-            "Fr"
+            "So"
           ],
           "gerichte": [
             {
               "tag": "Mo",
-              "abend": "Gefuellte Auberginen mit Kichererbsen und Joghurt",
-              "zeit_aktiv": "30m",
-              "zeit_total": "50m"
+              "abend": "Linsenbolognese mit Pappardelle",
+              "zeit_aktiv": "25m",
+              "zeit_total": "40m",
+              "mittag_nächster_tag": "Pasta-Reste aufgewärmt"
             },
             {
               "tag": "Mi",
-              "abend": "Hummus-Plate mit Roestgemuese",
-              "zeit_aktiv": "18m",
-              "zeit_total": "28m"
+              "abend": "Tomaten-Kichererbsen-Eintopf",
+              "zeit_aktiv": "15m",
+              "zeit_total": "20m",
+              "mittag_nächster_tag": "Eintopf-Reste"
             },
             {
-              "tag": "Fr",
-              "abend": "Tabbouleh mit Feta und Granatapfel",
-              "zeit_aktiv": "20m",
-              "zeit_total": "20m"
+              "tag": "So",
+              "abend": "Auberginen-Tomaten-Auflauf",
+              "zeit_aktiv": "35m",
+              "zeit_total": "60m",
+              "mittag_nächster_tag": "Auflauf-Portion zum Einfrieren"
             }
           ]
         },
         {
           "id": 3,
-          "thema": "Orientalisch",
+          "thema": "Indisch",
           "kochabende": [
             "Mo",
             "Mi",
-            "Fr"
+            "So"
           ],
           "gerichte": [
             {
               "tag": "Mo",
-              "abend": "Shakshuka mit Kichererbsen und Spinat",
+              "abend": "Linsenbolognese mit Pappardelle",
               "zeit_aktiv": "25m",
-              "zeit_total": "40m"
+              "zeit_total": "40m",
+              "mittag_nächster_tag": "Pasta-Reste aufgewärmt"
             },
             {
               "tag": "Mi",
-              "abend": "Falafel-Wrap mit Tahini-Sauce",
+              "abend": "Kichererbsen-Spinat-Curry",
               "zeit_aktiv": "18m",
-              "zeit_total": "25m"
+              "zeit_total": "20m",
+              "mittag_nächster_tag": "Curry-Reste"
             },
             {
-              "tag": "Fr",
-              "abend": "Linsen-Tabbouleh mit Feta",
-              "zeit_aktiv": "15m",
-              "zeit_total": "20m"
+              "tag": "So",
+              "abend": "Auberginen-Tomaten-Auflauf",
+              "zeit_aktiv": "35m",
+              "zeit_total": "60m",
+              "mittag_nächster_tag": "Auflauf-Portion zum Einfrieren"
             }
           ]
         }
