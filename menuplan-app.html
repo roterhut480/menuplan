@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=yes">
-<title>Menüplan v5.56</title>
+<title>Menüplan v5.59</title>
 <style>
 :root{
   --red:#e8390e;--rl:#fff2ef;--grn:#2e7d32;--grl:#f0faf4;
@@ -153,7 +153,7 @@ input[type=password]{letter-spacing:2px}
 
 <!-- HOME -->
 <div class="scr on" id="sh">
-  <div class="hero"><h1>Menüplan</h1><p id="hsub">v5.56 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
+  <div class="hero"><h1>Menüplan</h1><p id="hsub">v5.59 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
 
   <!-- Active plan card -->
 
@@ -170,7 +170,10 @@ input[type=password]{letter-spacing:2px}
         <div style="font-size:13px;color:var(--gr3);margin-bottom:16px">Generiere deinen ersten Wochenplan</div>
         <button onclick="showPlanSettings()" style="background:var(--red);color:#fff;border:none;border-radius:10px;padding:13px;font-size:15px;font-weight:700;cursor:pointer;width:100%">✨ Menüplan erstellen</button>
       </div>
-      <div id="dash-has-plan" style="display:none">
+      <div id="dash-stale" style="display:none;background:#fff8e1;border:.5px solid #ffe082;border-radius:var(--rlg);padding:11px 14px;margin-bottom:10px;font-size:12px;color:#e65100">
+            &#9888; Dieser Plan ist aus einer früheren Woche. <b>Neue Woche planen</b> für aktuelle Vorschläge.
+          </div>
+          <div id="dash-has-plan" style="display:none">
         <div id="dash-today-card" style="display:none;background:var(--red);border-radius:var(--rlg);color:#fff;padding:18px;margin-bottom:12px">
           <div id="dash-today-label" style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;opacity:.7;margin-bottom:6px">Heute</div>
           <div id="dash-today-name" style="font-size:20px;font-weight:800;margin-bottom:4px"></div>
@@ -187,14 +190,12 @@ input[type=password]{letter-spacing:2px}
         </div>
         <div id="dash-einkauf-card" style="display:none;background:#fff;border-radius:var(--rlg);border:.5px solid var(--bdr);padding:14px 16px;margin-bottom:12px">
           <div style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--gr3);margin-bottom:8px">Einkauf</div>
-          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
+            <div id="dash-einkauf-dot" style="width:9px;height:9px;border-radius:50%;background:var(--gr2);flex-shrink:0"></div>
             <div id="dash-einkauf-txt" style="font-size:14px;font-weight:600;color:var(--txt)"></div>
-            <div id="dash-einkauf-pct" style="font-size:13px;color:var(--gr3)"></div>
           </div>
-          <div style="background:#f0f0f0;border-radius:100px;height:7px;overflow:hidden;margin-bottom:12px">
-            <div id="dash-einkauf-bar" style="height:7px;background:var(--grn);border-radius:100px;width:0%;transition:width .6s"></div>
-          </div>
-          <button onclick="openActivePlan('e')" style="width:100%;background:#f5f5f5;border:none;border-radius:8px;padding:10px;font-size:13px;font-weight:600;color:var(--txt);cursor:pointer">Einkaufsliste öffnen →</button>
+          <div id="dash-einkauf-sub" style="font-size:11px;color:var(--gr3);margin-bottom:12px;padding-left:17px"></div>
+          <button id="dash-einkauf-btn" onclick="openActivePlan('e')" style="width:100%;background:#f5f5f5;border:none;border-radius:8px;padding:10px;font-size:13px;font-weight:600;color:var(--txt);cursor:pointer">Einkaufsliste öffnen →</button>
         </div>
         <button onclick="showPlanSettings()" style="width:100%;background:#fff;border:.5px solid var(--bdr);border-radius:var(--rlg);padding:14px;font-size:14px;font-weight:600;color:var(--gr3);cursor:pointer;margin-bottom:8px">📅 Neue Woche planen</button>
       </div>
@@ -214,7 +215,7 @@ input[type=password]{letter-spacing:2px}
       <div id="login-section">
         <div id="login-invite-banner" style="display:none;background:var(--grl);border:.5px solid #a5d6a7;border-radius:8px;padding:10px 12px;margin-bottom:12px">
           <div style="font-size:12px;font-weight:700;color:var(--grn);margin-bottom:2px">Einladung erhalten!</div>
-          <div style="font-size:12px;color:var(--grn)">Wähle einen Benutzernamen und ein eigenes Passwort.</div>
+          <div style="font-size:12px;color:var(--grn)">Melde dich mit den Zugangsdaten an, die du erhalten hast. Ein Konto muss vorher vom Admin angelegt werden.</div>
         </div>
         <div class="clbl" id="login-title">Anmelden</div>
         <div class="fld"><label>Benutzername</label><input id="login-user" placeholder="z.B. roman, anna..." autocomplete="username" onkeydown="if(event.key==='Enter')$('login-pw').focus()"></div>
@@ -251,7 +252,7 @@ input[type=password]{letter-spacing:2px}
       <!-- Tagesplanung -->
       <div class="fld" style="margin-top:4px">
         <label>🍳 Welche Tage kochen?</label>
-        <div id="day-picker" style="display:flex;flex-direction:column;gap:6px;margin-top:6px"></div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px"><span style="font-size:11px;color:var(--gr3)">Zeitrahmen pro Tag</span><span style="font-size:11px;color:var(--gr3)"><b id="n-display" style="color:var(--red);font-size:14px">3</b> Kochabende</span></div><div id="day-picker" style="display:flex;flex-direction:column;gap:6px;margin-top:2px"></div>
       </div>
 
       <!-- Fleisch Modus -->
@@ -319,6 +320,10 @@ input[type=password]{letter-spacing:2px}
   <div id="serr"></div>
   <div id="slist"></div>
   <div id="scta" style="display:none;padding:10px 10px 0">
+    <div id="fixed-hint" style="display:none;background:#e3f2fd;border:.5px solid #90caf9;border-radius:8px;padding:8px 12px;margin-bottom:8px;font-size:12px;color:#1565c0;align-items:center;justify-content:space-between">
+      <span>&#128274; Fixierte Gerichte bleiben erhalten</span>
+      <button onclick="clearFixedDishes()" style="background:none;border:none;font-size:11px;color:#1565c0;cursor:pointer;font-family:inherit;text-decoration:underline">Alle lösen</button>
+    </div>
     <button class="btn btn-red" id="set-plan-btn" onclick="setActivePlanAndGo()" disabled style="opacity:.35;cursor:not-allowed">Als aktiven Plan setzen</button>
     <div style="margin-top:16px;padding-top:16px;border-top:.5px solid var(--bdr)">
       <div style="font-size:12px;color:var(--gr3);margin-bottom:6px;font-weight:500">Nicht zufrieden? Sag Claude warum:</div>
@@ -688,11 +693,6 @@ function setN(n) {
   if ($('n-display')) $('n-display').textContent = n;
 }
 
-function setN(n) {
-  n = Math.max(1, Math.min(7, n));
-  G.n = n;
-  if ($('n-display')) $('n-display').textContent = n;
-}
 function setP(n) {
   n = Math.max(1, Math.min(6, n));
   G.personen = n;
@@ -769,8 +769,9 @@ window.addEventListener('DOMContentLoaded', function() {
 
 // ─── GITHUB ────────────────────────────────────────────────
 // ─── AUTH / LOGIN ──────────────────────────────────────────
-// Users stored as: gh_users = [{username, enc}]
-// enc = btoa(token + '|||' + password)
+// Auth laeuft vollstaendig ueber den Cloudflare Worker (MP_USERS).
+// Im Browser liegt nur die Session: gh_session = {username, pw}.
+// Der GitHub-Token verlaesst den Worker nie.
 // Current session: gh_session = {username, password}
 
 
@@ -860,7 +861,7 @@ function doLogout() {
   if ($('login-pw')) $('login-pw').value = '';
   if ($('login-user')) $('login-user').value = '';
   // Clear active plan display
-  if ($('active-plan')) $('active-plan').style.display = 'none';
+  /* legacy active-plan entfernt */
   G.activePlan = null;
 }
 
@@ -898,9 +899,9 @@ function updateGHUI() {
   var invite = params.get('invite');
   if (invite) {
     if ($('login-invite-banner')) $('login-invite-banner').style.display = 'block';
-    if ($('login-title')) $('login-title').textContent = 'Konto erstellen';
-    if ($('login-btn')) $('login-btn').textContent = 'Konto erstellen';
-    if ($('login-pw')) $('login-pw').placeholder = 'Eigenes Passwort wählen...';
+    if ($('login-title')) $('login-title').textContent = 'Anmelden';
+    if ($('login-btn')) $('login-btn').textContent = 'Anmelden';
+    if ($('login-pw')) $('login-pw').placeholder = 'Passwort vom Admin...';
     var ref = params.get('ref');
     if (ref && $('login-user')) $('login-user').placeholder = 'z.B. ' + ref + '_2, anna...';
     return;
@@ -915,6 +916,54 @@ function updateGHUI() {
 function decodeGHContent(d) {
   if (!d || !d.content) return null;
   try { return JSON.parse(decodeURIComponent(escape(atob(d.content.replace(/\n/g, ''))))); } catch(e) { return null; }
+}
+
+
+// ─── GITHUB VIA WORKER ─────────────────────────────────────
+function getAuthHeaders() {
+  var s = getSession();
+  if (!s) return null;
+  return { 'X-MP-User': s.username, 'X-MP-Pass': s.pw, 'Content-Type': 'application/json' };
+}
+
+function ghGet(filepath) {
+  var h = getAuthHeaders();
+  if (!h) return Promise.resolve(null);
+  return fetch(PROXY + '/gh/' + filepath, { headers: h })
+    .then(function(r) { return r.ok ? r.json() : null; })
+    .catch(function() { return null; });
+}
+
+function ghPut(filename, data, message) {
+  var h = getAuthHeaders();
+  if (!h) return Promise.resolve(null);
+  var filepath = ghFile(filename);
+  var encoded = btoa(unescape(encodeURIComponent(JSON.stringify(data, null, 2))));
+  function put(sha) {
+    var body = { message: message || 'Update', content: encoded };
+    if (sha) body.sha = sha;
+    return fetch(PROXY + '/gh/' + filepath, { method: 'PUT', headers: h, body: JSON.stringify(body) });
+  }
+  return fetch(PROXY + '/gh/' + filepath, { headers: h })
+    .then(function(r) { return r.ok ? r.json() : null; })
+    .then(function(ex) { return put(ex && ex.sha); })
+    .then(function(r) {
+      if (r && r.status === 409) {
+        // Konflikt: SHA neu holen und einmal wiederholen
+        return fetch(PROXY + '/gh/' + filepath, { headers: h })
+          .then(function(r2) { return r2.ok ? r2.json() : null; })
+          .then(function(fresh) { return put(fresh && fresh.sha); });
+      }
+      return r;
+    });
+}
+
+function saveToGH(data) {
+  ghPut('active-plan.json', data, 'Aktiver Plan').catch(function(){});
+}
+
+function saveHistoryToGH(hist) {
+  ghPut('history.json', hist, 'History aktualisiert').catch(function(){});
 }
 
 function syncAllFromGH() {
@@ -1151,7 +1200,7 @@ function doImportItems() {
     if (r && r.ok) {
       showSt('ist', items.length + ' Artikel in Bring! importiert!', 'ok');
       btn.innerHTML = 'Importiert';
-      markEinkaufDone();
+      markEinkaufDone(items ? items.length : 0);
     } else if (r && r.status === 401) {
       // Session abgelaufen - neu einloggen
       G.bToken = null; G.bUUID = null;
@@ -1371,6 +1420,8 @@ function goSuggest() {
   $('scta').style.display = 'none';
   $('serr').innerHTML = '';
   $('serr').style.display = 'none';
+  // Snapshot fixierter Gerichte ZUERST (vor dem Zurücksetzen von G.sel/G.sugs)
+  G.fixedSnapshot = getFixedDishes();
   G.sel = null;
   G.sugs = [];
   G.sugsPartial = true;
@@ -1411,6 +1462,18 @@ function goSuggest() {
     (learningProfile ? '. LERNPROFIL: ' + learningProfile : '') +
     '. Küche variieren.';
 
+  // Tagesplanung (welche Tage, welcher Zeitrahmen)
+  var _dayPlan = getDayPlanText();
+  if (_dayPlan) msg += ' ' + _dayPlan;
+
+  // Fixierte Gerichte als Pflichtbestandteil
+  var _fixed = G.fixedSnapshot || [];
+  if (_fixed.length) {
+    msg += ' WICHTIG: Diese Gerichte sind fixiert und muessen exakt so im Plan bleiben (gleicher Tag, gleiches Gericht): ' +
+      _fixed.map(function(f){ return (f.gericht.tag||'') + ': ' + (f.gericht.abend||''); }).join(', ') +
+      '. Plane die uebrigen Gerichte passend dazu.';
+  }
+
   var sys = buildSYS_overview();
 
   // Load all 3 suggestions in parallel
@@ -1424,19 +1487,22 @@ function goSuggest() {
           var sugs = parsed.vorschlaege || [];
           if (sugs.length > 0) {
             sugs[0].id = id;
-            // Dedupe by thema
+            // Dedupe by thema — bei Dublette Thema eindeutig machen statt verwerfen
             var exists = G.sugs.some(function(s){ return s.thema === sugs[0].thema; });
-            if (!exists) G.sugs.push(sugs[0]);
+            if (exists) sugs[0].thema = sugs[0].thema + ' (Variante ' + id + ')';
+            G.sugs.push(sugs[0]);
             G.sugs.sort(function(a,b){ return a.id - b.id; });
-            // Apply fixed dishes back after render
-            var fixed = getFixedDishes();
-            if (fixed.length && G.sugs.length > 0) {
-              var ng = G.sugs[G.sugs.length - 1];
-              if (ng && ng.gerichte) {
-                fixed.forEach(function(f) {
-                  if (f.j < ng.gerichte.length) ng.gerichte[f.j] = f.gericht;
+            // Fixierte Gerichte in JEDEN neuen Vorschlag zurückschreiben
+            var fixedSnap = G.fixedSnapshot || [];
+            if (fixedSnap.length) {
+              G.sugs.forEach(function(sg, si) {
+                if (!sg.gerichte) return;
+                fixedSnap.forEach(function(f) {
+                  if (f.j < sg.gerichte.length) sg.gerichte[f.j] = JSON.parse(JSON.stringify(f.gericht));
                 });
-              }
+                // Fix-Markierungen auf den neuen Index übertragen
+                fixedSnap.forEach(function(f) { G.fixedDishes[si + '_' + f.j] = true; });
+              });
             }
             renderSugs();
             if (G.sugs.length === 1) {
@@ -1571,6 +1637,9 @@ function goWeek() {
     // Validate: remove ingredients not mentioned in steps
     validateIngredients(sug.gerichte);
     G.sugsPartial = false;
+    // WICHTIG: Plan mit den nachgeladenen Rezepten erneut sichern,
+    // sonst fehlen Zutaten/Schritte nach Reload und auf anderen Geraeten.
+    if (G.activePlan && G.sel !== null && G.sugs[G.sel] === sug) persistActivePlan();
     goWeekRender(sug);
   })
   .catch(function(e) {
@@ -1581,6 +1650,7 @@ function goWeek() {
 
 
 function goWeekRender(sug) {
+  releaseWakeLock();
   if ($('wtit')) $('wtit').textContent = sug.thema;
   if ($('wsub')) $('wsub').textContent = sug.kochabende ? sug.kochabende.join(' - ') : '';
   if (G.bToken && G.bLists.length) {
@@ -1595,6 +1665,7 @@ function goWeekRender(sug) {
 
 function wtab(t) {
   var tabs = document.querySelectorAll('.tabs .tab');
+  if (!tabs || tabs.length < 2) return;
   tabs[0].classList.toggle('on', t === 'e');
   tabs[1].classList.toggle('on', t === 'r');
   $('te').style.display = t === 'e' ? 'block' : 'none';
@@ -1634,16 +1705,14 @@ function addMengen(a, b) {
 function getItems(sug) {
   var map = {}, order = [];
   for (var i = 0; i < sug.gerichte.length; i++) {
-    var zutaten = sug.gerichte[i].zutaten || [];
+    var g = sug.gerichte[i];
+    if (g._cancelled) continue;   // Ausgefallen / auswaerts: keine Zutaten einkaufen
+    var zutaten = g.zutaten || [];
     for (var j = 0; j < zutaten.length; j++) {
       var z = zutaten[j];
       var key = z.name.toLowerCase().trim();
-      if (map[key]) {
-        map[key].menge = addMengen(map[key].menge, z.menge);
-      } else {
-        map[key] = { name: z.name, menge: z.menge };
-        order.push(key);
-      }
+      if (map[key]) map[key].menge = addMengen(map[key].menge, z.menge);
+      else { map[key] = { name: z.name, menge: z.menge }; order.push(key); }
     }
   }
   return order.map(function(k){ return map[k]; });
@@ -1802,7 +1871,17 @@ function showIngOverview(g) {
       '<span class="zutat-menge" style="font-size:13px;color:var(--gr3);font-weight:500">' + zutaten[i].menge + '</span></div>';
   }
 
-  var html = '<div id="cing"><div class="badge bv">Vor dem Kochen</div>' +
+  // Portions-Aufschluesselung transparent machen
+  var _p = G.personen || 2;
+  var _mit = G.reste ? _p : 0;
+  var _tk  = G.freeze ? 2 : 0;
+  var _ges = _p + _mit + _tk;
+  var _parts = [_p + ' heute'];
+  if (_mit) _parts.push(_mit + ' morgen Mittag');
+  if (_tk)  _parts.push(_tk + ' einfrieren');
+  var _portInfo = '<div style="background:#e3f2fd;border-radius:8px;padding:9px 12px;margin-bottom:10px;font-size:12px;color:#1565c0">' +
+    '<b>Gesamtmenge: ' + _ges + ' Portionen</b><br>davon ' + _parts.join(', ') + '</div>';
+  var html = '<div id="cing">' + _portInfo + '<div class="badge bv">Vor dem Kochen</div>' +
     '<div style="font-size:16px;font-weight:700;margin-bottom:4px">' + g.abend + '</div>' +
     (g.mittag_nächster_tag ? '<div style="font-size:13px;color:var(--gr3);margin-bottom:8px">Morgen: ' + g.mittag_nächster_tag + '</div>' : '') +
     ((g.zeit_aktiv || g.zeit_total) ? '<div style="display:flex;gap:12px;margin-bottom:16px">' +
@@ -1834,6 +1913,7 @@ function releaseWakeLock() {
 }
 
 function beginCook() {
+  releaseWakeLock();
   G.cur = 0; G.act = 0;
   renderSegs();
   renderAllSteps();
@@ -2142,34 +2222,54 @@ function updateHistoryStatus(savedDate, status) {
   saveHistoryToGH(hist);
 }
 
-function markEinkaufDone() {
+function markEinkaufDone(itemCount) {
   if (!G.activePlan) return;
   G.activePlan.einkaufDone = true;
+  G.activePlan.bringImportedAt = new Date().toLocaleString('de-CH', {day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});
+  if (itemCount) G.activePlan.bringItemCount = itemCount;
   localStorage.setItem('active_plan', JSON.stringify(G.activePlan));
   renderActivePlan();
   saveToGH(G.activePlan);
   updateHistoryStatus(G.activePlan.saved || G.activePlan.date, 'einkauf');
 }
 // ─── ACTIVE PLAN ───────────────────────────────────────────
+
+// ─── AKTIVER PLAN: EINE Quelle der Wahrheit ────────────────
+// G.activePlan.sug ist massgeblich. sugsAll dient nur der Anzeige
+// alternativer Vorschlaege und wird nie zum Wiederherstellen benutzt.
+function persistActivePlan() {
+  if (!G.activePlan) return;
+  if (G.sel !== null && G.sugs && G.sugs[G.sel]) {
+    G.activePlan.sug = G.sugs[G.sel];
+    G.activePlan.sel = G.sel;
+  }
+  G.activePlan.sugsPartial = G.sugsPartial;
+  try { localStorage.setItem('active_plan', JSON.stringify(G.activePlan)); } catch(e) {}
+  saveToGH(G.activePlan);
+  updateDashboard();
+}
+
 function setActivePlanAndGo() {
   if (G.sel === null) return;
   var sug = G.sugs[G.sel];
+  // Wochenbeginn (Montag) festhalten, damit alte Plaene erkennbar sind
+  var now = new Date();
+  var dow = now.getDay() === 0 ? 6 : now.getDay() - 1;
+  var monday = new Date(now); monday.setDate(now.getDate() - dow); monday.setHours(0,0,0,0);
   var planData = {
     sug: sug, sel: G.sel, n: G.n, personen: G.personen,
-    reste: G.reste, freeze: G.freeze, modus: G.modus,
+    reste: G.reste, freeze: G.freeze, modus: G.modus, days: G.days,
+    weekStart: monday.toISOString().slice(0,10),
     saved: new Date().toLocaleDateString('de-CH'),
-    einkaufDone: false, sugsAll: G.sugs, sugsPartial: G.sugsPartial
+    bringImportedAt: null, bringItemCount: 0,
+    sugsAll: G.sugs, sugsPartial: G.sugsPartial
   };
   G.activePlan = planData;
+  G.checked = {};
   localStorage.setItem('active_plan', JSON.stringify(planData));
   localStorage.removeItem('einkauf_checked');
-  G.checked = {};
   saveToGH(planData);
   saveToHistory(planData);
-  localStorage.setItem('sw', JSON.stringify({
-    sugs: G.sugs, n: G.n, personen: G.personen,
-    reste: G.reste, freeze: G.freeze, saved: planData.saved
-  }));
   updateDashboard();
   var spb = $('set-plan-btn');
   if (spb) { spb.innerHTML = 'Als aktiven Plan setzen'; spb.disabled = false; }
@@ -2178,12 +2278,17 @@ function setActivePlanAndGo() {
 
 function openActivePlan(tab) {
   if (!G.activePlan || !G.activePlan.sug) return;
-  G.sugs = G.activePlan.sugsAll || [G.activePlan.sug];
-  G.sel = G.activePlan.sel || 0;
+  // sug ist massgeblich; sugsAll nur zur Anzeige der Alternativen
+  var all = G.activePlan.sugsAll || [];
+  var sel = G.activePlan.sel || 0;
+  if (all.length && sel < all.length) { all[sel] = G.activePlan.sug; G.sugs = all; }
+  else { G.sugs = [G.activePlan.sug]; sel = 0; }
+  G.sel = sel;
   G.n = G.activePlan.n || 3;
   G.personen = G.activePlan.personen || 2;
   G.reste = G.activePlan.reste !== undefined ? G.activePlan.reste : 1;
   G.freeze = G.activePlan.freeze !== undefined ? G.activePlan.freeze : 1;
+  if (G.activePlan.days) G.days = G.activePlan.days;
   G.sugsPartial = G.activePlan.sugsPartial || false;
   goWeekRender(G.sugs[G.sel]);
   setTimeout(function() { wtab(tab); }, 50);
@@ -2195,7 +2300,7 @@ function clearActivePlan() {
   nsRemove('active_plan');
   localStorage.removeItem('einkauf_checked');
   G.checked = {};
-  if ($('active-plan')) $('active-plan').style.display = 'none';
+  /* legacy active-plan entfernt */
   // Also clear on GH by saving empty plan marker
   ghPut('active-plan.json', { cleared: true, date: new Date().toISOString() }, 'Plan beendet').catch(function(){});
 }
@@ -2244,15 +2349,21 @@ function toggleFix(sugIdx, gerichtIdx) {
 }
 
 function getFixedDishes() {
-  // Returns array of {sugIdx, gerichtIdx, gericht} for currently selected suggestion
+  // Liefert [{j, gericht}] der fixierten Gerichte.
+  // Funktioniert auch wenn G.sel null ist (Vorschlagsansicht): nutzt den Vorschlag,
+  // in dem tatsaechlich etwas fixiert wurde.
   var fixed = [];
-  if (G.sel === null || !G.sugs[G.sel]) return fixed;
-  var gerichte = G.sugs[G.sel].gerichte || [];
-  for (var j = 0; j < gerichte.length; j++) {
-    var key = G.sel + '_' + j;
-    if (G.fixedDishes[key]) {
-      fixed.push({ j: j, gericht: gerichte[j] });
+  if (!G.sugs || !G.sugs.length) return fixed;
+  var srcIdx = G.sel;
+  if (srcIdx === null || srcIdx === undefined) {
+    for (var k in G.fixedDishes) {
+      if (G.fixedDishes[k]) { srcIdx = parseInt(k.split('_')[0], 10); break; }
     }
+  }
+  if (srcIdx === null || srcIdx === undefined || !G.sugs[srcIdx]) return fixed;
+  var gerichte = G.sugs[srcIdx].gerichte || [];
+  for (var j = 0; j < gerichte.length; j++) {
+    if (G.fixedDishes[srcIdx + '_' + j]) fixed.push({ j: j, gericht: gerichte[j] });
   }
   return fixed;
 }
@@ -2299,12 +2410,8 @@ function cancelGericht(ri) {
   g._cancelled = true;
   g._origAbend = g.abend;
   g.abend = '❌ ' + g.abend + ' (ausgefallen)';
-  goWeekRender(sug);
-  if (G.activePlan) {
-    G.activePlan.sug = sug;
-    localStorage.setItem('active_plan', JSON.stringify(G.activePlan));
-    saveToGH(G.activePlan);
-  }
+  try { goWeekRender(sug); } catch(e) { console.warn("render:", e.message); }
+  persistActivePlan();
   updateDashboard();
   showSwapToast('Kochabend ausgefallen – kein Einkauf nötig.', '#555');
 }
@@ -2317,12 +2424,8 @@ function auswaartsGericht(ri) {
   g._cancelled = true;
   g._origAbend = origName;
   g.abend = '🍽 Auswärts (' + (g.tag||'').slice(0,2) + ')';
-  goWeekRender(sug);
-  if (G.activePlan) {
-    G.activePlan.sug = sug;
-    localStorage.setItem('active_plan', JSON.stringify(G.activePlan));
-    saveToGH(G.activePlan);
-  }
+  try { goWeekRender(sug); } catch(e) { console.warn("render:", e.message); }
+  persistActivePlan();
   updateDashboard();
   showSwapToast('Auswärts markiert', '#555');
 }
@@ -2596,11 +2699,7 @@ function applyReplace() {
   G.sugsPartial = false;
 
   // Save
-  if (G.activePlan) {
-    G.activePlan.sug = sug;
-    localStorage.setItem('active_plan', JSON.stringify(G.activePlan));
-    saveToGH(G.activePlan);
-  }
+  persistActivePlan();
 
   closeReplace();
   goWeekRender(sug);
@@ -2716,6 +2815,15 @@ function updateDashboard() {
   if ($('dash-greeting')) $('dash-greeting').textContent = greeting + ', ' + session.username + '!';
   var plan = G.activePlan;
   var hasPlan = plan && plan.sug && !plan.cleared;
+  // Plan aus einer frueheren Woche? -> Hinweis statt stiller Weiterverwendung
+  var isStale = false;
+  if (hasPlan && plan.weekStart) {
+    var nw = new Date(); var dw = nw.getDay()===0?6:nw.getDay()-1;
+    var mon = new Date(nw); mon.setDate(nw.getDate()-dw); mon.setHours(0,0,0,0);
+    isStale = plan.weekStart < mon.toISOString().slice(0,10);
+  }
+  var staleEl = $('dash-stale');
+  if (staleEl) staleEl.style.display = (hasPlan && isStale) ? 'block' : 'none';
   if ($('dash-no-plan')) $('dash-no-plan').style.display = hasPlan ? 'none' : 'block';
   if ($('dash-has-plan')) $('dash-has-plan').style.display = hasPlan ? 'block' : 'none';
   if (!hasPlan) return;
@@ -2730,11 +2838,14 @@ function updateDashboard() {
     var tag = (g.tag||'').slice(0,2);
     var gIdx = DAYS.indexOf(tag);
     var isToday = tag === todayTag;
-    var isPast = gIdx < todayIdx;
-    var hasReste = g.mittag_naechster_tag && g.mittag_naechster_tag !== 'Restename';
+    var isCooked = !!g._gekocht;               // nur wirklich Gekochtes abhaken
+    var isCancelled = !!g._cancelled;
+    var isPast = gIdx < todayIdx && !isCooked; // zeitlich vorbei, aber nicht gekocht
+    var hasReste = g.mittag_naechster_tag && g.mittag_naechster_tag !== 'Restename' && !isCancelled;
     return '<div style="display:flex;align-items:flex-start;gap:10px;padding:6px 0;border-bottom:.5px solid #f5f5f5">' +
       '<span style="font-size:11px;font-weight:700;min-width:22px;margin-top:2px;color:' + (isToday?'var(--red)':isPast?'#ccc':'var(--gr3)') + '">' + tag + '</span>' +
-      '<div style="flex:1"><div style="font-size:14px;font-weight:' + (isToday?'700':'500') + ';color:' + (isPast?'#ccc':'var(--txt)') + ';' + (isPast?'text-decoration:line-through':'') + '">' + (isPast?'✓ ':'') + (g.abend||'') + '</div>' +
+      '<div style="flex:1"><div style="font-size:14px;font-weight:' + (isToday?'700':'500') + ';color:' + (isCooked?'var(--grn)':isCancelled?'#bbb':isPast?'#bbb':'var(--txt)') + ';' + ((isCooked||isCancelled)?'text-decoration:line-through':'') + '">' + (isCooked?'✓ ':isCancelled?'':'') + (g.abend||'') + '</div>' +
+      (isPast && !isCooked && !isCancelled ? '<div style="font-size:10px;color:#c62828">nicht gekocht</div>' : '') +
       (hasReste && !isPast ? '<div style="font-size:11px;color:var(--gr3)">↳ ' + g.mittag_naechster_tag + '</div>' : '') + '</div></div>';
   }).join('');
   if ($('dash-week-days')) $('dash-week-days').innerHTML = weekHtml;
@@ -2743,6 +2854,7 @@ function updateDashboard() {
   for (var i = 0; i < gerichte.length; i++) {
     var gTag = (gerichte[i].tag||'').slice(0,2);
     var gIdx2 = DAYS.indexOf(gTag);
+    if (gerichte[i]._cancelled) continue;   // ausgefallen/auswaerts ueberspringen
     if (gTag === todayTag) { todayDish = gerichte[i]; break; }
     if (gIdx2 > todayIdx && !nextDish) nextDish = gerichte[i];
   }
@@ -2772,18 +2884,23 @@ function updateDashboard() {
   } else if ($('dash-today-card')) {
     $('dash-today-card').style.display = 'none';
   }
-  // Einkauf
-  var checked = G.checked || {};
-  var checkedCount = Object.values(checked).filter(Boolean).length;
-  var totalItems = gerichte.reduce(function(s,g){ return s+(g.zutaten||[]).length; }, 0);
+  // Einkauf: Status der Uebertragung an Bring! (dort wird abgehakt, nicht hier)
+  var aktive = gerichte.filter(function(g){ return !g._cancelled; });
+  var totalItems = getItems({ gerichte: aktive }).length;
   if (totalItems > 0 && $('dash-einkauf-card')) {
     $('dash-einkauf-card').style.display = 'block';
-    var pct = Math.min(100, Math.round(checkedCount/totalItems*100));
-    var done = pct === 100;
-    if ($('dash-einkauf-txt')) $('dash-einkauf-txt').textContent = done ? '✅ Alles eingekauft!' : checkedCount + ' von ' + totalItems + ' Artikeln erledigt';
-    if ($('dash-einkauf-pct')) $('dash-einkauf-pct').textContent = pct + '%';
-    if ($('dash-einkauf-bar')) { $('dash-einkauf-bar').style.width=pct+'%'; $('dash-einkauf-bar').style.background=done?'var(--grn)':pct>60?'#66bb6a':'var(--red)'; }
+    var imported = plan.bringImportedAt;
+    if ($('dash-einkauf-txt')) $('dash-einkauf-txt').textContent = imported
+      ? (plan.bringItemCount || totalItems) + ' Artikel an Bring! übertragen'
+      : 'Noch nicht an Bring! übertragen';
+    if ($('dash-einkauf-sub')) $('dash-einkauf-sub').textContent = imported
+      ? 'Zuletzt: ' + imported + ' · Abhaken in Bring!'
+      : totalItems + ' Artikel bereit zum Übertragen';
+    if ($('dash-einkauf-dot')) $('dash-einkauf-dot').style.background = imported ? 'var(--grn)' : 'var(--gr2)';
+    if ($('dash-einkauf-btn')) $('dash-einkauf-btn').textContent = imported
+      ? 'Liste ansehen / erneut übertragen →' : 'Einkaufsliste öffnen →';
   }
+
 }
 
 function showRatingModal(ri) {
@@ -3012,6 +3129,7 @@ var G_foto={base64:null,mime:null,portionen:2};
 function setFotoP(n){G_foto.portionen=n;var chips=$('foto-pchips').querySelectorAll('.chip');for(var i=0;i<chips.length;i++)chips[i].classList.toggle('on',i===n-1);}
 function handleFotoFile(file){
   if(!file||!file.type.startsWith('image/'))return; G_foto.mime=file.type;
+  if (file.size > 8*1024*1024) { alert('Foto zu gross (max. 8 MB). Bitte kleineres Bild waehlen.'); return; }
   var reader=new FileReader();
   reader.onload=function(e){var dataUrl=e.target.result;G_foto.base64=dataUrl.split(',')[1];$('foto-img').src=dataUrl;$('foto-preview').style.display='block';$('foto-upload-area').style.display='none';$('foto-btn').disabled=false;$('foto-result').style.display='none';if($('foto-err'))$('foto-err').style.display='none';};
   reader.readAsDataURL(file);
@@ -3067,7 +3185,7 @@ function analyzeFoto(){
 function renderFotoRezept(r){
   var zRows=(r.zutaten||[]).map(function(z){return '<div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:.5px solid #f5f5f5"><span style="font-size:14px;font-weight:500">'+z.name+'</span><span style="font-size:13px;color:var(--gr3)">'+z.menge+'</span></div>';}).join('');
   var sRows=(r.schritte||[]).map(function(s,i){var pills=(s.zutaten_schritt||[]).map(function(z){return '<span class="zpill">'+z+'</span>';}).join('');return '<div style="margin-bottom:14px"><div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><div style="width:24px;height:24px;border-radius:50%;background:var(--red);color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0">'+(i+1)+'</div><b style="font-size:13px;color:var(--txt)">'+(s.titel||'')+'</b>'+(s.timer_min>0?'<span style="font-size:11px;color:var(--gr3);background:#f5f5f5;padding:2px 8px;border-radius:100px">⏱ '+s.timer_min+' Min.</span>':'')+'</div>'+(pills?'<div class="zpills" style="margin-bottom:6px">'+pills+'</div>':'')+'<div style="font-size:14px;color:var(--txt);line-height:1.6">'+s.text+'</div></div>';}).join('');
-  var html='<div class="card"><div class="cp"><div style="font-size:19px;font-weight:800;color:var(--txt);margin-bottom:4px">'+(r.name||'Rezept')+'</div>'+(r.beschreibung?'<div style="font-size:13px;color:var(--gr3);margin-bottom:10px">'+r.beschreibung+'</div>':'')+'<div style="display:flex;gap:12px;margin-bottom:14px">'+(r.zeit_aktiv?'<span style="font-size:12px;color:var(--gr3)">✏ Aktiv: <b style="color:var(--txt2)">'+r.zeit_aktiv+'</b></span>':'')+(r.zeit_total?'<span style="font-size:12px;color:var(--gr3)">⏰ Total: <b style="color:var(--txt2)">'+r.zeit_total+'</b></span>':'')+'</div><div class="clbl">Zutaten für '+G_foto.portionen+' Personen</div><div style="margin-bottom:14px">'+zRows+'</div>'+(r.tipp?'<div style="background:#fffde7;border-left:3px solid #f9a825;padding:10px 12px;border-radius:0 8px 8px 0;font-size:13px;margin-bottom:14px"><b>Tipp:</b> '+r.tipp+'</div>':'')+'</div></div><div class="card"><div class="cp"><div class="clbl">Zubereitung</div>'+sRows+'</div></div><div style="padding:0 10px 10px;display:flex;flex-direction:column;gap:8px"><button class="btn btn-red" onclick="startFotoCook()" style="font-size:13px">👨‍🍳 Jetzt kochen</button><button class="btn btn-out" onclick="importFotoFromResult()" style="font-size:13px">In Bring! importieren</button><div style="display:flex;gap:8px"><button class="btn btn-out" onclick="saveFotoRezept()" style="flex:1;font-size:13px">💾 Speichern</button><button class="btn btn-out" onclick="showFotoPrint()" style="flex:1;font-size:13px">🖨 PDF</button></div></div>';
+  var html='<div class="card"><div class="cp"><div style="font-size:19px;font-weight:800;color:var(--txt);margin-bottom:4px">'+(r.name||'Rezept')+'</div>'+(r.beschreibung?'<div style="font-size:13px;color:var(--gr3);margin-bottom:10px">'+r.beschreibung+'</div>':'')+'<div style="display:flex;gap:12px;margin-bottom:14px">'+(r.zeit_aktiv?'<span style="font-size:12px;color:var(--gr3)">✏ Aktiv: <b style="color:var(--txt2)">'+r.zeit_aktiv+'</b></span>':'')+(r.zeit_total?'<span style="font-size:12px;color:var(--gr3)">⏰ Total: <b style="color:var(--txt2)">'+r.zeit_total+'</b></span>':'')+'</div><div class="clbl">Zutaten für '+G_foto.portionen+' Personen</div><div style="margin-bottom:14px">'+zRows+'</div>'+(r.tipp?'<div style="background:#fffde7;border-left:3px solid #f9a825;padding:10px 12px;border-radius:0 8px 8px 0;font-size:13px;margin-bottom:14px"><b>Tipp:</b> '+r.tipp+'</div>':'')+'</div></div><div class="card"><div class="cp"><div class="clbl">Zubereitung</div>'+sRows+'</div></div><div style="padding:0 10px 10px;display:flex;flex-direction:column;gap:8px"><button class="btn btn-red" onclick="startFotoCook()" style="font-size:13px">👨‍🍳 Jetzt kochen</button><button class="btn btn-out" onclick="importFotoFromResult()" style="font-size:13px">In Bring! importieren</button><div style="display:flex;gap:8px"><button class="btn btn-out" onclick="saveFotoRezept(this)" style="flex:1;font-size:13px">💾 Speichern</button><button class="btn btn-out" onclick="showFotoPrint()" style="flex:1;font-size:13px">🖨 PDF</button></div></div>';
   window._fotoRezept=r; if($('foto-result')){$('foto-result').innerHTML=html;$('foto-result').style.display='block';}
 }
 function importFotoFromResult(){
@@ -3092,11 +3210,11 @@ function saveFotoRezeptSilent(r,status){
   localStorage.setItem('foto_rezepte',JSON.stringify(saved));
   saveFotoRezepteToGH(saved);
 }
-function saveFotoRezept(){
+function saveFotoRezept(btn){
   if(!window._fotoRezept)return;
   saveFotoRezeptSilent(window._fotoRezept);loadSavedFotoRezepte();
-  var btn=event.target; btn.textContent='Gespeichert!';btn.style.color='var(--grn)';btn.style.borderColor='var(--grn)';
-  setTimeout(function(){btn.textContent='💾 Speichern';btn.style.color='';btn.style.borderColor='';},2000);
+  if(btn&&btn.style){ btn.textContent='Gespeichert!';btn.style.color='var(--grn)';btn.style.borderColor='var(--grn)';
+    setTimeout(function(){btn.textContent='💾 Speichern';btn.style.color='';btn.style.borderColor='';},2000); }
 }
 function saveFotoRezepteToGH(saved){
   ghPut('foto-rezepte.json',saved,'Foto-Rezepte').then(function(r){if(r&&r.ok)console.log('Foto-Rezepte gespeichert');}).catch(function(){});
@@ -3160,7 +3278,17 @@ function savePrefs(){
 }
 function buildLearningProfile(){
   var ratings=[];
-  try{var lr=JSON.parse(localStorage.getItem('local_ratings')||'[]');var hist=JSON.parse(localStorage.getItem('local_history')||'[]');var fotos=JSON.parse(localStorage.getItem('foto_rezepte')||'[]');lr.forEach(function(r){if(r.stars)ratings.push({name:r.gericht,stars:r.stars,feedback:r.feedback||''});});hist.forEach(function(h){if(h.stars)ratings.push({name:h.thema,stars:h.stars,feedback:h.ratingFeedback||''});});fotos.forEach(function(f){if(f.stars)ratings.push({name:f.name,stars:f.stars,feedback:f.ratingFeedback||''});});}catch(e){}
+  var _prefs={}; try{_prefs=JSON.parse(localStorage.getItem(getPrefKey())||'{}');}catch(e){}
+  var _reset=_prefs.profileReset?new Date(_prefs.profileReset):null;
+  function _after(it){ if(!_reset||!it.date) return true; return new Date(it.date)>_reset; }
+  try{
+    var lr=JSON.parse(localStorage.getItem('local_ratings')||'[]');
+    var hist=JSON.parse(localStorage.getItem('local_history')||'[]');
+    var fotos=JSON.parse(localStorage.getItem('foto_rezepte')||'[]');
+    lr.forEach(function(r){if(r.stars&&_after(r))ratings.push({name:r.gericht,stars:r.stars,feedback:r.feedback||'',tags:r.tags||[]});});
+    hist.forEach(function(h){if(h.stars&&_after(h))ratings.push({name:h.thema,stars:h.stars,feedback:h.ratingFeedback||'',tags:h.tags||[]});});
+    fotos.forEach(function(f){if(f.stars&&_after(f))ratings.push({name:f.name,stars:f.stars,feedback:f.ratingFeedback||'',tags:f.tags||[]});});
+  }catch(e){}
   if(!ratings.length)return'';
   var loved=ratings.filter(function(r){return r.stars>=4;});var disliked=ratings.filter(function(r){return r.stars<=2;});var feedbacks=ratings.filter(function(r){return r.feedback&&r.feedback.length>3;});
   var profile='';
@@ -3229,5 +3357,124 @@ var G_foto={base64:null,mime:null,portionen:2};
 
 // ─── TOKEN & PASSWORT ──────────────────────────────────────
 </script>
+
+<!-- USER MENU -->
+<div id="user-menu" style="display:none;position:fixed;top:56px;right:10px;z-index:150;background:#fff;border-radius:var(--rlg);border:.5px solid var(--bdr);overflow:hidden;box-shadow:0 6px 24px rgba(0,0,0,.15);min-width:230px">
+  <div style="padding:14px 16px;background:var(--red);color:#fff">
+    <div style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;opacity:.75;margin-bottom:3px">Angemeldet als</div>
+    <div id="um-username" style="font-size:15px;font-weight:700"></div>
+  </div>
+  <div style="padding:6px 0">
+    <button onclick="openHistory();toggleUserMenu()" style="width:100%;text-align:left;padding:11px 16px;background:none;border:none;font-size:14px;color:var(--txt);cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:10px"><span style="font-size:17px">&#128197;</span> Verlauf</button>
+    <div style="height:.5px;background:var(--bdr);margin:0 16px"></div>
+    <button onclick="openPrefs();toggleUserMenu()" style="width:100%;text-align:left;padding:11px 16px;background:none;border:none;font-size:14px;color:var(--txt);cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:10px"><span style="font-size:17px">&#9881;</span> Präferenzen</button>
+    <div style="height:.5px;background:var(--bdr);margin:0 16px"></div>
+    <button onclick="showInviteLink();toggleUserMenu()" style="width:100%;text-align:left;padding:11px 16px;background:none;border:none;font-size:14px;color:var(--txt);cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:10px"><span style="font-size:17px">&#128279;</span> Einladungslink</button>
+    <div style="height:.5px;background:var(--bdr);margin:0 16px"></div>
+    <button onclick="showChangePassword();toggleUserMenu()" style="width:100%;text-align:left;padding:11px 16px;background:none;border:none;font-size:14px;color:var(--txt);cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:10px"><span style="font-size:17px">&#128274;</span> Passwort ändern (lokal)</button>
+    <div style="height:.5px;background:var(--bdr);margin:0 16px"></div>
+    <button onclick="doLogout();toggleUserMenu()" style="width:100%;text-align:left;padding:11px 16px;background:none;border:none;font-size:14px;color:var(--red);cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:10px"><span style="font-size:17px">&#8594;</span> Abmelden</button>
+  </div>
+</div>
+
+<!-- REPLACE DISH MODAL -->
+<div id="replace-modal" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);z-index:100;align-items:flex-end;justify-content:center">
+  <div style="background:#fff;border-radius:20px 20px 0 0;padding:24px 20px 36px;width:100%;max-width:480px;max-height:88vh;overflow-y:auto">
+    <div style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--gr3);margin-bottom:4px">Gericht austauschen</div>
+    <div id="rep-title" style="font-size:17px;font-weight:700;color:var(--txt);margin-bottom:16px"></div>
+    <div class="fld">
+      <label>Warum austauschen? (optional)</label>
+      <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px" id="rep-tags">
+        <button class="chip" onclick="toggleRepTag(this,'zu aufwendig')">zu aufwendig</button>
+        <button class="chip" onclick="toggleRepTag(this,'mag ich nicht')">mag ich nicht</button>
+        <button class="chip" onclick="toggleRepTag(this,'Zutaten fehlen')">Zutaten fehlen</button>
+        <button class="chip" onclick="toggleRepTag(this,'zu ähnlich')">zu ähnlich</button>
+        <button class="chip" onclick="toggleRepTag(this,'zu viele Zutaten')">zu viele Zutaten</button>
+        <button class="chip" onclick="toggleRepTag(this,'anderes gewünscht')">anderes gewünscht</button>
+      </div>
+      <input id="rep-hint" placeholder="Oder eigener Wunsch: z.B. etwas Asiatisches, schnell...">
+    </div>
+    <div id="rep-load" style="display:none;text-align:center;padding:20px 0">
+      <div class="spin" style="width:22px;height:22px;margin:0 auto 8px;border-width:2px"></div>
+      <div style="font-size:13px;color:var(--gr3)">Neues Gericht wird generiert...</div>
+    </div>
+    <div id="rep-result" style="display:none;background:var(--grl);border:.5px solid #a5d6a7;border-radius:10px;padding:12px 14px;margin-bottom:12px">
+      <div style="font-size:11px;color:var(--grn);font-weight:700;margin-bottom:4px">Vorschlag</div>
+      <div id="rep-name" style="font-size:15px;font-weight:700;color:var(--txt);margin-bottom:2px"></div>
+      <div id="rep-meta" style="font-size:12px;color:var(--gr3)"></div>
+    </div>
+    <div style="display:flex;gap:8px">
+      <button class="btn btn-out" onclick="closeReplace()" id="rep-cancel" style="flex:1;padding:11px;font-size:13px">Abbrechen</button>
+      <button class="btn btn-out" onclick="generateReplace()" id="rep-gen-btn" style="flex:1;padding:11px;font-size:13px">&#8634; Neu generieren</button>
+      <button class="btn btn-red" onclick="applyReplace()" id="rep-apply" style="display:none;flex:1;padding:11px;font-size:13px">Übernehmen</button>
+    </div>
+  </div>
+</div>
+
+<!-- RESCHEDULE MODAL -->
+<div id="reschedule-modal" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);z-index:100;align-items:flex-end;justify-content:center">
+  <div style="background:#fff;border-radius:20px 20px 0 0;padding:24px 20px 36px;width:100%;max-width:480px;max-height:88vh;overflow-y:auto">
+    <div style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--gr3);margin-bottom:4px">Tauschen mit</div>
+    <div id="rsch-title" style="font-size:17px;font-weight:700;color:var(--txt);margin-bottom:16px"></div>
+    <div id="rsch-days" style="display:flex;flex-direction:column;gap:8px;margin-bottom:16px"></div>
+    <button class="btn btn-out" onclick="$('reschedule-modal').style.display='none'" style="padding:11px;font-size:13px">Abbrechen</button>
+  </div>
+</div>
+
+<!-- RATING MODAL -->
+<div id="rating-modal" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);z-index:100;align-items:flex-end;justify-content:center">
+  <div style="background:#fff;border-radius:20px 20px 0 0;padding:24px 20px 36px;width:100%;max-width:480px;max-height:88vh;overflow-y:auto">
+    <div style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--gr3);margin-bottom:6px">Gericht bewerten</div>
+    <div id="rm-title" style="font-size:18px;font-weight:700;color:var(--txt);margin-bottom:16px"></div>
+    <div style="display:flex;gap:8px;margin-bottom:8px" id="rm-stars">
+      <button onclick="setStar(1)" class="star-btn" style="font-size:32px;background:none;border:none;cursor:pointer;padding:4px;opacity:.3">&#9733;</button>
+      <button onclick="setStar(2)" class="star-btn" style="font-size:32px;background:none;border:none;cursor:pointer;padding:4px;opacity:.3">&#9733;</button>
+      <button onclick="setStar(3)" class="star-btn" style="font-size:32px;background:none;border:none;cursor:pointer;padding:4px;opacity:.3">&#9733;</button>
+      <button onclick="setStar(4)" class="star-btn" style="font-size:32px;background:none;border:none;cursor:pointer;padding:4px;opacity:.3">&#9733;</button>
+      <button onclick="setStar(5)" class="star-btn" style="font-size:32px;background:none;border:none;cursor:pointer;padding:4px;opacity:.3">&#9733;</button>
+    </div>
+    <div id="rm-starlbl" style="font-size:13px;color:var(--gr3);margin-bottom:14px;min-height:18px"></div>
+    <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px" id="rm-tags">
+      <button class="chip" onclick="toggleRmTag(this,'zu aufwendig')">zu aufwendig</button>
+      <button class="chip" onclick="toggleRmTag(this,'zu wenig Geschmack')">zu wenig Geschmack</button>
+      <button class="chip" onclick="toggleRmTag(this,'zu ähnlich')">zu ähnlich</button>
+      <button class="chip" onclick="toggleRmTag(this,'zu viele Zutaten')">zu viele Zutaten</button>
+      <button class="chip" onclick="toggleRmTag(this,'unbedingt wieder')">unbedingt wieder &#9829;</button>
+      <button class="chip" onclick="toggleRmTag(this,'sehr schnell')">sehr schnell</button>
+      <button class="chip" onclick="toggleRmTag(this,'gut zum Einfrieren')">gut zum Einfrieren</button>
+      <button class="chip" onclick="toggleRmTag(this,'gute Reste')">gute Reste</button>
+    </div>
+    <div class="fld">
+      <label>Kommentar (optional)</label>
+      <textarea id="rm-feedback" placeholder="Was hat gefallen? Was würde ich ändern?" style="width:100%;background:#fff;border:1px solid var(--bdr);border-radius:7px;color:var(--txt);font-size:14px;padding:10px 12px;font-family:inherit;resize:none;height:76px;outline:none"></textarea>
+    </div>
+    <div style="display:flex;gap:8px;margin-top:4px">
+      <button class="btn btn-out" onclick="closeRating()" style="flex:1;padding:11px;font-size:13px">Überspringen</button>
+      <button class="btn btn-red" onclick="submitRating()" style="flex:1;padding:11px;font-size:13px" id="rm-submit" disabled>Speichern</button>
+    </div>
+  </div>
+</div>
+
+<!-- PASSWORD MODAL -->
+<div id="pw-modal" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);z-index:100;align-items:flex-end;justify-content:center">
+  <div style="background:#fff;border-radius:20px 20px 0 0;padding:24px 20px 36px;width:100%;max-width:480px">
+    <div style="font-size:16px;font-weight:700;color:var(--txt);margin-bottom:6px">Passwort ändern</div>
+    <div style="font-size:11px;color:var(--gr3);margin-bottom:14px;line-height:1.5">Ändert das Passwort nur auf diesem Gerät. Damit es überall gilt, muss es zusätzlich in Cloudflare unter <b>MP_USERS</b> angepasst werden.</div>
+    <div class="fld"><label>Aktuelles Passwort</label><input type="password" id="pw-old" autocomplete="current-password"></div>
+    <div class="fld"><label>Neues Passwort</label><input type="password" id="pw-new" autocomplete="new-password"></div>
+    <div class="fld"><label>Neues Passwort wiederholen</label><input type="password" id="pw-new2" autocomplete="new-password"></div>
+    <div id="pw-err" style="font-size:12px;color:var(--red);margin-bottom:8px;display:none"></div>
+    <div style="display:flex;gap:8px">
+      <button class="btn btn-out" onclick="$('pw-modal').style.display='none'" style="flex:1;padding:11px;font-size:13px">Abbrechen</button>
+      <button class="btn btn-red" onclick="doChangePassword()" style="flex:1;padding:11px;font-size:13px">Ändern</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOKEN REFRESH (versteckt, für Notfall) -->
+<div id="token-refresh-modal" style="display:none">
+  <input type="password" id="new-token" placeholder="ghp_...">
+</div>
+
 </body>
 </html>
