@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=yes">
-<title>Menüplan v5.59</title>
+<title>Menüplan v6.0</title>
 <style>
 :root{
   --red:#e8390e;--rl:#fff2ef;--grn:#2e7d32;--grl:#f0faf4;
@@ -153,7 +153,7 @@ input[type=password]{letter-spacing:2px}
 
 <!-- HOME -->
 <div class="scr on" id="sh">
-  <div class="hero"><h1>Menüplan</h1><p id="hsub">v5.59 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
+  <div class="hero"><h1>Menüplan</h1><p id="hsub">v6.0 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
 
   <!-- Active plan card -->
 
@@ -789,10 +789,10 @@ function doLogin() {
   err.style.display = 'none';
 
   // Verify against worker using a lightweight ping
-  fetch(PROXY + '/anthropic', {
+  fetch(PROXY + '/auth', {
     method: 'POST',
     headers: { 'X-MP-User': username, 'X-MP-Pass': pw, 'Content-Type': 'application/json' },
-    body: JSON.stringify({ model: 'claude-haiku-4-5-20251001', max_tokens: 1, messages: [{ role: 'user', content: 'hi' }] })
+    body: '{}'
   }).then(function(r) {
     if (loginBtn) { loginBtn.disabled = false; loginBtn.textContent = 'Anmelden'; }
     if (r.status === 401) {
@@ -1222,54 +1222,6 @@ function doImportItems() {
 
 // ─── SUGGESTIONS ───────────────────────────────────────────
 // Quick overview system prompt - no steps, just dishes and ingredients
-function buildSYS_overview() {
-  var p = G.personen || 2;
-  var modusText = G.modus === 'vegi' ? 'vegetarisch' : G.modus === 'fleisch' ? 'mit Fleisch' : 'vegi+optional Fleisch';
-  var mittag = G.reste ? ',"mittag_nächster_tag":"Linsensuppe als Rest"' : '';
-  var json = '{"vorschlaege":[{"id":1,"thema":"Asiatisch","kochabende":["Mo","Mi","Fr"],"gerichte":[{"tag":"Mo","abend":"Tofu-Gemu\u00ecsecurry","zeit_aktiv":"20m","zeit_total":"35m"' + mittag + '},{"tag":"Mi","abend":"Glasnudelsalat","zeit_aktiv":"15m","zeit_total":"15m"' + mittag + '}]}]}';
-
-  var resteModeText = G.resteMode === 'mikro' ? 'Reste werden am nächsten Tag NUR in der Mikrowelle aufgewärmt (kein Herd, kein Toaster). Gerichte wählen die als Mikrowellen-Reste gut schmecken: Suppen, Currys, Eintöpfe, Pasta mit Sauce, Reisgerichte.' : '';
-  var resteHinweis = G.reste ?
-    'RESTE-PLANUNG (wichtig): Jedes Abendgericht muss so portioniert sein dass am nächsten Mittag Reste aufgewärmt werden können. ' +
-    'Wähle Gerichte die als Reste gut schmecken: Suppen, Currys, Eintöpfe, Pasta mit Sauce, Reisgerichte. ' +
-    'KEINE kalten Salate, Omeletts oder Gerichte die nur frisch gut sind als Reste. ' +
-    'Das Feld mittag_nächster_tag = kurzer Name der Reste-Variante (z.B. "Curry-Reste", "Pasta aufgewärmt"). ' : '';
-
-  return 'Antworte NUR mit JSON, kein Text, keine Markdown-Backticks. Keine Apostrophe. ' +
-    'Generiere 3 Menüvorschläge a ' + G.n + ' Gerichte fuer ' + p + ' Personen (' + modusText + '). ' +
-    resteHinweis + (G.resteMode === 'mikro' ? resteModeText : '') +
-    'Felder pro Gericht: tag, abend (richtiger Gerichtsname!), zeit_aktiv, zeit_total' + (G.reste ? ', mittag_nächster_tag (kurzer Restename)' : '') + '. ' +
-    'KEINE anderen Felder, KEINE Zutaten. Kompakt. ' +
-    'Format-Beispiel: ' + json;
-}
-
-
-function buildSYS_full(sug) {
-  var p = G.personen || 2;
-  var portAbend = p;
-  var portMittag = G.reste ? p : 0;
-  var portFreeze = G.freeze ? 2 : 0;
-  var portTotal = portAbend + portMittag + portFreeze;
-  var mittag = G.reste ? '"mittag_nächster_tag":"Name","mittag_tag":"Dienstag",' : '';
-  var prep = G.reste ? ',"prep_next":["'+portMittag+' Portionen abkuehlen lassen und einpacken","Morgen in Mikrowelle '+Math.round(portMittag*2)+' Min. aufwaermen"]' : '';
-  var frz = G.freeze ? ',"einfrieren":["2 Port. einfrieren","Beschriften"]' : '';
-  var json = '{"gerichte":[{"tag":"Montag","abend":"Name",' + mittag + '"zutaten":[{"name":"X","menge":"Y"}],"schritte_vegi":[{"titel":"Sauce","text":"Detaillierter Schritt","timer_min":0,"zutaten_schritt":["X"]}],"schritte_fleisch":[{"titel":"Fleisch anbraten","text":"Detaillierter Schritt","timer_min":0,"zutaten_schritt":["X"]}]' + prep + frz + ',"tipp":"Tipp","zeit_aktiv":"X","zeit_total":"Y"}]}';
-  var dishes = sug.gerichte.map(function(g) { return g.tag + ': ' + g.abend; }).join(', ');
-  return 'NUR valides JSON, kein Text. Keine Apostrophe. ' +
-    'Generiere vollstaendige Kochschritte fuer diese Gerichte: ' + dishes + '. ' +
-    'Fuer ' + portTotal + ' Portionen (' + portAbend + ' Abend' + (portMittag?' + '+portMittag+' Mittag':'') + (portFreeze?' + 2 Einfrieren':'') + '). ' +
-    (G.reste ? 'Reste vom Abend werden am nächsten Mittag mikrogewellt (keine Stovetop-Zubereitung). Doppelte Portionen kochen: '+portAbend+' Abend + '+portMittag+' Mittag-Portionen.' : 'Keine Reste, nur '+portAbend+' Portionen.') + ' ' +
-    (G.freeze ? '+2 Einfrierportionen mitkochen.' : 'Keine Einfrierportionen.') + ' ' +
-    'WICHTIG: Das Zutaten-Array (zutaten) muss EXAKT die Zutaten enthalten die im Rezept verwendet werden - nicht mehr, nicht weniger. ' +
-    'Keine Zutaten in der Liste die nicht explizit in einem Kochschritt vorkommen. ' +
-    'Haltbarkeit beachten: wenn Spinat, Erbsen, Mais oder Beeren in Zutaten - TK-Version bevorzugen wenn das Gericht nicht am ersten Kochtag (Mo) stattfindet. ' +
-    'Frischer Spinat nur bei Mo-Gerichten, sonst TK-Spinat angeben. ' +
-    'Jeden Schritt hat ein "titel" Feld (2-3 Woerter, Substantiv): z.B. "Sauce kochen", "Gemüse schneiden", "Dressing mixen", "Pasta kochen", "Anbraten", "Backen", "Umfuellen". ' +
-    'Jeden Schritt mit Kontext beginnen wohin Zutaten kommen. ' +
-    'timer_min NUR bei aktivem Warten (kochen/braten/backen), sonst 0. ' +
-    'Format: ' + json;
-}
-
 function validateIngredients(gerichte) {
   // Cross-check: remove zutaten that don't appear in any step text
   for (var i = 0; i < gerichte.length; i++) {
@@ -1367,6 +1319,48 @@ function parseJSON(raw) {
   } catch(e4) {}
 
   throw new Error('JSON ungueltig: ' + jsonStr.slice(0, 150));
+}
+
+
+// ─── CLAUDE VIA WORKER ─────────────────────────────────────
+// Die System-Prompts liegen im Cloudflare Worker, nicht hier.
+// Der Browser schickt nur die Parameter (kind + opts).
+function currentOpts(extra) {
+  var o = {
+    personen: G.personen || 2,
+    n: G.n || 3,
+    modus: G.modus || 'optional',
+    reste: !!G.reste,
+    resteMode: G.resteMode || 'mikro',
+    freeze: !!G.freeze
+  };
+  if (extra) for (var k in extra) o[k] = extra[k];
+  return o;
+}
+
+function callWorker(kind, message, maxTokens, opts, model) {
+  var s = getSession();
+  var h = { 'Content-Type': 'application/json' };
+  if (s) { h['X-MP-User'] = s.username; h['X-MP-Pass'] = s.pw; }
+  return fetch(PROXY + '/generate', {
+    method: 'POST',
+    headers: h,
+    body: JSON.stringify({
+      kind: kind,
+      opts: currentOpts(opts),
+      message: message,
+      max_tokens: maxTokens || 1000,
+      model: model || 'claude-haiku-4-5-20251001'
+    })
+  })
+  .then(function(r) {
+    if (r.status === 401) throw new Error('Nicht angemeldet oder Zugangsdaten ungültig.');
+    return r.json();
+  })
+  .then(function(d) {
+    if (d.error) throw new Error(d.error.message || d.error || 'API Fehler');
+    return (d.content && d.content[0] && d.content[0].text) ? d.content[0].text : '';
+  });
 }
 
 function callClaudeHaiku(sys, msg, maxTokens) {
@@ -1474,11 +1468,11 @@ function goSuggest() {
       '. Plane die uebrigen Gerichte passend dazu.';
   }
 
-  var sys = buildSYS_overview();
+  // Prompt kommt aus dem Worker
 
   // Load all 3 suggestions in parallel
   function loadOne(id) {
-    return callClaudeHaiku(sys, msg + ' Vorschlag ' + id + ' von 3. Wähle eine andere Küche als die anderen Vorschläge.', 400)
+    return callWorker('overview', msg + ' Vorschlag ' + id + ' von 3. Wähle eine andere Küche als die anderen Vorschläge.', 400)
       .then(function(raw) {
         try {
           var parsed = parseJSON(raw);
@@ -1617,10 +1611,9 @@ function goWeek() {
     return g.tag + ': ' + g.abend + ' (' + z + ')';
   }).join(' | ');
 
-  var sys = buildSYS_full(sug);
-  var msg = 'Vollstaendige Kochschritte fuer: ' + dishList + '. Fuer ' + portTotal + ' Portionen.';
+  var msg = 'Erzeuge die vollständigen Kochschritte.';
 
-  callClaudeHaiku(sys, msg, 5000)
+  callWorker('full', msg, 5000, { dishes: dishList })
   .then(function(raw) {
     var parsed = parseJSON(raw);
     var fg = parsed.gerichte || [];
@@ -2651,7 +2644,7 @@ function generateReplace() {
     (G.reste ? ' Mit Resteverwertung am naechsten Tag.' : '') +
     ' NUR valides JSON. Format: {"gerichte":[{"tag":"' + g.tag + '","abend":"Gerichtsname","mittag_naechster_tag":"Restname","zeit_aktiv":"20m","zeit_total":"40m","zutaten":[{"name":"X","menge":"Y"}],"schritte_vegi":[{"titel":"Schritt","text":"Detail","timer_min":0,"zutaten_schritt":["X"]}],"tipp":"Tipp"}]}';
 
-  callClaudeHaiku(buildSYS_full(sug), msg, 2000)
+  callWorker('replace', msg, 2000, { dishes: existing })
     .then(function(raw) {
       $('rep-load').style.display = 'none';
       $('rep-gen-btn').disabled = false;
@@ -3170,10 +3163,12 @@ function analyzeFoto(){
   if(!G_foto.base64)return;
   $('foto-load').style.display='block'; if($('foto-result'))$('foto-result').style.display='none'; if($('foto-err'))$('foto-err').style.display='none'; $('foto-btn').disabled=true;
   var hint=$('foto-hint').value.trim(); var p=G_foto.portionen;
-  var sys='Du analysierst Fotos von Rezepten und leitest daraus ein vollständiges Rezept ab. Antworte NUR mit validem JSON ohne Text. Keine Apostrophe. Format: {"name":"Name","beschreibung":"Kurze Beschreibung","zeit_aktiv":"15 Min.","zeit_total":"45 Min.","zutaten":[{"name":"X","menge":"Y"}],"schritte":[{"titel":"Schritt","text":"Detail","timer_min":0,"zutaten_schritt":["X"]}],"tipp":"Tipp"}. Schritte haben ein titel Feld (2-3 Wörter).';
+  // Foto-Prompt liegt im Worker
   var msg='Analysiere dieses Foto und leite ein vollständiges Rezept für '+p+' Personen ab. Gib alle Zutaten mit genauen Mengen an. Schritte detailliert.'+(hint?' Hinweis: '+hint+'.':'');
   var session=getSession(); var authH=session?{'X-MP-User':session.username,'X-MP-Pass':session.pw,'Content-Type':'application/json'}:{'Content-Type':'application/json'};
-  fetch(PROXY+'/anthropic',{method:'POST',headers:authH,body:JSON.stringify({model:'claude-sonnet-4-5',max_tokens:3000,system:sys,messages:[{role:'user',content:[{type:'image',source:{type:'base64',media_type:G_foto.mime,data:G_foto.base64}},{type:'text',text:msg}]}]})})
+  fetch(PROXY+'/generate',{method:'POST',headers:authH,body:JSON.stringify({
+    kind:'photo', opts:currentOpts(), model:'claude-sonnet-4-5', max_tokens:3000,
+    messages:[{role:'user',content:[{type:'image',source:{type:'base64',media_type:G_foto.mime,data:G_foto.base64}},{type:'text',text:msg}]}]})})
   .then(function(r){return r.json();})
   .then(function(d){
     $('foto-load').style.display='none'; $('foto-btn').disabled=false;
