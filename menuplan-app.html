@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=yes">
-<title>Menüplan v6.0</title>
+<title>Menüplan v6.1</title>
 <style>
 :root{
   --red:#e8390e;--rl:#fff2ef;--grn:#2e7d32;--grl:#f0faf4;
@@ -153,7 +153,7 @@ input[type=password]{letter-spacing:2px}
 
 <!-- HOME -->
 <div class="scr on" id="sh">
-  <div class="hero"><h1>Menüplan</h1><p id="hsub">v6.0 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
+  <div class="hero"><h1>Menüplan</h1><p id="hsub">v6.1 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
 
   <!-- Active plan card -->
 
@@ -740,7 +740,6 @@ function setF(v) {
 
 
 
-// ─── SYSTEM PROMPT BUILDER ─────────────────────────────────
 
 
 // ─── INIT ──────────────────────────────────────────────────
@@ -1065,23 +1064,46 @@ function loadSaved() {
 
 // ─── BRING! ────────────────────────────────────────────────
 function loadBringLists(callback) {
-  if (!G.bToken) return;
+  if (!G.bToken) { showBringLogin(); if (callback) callback(false); return; }
   var headers = {};
   for (var k in BH) headers[k] = BH[k];
   headers['Authorization'] = G.bToken;
   headers['X-BRING-USER-UUID'] = G.bUUID;
   headers['Content-Type'] = 'application/json';
   fetch(BAPI + '/bringusers/' + G.bUUID + '/lists', { headers: headers })
-    .then(function(r) { return r.ok ? r.json() : null; })
-    .then(function(d) {
-      if (!d) { if (callback) callback(); return; }
-      G.bLists = Array.isArray(d.lists) ? d.lists : [];
-      $('blist').innerHTML = G.bLists.map(function(l) { return '<option value="' + l.listUuid + '">' + l.name + '</option>'; }).join('');
-      $('blistwrap').style.display = 'block';
-      $('bfields').style.display = 'none';
-      if (callback) callback();
+    .then(function(r) {
+      if (r.status === 401 || r.status === 403) throw new Error('expired');
+      return r.ok ? r.json() : null;
     })
-    .catch(function() { if (callback) callback(); });
+    .then(function(d) {
+      var lists = (d && Array.isArray(d.lists)) ? d.lists : [];
+      if (!lists.length) throw new Error('empty');
+      G.bLists = lists;
+      if ($('blist')) $('blist').innerHTML = lists.map(function(l) {
+        return '<option value="' + l.listUuid + '">' + l.name + '</option>';
+      }).join('');
+      if ($('blistwrap')) $('blistwrap').style.display = 'block';
+      if ($('bfields')) $('bfields').style.display = 'none';
+      if (callback) callback(true);
+    })
+    .catch(function(e) {
+      // Sitzung abgelaufen oder ungueltig: sauber zuruecksetzen
+      clearBringSession(e.message === 'expired');
+      if (callback) callback(false);
+    });
+}
+
+function showBringLogin() {
+  if ($('blistwrap')) $('blistwrap').style.display = 'none';
+  if ($('bfields')) $('bfields').style.display = 'block';
+}
+
+function clearBringSession(wasExpired) {
+  G.bToken = null; G.bUUID = null; G.bLists = [];
+  localStorage.removeItem('bs');
+  if ($('blist')) $('blist').innerHTML = '';
+  showBringLogin();
+  if (wasExpired) showSt('ist', 'Bring!-Sitzung abgelaufen. Bitte erneut anmelden.', 'er');
 }
 
 function doImport() {
@@ -1089,6 +1111,18 @@ function doImport() {
   var dbg = $('idbg');
   dbg.style.display = 'none';
   if ($('ist')) $('ist').style.display = 'none';
+
+  // Angemeldet, aber Listen (noch) nicht geladen -> zuerst nachladen
+  if (G.bToken && (!G.bLists || !G.bLists.length)) {
+    btn.innerHTML = '<span class="spin w"></span> Listen laden...';
+    btn.disabled = true;
+    loadBringLists(function(ok) {
+      btn.innerHTML = 'In Bring! importieren';
+      btn.disabled = false;
+      if (ok) showSt('ist', 'Bitte Liste auswählen und nochmals importieren.', 'ok');
+    });
+    return;
+  }
 
   // Login if needed
   if (!G.bToken) {
@@ -1123,8 +1157,13 @@ function doImport() {
 function doImportItems() {
   if (G.sel === null) { showSt('ist', 'Bitte zuerst eine Menüwoche auswählen.', 'er'); return; }
   var sug = G.sugs[G.sel];
-  var listUuid = $('blist').value;
-  if (!listUuid) { showSt('ist', 'Bitte eine Bring!-Liste auswählen.', 'er'); return; }
+  var listUuid = $('blist') ? $('blist').value : '';
+  if (!listUuid) {
+    if (!G.bToken) showSt('ist', 'Bitte zuerst bei Bring! anmelden.', 'er');
+    else if (!G.bLists || !G.bLists.length) { showSt('ist', 'Listen werden geladen...', 'ok'); loadBringLists(); }
+    else showSt('ist', 'Bitte eine Bring!-Liste auswählen.', 'er');
+    return;
+  }
 
   var items = getItems(sug);
   var clearFirst = $('bclr').checked;
@@ -1215,13 +1254,13 @@ function doImportItems() {
     }
   })
   .catch(function(e) {
-    showSt('ist', 'Import fehlgeschlagen: ' + e.message, 'er');
     btn.innerHTML = 'Nochmals versuchen'; btn.disabled = false;
+    if (e && /401|403|expired|Unauthorized/i.test(e.message || '')) { clearBringSession(true); return; }
+    showSt('ist', 'Import fehlgeschlagen: ' + e.message, 'er');
   });
 }
 
 // ─── SUGGESTIONS ───────────────────────────────────────────
-// Quick overview system prompt - no steps, just dishes and ingredients
 function validateIngredients(gerichte) {
   // Cross-check: remove zutaten that don't appear in any step text
   for (var i = 0; i < gerichte.length; i++) {
