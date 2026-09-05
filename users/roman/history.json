@@ -1,0 +1,166 @@
+[
+  {
+    "date": "2026-09-05",
+    "saved": "5.9.2026",
+    "thema": "Mittelmeer",
+    "personen": 2,
+    "kochabende": 3,
+    "reste": 0,
+    "freeze": 1,
+    "gerichte": [
+      {
+        "tag": "Mo",
+        "abend": "Auberginen-Linsen-Moussaka"
+      },
+      {
+        "tag": "Mi",
+        "abend": "Spanischer Tortilla mit Salat"
+      },
+      {
+        "tag": "Fr",
+        "abend": "Zorba-Salat mit Halloumi"
+      }
+    ],
+    "status": "geplant",
+    "plan": {
+      "sug": {
+        "id": 1,
+        "thema": "Mittelmeer",
+        "kochabende": [
+          "Mo",
+          "Mi",
+          "Fr"
+        ],
+        "gerichte": [
+          {
+            "tag": "Mo",
+            "abend": "Auberginen-Linsen-Moussaka",
+            "zeit_aktiv": "35m",
+            "zeit_total": "70m"
+          },
+          {
+            "tag": "Mi",
+            "abend": "Spanischer Tortilla mit Salat",
+            "zeit_aktiv": "25m",
+            "zeit_total": "40m"
+          },
+          {
+            "tag": "Fr",
+            "abend": "Zorba-Salat mit Halloumi",
+            "zeit_aktiv": "15m",
+            "zeit_total": "15m"
+          }
+        ]
+      },
+      "sel": 0,
+      "n": 3,
+      "personen": 2,
+      "reste": 0,
+      "freeze": 1,
+      "modus": "vegi",
+      "days": {
+        "Mo": "aufwendig",
+        "Di": null,
+        "Mi": "normal",
+        "Do": null,
+        "Fr": "normal",
+        "Sa": null,
+        "So": null
+      },
+      "weekStart": "2026-08-30",
+      "saved": "5.9.2026",
+      "bringImportedAt": null,
+      "bringItemCount": 0,
+      "sugsAll": [
+        {
+          "id": 1,
+          "thema": "Mittelmeer",
+          "kochabende": [
+            "Mo",
+            "Mi",
+            "Fr"
+          ],
+          "gerichte": [
+            {
+              "tag": "Mo",
+              "abend": "Auberginen-Linsen-Moussaka",
+              "zeit_aktiv": "35m",
+              "zeit_total": "70m"
+            },
+            {
+              "tag": "Mi",
+              "abend": "Spanischer Tortilla mit Salat",
+              "zeit_aktiv": "25m",
+              "zeit_total": "40m"
+            },
+            {
+              "tag": "Fr",
+              "abend": "Zorba-Salat mit Halloumi",
+              "zeit_aktiv": "15m",
+              "zeit_total": "15m"
+            }
+          ]
+        },
+        {
+          "id": 2,
+          "thema": "Levantinisch",
+          "kochabende": [
+            "Mo",
+            "Mi",
+            "Fr"
+          ],
+          "gerichte": [
+            {
+              "tag": "Mo",
+              "abend": "Auberginen-Linsen-Moussaka",
+              "zeit_aktiv": "35m",
+              "zeit_total": "70m"
+            },
+            {
+              "tag": "Mi",
+              "abend": "Kichererbsen-Taboulé mit Feta",
+              "zeit_aktiv": "20m",
+              "zeit_total": "20m"
+            },
+            {
+              "tag": "Fr",
+              "abend": "Zorba-Salat mit Halloumi",
+              "zeit_aktiv": "15m",
+              "zeit_total": "15m"
+            }
+          ]
+        },
+        {
+          "id": 3,
+          "thema": "Nordafrikanisch",
+          "kochabende": [
+            "Mo",
+            "Mi",
+            "Fr"
+          ],
+          "gerichte": [
+            {
+              "tag": "Mo",
+              "abend": "Auberginen-Linsen-Moussaka",
+              "zeit_aktiv": "35m",
+              "zeit_total": "70m"
+            },
+            {
+              "tag": "Mi",
+              "abend": "Shakshuka mit Kichererbsen",
+              "zeit_aktiv": "20m",
+              "zeit_total": "25m"
+            },
+            {
+              "tag": "Fr",
+              "abend": "Zorba-Salat mit Halloumi",
+              "zeit_aktiv": "15m",
+              "zeit_total": "15m"
+            }
+          ]
+        }
+      ],
+      "sugsPartial": true
+    }
+  }
+]
