@@ -10,7 +10,108 @@
         "tag": "Mo",
         "abend": "Pasta al Pomodoro mit Rucolasalat",
         "zeit_aktiv": "18m",
-        "zeit_total": "25m"
+        "zeit_total": "25m",
+        "schritte_vegi": [
+          {
+            "titel": "Knoblauch vorbereiten",
+            "text": "Knoblauch schälen und fein hacken.",
+            "timer_min": 0,
+            "zutaten_schritt": [
+              "Knoblauch"
+            ]
+          },
+          {
+            "titel": "Tomatensauce kochen",
+            "text": "In einem Topf 20 ml Olivenöl erhitzen. Gehackten Knoblauch hinzufügen und 30 Sekunden darin anbraten bis duftend. Gehackte Tomaten (400 g) hineingeben, mit 4 g Salz, 1 g Pfeffer und Oregano (3 g) würzen. Aufkochen lassen und dann bei mittlerer Hitze 15 Minuten köcheln lassen.",
+            "timer_min": 15,
+            "zutaten_schritt": [
+              "Olivenöl",
+              "Knoblauch",
+              "Tomaten, gehackt",
+              "Salz",
+              "Schwarzer Pfeffer",
+              "Oregano"
+            ]
+          },
+          {
+            "titel": "Pasta kochen",
+            "text": "In einem großen Topf 2 Liter Wasser zum Kochen bringen. 4 g Salz hinzufügen. Spaghetti (160 g) hineinlegen und nach Paketanleitung ca. 9-10 Minuten bissfest kochen.",
+            "timer_min": 10,
+            "zutaten_schritt": [
+              "Spaghetti",
+              "Salz"
+            ]
+          },
+          {
+            "titel": "Rucola vorbereiten",
+            "text": "Rucola (120 g) waschen und trockenspinnen oder trocken tupfen. In eine Schüssel geben.",
+            "timer_min": 0,
+            "zutaten_schritt": [
+              "Rucola"
+            ]
+          },
+          {
+            "titel": "Rucolasalat dressing",
+            "text": "In einer kleinen Schüssel restliches Olivenöl (20 ml) mit dem Saft der halben Zitrone, 4 g Salz und 1 g Pfeffer vermischen. Über Rucola gießen und leicht vermischen.",
+            "timer_min": 0,
+            "zutaten_schritt": [
+              "Olivenöl",
+              "Zitrone",
+              "Salz",
+              "Schwarzer Pfeffer",
+              "Rucola"
+            ]
+          },
+          {
+            "titel": "Pasta anrichten",
+            "text": "Gekochte Spaghetti in ein Sieb gießen und abtropfen lassen. Auf zwei Tellern verteilen. Tomatensauce gleichmäßig über Pasta gießen. Rucolasalat auf der Seite oder über der Pasta anrichten. Sofort servieren.",
+            "timer_min": 0,
+            "zutaten_schritt": [
+              "Spaghetti",
+              "Tomaten, gehackt",
+              "Rucola"
+            ]
+          }
+        ],
+        "schritte_fleisch": [],
+        "zutaten": [
+          {
+            "name": "Spaghetti",
+            "menge": "160 g"
+          },
+          {
+            "name": "Tomaten, gehackt",
+            "menge": "400 g"
+          },
+          {
+            "name": "Knoblauch",
+            "menge": "2 Zehen"
+          },
+          {
+            "name": "Olivenöl",
+            "menge": "40 ml"
+          },
+          {
+            "name": "Salz",
+            "menge": "8 g"
+          },
+          {
+            "name": "Schwarzer Pfeffer",
+            "menge": "2 g"
+          },
+          {
+            "name": "Oregano",
+            "menge": "3 g"
+          },
+          {
+            "name": "Rucola",
+            "menge": "120 g"
+          },
+          {
+            "name": "Zitrone",
+            "menge": "1 Stück"
+          }
+        ]
       }
     ]
   },
@@ -45,7 +146,108 @@
           "tag": "Mo",
           "abend": "Pasta al Pomodoro mit Rucolasalat",
           "zeit_aktiv": "18m",
-          "zeit_total": "25m"
+          "zeit_total": "25m",
+          "schritte_vegi": [
+            {
+              "titel": "Knoblauch vorbereiten",
+              "text": "Knoblauch schälen und fein hacken.",
+              "timer_min": 0,
+              "zutaten_schritt": [
+                "Knoblauch"
+              ]
+            },
+            {
+              "titel": "Tomatensauce kochen",
+              "text": "In einem Topf 20 ml Olivenöl erhitzen. Gehackten Knoblauch hinzufügen und 30 Sekunden darin anbraten bis duftend. Gehackte Tomaten (400 g) hineingeben, mit 4 g Salz, 1 g Pfeffer und Oregano (3 g) würzen. Aufkochen lassen und dann bei mittlerer Hitze 15 Minuten köcheln lassen.",
+              "timer_min": 15,
+              "zutaten_schritt": [
+                "Olivenöl",
+                "Knoblauch",
+                "Tomaten, gehackt",
+                "Salz",
+                "Schwarzer Pfeffer",
+                "Oregano"
+              ]
+            },
+            {
+              "titel": "Pasta kochen",
+              "text": "In einem großen Topf 2 Liter Wasser zum Kochen bringen. 4 g Salz hinzufügen. Spaghetti (160 g) hineinlegen und nach Paketanleitung ca. 9-10 Minuten bissfest kochen.",
+              "timer_min": 10,
+              "zutaten_schritt": [
+                "Spaghetti",
+                "Salz"
+              ]
+            },
+            {
+              "titel": "Rucola vorbereiten",
+              "text": "Rucola (120 g) waschen und trockenspinnen oder trocken tupfen. In eine Schüssel geben.",
+              "timer_min": 0,
+              "zutaten_schritt": [
+                "Rucola"
+              ]
+            },
+            {
+              "titel": "Rucolasalat dressing",
+              "text": "In einer kleinen Schüssel restliches Olivenöl (20 ml) mit dem Saft der halben Zitrone, 4 g Salz und 1 g Pfeffer vermischen. Über Rucola gießen und leicht vermischen.",
+              "timer_min": 0,
+              "zutaten_schritt": [
+                "Olivenöl",
+                "Zitrone",
+                "Salz",
+                "Schwarzer Pfeffer",
+                "Rucola"
+              ]
+            },
+            {
+              "titel": "Pasta anrichten",
+              "text": "Gekochte Spaghetti in ein Sieb gießen und abtropfen lassen. Auf zwei Tellern verteilen. Tomatensauce gleichmäßig über Pasta gießen. Rucolasalat auf der Seite oder über der Pasta anrichten. Sofort servieren.",
+              "timer_min": 0,
+              "zutaten_schritt": [
+                "Spaghetti",
+                "Tomaten, gehackt",
+                "Rucola"
+              ]
+            }
+          ],
+          "schritte_fleisch": [],
+          "zutaten": [
+            {
+              "name": "Spaghetti",
+              "menge": "160 g"
+            },
+            {
+              "name": "Tomaten, gehackt",
+              "menge": "400 g"
+            },
+            {
+              "name": "Knoblauch",
+              "menge": "2 Zehen"
+            },
+            {
+              "name": "Olivenöl",
+              "menge": "40 ml"
+            },
+            {
+              "name": "Salz",
+              "menge": "8 g"
+            },
+            {
+              "name": "Schwarzer Pfeffer",
+              "menge": "2 g"
+            },
+            {
+              "name": "Oregano",
+              "menge": "3 g"
+            },
+            {
+              "name": "Rucola",
+              "menge": "120 g"
+            },
+            {
+              "name": "Zitrone",
+              "menge": "1 Stück"
+            }
+          ]
         }
       ]
     },
@@ -80,5 +282,5 @@
       ]
     }
   ],
-  "sugsPartial": true
+  "sugsPartial": false
 }
