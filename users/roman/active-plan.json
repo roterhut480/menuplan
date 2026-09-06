@@ -169,8 +169,8 @@
   },
   "weekStart": "2026-08-30",
   "saved": "6.9.2026",
-  "bringImportedAt": null,
-  "bringItemCount": 0,
+  "bringImportedAt": "06.09., 11:25",
+  "bringItemCount": 13,
   "sugsAll": [
     {
       "id": 1,
@@ -356,5 +356,6 @@
       ]
     }
   ],
-  "sugsPartial": false
+  "sugsPartial": false,
+  "einkaufDone": true
 }
