@@ -1,1 +1,102 @@
-[]
+[
+  {
+    "date": "2026-09-06",
+    "saved": "6.9.2026",
+    "thema": "Mediterran",
+    "personen": 2,
+    "kochabende": 1,
+    "reste": 0,
+    "freeze": 0,
+    "gerichte": [
+      {
+        "tag": "Mo",
+        "abend": "Gnocchi mit Spinat-Ricotta-Sauce und Tomaten"
+      }
+    ],
+    "status": "geplant",
+    "plan": {
+      "sug": {
+        "id": 1,
+        "thema": "Mediterran",
+        "kochabende": [
+          "Mo"
+        ],
+        "gerichte": [
+          {
+            "tag": "Mo",
+            "abend": "Gnocchi mit Spinat-Ricotta-Sauce und Tomaten",
+            "zeit_aktiv": "25m",
+            "zeit_total": "40m"
+          }
+        ]
+      },
+      "sel": 0,
+      "n": 1,
+      "personen": 2,
+      "reste": 0,
+      "freeze": 0,
+      "modus": "vegi",
+      "days": {
+        "Mo": "normal",
+        "Di": null,
+        "Mi": null,
+        "Do": null,
+        "Fr": null,
+        "Sa": null,
+        "So": null
+      },
+      "weekStart": "2026-08-30",
+      "saved": "6.9.2026",
+      "bringImportedAt": null,
+      "bringItemCount": 0,
+      "sugsAll": [
+        {
+          "id": 1,
+          "thema": "Mediterran",
+          "kochabende": [
+            "Mo"
+          ],
+          "gerichte": [
+            {
+              "tag": "Mo",
+              "abend": "Gnocchi mit Spinat-Ricotta-Sauce und Tomaten",
+              "zeit_aktiv": "25m",
+              "zeit_total": "40m"
+            }
+          ]
+        },
+        {
+          "id": 2,
+          "thema": "Orientalisch",
+          "kochabende": [
+            "Mo"
+          ],
+          "gerichte": [
+            {
+              "tag": "Mo",
+              "abend": "Shakshuka mit Kichererbsen und Gemüse",
+              "zeit_aktiv": "25m",
+              "zeit_total": "40m"
+            }
+          ]
+        },
+        {
+          "id": 3,
+          "thema": "Mediterran (Variante 3)",
+          "kochabende": [
+            "Mo"
+          ],
+          "gerichte": [
+            {
+              "tag": "Mo",
+              "abend": "Shakshuka mit Feta und Gemüse",
+              "zeit_aktiv": "25m",
+              "zeit_total": "30m"
+            }
+          ]
+        }
+      ],
+      "sugsPartial": true
+    }
+  }
+]
