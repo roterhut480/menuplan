@@ -10,7 +10,145 @@
         "tag": "Mi",
         "abend": "Linsen-Gemüse-Eintopf mit Feta",
         "zeit_aktiv": "20m",
-        "zeit_total": "40m"
+        "zeit_total": "40m",
+        "schritte_vegi": [
+          {
+            "titel": "Gemüse vorbereiten",
+            "text": "Karotten schälen und in 1 cm große Würfel schneiden. Zucchini waschen, schälen und ebenfalls in 1 cm große Würfel schneiden. Zwiebel schälen und fein hacken. Knoblauch schälen und durch die Presse drücken.",
+            "timer_min": 0,
+            "zutaten_schritt": [
+              "Karotten",
+              "Zucchini",
+              "Zwiebel",
+              "Knoblauch"
+            ]
+          },
+          {
+            "titel": "Aromaten anbraten",
+            "text": "Olivenöl in einem großen Topf erhitzen. Gehackte Zwiebel und Knoblauch hinzufügen und 2 Minuten bei mittlerer Hitze anbraten, bis sie duften.",
+            "timer_min": 2,
+            "zutaten_schritt": [
+              "Olivenöl",
+              "Zwiebel",
+              "Knoblauch"
+            ]
+          },
+          {
+            "titel": "Tomatenmark einrühren",
+            "text": "Tomatenmark in den Topf geben und 1 Minute mitbraten, um den Geschmack zu intensivieren.",
+            "timer_min": 1,
+            "zutaten_schritt": [
+              "Tomatenmark"
+            ]
+          },
+          {
+            "titel": "Gemüse hinzufügen",
+            "text": "Karotten- und Zucchiniwürfel in den Topf geben und 3 Minuten unter gelegentlichem Rühren anbraten.",
+            "timer_min": 3,
+            "zutaten_schritt": [
+              "Karotten",
+              "Zucchini"
+            ]
+          },
+          {
+            "titel": "Linsen und Brühe zugeben",
+            "text": "Rote Linsen und Gemüsebrühe in den Topf geben. Kreuzkümmel, Salz und schwarzen Pfeffer hinzufügen und alles gut verrühren.",
+            "timer_min": 0,
+            "zutaten_schritt": [
+              "rote Linsen",
+              "Gemüsebrühe",
+              "Kreuzkümmel",
+              "Salz",
+              "schwarzer Pfeffer"
+            ]
+          },
+          {
+            "titel": "Eintopf köcheln",
+            "text": "Zum Kochen bringen, dann die Hitze reduzieren und den Eintopf 18-20 Minuten köcheln lassen, bis die Linsen vollständig gar und die Karotten weich sind. Gelegentlich umrühren.",
+            "timer_min": 20,
+            "zutaten_schritt": []
+          },
+          {
+            "titel": "Feta zerbröseln",
+            "text": "Feta in eine Schüssel geben und mit den Händen oder einer Gabel in grobe Bröckel zerbröseln.",
+            "timer_min": 0,
+            "zutaten_schritt": [
+              "Feta"
+            ]
+          },
+          {
+            "titel": "Petersilie hacken",
+            "text": "Petersilie waschen, trockentupfen und fein hacken.",
+            "timer_min": 0,
+            "zutaten_schritt": [
+              "frische Petersilie"
+            ]
+          },
+          {
+            "titel": "Servieren",
+            "text": "Den Eintopf in zwei Schüsseln verteilen. Mit Fetabröckeln und gehackter Petersilie garnieren und sofort servieren.",
+            "timer_min": 0,
+            "zutaten_schritt": [
+              "Feta",
+              "frische Petersilie"
+            ]
+          }
+        ],
+        "schritte_fleisch": [],
+        "zutaten": [
+          {
+            "name": "rote Linsen",
+            "menge": "120 g"
+          },
+          {
+            "name": "Karotten",
+            "menge": "150 g"
+          },
+          {
+            "name": "Zucchini",
+            "menge": "180 g"
+          },
+          {
+            "name": "Zwiebel",
+            "menge": "80 g"
+          },
+          {
+            "name": "Knoblauch",
+            "menge": "6 g"
+          },
+          {
+            "name": "Gemüsebrühe",
+            "menge": "500 ml"
+          },
+          {
+            "name": "Olivenöl",
+            "menge": "15 ml"
+          },
+          {
+            "name": "Tomatenmark",
+            "menge": "20 g"
+          },
+          {
+            "name": "Salz",
+            "menge": "3 g"
+          },
+          {
+            "name": "schwarzer Pfeffer",
+            "menge": "1 g"
+          },
+          {
+            "name": "Kreuzkümmel",
+            "menge": "2 g"
+          },
+          {
+            "name": "Feta",
+            "menge": "100 g"
+          },
+          {
+            "name": "frische Petersilie",
+            "menge": "10 g"
+          }
+        ]
       }
     ]
   },
@@ -60,7 +198,145 @@
           "tag": "Mi",
           "abend": "Linsen-Gemüse-Eintopf mit Feta",
           "zeit_aktiv": "20m",
-          "zeit_total": "40m"
+          "zeit_total": "40m",
+          "schritte_vegi": [
+            {
+              "titel": "Gemüse vorbereiten",
+              "text": "Karotten schälen und in 1 cm große Würfel schneiden. Zucchini waschen, schälen und ebenfalls in 1 cm große Würfel schneiden. Zwiebel schälen und fein hacken. Knoblauch schälen und durch die Presse drücken.",
+              "timer_min": 0,
+              "zutaten_schritt": [
+                "Karotten",
+                "Zucchini",
+                "Zwiebel",
+                "Knoblauch"
+              ]
+            },
+            {
+              "titel": "Aromaten anbraten",
+              "text": "Olivenöl in einem großen Topf erhitzen. Gehackte Zwiebel und Knoblauch hinzufügen und 2 Minuten bei mittlerer Hitze anbraten, bis sie duften.",
+              "timer_min": 2,
+              "zutaten_schritt": [
+                "Olivenöl",
+                "Zwiebel",
+                "Knoblauch"
+              ]
+            },
+            {
+              "titel": "Tomatenmark einrühren",
+              "text": "Tomatenmark in den Topf geben und 1 Minute mitbraten, um den Geschmack zu intensivieren.",
+              "timer_min": 1,
+              "zutaten_schritt": [
+                "Tomatenmark"
+              ]
+            },
+            {
+              "titel": "Gemüse hinzufügen",
+              "text": "Karotten- und Zucchiniwürfel in den Topf geben und 3 Minuten unter gelegentlichem Rühren anbraten.",
+              "timer_min": 3,
+              "zutaten_schritt": [
+                "Karotten",
+                "Zucchini"
+              ]
+            },
+            {
+              "titel": "Linsen und Brühe zugeben",
+              "text": "Rote Linsen und Gemüsebrühe in den Topf geben. Kreuzkümmel, Salz und schwarzen Pfeffer hinzufügen und alles gut verrühren.",
+              "timer_min": 0,
+              "zutaten_schritt": [
+                "rote Linsen",
+                "Gemüsebrühe",
+                "Kreuzkümmel",
+                "Salz",
+                "schwarzer Pfeffer"
+              ]
+            },
+            {
+              "titel": "Eintopf köcheln",
+              "text": "Zum Kochen bringen, dann die Hitze reduzieren und den Eintopf 18-20 Minuten köcheln lassen, bis die Linsen vollständig gar und die Karotten weich sind. Gelegentlich umrühren.",
+              "timer_min": 20,
+              "zutaten_schritt": []
+            },
+            {
+              "titel": "Feta zerbröseln",
+              "text": "Feta in eine Schüssel geben und mit den Händen oder einer Gabel in grobe Bröckel zerbröseln.",
+              "timer_min": 0,
+              "zutaten_schritt": [
+                "Feta"
+              ]
+            },
+            {
+              "titel": "Petersilie hacken",
+              "text": "Petersilie waschen, trockentupfen und fein hacken.",
+              "timer_min": 0,
+              "zutaten_schritt": [
+                "frische Petersilie"
+              ]
+            },
+            {
+              "titel": "Servieren",
+              "text": "Den Eintopf in zwei Schüsseln verteilen. Mit Fetabröckeln und gehackter Petersilie garnieren und sofort servieren.",
+              "timer_min": 0,
+              "zutaten_schritt": [
+                "Feta",
+                "frische Petersilie"
+              ]
+            }
+          ],
+          "schritte_fleisch": [],
+          "zutaten": [
+            {
+              "name": "rote Linsen",
+              "menge": "120 g"
+            },
+            {
+              "name": "Karotten",
+              "menge": "150 g"
+            },
+            {
+              "name": "Zucchini",
+              "menge": "180 g"
+            },
+            {
+              "name": "Zwiebel",
+              "menge": "80 g"
+            },
+            {
+              "name": "Knoblauch",
+              "menge": "6 g"
+            },
+            {
+              "name": "Gemüsebrühe",
+              "menge": "500 ml"
+            },
+            {
+              "name": "Olivenöl",
+              "menge": "15 ml"
+            },
+            {
+              "name": "Tomatenmark",
+              "menge": "20 g"
+            },
+            {
+              "name": "Salz",
+              "menge": "3 g"
+            },
+            {
+              "name": "schwarzer Pfeffer",
+              "menge": "1 g"
+            },
+            {
+              "name": "Kreuzkümmel",
+              "menge": "2 g"
+            },
+            {
+              "name": "Feta",
+              "menge": "100 g"
+            },
+            {
+              "name": "frische Petersilie",
+              "menge": "10 g"
+            }
+          ]
         }
       ]
     },
@@ -80,5 +356,5 @@
       ]
     }
   ],
-  "sugsPartial": true
+  "sugsPartial": false
 }
