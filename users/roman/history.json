@@ -2,6 +2,106 @@
   {
     "date": "2026-09-06",
     "saved": "6.9.2026",
+    "thema": "Mediterran (Variante 2)",
+    "personen": 2,
+    "kochabende": 1,
+    "reste": 0,
+    "freeze": 0,
+    "gerichte": [
+      {
+        "tag": "Mi",
+        "abend": "Linsen-Gemüse-Eintopf mit Feta"
+      }
+    ],
+    "status": "geplant",
+    "plan": {
+      "sug": {
+        "id": 2,
+        "thema": "Mediterran (Variante 2)",
+        "kochabende": [
+          "Mi"
+        ],
+        "gerichte": [
+          {
+            "tag": "Mi",
+            "abend": "Linsen-Gemüse-Eintopf mit Feta",
+            "zeit_aktiv": "20m",
+            "zeit_total": "40m"
+          }
+        ]
+      },
+      "sel": 1,
+      "n": 1,
+      "personen": 2,
+      "reste": 0,
+      "freeze": 0,
+      "modus": "vegi",
+      "days": {
+        "Mo": null,
+        "Di": null,
+        "Mi": "normal",
+        "Do": null,
+        "Fr": null,
+        "Sa": null,
+        "So": null
+      },
+      "weekStart": "2026-08-30",
+      "saved": "6.9.2026",
+      "bringImportedAt": null,
+      "bringItemCount": 0,
+      "sugsAll": [
+        {
+          "id": 1,
+          "thema": "Mediterran (Variante 1)",
+          "kochabende": [
+            "Mi"
+          ],
+          "gerichte": [
+            {
+              "tag": "Mi",
+              "abend": "Shakshuka mit Feta und Gemüse",
+              "zeit_aktiv": "20m",
+              "zeit_total": "25m"
+            }
+          ]
+        },
+        {
+          "id": 2,
+          "thema": "Mediterran (Variante 2)",
+          "kochabende": [
+            "Mi"
+          ],
+          "gerichte": [
+            {
+              "tag": "Mi",
+              "abend": "Linsen-Gemüse-Eintopf mit Feta",
+              "zeit_aktiv": "20m",
+              "zeit_total": "40m"
+            }
+          ]
+        },
+        {
+          "id": 3,
+          "thema": "Mediterran",
+          "kochabende": [
+            "Mi"
+          ],
+          "gerichte": [
+            {
+              "tag": "Mi",
+              "abend": "Linsensuppe mit Feta und Spinat",
+              "zeit_aktiv": "20m",
+              "zeit_total": "40m"
+            }
+          ]
+        }
+      ],
+      "sugsPartial": true
+    }
+  },
+  {
+    "date": "2026-09-06",
+    "saved": "6.9.2026",
     "thema": "Italienisch",
     "personen": 2,
     "kochabende": 1,
