@@ -1,160 +1,23 @@
 {
   "sug": {
-    "id": 1,
-    "thema": "Italienisch",
+    "id": 2,
+    "thema": "Mexikanisch",
     "kochabende": [
       "Mo"
     ],
     "gerichte": [
       {
         "tag": "Mo",
-        "abend": "Pasta e Fagioli mit optional Pancetta",
-        "zeit_aktiv": "25m",
-        "zeit_total": "40m",
-        "mittag_nächster_tag": "Pasta e Fagioli mit Pancetta",
-        "schritte_vegi": [],
-        "schritte_fleisch": [
-          {
-            "titel": "Pancetta anbraten",
-            "text": "Pancetta in 1 cm große Würfel schneiden. In großem Topf mit schwerer Ausführung bei mittlerer Hitze ohne zusätzliches Öl für 5 Minuten anbraten, bis die Ränder kross werden und das Fett austritt. Mit Schaumlöffel herausnehmen und auf Küchenrolle ablegen.",
-            "timer_min": 5,
-            "zutaten_schritt": [
-              "Pancetta"
-            ]
-          },
-          {
-            "titel": "Mirepoix anbraten",
-            "text": "Zwiebel, Karotte und Sellerie in kleine 0,5 cm Würfel schneiden. Knoblauch fein hacken. Das austretende Pancetta-Fett im Topf behalten. Gemüse hinzufügen und bei mittlerer-hoher Hitze für 6 Minuten unter gelegentlichem Rühren anbraten, bis die Zwiebeln transparent und die Ränder leicht karamellisiert sind. Knoblauch in den letzten 30 Sekunden hinzufügen.",
-            "timer_min": 6,
-            "zutaten_schritt": [
-              "Zwiebel",
-              "Karotte",
-              "Sellerie",
-              "Knoblauch"
-            ]
-          },
-          {
-            "titel": "Tomatenmark einarbeiten",
-            "text": "Tomatenmark in den Topf geben und für 2 Minuten bei mittlerer Hitze ständig rührend anbraten. Dies intensiviert den Geschmack und entfernt den bitteren Rohgeschmack.",
-            "timer_min": 2,
-            "zutaten_schritt": [
-              "Tomatenmark"
-            ]
-          },
-          {
-            "titel": "Flüssigkeit deglacialisieren",
-            "text": "Gemüsebrühe in den Topf gießen. Mit Holzlöffel die Töpfchen-Rückstände vom Boden abkratzen. Die angebratenen Pancetta-Würfel zurück in den Topf geben. Weiße Bohnen aus der Dose abtropfen lassen und hinzufügen.",
-            "timer_min": 0,
-            "zutaten_schritt": [
-              "Gemüsebrühe",
-              "Dosen Weiße Bohnen",
-              "Pancetta"
-            ]
-          },
-          {
-            "titel": "Sauce köcheln",
-            "text": "Auf hohe Hitze bringen, bis es leicht kocht. Dann auf mittlere Hitze reduzieren und für 15 Minuten ohne Deckel köcheln lassen. Der Eintopf soll leicht blubbern aber nicht wild kochen. Die Bohnen sollen teilweise zerfallen und die Sauce verdicken.",
-            "timer_min": 15,
-            "zutaten_schritt": [
-              "Gemüsebrühe",
-              "Dosen Weiße Bohnen"
-            ]
-          },
-          {
-            "titel": "Pasta kochen",
-            "text": "Ditalini Pasta in einem separaten Topf mit 1.5 Litern Salzwasser (ca. 2 g Salz pro 100 ml Wasser) auf hoher Hitze zum Kochen bringen. Nach 8 Minuten al dente probieren. Die Pasta sollte noch leicht festen Kern haben. Abgießen, aber NICHT abschrecken.",
-            "timer_min": 8,
-            "zutaten_schritt": [
-              "Ditalini Pasta",
-              "Salz"
-            ]
-          },
-          {
-            "titel": "Kombinieren",
-            "text": "Gegarte Pasta in den Eintopf-Topf geben und gründlich umrühren. Mit Salz und schwarzem Pfeffer abschmecken. 3 Minuten zusammen köcheln lassen, damit die Aromen sich verbinden.",
-            "timer_min": 3,
-            "zutaten_schritt": [
-              "Ditalini Pasta",
-              "Salz",
-              "Schwarzer Pfeffer"
-            ]
-          },
-          {
-            "titel": "Fertigstellen",
-            "text": "Petersilie waschen, trocken tupfen und fein hacken. Frische Petersilie direkt vor dem Servieren über den Eintopf streuen. Mit Olivenöl nach Geschmack beträufeln (ca. 15 ml pro Person).",
-            "timer_min": 0,
-            "zutaten_schritt": [
-              "Frische Petersilie",
-              "Olivenöl"
-            ]
-          }
-        ],
-        "prep_next": [
-          "1 Portion in hitzefestes Behältnis (ca. 600 ml) abkühlen lassen und luftdicht verschlossen im Kühlschrank lagern",
-          "Dienstag Mittag: Behältnis 2 Minuten bei 50 % Leistung in der Mikrowelle aufwärmen, halb durchrühren, weitere 2 Minuten bei voller Leistung"
-        ],
-        "mittag_tag": "Dienstag",
-        "zutaten": [
-          {
-            "name": "Pancetta",
-            "menge": "150 g"
-          },
-          {
-            "name": "Zwiebel",
-            "menge": "200 g"
-          },
-          {
-            "name": "Karotte",
-            "menge": "150 g"
-          },
-          {
-            "name": "Sellerie",
-            "menge": "100 g"
-          },
-          {
-            "name": "Knoblauch",
-            "menge": "20 g"
-          },
-          {
-            "name": "Olivenöl",
-            "menge": "60 ml"
-          },
-          {
-            "name": "Tomatenmark",
-            "menge": "40 g"
-          },
-          {
-            "name": "Dosen Weiße Bohnen",
-            "menge": "800 g"
-          },
-          {
-            "name": "Gemüsebrühe",
-            "menge": "800 ml"
-          },
-          {
-            "name": "Ditalini Pasta",
-            "menge": "250 g"
-          },
-          {
-            "name": "Frische Petersilie",
-            "menge": "15 g"
-          },
-          {
-            "name": "Salz",
-            "menge": "8 g"
-          },
-          {
-            "name": "Schwarzer Pfeffer",
-            "menge": "3 g"
-          }
-        ]
+        "abend": "Chipotle-Bohnen-Tacos mit Avocado und optional Huehnchen",
+        "zeit_aktiv": "18m",
+        "zeit_total": "25m"
       }
     ]
   },
-  "sel": 0,
+  "sel": 1,
   "n": 1,
-  "personen": 1,
-  "reste": 1,
+  "personen": 2,
+  "reste": 0,
   "freeze": 0,
   "modus": "optional",
   "days": {
@@ -173,158 +36,36 @@
   "sugsAll": [
     {
       "id": 1,
-      "thema": "Italienisch",
+      "thema": "Mediterran",
       "kochabende": [
         "Mo"
       ],
       "gerichte": [
         {
           "tag": "Mo",
-          "abend": "Pasta e Fagioli mit optional Pancetta",
+          "abend": "Shakshuka mit Feta und Vollkornbrot",
           "zeit_aktiv": "25m",
-          "zeit_total": "40m",
-          "mittag_nächster_tag": "Pasta e Fagioli mit Pancetta",
-          "schritte_vegi": [],
-          "schritte_fleisch": [
-            {
-              "titel": "Pancetta anbraten",
-              "text": "Pancetta in 1 cm große Würfel schneiden. In großem Topf mit schwerer Ausführung bei mittlerer Hitze ohne zusätzliches Öl für 5 Minuten anbraten, bis die Ränder kross werden und das Fett austritt. Mit Schaumlöffel herausnehmen und auf Küchenrolle ablegen.",
-              "timer_min": 5,
-              "zutaten_schritt": [
-                "Pancetta"
-              ]
-            },
-            {
-              "titel": "Mirepoix anbraten",
-              "text": "Zwiebel, Karotte und Sellerie in kleine 0,5 cm Würfel schneiden. Knoblauch fein hacken. Das austretende Pancetta-Fett im Topf behalten. Gemüse hinzufügen und bei mittlerer-hoher Hitze für 6 Minuten unter gelegentlichem Rühren anbraten, bis die Zwiebeln transparent und die Ränder leicht karamellisiert sind. Knoblauch in den letzten 30 Sekunden hinzufügen.",
-              "timer_min": 6,
-              "zutaten_schritt": [
-                "Zwiebel",
-                "Karotte",
-                "Sellerie",
-                "Knoblauch"
-              ]
-            },
-            {
-              "titel": "Tomatenmark einarbeiten",
-              "text": "Tomatenmark in den Topf geben und für 2 Minuten bei mittlerer Hitze ständig rührend anbraten. Dies intensiviert den Geschmack und entfernt den bitteren Rohgeschmack.",
-              "timer_min": 2,
-              "zutaten_schritt": [
-                "Tomatenmark"
-              ]
-            },
-            {
-              "titel": "Flüssigkeit deglacialisieren",
-              "text": "Gemüsebrühe in den Topf gießen. Mit Holzlöffel die Töpfchen-Rückstände vom Boden abkratzen. Die angebratenen Pancetta-Würfel zurück in den Topf geben. Weiße Bohnen aus der Dose abtropfen lassen und hinzufügen.",
-              "timer_min": 0,
-              "zutaten_schritt": [
-                "Gemüsebrühe",
-                "Dosen Weiße Bohnen",
-                "Pancetta"
-              ]
-            },
-            {
-              "titel": "Sauce köcheln",
-              "text": "Auf hohe Hitze bringen, bis es leicht kocht. Dann auf mittlere Hitze reduzieren und für 15 Minuten ohne Deckel köcheln lassen. Der Eintopf soll leicht blubbern aber nicht wild kochen. Die Bohnen sollen teilweise zerfallen und die Sauce verdicken.",
-              "timer_min": 15,
-              "zutaten_schritt": [
-                "Gemüsebrühe",
-                "Dosen Weiße Bohnen"
-              ]
-            },
-            {
-              "titel": "Pasta kochen",
-              "text": "Ditalini Pasta in einem separaten Topf mit 1.5 Litern Salzwasser (ca. 2 g Salz pro 100 ml Wasser) auf hoher Hitze zum Kochen bringen. Nach 8 Minuten al dente probieren. Die Pasta sollte noch leicht festen Kern haben. Abgießen, aber NICHT abschrecken.",
-              "timer_min": 8,
-              "zutaten_schritt": [
-                "Ditalini Pasta",
-                "Salz"
-              ]
-            },
-            {
-              "titel": "Kombinieren",
-              "text": "Gegarte Pasta in den Eintopf-Topf geben und gründlich umrühren. Mit Salz und schwarzem Pfeffer abschmecken. 3 Minuten zusammen köcheln lassen, damit die Aromen sich verbinden.",
-              "timer_min": 3,
-              "zutaten_schritt": [
-                "Ditalini Pasta",
-                "Salz",
-                "Schwarzer Pfeffer"
-              ]
-            },
-            {
-              "titel": "Fertigstellen",
-              "text": "Petersilie waschen, trocken tupfen und fein hacken. Frische Petersilie direkt vor dem Servieren über den Eintopf streuen. Mit Olivenöl nach Geschmack beträufeln (ca. 15 ml pro Person).",
-              "timer_min": 0,
-              "zutaten_schritt": [
-                "Frische Petersilie",
-                "Olivenöl"
-              ]
-            }
-          ],
-          "prep_next": [
-            "1 Portion in hitzefestes Behältnis (ca. 600 ml) abkühlen lassen und luftdicht verschlossen im Kühlschrank lagern",
-            "Dienstag Mittag: Behältnis 2 Minuten bei 50 % Leistung in der Mikrowelle aufwärmen, halb durchrühren, weitere 2 Minuten bei voller Leistung"
-          ],
-          "mittag_tag": "Dienstag",
-          "zutaten": [
-            {
-              "name": "Pancetta",
-              "menge": "150 g"
-            },
-            {
-              "name": "Zwiebel",
-              "menge": "200 g"
-            },
-            {
-              "name": "Karotte",
-              "menge": "150 g"
-            },
-            {
-              "name": "Sellerie",
-              "menge": "100 g"
-            },
-            {
-              "name": "Knoblauch",
-              "menge": "20 g"
-            },
-            {
-              "name": "Olivenöl",
-              "menge": "60 ml"
-            },
-            {
-              "name": "Tomatenmark",
-              "menge": "40 g"
-            },
-            {
-              "name": "Dosen Weiße Bohnen",
-              "menge": "800 g"
-            },
-            {
-              "name": "Gemüsebrühe",
-              "menge": "800 ml"
-            },
-            {
-              "name": "Ditalini Pasta",
-              "menge": "250 g"
-            },
-            {
-              "name": "Frische Petersilie",
-              "menge": "15 g"
-            },
-            {
-              "name": "Salz",
-              "menge": "8 g"
-            },
-            {
-              "name": "Schwarzer Pfeffer",
-              "menge": "3 g"
-            }
-          ]
+          "zeit_total": "35m"
         }
       ]
     },
     {
       "id": 2,
+      "thema": "Mexikanisch",
+      "kochabende": [
+        "Mo"
+      ],
+      "gerichte": [
+        {
+          "tag": "Mo",
+          "abend": "Chipotle-Bohnen-Tacos mit Avocado und optional Huehnchen",
+          "zeit_aktiv": "18m",
+          "zeit_total": "25m"
+        }
+      ]
+    },
+    {
+      "id": 3,
       "thema": "Orientalisch",
       "kochabende": [
         "Mo"
@@ -332,29 +73,12 @@
       "gerichte": [
         {
           "tag": "Mo",
-          "abend": "Linseneintopf mit Spinat und Granatapfel",
+          "abend": "Falafel-Wrap mit Tahini-Sauce und gegrilltem Hähnchen",
           "zeit_aktiv": "25m",
-          "zeit_total": "40m",
-          "mittag_nächster_tag": "Linseneintopf-Reste"
-        }
-      ]
-    },
-    {
-      "id": 3,
-      "thema": "Orientalisch (Variante 3)",
-      "kochabende": [
-        "Mo"
-      ],
-      "gerichte": [
-        {
-          "tag": "Mo",
-          "abend": "Linsensuppe mit Spinat und optional Lamm-Hackfleisch",
-          "zeit_aktiv": "25m",
-          "zeit_total": "40m",
-          "mittag_nächster_tag": "Linsensuppe aufgewärmt"
+          "zeit_total": "40m"
         }
       ]
     }
   ],
-  "sugsPartial": false
+  "sugsPartial": true
 }
