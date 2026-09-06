@@ -10,7 +10,149 @@
         "tag": "Mo",
         "abend": "Chipotle-Bohnen-Tacos mit Avocado und optional Huehnchen",
         "zeit_aktiv": "18m",
-        "zeit_total": "25m"
+        "zeit_total": "25m",
+        "schritte_vegi": [
+          {
+            "titel": "Bohnen erwaermen",
+            "text": "Die 400 g Chipotle-Bohnen in einen Topf geben, bei mittlerer Hitze 5 Minuten erwaermen, dabei gelegentlich umruehren. Dekkel aufbehalten.",
+            "timer_min": 5,
+            "zutaten_schritt": [
+              "Canned Chipotle Bohnen"
+            ]
+          },
+          {
+            "titel": "Zwiebel schneiden",
+            "text": "80 g Zwiebel schaelen und in feine Wuerfel schneiden. Auf ein Schneidebrett legen.",
+            "timer_min": 0,
+            "zutaten_schritt": [
+              "Zwiebel"
+            ]
+          },
+          {
+            "titel": "Knoblauch hacken",
+            "text": "10 g Knoblauch schaelen und fein hacken. Neben den Zwiebeln bereitstellen.",
+            "timer_min": 0,
+            "zutaten_schritt": [
+              "Knoblauch"
+            ]
+          },
+          {
+            "titel": "Avocado vorbereiten",
+            "text": "1 Avocado laengs durchschneiden, den Kern entfernen und das Fleisch mit einem Loeffel aus der Schale loesen. In Scheiben schneiden und auf einem Teller anrichten.",
+            "timer_min": 0,
+            "zutaten_schritt": [
+              "Avocado"
+            ]
+          },
+          {
+            "titel": "Tortillas erwaermen",
+            "text": "Die 4 Tortillas einzeln in einer trockenen Pfanne bei mittlerer Hitze 30 Sekunden pro Seite erwaermen, bis sie flexibel sind. Auf einen Teller stapeln.",
+            "timer_min": 1,
+            "zutaten_schritt": [
+              "Tortillas Weizen"
+            ]
+          },
+          {
+            "titel": "Limetten pressen",
+            "text": "1 Limette halbieren und beide Haelften auspressen. Den Saft in eine kleine Schale geben.",
+            "timer_min": 0,
+            "zutaten_schritt": [
+              "Limette"
+            ]
+          },
+          {
+            "titel": "Koriander hacken",
+            "text": "15 g frischen Koriander waschen, trocken tupfen und fein hacken. In eine kleine Schale geben.",
+            "timer_min": 0,
+            "zutaten_schritt": [
+              "Koriander frisch"
+            ]
+          }
+        ],
+        "schritte_fleisch": [
+          {
+            "titel": "Huehnchen schneiden",
+            "text": "250 g Huehnchenbrust in Streifen von ca. 1 cm Breite schneiden. Auf ein Schneidebrett legen.",
+            "timer_min": 0,
+            "zutaten_schritt": [
+              "Huehnchenbrust"
+            ]
+          },
+          {
+            "titel": "Huehnchen anbraten",
+            "text": "30 ml Olivenoel in eine grosse Pfanne geben und bei mittlerer bis hoher Hitze erwaermen. Die Huehnchenbrust-Streifen hineingeben und 6-7 Minuten unter gelegentlichem Rühren braten bis golden und durchgegart.",
+            "timer_min": 7,
+            "zutaten_schritt": [
+              "Huehnchenbrust",
+              "Olivenoel"
+            ]
+          },
+          {
+            "titel": "Gewueze hinzufuegen",
+            "text": "Nach 4 Minuten die gehackte Zwiebel und den Knoblauch zur Pfanne geben, 2-3 Minuten mitbraten bis die Zwiebel weich wird.",
+            "timer_min": 3,
+            "zutaten_schritt": [
+              "Zwiebel",
+              "Knoblauch"
+            ]
+          },
+          {
+            "titel": "Bohnen mischen",
+            "text": "Die erwaermten Chipotle-Bohnen in die Pfanne mit dem Huehnchen geben. Mit 3 g Salz und 2 g schwarzem Pfeffer wuerwuerzn. Alles 2 Minuten durchmischen.",
+            "timer_min": 2,
+            "zutaten_schritt": [
+              "Canned Chipotle Bohnen",
+              "Salz",
+              "Schwarzer Pfeffer"
+            ]
+          }
+        ],
+        "zutaten": [
+          {
+            "name": "Canned Chipotle Bohnen",
+            "menge": "400 g"
+          },
+          {
+            "name": "Avocado",
+            "menge": "1 Stueck"
+          },
+          {
+            "name": "Huehnchenbrust",
+            "menge": "250 g"
+          },
+          {
+            "name": "Tortillas Weizen",
+            "menge": "4 Stueck"
+          },
+          {
+            "name": "Zwiebel",
+            "menge": "80 g"
+          },
+          {
+            "name": "Knoblauch",
+            "menge": "10 g"
+          },
+          {
+            "name": "Limette",
+            "menge": "1 Stueck"
+          },
+          {
+            "name": "Koriander frisch",
+            "menge": "15 g"
+          },
+          {
+            "name": "Salz",
+            "menge": "3 g"
+          },
+          {
+            "name": "Schwarzer Pfeffer",
+            "menge": "2 g"
+          },
+          {
+            "name": "Olivenoel",
+            "menge": "30 ml"
+          }
+        ]
       }
     ]
   },
@@ -60,7 +202,149 @@
           "tag": "Mo",
           "abend": "Chipotle-Bohnen-Tacos mit Avocado und optional Huehnchen",
           "zeit_aktiv": "18m",
-          "zeit_total": "25m"
+          "zeit_total": "25m",
+          "schritte_vegi": [
+            {
+              "titel": "Bohnen erwaermen",
+              "text": "Die 400 g Chipotle-Bohnen in einen Topf geben, bei mittlerer Hitze 5 Minuten erwaermen, dabei gelegentlich umruehren. Dekkel aufbehalten.",
+              "timer_min": 5,
+              "zutaten_schritt": [
+                "Canned Chipotle Bohnen"
+              ]
+            },
+            {
+              "titel": "Zwiebel schneiden",
+              "text": "80 g Zwiebel schaelen und in feine Wuerfel schneiden. Auf ein Schneidebrett legen.",
+              "timer_min": 0,
+              "zutaten_schritt": [
+                "Zwiebel"
+              ]
+            },
+            {
+              "titel": "Knoblauch hacken",
+              "text": "10 g Knoblauch schaelen und fein hacken. Neben den Zwiebeln bereitstellen.",
+              "timer_min": 0,
+              "zutaten_schritt": [
+                "Knoblauch"
+              ]
+            },
+            {
+              "titel": "Avocado vorbereiten",
+              "text": "1 Avocado laengs durchschneiden, den Kern entfernen und das Fleisch mit einem Loeffel aus der Schale loesen. In Scheiben schneiden und auf einem Teller anrichten.",
+              "timer_min": 0,
+              "zutaten_schritt": [
+                "Avocado"
+              ]
+            },
+            {
+              "titel": "Tortillas erwaermen",
+              "text": "Die 4 Tortillas einzeln in einer trockenen Pfanne bei mittlerer Hitze 30 Sekunden pro Seite erwaermen, bis sie flexibel sind. Auf einen Teller stapeln.",
+              "timer_min": 1,
+              "zutaten_schritt": [
+                "Tortillas Weizen"
+              ]
+            },
+            {
+              "titel": "Limetten pressen",
+              "text": "1 Limette halbieren und beide Haelften auspressen. Den Saft in eine kleine Schale geben.",
+              "timer_min": 0,
+              "zutaten_schritt": [
+                "Limette"
+              ]
+            },
+            {
+              "titel": "Koriander hacken",
+              "text": "15 g frischen Koriander waschen, trocken tupfen und fein hacken. In eine kleine Schale geben.",
+              "timer_min": 0,
+              "zutaten_schritt": [
+                "Koriander frisch"
+              ]
+            }
+          ],
+          "schritte_fleisch": [
+            {
+              "titel": "Huehnchen schneiden",
+              "text": "250 g Huehnchenbrust in Streifen von ca. 1 cm Breite schneiden. Auf ein Schneidebrett legen.",
+              "timer_min": 0,
+              "zutaten_schritt": [
+                "Huehnchenbrust"
+              ]
+            },
+            {
+              "titel": "Huehnchen anbraten",
+              "text": "30 ml Olivenoel in eine grosse Pfanne geben und bei mittlerer bis hoher Hitze erwaermen. Die Huehnchenbrust-Streifen hineingeben und 6-7 Minuten unter gelegentlichem Rühren braten bis golden und durchgegart.",
+              "timer_min": 7,
+              "zutaten_schritt": [
+                "Huehnchenbrust",
+                "Olivenoel"
+              ]
+            },
+            {
+              "titel": "Gewueze hinzufuegen",
+              "text": "Nach 4 Minuten die gehackte Zwiebel und den Knoblauch zur Pfanne geben, 2-3 Minuten mitbraten bis die Zwiebel weich wird.",
+              "timer_min": 3,
+              "zutaten_schritt": [
+                "Zwiebel",
+                "Knoblauch"
+              ]
+            },
+            {
+              "titel": "Bohnen mischen",
+              "text": "Die erwaermten Chipotle-Bohnen in die Pfanne mit dem Huehnchen geben. Mit 3 g Salz und 2 g schwarzem Pfeffer wuerwuerzn. Alles 2 Minuten durchmischen.",
+              "timer_min": 2,
+              "zutaten_schritt": [
+                "Canned Chipotle Bohnen",
+                "Salz",
+                "Schwarzer Pfeffer"
+              ]
+            }
+          ],
+          "zutaten": [
+            {
+              "name": "Canned Chipotle Bohnen",
+              "menge": "400 g"
+            },
+            {
+              "name": "Avocado",
+              "menge": "1 Stueck"
+            },
+            {
+              "name": "Huehnchenbrust",
+              "menge": "250 g"
+            },
+            {
+              "name": "Tortillas Weizen",
+              "menge": "4 Stueck"
+            },
+            {
+              "name": "Zwiebel",
+              "menge": "80 g"
+            },
+            {
+              "name": "Knoblauch",
+              "menge": "10 g"
+            },
+            {
+              "name": "Limette",
+              "menge": "1 Stueck"
+            },
+            {
+              "name": "Koriander frisch",
+              "menge": "15 g"
+            },
+            {
+              "name": "Salz",
+              "menge": "3 g"
+            },
+            {
+              "name": "Schwarzer Pfeffer",
+              "menge": "2 g"
+            },
+            {
+              "name": "Olivenoel",
+              "menge": "30 ml"
+            }
+          ]
         }
       ]
     },
@@ -80,5 +364,5 @@
       ]
     }
   ],
-  "sugsPartial": true
+  "sugsPartial": false
 }
