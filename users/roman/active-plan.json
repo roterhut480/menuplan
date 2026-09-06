@@ -364,5 +364,6 @@
       ]
     }
   ],
-  "sugsPartial": false
+  "sugsPartial": false,
+  "einkaufDone": true
 }
