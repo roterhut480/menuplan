@@ -1,1 +1,102 @@
-[]
+[
+  {
+    "date": "2026-09-06",
+    "saved": "6.9.2026",
+    "thema": "Italienisch",
+    "personen": 2,
+    "kochabende": 1,
+    "reste": 0,
+    "freeze": 0,
+    "gerichte": [
+      {
+        "tag": "Mo",
+        "abend": "Pasta al Pomodoro mit Rucolasalat"
+      }
+    ],
+    "status": "geplant",
+    "plan": {
+      "sug": {
+        "id": 1,
+        "thema": "Italienisch",
+        "kochabende": [
+          "Mo"
+        ],
+        "gerichte": [
+          {
+            "tag": "Mo",
+            "abend": "Pasta al Pomodoro mit Rucolasalat",
+            "zeit_aktiv": "18m",
+            "zeit_total": "25m"
+          }
+        ]
+      },
+      "sel": 0,
+      "n": 1,
+      "personen": 2,
+      "reste": 0,
+      "freeze": 0,
+      "modus": "vegi",
+      "days": {
+        "Mo": "normal",
+        "Di": null,
+        "Mi": null,
+        "Do": null,
+        "Fr": null,
+        "Sa": null,
+        "So": null
+      },
+      "weekStart": "2026-08-30",
+      "saved": "6.9.2026",
+      "bringImportedAt": null,
+      "bringItemCount": 0,
+      "sugsAll": [
+        {
+          "id": 1,
+          "thema": "Italienisch",
+          "kochabende": [
+            "Mo"
+          ],
+          "gerichte": [
+            {
+              "tag": "Mo",
+              "abend": "Pasta al Pomodoro mit Rucolasalat",
+              "zeit_aktiv": "18m",
+              "zeit_total": "25m"
+            }
+          ]
+        },
+        {
+          "id": 2,
+          "thema": "Mediterran",
+          "kochabende": [
+            "Mo"
+          ],
+          "gerichte": [
+            {
+              "tag": "Mo",
+              "abend": "Pasta e Fagioli",
+              "zeit_aktiv": "15m",
+              "zeit_total": "30m"
+            }
+          ]
+        },
+        {
+          "id": 3,
+          "thema": "Indisch",
+          "kochabende": [
+            "Mo"
+          ],
+          "gerichte": [
+            {
+              "tag": "Mo",
+              "abend": "Chana Masala mit Basmati-Reis",
+              "zeit_aktiv": "25m",
+              "zeit_total": "40m"
+            }
+          ]
+        }
+      ],
+      "sugsPartial": true
+    }
+  }
+]
