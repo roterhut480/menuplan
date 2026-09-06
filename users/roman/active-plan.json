@@ -1,149 +1,85 @@
 {
   "sug": {
     "id": 1,
-    "thema": "Mediterran",
+    "thema": "Italienisch",
     "kochabende": [
-      "Mo",
-      "Mi",
-      "So"
+      "Mo"
     ],
     "gerichte": [
       {
         "tag": "Mo",
-        "abend": "Linsenbolognese mit Pappardelle",
+        "abend": "Pasta e Fagioli mit optional Pancetta",
         "zeit_aktiv": "25m",
         "zeit_total": "40m",
-        "mittag_nächster_tag": "Pasta-Reste aufgewärmt"
-      },
-      {
-        "tag": "Mi",
-        "abend": "Minestrone-Suppe",
-        "zeit_aktiv": "18m",
-        "zeit_total": "25m",
-        "mittag_nächster_tag": "Minestrone aufgewärmt"
-      },
-      {
-        "tag": "So",
-        "abend": "Auberginen-Tomaten-Auflauf",
-        "zeit_aktiv": "35m",
-        "zeit_total": "60m",
-        "mittag_nächster_tag": "Auflauf-Portion zum Einfrieren"
+        "mittag_nächster_tag": "Pasta e Fagioli aufgewärmt"
       }
     ]
   },
   "sel": 0,
-  "n": 3,
+  "n": 1,
   "personen": 1,
   "reste": 1,
-  "freeze": 1,
-  "modus": "vegi",
+  "freeze": 0,
+  "modus": "optional",
   "days": {
     "Mo": "normal",
     "Di": null,
-    "Mi": "schnell",
+    "Mi": null,
     "Do": null,
     "Fr": null,
     "Sa": null,
-    "So": "aufwendig"
+    "So": null
   },
   "weekStart": "2026-08-30",
-  "saved": "5.9.2026",
+  "saved": "6.9.2026",
   "bringImportedAt": null,
   "bringItemCount": 0,
   "sugsAll": [
     {
       "id": 1,
-      "thema": "Mediterran",
+      "thema": "Italienisch",
       "kochabende": [
-        "Mo",
-        "Mi",
-        "So"
+        "Mo"
       ],
       "gerichte": [
         {
           "tag": "Mo",
-          "abend": "Linsenbolognese mit Pappardelle",
+          "abend": "Pasta e Fagioli mit optional Pancetta",
           "zeit_aktiv": "25m",
           "zeit_total": "40m",
-          "mittag_nächster_tag": "Pasta-Reste aufgewärmt"
-        },
-        {
-          "tag": "Mi",
-          "abend": "Minestrone-Suppe",
-          "zeit_aktiv": "18m",
-          "zeit_total": "25m",
-          "mittag_nächster_tag": "Minestrone aufgewärmt"
-        },
-        {
-          "tag": "So",
-          "abend": "Auberginen-Tomaten-Auflauf",
-          "zeit_aktiv": "35m",
-          "zeit_total": "60m",
-          "mittag_nächster_tag": "Auflauf-Portion zum Einfrieren"
+          "mittag_nächster_tag": "Pasta e Fagioli aufgewärmt"
         }
       ]
     },
     {
       "id": 2,
-      "thema": "Mediterran (Variante 2)",
+      "thema": "Orientalisch",
       "kochabende": [
-        "Mo",
-        "Mi",
-        "So"
+        "Mo"
       ],
       "gerichte": [
         {
           "tag": "Mo",
-          "abend": "Linsenbolognese mit Pappardelle",
+          "abend": "Linseneintopf mit Spinat und Granatapfel",
           "zeit_aktiv": "25m",
           "zeit_total": "40m",
-          "mittag_nächster_tag": "Pasta-Reste aufgewärmt"
-        },
-        {
-          "tag": "Mi",
-          "abend": "Tomaten-Kichererbsen-Eintopf",
-          "zeit_aktiv": "15m",
-          "zeit_total": "20m",
-          "mittag_nächster_tag": "Eintopf-Reste"
-        },
-        {
-          "tag": "So",
-          "abend": "Auberginen-Tomaten-Auflauf",
-          "zeit_aktiv": "35m",
-          "zeit_total": "60m",
-          "mittag_nächster_tag": "Auflauf-Portion zum Einfrieren"
+          "mittag_nächster_tag": "Linseneintopf-Reste"
         }
       ]
     },
     {
       "id": 3,
-      "thema": "Indisch",
+      "thema": "Orientalisch (Variante 3)",
       "kochabende": [
-        "Mo",
-        "Mi",
-        "So"
+        "Mo"
       ],
       "gerichte": [
         {
           "tag": "Mo",
-          "abend": "Linsenbolognese mit Pappardelle",
+          "abend": "Linsensuppe mit Spinat und optional Lamm-Hackfleisch",
           "zeit_aktiv": "25m",
           "zeit_total": "40m",
-          "mittag_nächster_tag": "Pasta-Reste aufgewärmt"
-        },
-        {
-          "tag": "Mi",
-          "abend": "Kichererbsen-Spinat-Curry",
-          "zeit_aktiv": "18m",
-          "zeit_total": "20m",
-          "mittag_nächster_tag": "Curry-Reste"
-        },
-        {
-          "tag": "So",
-          "abend": "Auberginen-Tomaten-Auflauf",
-          "zeit_aktiv": "35m",
-          "zeit_total": "60m",
-          "mittag_nächster_tag": "Auflauf-Portion zum Einfrieren"
+          "mittag_nächster_tag": "Linsensuppe aufgewärmt"
         }
       ]
     }
