@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=yes">
-<title>Menüplan v6.4</title>
+<title>Menüplan v6.5</title>
 <style>
 :root{
   --red:#e8390e;--rl:#fff2ef;--grn:#2e7d32;--grl:#f0faf4;
@@ -153,7 +153,7 @@ input[type=password]{letter-spacing:2px}
 
 <!-- HOME -->
 <div class="scr on" id="sh">
-  <div class="hero"><h1>Menüplan</h1><p id="hsub">v6.4 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
+  <div class="hero"><h1>Menüplan</h1><p id="hsub">v6.5 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
 
   <!-- Active plan card -->
 
@@ -164,6 +164,30 @@ input[type=password]{letter-spacing:2px}
         <div id="dash-greeting" style="font-size:20px;font-weight:800;color:var(--txt)">Guten Abend</div>
         <button onclick="toggleUserMenu()" id="user-menu-btn" style="display:none;width:38px;height:38px;border-radius:50%;background:var(--red);color:#fff;border:none;font-size:16px;cursor:pointer">👤</button>
       </div>
+
+      <div id="dash-bring-card" style="display:none;background:#fff;border-radius:var(--rlg);border:.5px solid var(--bdr);padding:14px 16px;margin-bottom:12px">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+          <div style="width:34px;height:34px;border-radius:9px;background:#f5f5f5;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0">🛒</div>
+          <div>
+            <div style="font-size:14px;font-weight:700;color:var(--txt)">Mit Bring! verbinden</div>
+            <div style="font-size:12px;color:var(--gr3)">Damit Einkaufslisten direkt übertragen werden können</div>
+          </div>
+        </div>
+        <div class="fld" style="margin-bottom:8px"><input type="email" id="dash-bemail" placeholder="Bring! E-Mail" autocomplete="email"></div>
+        <div class="fld" style="margin-bottom:10px"><input type="password" id="dash-bpw" placeholder="Passwort" autocomplete="current-password" onkeydown="if(event.key==='Enter')connectBringFromDashboard()"></div>
+        <div id="dash-bring-err" style="font-size:12px;color:var(--red);margin-bottom:8px;display:none"></div>
+        <button class="btn btn-red" id="dash-bring-btn" onclick="connectBringFromDashboard()" style="padding:10px;font-size:13px">Verbinden</button>
+        <button onclick="skipBringForNow()" style="width:100%;background:none;border:none;font-size:11px;color:var(--gr3);cursor:pointer;font-family:inherit;text-decoration:underline;margin-top:8px">Später</button>
+      </div>
+
+      <div id="dash-bring-connected" style="display:none;background:#e8f5e9;border:.5px solid #a5d6a7;border-radius:var(--rlg);padding:11px 16px;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between">
+        <div style="display:flex;align-items:center;gap:8px">
+          <span style="font-size:16px">✅</span>
+          <span style="font-size:13px;color:#2e7d32;font-weight:600">Bring! verbunden</span>
+        </div>
+        <button onclick="clearBringSession(false)" style="background:none;border:none;font-size:11px;color:#2e7d32;cursor:pointer;font-family:inherit;text-decoration:underline">Trennen</button>
+      </div>
+
       <div id="dash-no-plan" style="display:none;background:#fff;border-radius:var(--rlg);border:.5px solid var(--bdr);padding:24px;text-align:center;margin-bottom:12px">
         <div style="font-size:40px;margin-bottom:10px">📅</div>
         <div style="font-size:16px;font-weight:700;color:var(--txt);margin-bottom:6px">Noch kein Menüplan</div>
@@ -1138,6 +1162,7 @@ function showBringLogin() {
 function clearBringSession(wasExpired) {
   G.bToken = null; G.bUUID = null; G.bLists = [];
   deleteBringTokenRemote();
+  updateDashboard();
   if ($('blist')) $('blist').innerHTML = '';
   showBringLogin();
   if (wasExpired) showSt('ist', 'Bring!-Sitzung abgelaufen. Bitte erneut anmelden.', 'er');
@@ -2822,6 +2847,13 @@ function showLoggedIn() {
     var ap = JSON.parse(localStorage.getItem('active_plan') || 'null');
     if (ap && ap.sug) { G.activePlan = ap; }
   } catch(e) {}
+  // Bring!-Sitzung pruefen (KV, sonst lokal) und Dashboard-Status aktualisieren
+  loadBringTokenRemote().then(function(remote) {
+    var d = remote;
+    if (!d) { try { d = JSON.parse(localStorage.getItem('bs') || 'null'); } catch(e) { d = null; } }
+    if (d && d.t) { G.bToken = d.t; G.bUUID = d.u; }
+    updateDashboard();
+  });
   updateDashboard();
 }
 
@@ -2896,6 +2928,57 @@ function copyInviteLink() {
   }
 }
 
+
+// ─── BRING! VERBINDEN VOM DASHBOARD ─────────────────────────
+function connectBringFromDashboard() {
+  var email = ($('dash-bemail') || {}).value ? $('dash-bemail').value.trim() : '';
+  var pw = ($('dash-bpw') || {}).value || '';
+  var btn = $('dash-bring-btn');
+  var err = $('dash-bring-err');
+  if (err) err.style.display = 'none';
+
+  if (!email || !pw) {
+    if (err) { err.textContent = 'Bitte E-Mail und Passwort eingeben.'; err.style.display = 'block'; }
+    return;
+  }
+
+  btn.innerHTML = '<span class="spin w"></span> Verbinden...';
+  btn.disabled = true;
+
+  var done = false;
+  var watchdog = setTimeout(function() {
+    if (!done) { btn.innerHTML = 'Verbinden'; btn.disabled = false;
+      if (err) { err.textContent = 'Zeitüberschreitung. Bitte nochmals versuchen.'; err.style.display = 'block'; } }
+  }, 15000);
+
+  fetch(BAPI + '/v2/bringauth', {
+    method: 'POST', headers: BH,
+    body: new URLSearchParams({ email: email, password: pw }).toString()
+  })
+    .then(function(r) { return r.json().then(function(d) { return { ok: r.ok, d: d }; }); })
+    .then(function(res) {
+      if (!res.ok) throw new Error(res.d.message || 'Anmeldung fehlgeschlagen');
+      done = true; clearTimeout(watchdog);
+      G.bToken = res.d.token_type + ' ' + res.d.access_token;
+      G.bUUID  = res.d.uuid;
+      G.bLists = [];
+      var saveWatch = setTimeout(finishConnect, 5000);
+      function finishConnect() { clearTimeout(saveWatch); btn.innerHTML = 'Verbinden'; btn.disabled = false; updateDashboard(); }
+      saveBringTokenRemote({ t: G.bToken, u: G.bUUID, e: email }).then(finishConnect);
+    })
+    .catch(function(e) {
+      done = true; clearTimeout(watchdog);
+      btn.innerHTML = 'Verbinden'; btn.disabled = false;
+      if (err) { err.textContent = 'Bring!: ' + e.message; err.style.display = 'block'; }
+    });
+}
+
+function skipBringForNow() {
+  var session = getSession();
+  if (session) localStorage.setItem('bring_skip_' + session.username, '1');
+  updateDashboard();
+}
+
 // ─── DASHBOARD ─────────────────────────────────────────────
 function showPlanSettings() {
   // Hide dashboard, show cook options
@@ -2906,6 +2989,12 @@ function showPlanSettings() {
 function updateDashboard() {
   var session = getSession();
   if (!session) return;
+
+  // Bring!-Status auf dem Dashboard: verbunden / Karte zum Anmelden / ausgeblendet ("Später")
+  var bringConnected = !!G.bToken;
+  var bringSkipped = localStorage.getItem('bring_skip_' + session.username) === '1';
+  if ($('dash-bring-connected')) $('dash-bring-connected').style.display = bringConnected ? 'flex' : 'none';
+  if ($('dash-bring-card')) $('dash-bring-card').style.display = (!bringConnected && !bringSkipped) ? 'block' : 'none';
   var h = new Date().getHours();
   var greeting = h < 12 ? 'Guten Morgen' : h < 18 ? 'Guten Tag' : 'Guten Abend';
   if ($('dash-greeting')) $('dash-greeting').textContent = greeting + ', ' + session.username + '!';
