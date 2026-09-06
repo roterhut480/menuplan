@@ -1,5 +1,109 @@
 [
   {
+    "date": "2026-09-06",
+    "saved": "6.9.2026",
+    "thema": "Italienisch",
+    "personen": 1,
+    "kochabende": 1,
+    "reste": 1,
+    "freeze": 0,
+    "gerichte": [
+      {
+        "tag": "Mo",
+        "abend": "Pasta e Fagioli mit optional Pancetta"
+      }
+    ],
+    "status": "geplant",
+    "plan": {
+      "sug": {
+        "id": 1,
+        "thema": "Italienisch",
+        "kochabende": [
+          "Mo"
+        ],
+        "gerichte": [
+          {
+            "tag": "Mo",
+            "abend": "Pasta e Fagioli mit optional Pancetta",
+            "zeit_aktiv": "25m",
+            "zeit_total": "40m",
+            "mittag_nächster_tag": "Pasta e Fagioli aufgewärmt"
+          }
+        ]
+      },
+      "sel": 0,
+      "n": 1,
+      "personen": 1,
+      "reste": 1,
+      "freeze": 0,
+      "modus": "optional",
+      "days": {
+        "Mo": "normal",
+        "Di": null,
+        "Mi": null,
+        "Do": null,
+        "Fr": null,
+        "Sa": null,
+        "So": null
+      },
+      "weekStart": "2026-08-30",
+      "saved": "6.9.2026",
+      "bringImportedAt": null,
+      "bringItemCount": 0,
+      "sugsAll": [
+        {
+          "id": 1,
+          "thema": "Italienisch",
+          "kochabende": [
+            "Mo"
+          ],
+          "gerichte": [
+            {
+              "tag": "Mo",
+              "abend": "Pasta e Fagioli mit optional Pancetta",
+              "zeit_aktiv": "25m",
+              "zeit_total": "40m",
+              "mittag_nächster_tag": "Pasta e Fagioli aufgewärmt"
+            }
+          ]
+        },
+        {
+          "id": 2,
+          "thema": "Orientalisch",
+          "kochabende": [
+            "Mo"
+          ],
+          "gerichte": [
+            {
+              "tag": "Mo",
+              "abend": "Linseneintopf mit Spinat und Granatapfel",
+              "zeit_aktiv": "25m",
+              "zeit_total": "40m",
+              "mittag_nächster_tag": "Linseneintopf-Reste"
+            }
+          ]
+        },
+        {
+          "id": 3,
+          "thema": "Orientalisch (Variante 3)",
+          "kochabende": [
+            "Mo"
+          ],
+          "gerichte": [
+            {
+              "tag": "Mo",
+              "abend": "Linsensuppe mit Spinat und optional Lamm-Hackfleisch",
+              "zeit_aktiv": "25m",
+              "zeit_total": "40m",
+              "mittag_nächster_tag": "Linsensuppe aufgewärmt"
+            }
+          ]
+        }
+      ],
+      "sugsPartial": true
+    }
+  },
+  {
     "date": "2026-09-05",
     "saved": "5.9.2026",
     "thema": "Mediterran",
@@ -21,7 +125,7 @@
         "abend": "Auberginen-Tomaten-Auflauf"
       }
     ],
-    "status": "geplant",
+    "status": "gekocht",
     "plan": {
       "sug": {
         "id": 1,
