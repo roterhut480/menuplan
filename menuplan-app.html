@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=yes">
-<title>Menüplan v6.7</title>
+<title>Menüplan v6.8</title>
 <style>
 :root{
   --red:#e8390e;--rl:#fff2ef;--grn:#2e7d32;--grl:#f0faf4;
@@ -153,7 +153,7 @@ input[type=password]{letter-spacing:2px}
 
 <!-- HOME -->
 <div class="scr on" id="sh">
-  <div class="hero"><h1>Menüplan</h1><p id="hsub">v6.7 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
+  <div class="hero"><h1>Menüplan</h1><p id="hsub">v6.8 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
 
   <!-- Active plan card -->
 
@@ -1130,26 +1130,39 @@ function deleteBringTokenRemote() {
 // Ist ein Token vorhanden aber die Listen noch nicht geladen, werden
 // sie hier nachgeladen statt die Login-Maske faelschlich zu zeigen.
 function syncBringUiState() {
+  console.log('[Bring-Diagnose] syncBringUiState() Start. G.bToken:', G.bToken ? '(vorhanden)' : '(leer)',
+              '| getSession():', getSession() ? '(App eingeloggt: ' + getSession().username + ')' : '(NICHT eingeloggt!)');
   if (G.bToken) {
     if ($('bfields')) $('bfields').style.display = 'none';
     if (G.bLists && G.bLists.length) {
       if ($('blistwrap')) $('blistwrap').style.display = 'block';
     } else {
       loadBringLists(function(ok) {
+        console.log('[Bring-Diagnose] loadBringLists Ergebnis:', ok);
         if (ok) { if ($('blistwrap')) $('blistwrap').style.display = 'block'; }
-        // clearBringSession (bei ungueltigem Token) blendet die Felder selbst wieder ein
       });
     }
   } else {
-    // Kein lokales Token: evtl. liegt eines in KV (z.B. auf dem Dashboard verbunden) -> nachladen
+    var h = bringTokenHeaders();
+    console.log('[Bring-Diagnose] Kein lokales Token. Versuche KV zu lesen. Auth-Header vorhanden:', !!h);
+    if (!h) {
+      console.log('[Bring-Diagnose] ABBRUCH: keine App-Session -> KV kann nicht abgefragt werden -> Login-Maske erscheint');
+      showBringLogin();
+      return;
+    }
     loadBringTokenRemote().then(function(remote) {
+      console.log('[Bring-Diagnose] KV-Antwort:', remote ? JSON.stringify({u:remote.u, e:remote.e, hasToken:!!remote.t}) : 'null (kein Eintrag in KV)');
       if (remote && remote.t) {
         G.bToken = remote.t; G.bUUID = remote.u;
         if ($('bemail')) $('bemail').value = remote.e || '';
         syncBringUiState();
       } else {
+        console.log('[Bring-Diagnose] ABBRUCH: KV liefert kein Token -> Login-Maske erscheint zu Recht oder Speichern ist fehlgeschlagen');
         showBringLogin();
       }
+    }).catch(function(e) {
+      console.log('[Bring-Diagnose] FEHLER beim KV-Abruf:', e.message);
+      showBringLogin();
     });
   }
 }
