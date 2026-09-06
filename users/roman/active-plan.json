@@ -8,147 +8,119 @@
     "gerichte": [
       {
         "tag": "Mi",
-        "abend": "Linsen-Gemüse-Eintopf mit Feta",
-        "zeit_aktiv": "20m",
-        "zeit_total": "40m",
+        "abend": "Linsen-Gemüse-Auflauf mit Feta",
+        "zeit_aktiv": "25m",
+        "zeit_total": "50m",
+        "zutaten": [
+          {
+            "name": "Rote Linsen",
+            "menge": "150g"
+          },
+          {
+            "name": "Zucchini",
+            "menge": "250g"
+          },
+          {
+            "name": "Paprika rot",
+            "menge": "1 Stück (200g)"
+          },
+          {
+            "name": "Zwiebel",
+            "menge": "1 Stück (100g)"
+          },
+          {
+            "name": "Knoblauch",
+            "menge": "2 Zehen (6g)"
+          },
+          {
+            "name": "Gemüsebrühe",
+            "menge": "400ml"
+          },
+          {
+            "name": "Feta",
+            "menge": "120g"
+          },
+          {
+            "name": "Olivenöl",
+            "menge": "30ml"
+          },
+          {
+            "name": "Tomatenmark",
+            "menge": "30g"
+          },
+          {
+            "name": "Oregano getrocknet",
+            "menge": "3g"
+          },
+          {
+            "name": "Salz",
+            "menge": "4g"
+          },
+          {
+            "name": "Pfeffer schwarz",
+            "menge": "2g"
+          }
+        ],
         "schritte_vegi": [
           {
-            "titel": "Gemüse vorbereiten",
-            "text": "Karotten schälen und in 1 cm große Würfel schneiden. Zucchini waschen, schälen und ebenfalls in 1 cm große Würfel schneiden. Zwiebel schälen und fein hacken. Knoblauch schälen und durch die Presse drücken.",
+            "titel": "Gemüse schneiden",
+            "text": "Zucchini waschen und in 1cm dicke Scheiben schneiden. Paprika waschen, entkernen und in 2cm große Würfel schneiden. Zwiebel schälen und fein würfeln. Knoblauch schälen und minieren.",
             "timer_min": 0,
             "zutaten_schritt": [
-              "Karotten",
               "Zucchini",
+              "Paprika rot",
               "Zwiebel",
               "Knoblauch"
             ]
           },
           {
-            "titel": "Aromaten anbraten",
-            "text": "Olivenöl in einem großen Topf erhitzen. Gehackte Zwiebel und Knoblauch hinzufügen und 2 Minuten bei mittlerer Hitze anbraten, bis sie duften.",
-            "timer_min": 2,
+            "titel": "Basis anbraten",
+            "text": "Olivenöl in großer Pfanne bei mittlerer Hitze erhitzen. Zwiebel und Knoblauch zugeben und 2 Minuten glasig andünsten. Tomatenmark einrühren und 1 Minute mitbraten.",
+            "timer_min": 3,
             "zutaten_schritt": [
               "Olivenöl",
               "Zwiebel",
-              "Knoblauch"
-            ]
-          },
-          {
-            "titel": "Tomatenmark einrühren",
-            "text": "Tomatenmark in den Topf geben und 1 Minute mitbraten, um den Geschmack zu intensivieren.",
-            "timer_min": 1,
-            "zutaten_schritt": [
+              "Knoblauch",
               "Tomatenmark"
             ]
           },
           {
-            "titel": "Gemüse hinzufügen",
-            "text": "Karotten- und Zucchiniwürfel in den Topf geben und 3 Minuten unter gelegentlichem Rühren anbraten.",
+            "titel": "Gemüse zugeben",
+            "text": "Zucchini und Paprika in die Pfanne geben. Mit Oregano, Salz und Pfeffer würzen. Gut durchmischen und 3 Minuten anbraten.",
             "timer_min": 3,
             "zutaten_schritt": [
-              "Karotten",
-              "Zucchini"
-            ]
-          },
-          {
-            "titel": "Linsen und Brühe zugeben",
-            "text": "Rote Linsen und Gemüsebrühe in den Topf geben. Kreuzkümmel, Salz und schwarzen Pfeffer hinzufügen und alles gut verrühren.",
-            "timer_min": 0,
-            "zutaten_schritt": [
-              "rote Linsen",
-              "Gemüsebrühe",
-              "Kreuzkümmel",
+              "Zucchini",
+              "Paprika rot",
+              "Oregano getrocknet",
               "Salz",
-              "schwarzer Pfeffer"
+              "Pfeffer schwarz"
             ]
           },
           {
-            "titel": "Eintopf köcheln",
-            "text": "Zum Kochen bringen, dann die Hitze reduzieren und den Eintopf 18-20 Minuten köcheln lassen, bis die Linsen vollständig gar und die Karotten weich sind. Gelegentlich umrühren.",
-            "timer_min": 20,
-            "zutaten_schritt": []
+            "titel": "Linsen kochen",
+            "text": "Rote Linsen und Gemüsebrühe zur Pfanne geben. Aufkochen, dann Hitze reduzieren und 15 Minuten leicht köchelnd garen bis Linsen weich sind.",
+            "timer_min": 15,
+            "zutaten_schritt": [
+              "Rote Linsen",
+              "Gemüsebrühe"
+            ]
           },
           {
-            "titel": "Feta zerbröseln",
-            "text": "Feta in eine Schüssel geben und mit den Händen oder einer Gabel in grobe Bröckel zerbröseln.",
+            "titel": "Auflauf schichten",
+            "text": "Linsenmischung in Auflaufform umfüllen. Feta in grobe Würfel zerlegen und gleichmäßig über die Mischung verteilen.",
             "timer_min": 0,
             "zutaten_schritt": [
               "Feta"
             ]
           },
           {
-            "titel": "Petersilie hacken",
-            "text": "Petersilie waschen, trockentupfen und fein hacken.",
-            "timer_min": 0,
-            "zutaten_schritt": [
-              "frische Petersilie"
-            ]
-          },
-          {
-            "titel": "Servieren",
-            "text": "Den Eintopf in zwei Schüsseln verteilen. Mit Fetabröckeln und gehackter Petersilie garnieren und sofort servieren.",
-            "timer_min": 0,
-            "zutaten_schritt": [
-              "Feta",
-              "frische Petersilie"
-            ]
+            "titel": "Backen",
+            "text": "Auflauf im vorgeheizten Ofen bei 200°C Ober-/Unterhitze für 18-20 Minuten backen bis Feta leicht gebräunt ist.",
+            "timer_min": 20,
+            "zutaten_schritt": []
           }
         ],
-        "schritte_fleisch": [],
-        "zutaten": [
-          {
-            "name": "rote Linsen",
-            "menge": "120 g"
-          },
-          {
-            "name": "Karotten",
-            "menge": "150 g"
-          },
-          {
-            "name": "Zucchini",
-            "menge": "180 g"
-          },
-          {
-            "name": "Zwiebel",
-            "menge": "80 g"
-          },
-          {
-            "name": "Knoblauch",
-            "menge": "6 g"
-          },
-          {
-            "name": "Gemüsebrühe",
-            "menge": "500 ml"
-          },
-          {
-            "name": "Olivenöl",
-            "menge": "15 ml"
-          },
-          {
-            "name": "Tomatenmark",
-            "menge": "20 g"
-          },
-          {
-            "name": "Salz",
-            "menge": "3 g"
-          },
-          {
-            "name": "schwarzer Pfeffer",
-            "menge": "1 g"
-          },
-          {
-            "name": "Kreuzkümmel",
-            "menge": "2 g"
-          },
-          {
-            "name": "Feta",
-            "menge": "100 g"
-          },
-          {
-            "name": "frische Petersilie",
-            "menge": "10 g"
-          }
-        ]
+        "tipp": "Auflauf direkt aus dem Ofen servieren wenn Feta noch cremig ist. Optional mit frischen Kräutern oder Petersilie garnieren."
       }
     ]
   },
@@ -196,147 +168,119 @@
       "gerichte": [
         {
           "tag": "Mi",
-          "abend": "Linsen-Gemüse-Eintopf mit Feta",
-          "zeit_aktiv": "20m",
-          "zeit_total": "40m",
+          "abend": "Linsen-Gemüse-Auflauf mit Feta",
+          "zeit_aktiv": "25m",
+          "zeit_total": "50m",
+          "zutaten": [
+            {
+              "name": "Rote Linsen",
+              "menge": "150g"
+            },
+            {
+              "name": "Zucchini",
+              "menge": "250g"
+            },
+            {
+              "name": "Paprika rot",
+              "menge": "1 Stück (200g)"
+            },
+            {
+              "name": "Zwiebel",
+              "menge": "1 Stück (100g)"
+            },
+            {
+              "name": "Knoblauch",
+              "menge": "2 Zehen (6g)"
+            },
+            {
+              "name": "Gemüsebrühe",
+              "menge": "400ml"
+            },
+            {
+              "name": "Feta",
+              "menge": "120g"
+            },
+            {
+              "name": "Olivenöl",
+              "menge": "30ml"
+            },
+            {
+              "name": "Tomatenmark",
+              "menge": "30g"
+            },
+            {
+              "name": "Oregano getrocknet",
+              "menge": "3g"
+            },
+            {
+              "name": "Salz",
+              "menge": "4g"
+            },
+            {
+              "name": "Pfeffer schwarz",
+              "menge": "2g"
+            }
+          ],
           "schritte_vegi": [
             {
-              "titel": "Gemüse vorbereiten",
-              "text": "Karotten schälen und in 1 cm große Würfel schneiden. Zucchini waschen, schälen und ebenfalls in 1 cm große Würfel schneiden. Zwiebel schälen und fein hacken. Knoblauch schälen und durch die Presse drücken.",
+              "titel": "Gemüse schneiden",
+              "text": "Zucchini waschen und in 1cm dicke Scheiben schneiden. Paprika waschen, entkernen und in 2cm große Würfel schneiden. Zwiebel schälen und fein würfeln. Knoblauch schälen und minieren.",
               "timer_min": 0,
               "zutaten_schritt": [
-                "Karotten",
                 "Zucchini",
+                "Paprika rot",
                 "Zwiebel",
                 "Knoblauch"
               ]
             },
             {
-              "titel": "Aromaten anbraten",
-              "text": "Olivenöl in einem großen Topf erhitzen. Gehackte Zwiebel und Knoblauch hinzufügen und 2 Minuten bei mittlerer Hitze anbraten, bis sie duften.",
-              "timer_min": 2,
+              "titel": "Basis anbraten",
+              "text": "Olivenöl in großer Pfanne bei mittlerer Hitze erhitzen. Zwiebel und Knoblauch zugeben und 2 Minuten glasig andünsten. Tomatenmark einrühren und 1 Minute mitbraten.",
+              "timer_min": 3,
               "zutaten_schritt": [
                 "Olivenöl",
                 "Zwiebel",
-                "Knoblauch"
-              ]
-            },
-            {
-              "titel": "Tomatenmark einrühren",
-              "text": "Tomatenmark in den Topf geben und 1 Minute mitbraten, um den Geschmack zu intensivieren.",
-              "timer_min": 1,
-              "zutaten_schritt": [
+                "Knoblauch",
                 "Tomatenmark"
               ]
             },
             {
-              "titel": "Gemüse hinzufügen",
-              "text": "Karotten- und Zucchiniwürfel in den Topf geben und 3 Minuten unter gelegentlichem Rühren anbraten.",
+              "titel": "Gemüse zugeben",
+              "text": "Zucchini und Paprika in die Pfanne geben. Mit Oregano, Salz und Pfeffer würzen. Gut durchmischen und 3 Minuten anbraten.",
               "timer_min": 3,
               "zutaten_schritt": [
-                "Karotten",
-                "Zucchini"
-              ]
-            },
-            {
-              "titel": "Linsen und Brühe zugeben",
-              "text": "Rote Linsen und Gemüsebrühe in den Topf geben. Kreuzkümmel, Salz und schwarzen Pfeffer hinzufügen und alles gut verrühren.",
-              "timer_min": 0,
-              "zutaten_schritt": [
-                "rote Linsen",
-                "Gemüsebrühe",
-                "Kreuzkümmel",
+                "Zucchini",
+                "Paprika rot",
+                "Oregano getrocknet",
                 "Salz",
-                "schwarzer Pfeffer"
+                "Pfeffer schwarz"
               ]
             },
             {
-              "titel": "Eintopf köcheln",
-              "text": "Zum Kochen bringen, dann die Hitze reduzieren und den Eintopf 18-20 Minuten köcheln lassen, bis die Linsen vollständig gar und die Karotten weich sind. Gelegentlich umrühren.",
-              "timer_min": 20,
-              "zutaten_schritt": []
+              "titel": "Linsen kochen",
+              "text": "Rote Linsen und Gemüsebrühe zur Pfanne geben. Aufkochen, dann Hitze reduzieren und 15 Minuten leicht köchelnd garen bis Linsen weich sind.",
+              "timer_min": 15,
+              "zutaten_schritt": [
+                "Rote Linsen",
+                "Gemüsebrühe"
+              ]
             },
             {
-              "titel": "Feta zerbröseln",
-              "text": "Feta in eine Schüssel geben und mit den Händen oder einer Gabel in grobe Bröckel zerbröseln.",
+              "titel": "Auflauf schichten",
+              "text": "Linsenmischung in Auflaufform umfüllen. Feta in grobe Würfel zerlegen und gleichmäßig über die Mischung verteilen.",
               "timer_min": 0,
               "zutaten_schritt": [
                 "Feta"
               ]
             },
             {
-              "titel": "Petersilie hacken",
-              "text": "Petersilie waschen, trockentupfen und fein hacken.",
-              "timer_min": 0,
-              "zutaten_schritt": [
-                "frische Petersilie"
-              ]
-            },
-            {
-              "titel": "Servieren",
-              "text": "Den Eintopf in zwei Schüsseln verteilen. Mit Fetabröckeln und gehackter Petersilie garnieren und sofort servieren.",
-              "timer_min": 0,
-              "zutaten_schritt": [
-                "Feta",
-                "frische Petersilie"
-              ]
+              "titel": "Backen",
+              "text": "Auflauf im vorgeheizten Ofen bei 200°C Ober-/Unterhitze für 18-20 Minuten backen bis Feta leicht gebräunt ist.",
+              "timer_min": 20,
+              "zutaten_schritt": []
             }
           ],
-          "schritte_fleisch": [],
-          "zutaten": [
-            {
-              "name": "rote Linsen",
-              "menge": "120 g"
-            },
-            {
-              "name": "Karotten",
-              "menge": "150 g"
-            },
-            {
-              "name": "Zucchini",
-              "menge": "180 g"
-            },
-            {
-              "name": "Zwiebel",
-              "menge": "80 g"
-            },
-            {
-              "name": "Knoblauch",
-              "menge": "6 g"
-            },
-            {
-              "name": "Gemüsebrühe",
-              "menge": "500 ml"
-            },
-            {
-              "name": "Olivenöl",
-              "menge": "15 ml"
-            },
-            {
-              "name": "Tomatenmark",
-              "menge": "20 g"
-            },
-            {
-              "name": "Salz",
-              "menge": "3 g"
-            },
-            {
-              "name": "schwarzer Pfeffer",
-              "menge": "1 g"
-            },
-            {
-              "name": "Kreuzkümmel",
-              "menge": "2 g"
-            },
-            {
-              "name": "Feta",
-              "menge": "100 g"
-            },
-            {
-              "name": "frische Petersilie",
-              "menge": "10 g"
-            }
-          ]
+          "tipp": "Auflauf direkt aus dem Ofen servieren wenn Feta noch cremig ist. Optional mit frischen Kräutern oder Petersilie garnieren."
         }
       ]
     },
