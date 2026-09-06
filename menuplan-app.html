@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=yes">
-<title>Menüplan v6.3</title>
+<title>Menüplan v6.4</title>
 <style>
 :root{
   --red:#e8390e;--rl:#fff2ef;--grn:#2e7d32;--grl:#f0faf4;
@@ -153,7 +153,7 @@ input[type=password]{letter-spacing:2px}
 
 <!-- HOME -->
 <div class="scr on" id="sh">
-  <div class="hero"><h1>Menüplan</h1><p id="hsub">v6.3 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
+  <div class="hero"><h1>Menüplan</h1><p id="hsub">v6.4 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
 
   <!-- Active plan card -->
 
@@ -1153,12 +1153,19 @@ function doImport() {
   var hasCreds = !!(email && pw);
   var loginVisible = $('bfields') && $('bfields').style.display !== 'none';
 
-  function busy(txt) { btn.innerHTML = '<span class="spin w"></span> ' + txt; btn.disabled = true; }
-  function idle() { btn.innerHTML = 'In Bring! importieren'; btn.disabled = false; }
+  function busy(txt) { if (btn) { btn.innerHTML = '<span class="spin w"></span> ' + txt; btn.disabled = true; } }
+  function idle() { if (btn) { btn.innerHTML = 'In Bring! importieren'; btn.disabled = false; } }
+  function fail(msg) { idle(); console.warn('Bring-Import:', msg); showSt('ist', msg, 'er'); }
+
+  // Sicherheitsnetz: falls irgendein Schritt haengt oder ein Promise
+  // ohne Fehlermeldung verworfen wird, bleibt der Button nicht ewig "Anmelden..." stehen.
+  var watchdog = setTimeout(function() { fail('Zeitüberschreitung. Bitte nochmals versuchen.'); }, 15000);
+  function clearWatch() { clearTimeout(watchdog); }
 
   // Schritt 3: Liste bestimmen und importieren
   function proceed() {
-    if (!G.bLists || !G.bLists.length) { idle(); showSt('ist', 'Keine Bring!-Listen gefunden.', 'er'); return; }
+    clearWatch();
+    if (!G.bLists || !G.bLists.length) { fail('Keine Bring!-Listen gefunden.'); return; }
     var sel = $('blist');
     if (sel && !sel.value && G.bLists.length) sel.value = G.bLists[0].listUuid;  // erste Liste vorwaehlen
     idle();
@@ -1170,7 +1177,7 @@ function doImport() {
     if (G.bLists && G.bLists.length) { proceed(); return; }
     busy('Listen laden...');
     loadBringLists(function(ok) {
-      if (!ok) { idle(); return; }   // clearBringSession hat bereits informiert
+      if (!ok) { clearWatch(); idle(); return; }   // clearBringSession hat bereits informiert
       proceed();
     });
   }
@@ -1179,7 +1186,7 @@ function doImport() {
   // Wichtig: Wenn Zugangsdaten eingegeben sind und das Login-Feld sichtbar ist,
   // hat die frische Anmeldung Vorrang vor einer evtl. veralteten Sitzung.
   if (!G.bToken || (hasCreds && loginVisible)) {
-    if (!hasCreds) { showSt('ist', 'Bitte E-Mail und Passwort eingeben.', 'er'); return; }
+    if (!hasCreds) { clearWatch(); fail('Bitte E-Mail und Passwort eingeben.'); return; }
     busy('Anmelden...');
     fetch(BAPI + '/v2/bringauth', {
       method: 'POST', headers: BH,
@@ -1191,11 +1198,20 @@ function doImport() {
         G.bToken = res.d.token_type + ' ' + res.d.access_token;
         G.bUUID  = res.d.uuid;
         G.bLists = [];
-        if ($('bpw')) $('bpw').value = '';
-        // Speichern abwarten, dann weiter - vermeidet Race Condition mit withLists()
-        saveBringTokenRemote({ t: G.bToken, u: G.bUUID, e: email }).then(withLists);
+        // Passwort erst leeren wenn wirklich alles geklappt hat - sonst bei Bedarf sichtbar lassen
+        // damit ein hängender Folgeschritt nicht wie ein Datenverlust aussieht.
+        busy('Sitzung wird gespeichert...');
+        var saveDone = false;
+        var saveWatch = setTimeout(function() {
+          if (!saveDone) { console.warn('saveBringTokenRemote antwortet nicht, fahre trotzdem fort'); withLists(); }
+        }, 5000);
+        saveBringTokenRemote({ t: G.bToken, u: G.bUUID, e: email }).then(function() {
+          saveDone = true; clearTimeout(saveWatch);
+          if ($('bpw')) $('bpw').value = '';
+          withLists();
+        });
       })
-      .catch(function(e) { idle(); showSt('ist', 'Bring!: ' + e.message, 'er'); });
+      .catch(function(e) { clearWatch(); fail('Bring!: ' + e.message); });
     return;
   }
 
