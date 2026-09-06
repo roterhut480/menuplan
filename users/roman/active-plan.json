@@ -10,7 +10,124 @@
         "tag": "Mo",
         "abend": "Gnocchi mit Spinat-Ricotta-Sauce und Tomaten",
         "zeit_aktiv": "25m",
-        "zeit_total": "40m"
+        "zeit_total": "40m",
+        "schritte_vegi": [
+          {
+            "titel": "Sauce ansetzen",
+            "text": "Olivenoel in einem großen Topf erhitzen. Gehackte Knoblauchzehen hinzufuegen und 1 Minute bei mittlerer Hitze anbraten bis sie dueftig werden.",
+            "timer_min": 1,
+            "zutaten_schritt": [
+              "Olivenoel",
+              "Knoblauch"
+            ]
+          },
+          {
+            "titel": "Tomaten kochen",
+            "text": "Gehackte Tomaten in den Topf geben. Mit Salz 3g und Pfeffer 1g wuerzen. Bei mittlerer Hitze 10 Minuten kochen lassen bis die Tomaten weich werden.",
+            "timer_min": 10,
+            "zutaten_schritt": [
+              "Tomaten",
+              "Salz",
+              "Pfeffer"
+            ]
+          },
+          {
+            "titel": "Spinat vorbereiten",
+            "text": "Frischen Spinat waschen und grob hacken. Beiseitestellen.",
+            "timer_min": 0,
+            "zutaten_schritt": [
+              "Frischer Spinat"
+            ]
+          },
+          {
+            "titel": "Ricotta mischen",
+            "text": "Ricotta in einer Schuessel mit Muskatnuss 0.5g verruehren bis cremig. Mit Salz 2g abschmecken.",
+            "timer_min": 0,
+            "zutaten_schritt": [
+              "Ricotta",
+              "Muskatnuss",
+              "Salz"
+            ]
+          },
+          {
+            "titel": "Spinat einarbeiten",
+            "text": "Gehackten Spinat in die Tomatensauce geben und 2 Minuten mit kochen lassen bis der Spinat wilts.",
+            "timer_min": 2,
+            "zutaten_schritt": [
+              "Frischer Spinat"
+            ]
+          },
+          {
+            "titel": "Ricotta untermischen",
+            "text": "Ricotta-Mischung in die Tomatensauce ruehren und gut vermischen. Mit Pfeffer 1g abschmecken. Sauce auf niedriger Hitze warm halten.",
+            "timer_min": 0,
+            "zutaten_schritt": [
+              "Ricotta",
+              "Pfeffer"
+            ]
+          },
+          {
+            "titel": "Gnocchi kochen",
+            "text": "In einem seperaten großen Topf reichlich Salzwasser zum Kochen bringen. Gnocchi hineingeben und 3-4 Minuten kochen bis sie oben schwimmen. Mit Schaumlöffel herausnehmen.",
+            "timer_min": 4,
+            "zutaten_schritt": [
+              "Gnocchi",
+              "Salz"
+            ]
+          },
+          {
+            "titel": "Anrichten",
+            "text": "Gekochte Gnocchi in Servierschuesseln portionieren. Spinat-Ricotta-Tomatensauce darueber verteilen. Mit geriebener Parmesan 60g bestreuen und servieren.",
+            "timer_min": 0,
+            "zutaten_schritt": [
+              "Gnocchi",
+              "Parmesan"
+            ]
+          }
+        ],
+        "schritte_fleisch": [],
+        "zutaten": [
+          {
+            "name": "Gnocchi",
+            "menge": "500g"
+          },
+          {
+            "name": "Frischer Spinat",
+            "menge": "250g"
+          },
+          {
+            "name": "Ricotta",
+            "menge": "200g"
+          },
+          {
+            "name": "Tomaten",
+            "menge": "400g"
+          },
+          {
+            "name": "Knoblauch",
+            "menge": "2 Zehen"
+          },
+          {
+            "name": "Olivenoel",
+            "menge": "30ml"
+          },
+          {
+            "name": "Parmesan",
+            "menge": "60g"
+          },
+          {
+            "name": "Salz",
+            "menge": "5g"
+          },
+          {
+            "name": "Pfeffer",
+            "menge": "2g"
+          },
+          {
+            "name": "Muskatnuss",
+            "menge": "0.5g"
+          }
+        ]
       }
     ]
   },
@@ -45,7 +162,124 @@
           "tag": "Mo",
           "abend": "Gnocchi mit Spinat-Ricotta-Sauce und Tomaten",
           "zeit_aktiv": "25m",
-          "zeit_total": "40m"
+          "zeit_total": "40m",
+          "schritte_vegi": [
+            {
+              "titel": "Sauce ansetzen",
+              "text": "Olivenoel in einem großen Topf erhitzen. Gehackte Knoblauchzehen hinzufuegen und 1 Minute bei mittlerer Hitze anbraten bis sie dueftig werden.",
+              "timer_min": 1,
+              "zutaten_schritt": [
+                "Olivenoel",
+                "Knoblauch"
+              ]
+            },
+            {
+              "titel": "Tomaten kochen",
+              "text": "Gehackte Tomaten in den Topf geben. Mit Salz 3g und Pfeffer 1g wuerzen. Bei mittlerer Hitze 10 Minuten kochen lassen bis die Tomaten weich werden.",
+              "timer_min": 10,
+              "zutaten_schritt": [
+                "Tomaten",
+                "Salz",
+                "Pfeffer"
+              ]
+            },
+            {
+              "titel": "Spinat vorbereiten",
+              "text": "Frischen Spinat waschen und grob hacken. Beiseitestellen.",
+              "timer_min": 0,
+              "zutaten_schritt": [
+                "Frischer Spinat"
+              ]
+            },
+            {
+              "titel": "Ricotta mischen",
+              "text": "Ricotta in einer Schuessel mit Muskatnuss 0.5g verruehren bis cremig. Mit Salz 2g abschmecken.",
+              "timer_min": 0,
+              "zutaten_schritt": [
+                "Ricotta",
+                "Muskatnuss",
+                "Salz"
+              ]
+            },
+            {
+              "titel": "Spinat einarbeiten",
+              "text": "Gehackten Spinat in die Tomatensauce geben und 2 Minuten mit kochen lassen bis der Spinat wilts.",
+              "timer_min": 2,
+              "zutaten_schritt": [
+                "Frischer Spinat"
+              ]
+            },
+            {
+              "titel": "Ricotta untermischen",
+              "text": "Ricotta-Mischung in die Tomatensauce ruehren und gut vermischen. Mit Pfeffer 1g abschmecken. Sauce auf niedriger Hitze warm halten.",
+              "timer_min": 0,
+              "zutaten_schritt": [
+                "Ricotta",
+                "Pfeffer"
+              ]
+            },
+            {
+              "titel": "Gnocchi kochen",
+              "text": "In einem seperaten großen Topf reichlich Salzwasser zum Kochen bringen. Gnocchi hineingeben und 3-4 Minuten kochen bis sie oben schwimmen. Mit Schaumlöffel herausnehmen.",
+              "timer_min": 4,
+              "zutaten_schritt": [
+                "Gnocchi",
+                "Salz"
+              ]
+            },
+            {
+              "titel": "Anrichten",
+              "text": "Gekochte Gnocchi in Servierschuesseln portionieren. Spinat-Ricotta-Tomatensauce darueber verteilen. Mit geriebener Parmesan 60g bestreuen und servieren.",
+              "timer_min": 0,
+              "zutaten_schritt": [
+                "Gnocchi",
+                "Parmesan"
+              ]
+            }
+          ],
+          "schritte_fleisch": [],
+          "zutaten": [
+            {
+              "name": "Gnocchi",
+              "menge": "500g"
+            },
+            {
+              "name": "Frischer Spinat",
+              "menge": "250g"
+            },
+            {
+              "name": "Ricotta",
+              "menge": "200g"
+            },
+            {
+              "name": "Tomaten",
+              "menge": "400g"
+            },
+            {
+              "name": "Knoblauch",
+              "menge": "2 Zehen"
+            },
+            {
+              "name": "Olivenoel",
+              "menge": "30ml"
+            },
+            {
+              "name": "Parmesan",
+              "menge": "60g"
+            },
+            {
+              "name": "Salz",
+              "menge": "5g"
+            },
+            {
+              "name": "Pfeffer",
+              "menge": "2g"
+            },
+            {
+              "name": "Muskatnuss",
+              "menge": "0.5g"
+            }
+          ]
         }
       ]
     },
@@ -80,5 +314,5 @@
       ]
     }
   ],
-  "sugsPartial": true
+  "sugsPartial": false
 }
