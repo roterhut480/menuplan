@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=yes">
-<title>Menüplan v6.9</title>
+<title>Menüplan v6.10</title>
 <style>
 :root{
   --red:#e8390e;--rl:#fff2ef;--grn:#2e7d32;--grl:#f0faf4;
@@ -153,7 +153,7 @@ input[type=password]{letter-spacing:2px}
 
 <!-- HOME -->
 <div class="scr on" id="sh">
-  <div class="hero"><h1>Menüplan</h1><p id="hsub">v6.9 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
+  <div class="hero"><h1>Menüplan</h1><p id="hsub">v6.10 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
 
   <!-- Active plan card -->
 
@@ -192,7 +192,7 @@ input[type=password]{letter-spacing:2px}
         <div style="font-size:40px;margin-bottom:10px">📅</div>
         <div style="font-size:16px;font-weight:700;color:var(--txt);margin-bottom:6px">Noch kein Menüplan</div>
         <div style="font-size:13px;color:var(--gr3);margin-bottom:16px">Generiere deinen ersten Wochenplan</div>
-        <button onclick="showPlanSettings()" style="background:var(--red);color:#fff;border:none;border-radius:10px;padding:13px;font-size:15px;font-weight:700;cursor:pointer;width:100%">✨ Menüplan erstellen</button>
+        <button onclick="openNewWeekScreen()" style="background:var(--red);color:#fff;border:none;border-radius:10px;padding:13px;font-size:15px;font-weight:700;cursor:pointer;width:100%">✨ Menüplan erstellen</button>
       </div>
       <div id="dash-stale" style="display:none;background:#fff8e1;border:.5px solid #ffe082;border-radius:var(--rlg);padding:11px 14px;margin-bottom:10px;font-size:12px;color:#e65100">
             &#9888; Dieser Plan ist aus einer früheren Woche. <b>Neue Woche planen</b> für aktuelle Vorschläge.
@@ -221,7 +221,7 @@ input[type=password]{letter-spacing:2px}
           <div id="dash-einkauf-sub" style="font-size:11px;color:var(--gr3);margin-bottom:12px;padding-left:17px"></div>
           <button id="dash-einkauf-btn" onclick="openActivePlan('e')" style="width:100%;background:#f5f5f5;border:none;border-radius:8px;padding:10px;font-size:13px;font-weight:600;color:var(--txt);cursor:pointer">Einkaufsliste öffnen →</button>
         </div>
-        <button onclick="showPlanSettings()" style="width:100%;background:#fff;border:.5px solid var(--bdr);border-radius:var(--rlg);padding:14px;font-size:14px;font-weight:600;color:var(--gr3);cursor:pointer;margin-bottom:8px">📅 Neue Woche planen</button>
+        <button onclick="openNewWeekScreen()" style="width:100%;background:#fff;border:.5px solid var(--bdr);border-radius:var(--rlg);padding:14px;font-size:14px;font-weight:600;color:var(--gr3);cursor:pointer;margin-bottom:8px">📅 Neue Woche planen</button>
       </div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:4px">
         <button onclick="openFotoScreen()" style="background:#fff;border:.5px solid var(--bdr);border-radius:var(--rlg);padding:14px;text-align:left;cursor:pointer;font-family:inherit"><div style="font-size:22px;margin-bottom:4px">📷</div><div style="font-size:13px;font-weight:700;color:var(--txt)">Foto-Rezept</div><div style="font-size:11px;color:var(--gr3)">Foto analysieren</div></button>
@@ -253,6 +253,15 @@ input[type=password]{letter-spacing:2px}
     </div>
   </div>
 
+    </div>
+</div><!-- END #sh -->
+
+<!-- NEUE WOCHE PLANEN -->
+<div class="scr" id="snew">
+  <div class="tbar">
+    <div class="tbar-bk" onclick="go('sh')">&#8592;</div>
+    <div><h1>Neue Woche planen</h1><div class="tbar-sub">Einstellungen &amp; Generierung</div></div>
+  </div>
   <!-- Cook options -->
   <div class="card">
     <div class="cp">
@@ -328,13 +337,14 @@ input[type=password]{letter-spacing:2px}
   <!-- Generieren Button -->
   <div style="padding:0 10px 10px">
     <button class="btn btn-red" onclick="goSuggest()" style="font-size:15px;padding:14px;font-weight:700">✨ Menüvorschläge generieren</button>
-  </div>
-</div><!-- END #sh -->
+
+</div>
 
 <!-- VORSCHLAEGE -->
 <div class="scr" id="ss">
   <div class="tbar">
-    <div class="tbar-bk" onclick="go('sh')">&#8592;</div>
+    <div class="tbar-bk" onclick="go('snew')">&#8592;</div>
+    <div class="tbar-bk" onclick="go('sh')" style="margin-left:4px" title="Startseite">&#8962;</div>
     <div><h1>Menüvorschläge</h1><div class="tbar-sub">Wähle eine Abfolge</div></div>
   </div>
   <div id="sload" style="display:none;text-align:center;padding:40px 16px">
@@ -381,6 +391,9 @@ input[type=password]{letter-spacing:2px}
           <input type="checkbox" id="bclr" checked style="width:18px;height:18px;accent-color:var(--red)">
           Liste vor Import leeren
         </label>
+      </div>
+      <div id="einkauf-transfer-status" style="display:none;background:#e8f5e9;border:.5px solid #a5d6a7;border-radius:8px;padding:9px 12px;margin-bottom:10px;font-size:12px;color:#2e7d32">
+        ✅ <span id="einkauf-transfer-text"></span>
       </div>
       <button class="btn btn-red" id="ibtn" onclick="doImport()">In Bring! importieren</button>
       <div class="prog" id="iprog" style="display:none"><div class="progb" id="iprogb"></div></div>
@@ -633,7 +646,7 @@ function go(id) {
   for (var i = 0; i < screens.length; i++) screens[i].classList.remove('on');
   $(id).classList.add('on');
   window.scrollTo(0, 0);
-  if (id === 'sh') setTimeout(initDayPicker, 50);
+  if (id === 'snew') setTimeout(initDayPicker, 50);
 }
 
 document.addEventListener('DOMContentLoaded', function() { setTimeout(initDayPicker, 100); });
@@ -1901,6 +1914,50 @@ function renderEink(sug) {
       '<div><div class="iname">' + items[i].name + '</div><div class="ispec">' + items[i].menge + '</div></div></div>';
   }
   $('elist').innerHTML = html;
+  updateTransferStatusUI();
+}
+
+function markPlanChangedSinceTransfer() {
+  // Wird aufgerufen wenn sich die Einkaufsliste nach einer Bring!-Uebertragung
+  // aendert (Austausch, Absage, Auswaerts). Zeigt einen Hinweis statt den
+  // veralteten "erfolgreich uebertragen"-Status weiter zu behaupten.
+  if (!G.activePlan || !G.activePlan.bringImportedAt) return;
+  G.activePlan.bringStale = true;
+  localStorage.setItem('active_plan', JSON.stringify(G.activePlan));
+  var box = $('einkauf-transfer-status');
+  if (box) {
+    box.style.background = '#fff8e1';
+    box.style.borderColor = '#ffe082';
+    box.style.color = '#e65100';
+    box.innerHTML = '&#9888; <span id="einkauf-transfer-text">Plan wurde geändert – die an Bring! übertragene Liste ist nicht mehr aktuell.</span>';
+    box.style.display = 'block';
+  }
+  updateDashboard();
+}
+
+function updateTransferStatusUI() {
+  // Das #einkauf-transfer-text Element existiert erst NACHDEM innerHTML gesetzt
+  // wurde - hier daher nicht vorab abfragen, sonst bricht die Funktion sofort ab.
+  var box = $('einkauf-transfer-status');
+  if (!box) return;
+  var plan = G.activePlan;
+  if (plan && plan.bringImportedAt && !plan.bringStale) {
+    var count = plan.bringItemCount || '';
+    box.style.background = '#e8f5e9';
+    box.style.borderColor = '#a5d6a7';
+    box.style.color = '#2e7d32';
+    box.innerHTML = '✅ <span id="einkauf-transfer-text">' +
+      (count ? count + ' Artikel' : 'Liste') + ' übertragen am ' + plan.bringImportedAt + '.</span>';
+    box.style.display = 'block';
+  } else if (plan && plan.bringImportedAt && plan.bringStale) {
+    box.style.background = '#fff8e1';
+    box.style.borderColor = '#ffe082';
+    box.style.color = '#e65100';
+    box.innerHTML = '&#9888; <span id="einkauf-transfer-text">Plan wurde geändert – die an Bring! übertragene Liste ist nicht mehr aktuell.</span>';
+    box.style.display = 'block';
+  } else {
+    box.style.display = 'none';
+  }
 }
 
 function togItem(i) {
@@ -2400,9 +2457,11 @@ function markEinkaufDone(itemCount) {
   if (!G.activePlan) return;
   G.activePlan.einkaufDone = true;
   G.activePlan.bringImportedAt = new Date().toLocaleString('de-CH', {day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});
+  G.activePlan.bringStale = false;
   if (itemCount) G.activePlan.bringItemCount = itemCount;
   localStorage.setItem('active_plan', JSON.stringify(G.activePlan));
   renderActivePlan();
+  updateTransferStatusUI();
   saveToGH(G.activePlan);
   updateHistoryStatus(G.activePlan.saved || G.activePlan.date, 'einkauf');
 }
@@ -2584,6 +2643,7 @@ function cancelGericht(ri) {
   g._cancelled = true;
   g._origAbend = g.abend;
   g.abend = '❌ ' + g.abend + ' (ausgefallen)';
+  markPlanChangedSinceTransfer();
   try { goWeekRender(sug); } catch(e) { console.warn("render:", e.message); }
   persistActivePlan();
   updateDashboard();
@@ -2598,6 +2658,7 @@ function auswaartsGericht(ri) {
   g._cancelled = true;
   g._origAbend = origName;
   g.abend = '🍽 Auswärts (' + (g.tag||'').slice(0,2) + ')';
+  markPlanChangedSinceTransfer();
   try { goWeekRender(sug); } catch(e) { console.warn("render:", e.message); }
   persistActivePlan();
   updateDashboard();
@@ -2872,6 +2933,8 @@ function applyReplace() {
   sug.gerichte[ri] = ng;
   G.sugsPartial = false;
 
+  markPlanChangedSinceTransfer();
+
   // Save
   persistActivePlan();
 
@@ -3033,10 +3096,9 @@ function skipBringForNow() {
 }
 
 // ─── DASHBOARD ─────────────────────────────────────────────
-function showPlanSettings() {
-  // Hide dashboard, show cook options
-  if ($('loggedin-section')) $('loggedin-section').style.display = 'none';
-  if ($('login-card')) $('login-card').style.display = 'none';
+function openNewWeekScreen() {
+  go('snew');
+  setTimeout(initDayPicker, 50);
 }
 
 function updateDashboard() {
@@ -3330,7 +3392,7 @@ function resetHistoryStatus(i) {
 }
 function loadHistoryRecipes() {
   var saved=JSON.parse(localStorage.getItem('foto_rezepte')||'[]'); var el=$('hrecipes-list'); if(!el)return;
-  if(!saved.length){el.innerHTML='<div style="text-align:center;padding:40px;color:var(--gr3);font-size:13px">Noch keine gespeicherten Rezepte.</div>';return;}
+  if(!saved.length){el.innerHTML='<div style="text-align:center;padding:40px 24px;color:var(--gr3);font-size:13px">Noch keine gespeicherten Rezepte.<br><span style="font-size:12px;opacity:.8">Hier erscheinen Rezepte, die über 📷 Foto-Rezept erstellt wurden. Menüpläne findest du im Tab "Menüpläne".</span></div>';return;}
   var html=saved.map(function(r,i){
     var zCount=(r.zutaten||[]).length; var sCount=(r.schritte||[]).length;
     return '<div style="background:#fff;border-radius:var(--rlg);border:.5px solid var(--bdr);margin-bottom:8px;overflow:hidden">'
