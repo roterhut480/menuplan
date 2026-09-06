@@ -8,7 +8,7 @@
     "gerichte": [
       {
         "tag": "Mi",
-        "abend": "Linsen-Gemüse-Auflauf mit Feta",
+        "abend": "❌ Linsen-Gemüse-Auflauf mit Feta (ausgefallen)",
         "zeit_aktiv": "25m",
         "zeit_total": "50m",
         "zutaten": [
@@ -120,7 +120,9 @@
             "zutaten_schritt": []
           }
         ],
-        "tipp": "Auflauf direkt aus dem Ofen servieren wenn Feta noch cremig ist. Optional mit frischen Kräutern oder Petersilie garnieren."
+        "tipp": "Auflauf direkt aus dem Ofen servieren wenn Feta noch cremig ist. Optional mit frischen Kräutern oder Petersilie garnieren.",
+        "_cancelled": true,
+        "_origAbend": "Linsen-Gemüse-Auflauf mit Feta"
       }
     ]
   },
@@ -168,7 +170,7 @@
       "gerichte": [
         {
           "tag": "Mi",
-          "abend": "Linsen-Gemüse-Auflauf mit Feta",
+          "abend": "❌ Linsen-Gemüse-Auflauf mit Feta (ausgefallen)",
           "zeit_aktiv": "25m",
           "zeit_total": "50m",
           "zutaten": [
@@ -280,7 +282,9 @@
               "zutaten_schritt": []
             }
           ],
-          "tipp": "Auflauf direkt aus dem Ofen servieren wenn Feta noch cremig ist. Optional mit frischen Kräutern oder Petersilie garnieren."
+          "tipp": "Auflauf direkt aus dem Ofen servieren wenn Feta noch cremig ist. Optional mit frischen Kräutern oder Petersilie garnieren.",
+          "_cancelled": true,
+          "_origAbend": "Linsen-Gemüse-Auflauf mit Feta"
         }
       ]
     },
