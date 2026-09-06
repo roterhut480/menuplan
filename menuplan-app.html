@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=yes">
-<title>Menüplan v6.1</title>
+<title>Menüplan v6.3</title>
 <style>
 :root{
   --red:#e8390e;--rl:#fff2ef;--grn:#2e7d32;--grl:#f0faf4;
@@ -153,7 +153,7 @@ input[type=password]{letter-spacing:2px}
 
 <!-- HOME -->
 <div class="scr on" id="sh">
-  <div class="hero"><h1>Menüplan</h1><p id="hsub">v6.1 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
+  <div class="hero"><h1>Menüplan</h1><p id="hsub">v6.3 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
 
   <!-- Active plan card -->
 
@@ -744,16 +744,21 @@ function setF(v) {
 
 // ─── INIT ──────────────────────────────────────────────────
 window.addEventListener('DOMContentLoaded', function() {
-  // Bring session
-  var bs = localStorage.getItem('bs');
-  if (bs) {
-    try {
-      var d = JSON.parse(bs);
-      G.bToken = d.t; G.bUUID = d.u;
-      if ($('bemail')) $('bemail').value = d.e || '';
-      loadBringLists();
-    } catch(e) { localStorage.removeItem('bs'); }
+  // Bring!-Sitzung: zuerst geräteübergreifend aus KV, sonst lokal
+  function applyBringSession(d) {
+    if (!d || !d.t) return;
+    G.bToken = d.t; G.bUUID = d.u;
+    if ($('bemail')) $('bemail').value = d.e || '';
+    loadBringLists();
   }
+  loadBringTokenRemote().then(function(remote) {
+    if (remote) { applyBringSession(remote); return; }
+    var bs = localStorage.getItem('bs');
+    if (bs) {
+      try { applyBringSession(JSON.parse(bs)); }
+      catch(e) { localStorage.removeItem('bs'); }
+    }
+  });
   // GitHub
   updateGHUI();
   // Active plan
@@ -1063,6 +1068,38 @@ function loadSaved() {
 }
 
 // ─── BRING! ────────────────────────────────────────────────
+
+// ─── BRING!-TOKEN IN CLOUDFLARE KV (geräteübergreifend) ────
+// Liegt serverseitig, nie im GitHub-Repo. Fällt auf localStorage
+// zurück, falls kein Login besteht oder KV nicht erreichbar ist.
+function bringTokenHeaders() {
+  var s = getSession();
+  return s ? { 'X-MP-User': s.username, 'X-MP-Pass': s.pw, 'Content-Type': 'application/json' } : null;
+}
+
+function saveBringTokenRemote(data) {
+  var h = bringTokenHeaders();
+  localStorage.setItem('bs', JSON.stringify(data));   // lokaler Fallback bleibt bestehen
+  if (!h) return Promise.resolve();
+  return fetch(PROXY + '/bring-token', { method: 'PUT', headers: h, body: JSON.stringify(data) })
+    .catch(function() {});
+}
+
+function loadBringTokenRemote() {
+  var h = bringTokenHeaders();
+  if (!h) return Promise.resolve(null);
+  return fetch(PROXY + '/bring-token', { headers: h })
+    .then(function(r) { return r.ok ? r.json() : null; })
+    .catch(function() { return null; });
+}
+
+function deleteBringTokenRemote() {
+  var h = bringTokenHeaders();
+  localStorage.removeItem('bs');
+  if (!h) return Promise.resolve();
+  return fetch(PROXY + '/bring-token', { method: 'DELETE', headers: h }).catch(function(){});
+}
+
 function loadBringLists(callback) {
   if (!G.bToken) { showBringLogin(); if (callback) callback(false); return; }
   var headers = {};
@@ -1100,7 +1137,7 @@ function showBringLogin() {
 
 function clearBringSession(wasExpired) {
   G.bToken = null; G.bUUID = null; G.bLists = [];
-  localStorage.removeItem('bs');
+  deleteBringTokenRemote();
   if ($('blist')) $('blist').innerHTML = '';
   showBringLogin();
   if (wasExpired) showSt('ist', 'Bring!-Sitzung abgelaufen. Bitte erneut anmelden.', 'er');
@@ -1108,50 +1145,61 @@ function clearBringSession(wasExpired) {
 
 function doImport() {
   var btn = $('ibtn');
-  var dbg = $('idbg');
-  dbg.style.display = 'none';
+  if ($('idbg')) $('idbg').style.display = 'none';
   if ($('ist')) $('ist').style.display = 'none';
 
-  // Angemeldet, aber Listen (noch) nicht geladen -> zuerst nachladen
-  if (G.bToken && (!G.bLists || !G.bLists.length)) {
-    btn.innerHTML = '<span class="spin w"></span> Listen laden...';
-    btn.disabled = true;
+  var email = $('bemail') ? $('bemail').value.trim() : '';
+  var pw    = $('bpw') ? $('bpw').value : '';
+  var hasCreds = !!(email && pw);
+  var loginVisible = $('bfields') && $('bfields').style.display !== 'none';
+
+  function busy(txt) { btn.innerHTML = '<span class="spin w"></span> ' + txt; btn.disabled = true; }
+  function idle() { btn.innerHTML = 'In Bring! importieren'; btn.disabled = false; }
+
+  // Schritt 3: Liste bestimmen und importieren
+  function proceed() {
+    if (!G.bLists || !G.bLists.length) { idle(); showSt('ist', 'Keine Bring!-Listen gefunden.', 'er'); return; }
+    var sel = $('blist');
+    if (sel && !sel.value && G.bLists.length) sel.value = G.bLists[0].listUuid;  // erste Liste vorwaehlen
+    idle();
+    doImportItems();
+  }
+
+  // Schritt 2: Listen laden
+  function withLists() {
+    if (G.bLists && G.bLists.length) { proceed(); return; }
+    busy('Listen laden...');
     loadBringLists(function(ok) {
-      btn.innerHTML = 'In Bring! importieren';
-      btn.disabled = false;
-      if (ok) showSt('ist', 'Bitte Liste auswählen und nochmals importieren.', 'ok');
+      if (!ok) { idle(); return; }   // clearBringSession hat bereits informiert
+      proceed();
     });
+  }
+
+  // Schritt 1: Anmelden, falls noetig
+  // Wichtig: Wenn Zugangsdaten eingegeben sind und das Login-Feld sichtbar ist,
+  // hat die frische Anmeldung Vorrang vor einer evtl. veralteten Sitzung.
+  if (!G.bToken || (hasCreds && loginVisible)) {
+    if (!hasCreds) { showSt('ist', 'Bitte E-Mail und Passwort eingeben.', 'er'); return; }
+    busy('Anmelden...');
+    fetch(BAPI + '/v2/bringauth', {
+      method: 'POST', headers: BH,
+      body: new URLSearchParams({ email: email, password: pw }).toString()
+    })
+      .then(function(r) { return r.json().then(function(d) { return { ok: r.ok, d: d }; }); })
+      .then(function(res) {
+        if (!res.ok) throw new Error(res.d.message || 'Anmeldung fehlgeschlagen');
+        G.bToken = res.d.token_type + ' ' + res.d.access_token;
+        G.bUUID  = res.d.uuid;
+        G.bLists = [];
+        if ($('bpw')) $('bpw').value = '';
+        // Speichern abwarten, dann weiter - vermeidet Race Condition mit withLists()
+        saveBringTokenRemote({ t: G.bToken, u: G.bUUID, e: email }).then(withLists);
+      })
+      .catch(function(e) { idle(); showSt('ist', 'Bring!: ' + e.message, 'er'); });
     return;
   }
 
-  // Login if needed
-  if (!G.bToken) {
-    var email = $('bemail').value.trim();
-    var pw = $('bpw').value;
-    if (!email || !pw) { showSt('ist', 'Bitte E-Mail und Passwort eingeben.', 'er'); return; }
-    btn.innerHTML = '<span class="spin w"></span> Anmelden...';
-    btn.disabled = true;
-    fetch(BAPI + '/v2/bringauth', { method: 'POST', headers: BH, body: new URLSearchParams({ email: email, password: pw }).toString() })
-      .then(function(r) { return r.json().then(function(d) { return { ok: r.ok, d: d }; }); })
-      .then(function(res) {
-        if (!res.ok) throw new Error(res.d.message || 'Fehler ' + res.d.errorcode);
-        G.bToken = res.d.token_type + ' ' + res.d.access_token;
-        G.bUUID = res.d.uuid;
-        localStorage.setItem('bs', JSON.stringify({ t: G.bToken, u: G.bUUID, e: email }));
-        loadBringLists(function() {
-          // Show list selector - let user pick list and click import
-          btn.innerHTML = 'In Bring! importieren';
-          btn.disabled = false;
-          showSt('ist', 'Angemeldet! Bitte Liste auswählen und nochmals importieren.', 'ok');
-        });
-      })
-      .catch(function(e) {
-        showSt('ist', 'Login fehlgeschlagen: ' + e.message, 'er');
-        btn.innerHTML = 'In Bring! importieren'; btn.disabled = false;
-      });
-    return;
-  }
-  doImportItems();
+  withLists();
 }
 
 function doImportItems() {
