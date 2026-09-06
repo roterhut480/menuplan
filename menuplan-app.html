@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=yes">
-<title>Menüplan v6.5</title>
+<title>Menüplan v6.7</title>
 <style>
 :root{
   --red:#e8390e;--rl:#fff2ef;--grn:#2e7d32;--grl:#f0faf4;
@@ -153,7 +153,7 @@ input[type=password]{letter-spacing:2px}
 
 <!-- HOME -->
 <div class="scr on" id="sh">
-  <div class="hero"><h1>Menüplan</h1><p id="hsub">v6.5 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
+  <div class="hero"><h1>Menüplan</h1><p id="hsub">v6.7 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
 
   <!-- Active plan card -->
 
@@ -360,7 +360,7 @@ input[type=password]{letter-spacing:2px}
 <!-- WOCHE -->
 <div class="scr" id="sw">
   <div class="tbar">
-    <div class="tbar-bk" onclick="go('ss')">&#8592;</div>
+    <div class="tbar-bk" onclick="go('sh')">&#8592;</div><div class="tbar-bk" onclick="go('sh')" style="margin-left:4px" title="Startseite">&#8962;</div>
     <div><h1 id="wtit" style="font-size:15px"></h1><div class="tbar-sub" id="wsub"></div></div>
   </div>
   <div class="tabs">
@@ -1124,6 +1124,36 @@ function deleteBringTokenRemote() {
   return fetch(PROXY + '/bring-token', { method: 'DELETE', headers: h }).catch(function(){});
 }
 
+
+// ─── EINKAUFS-MASKE: BRING!-STATUS KORREKT SPIEGELN ─────────
+// Zeigt Login-Felder nur, wenn wirklich kein gueltiges Token vorliegt.
+// Ist ein Token vorhanden aber die Listen noch nicht geladen, werden
+// sie hier nachgeladen statt die Login-Maske faelschlich zu zeigen.
+function syncBringUiState() {
+  if (G.bToken) {
+    if ($('bfields')) $('bfields').style.display = 'none';
+    if (G.bLists && G.bLists.length) {
+      if ($('blistwrap')) $('blistwrap').style.display = 'block';
+    } else {
+      loadBringLists(function(ok) {
+        if (ok) { if ($('blistwrap')) $('blistwrap').style.display = 'block'; }
+        // clearBringSession (bei ungueltigem Token) blendet die Felder selbst wieder ein
+      });
+    }
+  } else {
+    // Kein lokales Token: evtl. liegt eines in KV (z.B. auf dem Dashboard verbunden) -> nachladen
+    loadBringTokenRemote().then(function(remote) {
+      if (remote && remote.t) {
+        G.bToken = remote.t; G.bUUID = remote.u;
+        if ($('bemail')) $('bemail').value = remote.e || '';
+        syncBringUiState();
+      } else {
+        showBringLogin();
+      }
+    });
+  }
+}
+
 function loadBringLists(callback) {
   if (!G.bToken) { showBringLogin(); if (callback) callback(false); return; }
   var headers = {};
@@ -1774,10 +1804,7 @@ function goWeekRender(sug) {
   releaseWakeLock();
   if ($('wtit')) $('wtit').textContent = sug.thema;
   if ($('wsub')) $('wsub').textContent = sug.kochabende ? sug.kochabende.join(' - ') : '';
-  if (G.bToken && G.bLists.length) {
-    if ($('blistwrap')) $('blistwrap').style.display = 'block';
-    if ($('bfields')) $('bfields').style.display = 'none';
-  }
+  syncBringUiState();
   renderEink(sug);
   renderRez(sug);
   wtab('e');
@@ -3201,7 +3228,7 @@ function renderHistoryList(history) {
       +'<div style="padding:0 14px 10px;display:flex;flex-direction:column;gap:6px">'
         +(isLoved ? '<button class="btn btn-red" onclick="nochmalKochen('+i+')" style="padding:9px;font-size:13px;font-weight:700">🔁 Nochmal kochen</button>' : '')
         +'<div style="display:flex;gap:6px"><button class="btn btn-out" onclick="loadHistoryEntry('+i+')" style="flex:1;padding:9px;font-size:12px">Plan laden</button><button class="btn btn-out" onclick="showHistoryRating('+i+')" style="flex:1;padding:9px;font-size:12px">★ Bewerten</button></div>'
-        +'<div style="display:flex;gap:6px">'+(status!=='gekocht'?'<button class="btn btn-out" onclick="markHistoryKekocht('+i+')" style="flex:1;padding:9px;font-size:12px">🍽 Gekocht</button>':'')+(status!=='geplant'?'<button class="btn btn-out" onclick="resetHistoryStatus('+i+')" style="padding:9px;font-size:12px">✕ Reset</button>':'')+'</div>'
+        +'<div style="display:flex;gap:6px">'+(status!=='gekocht'?'<button class="btn btn-out" onclick="markHistoryKekocht('+i+')" style="flex:1;padding:9px;font-size:12px">🍽 Gekocht</button>':'')+(status!=='geplant'?'<button class="btn btn-out" onclick="resetHistoryStatus('+i+')" style="padding:9px;font-size:12px">✕ Reset</button>':'')+'<button onclick="deleteHistoryPlan('+i+')" style="background:none;border:.5px solid var(--bdr);border-radius:8px;padding:9px 12px;color:var(--gr3);cursor:pointer;font-size:16px" title="Löschen">✕</button>'+'</div>'
       +'</div>'
     +'</div>';
   }
@@ -3243,6 +3270,28 @@ function nochmalKochen(i) {
     loadHistoryEntry(i);
     go('sw');
   }
+}
+
+function deleteHistoryPlan(i) {
+  var hist = window._history;
+  if (!hist || !hist[i]) return;
+  var name = hist[i].thema || 'Menüplan';
+  if (!confirm('"' + name + '" endgültig aus dem Verlauf löschen?')) return;
+
+  // Falls es gerade der aktive Plan ist, diesen ebenfalls beenden
+  if (G.activePlan && G.activePlan.saved === hist[i].saved && G.activePlan.sug &&
+      G.activePlan.sug.thema === hist[i].thema) {
+    G.activePlan = null;
+    localStorage.removeItem('active_plan');
+    localStorage.removeItem('einkauf_checked');
+    ghPut('active-plan.json', { cleared: true, date: new Date().toISOString() }, 'Plan gelöscht').catch(function(){});
+    updateDashboard();
+  }
+
+  hist.splice(i, 1);
+  localStorage.setItem('local_history', JSON.stringify(hist));
+  saveHistoryToGH(hist);
+  renderHistoryList(hist);
 }
 
 function markHistoryKekocht(i) {
