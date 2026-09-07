@@ -1,16 +1,16 @@
 {
   "sug": {
     "id": 1,
-    "thema": "Mediterran",
+    "thema": "Mediterran (Variante 1)",
     "kochabende": [
       "Fr"
     ],
     "gerichte": [
       {
         "tag": "Fr",
-        "abend": "Tomaten-Linsen-Eintopf mit Feta",
+        "abend": "Bruschetta mit Tomaten-Basilikum und gegrilltem Haehnchen",
         "zeit_aktiv": "18m",
-        "zeit_total": "30m"
+        "zeit_total": "20m"
       }
     ]
   },
@@ -19,7 +19,7 @@
   "personen": 2,
   "reste": 0,
   "freeze": 0,
-  "modus": "vegi",
+  "modus": "optional",
   "days": {
     "Mo": null,
     "Di": null,
@@ -36,6 +36,21 @@
   "sugsAll": [
     {
       "id": 1,
+      "thema": "Mediterran (Variante 1)",
+      "kochabende": [
+        "Fr"
+      ],
+      "gerichte": [
+        {
+          "tag": "Fr",
+          "abend": "Bruschetta mit Tomaten-Basilikum und gegrilltem Haehnchen",
+          "zeit_aktiv": "18m",
+          "zeit_total": "20m"
+        }
+      ]
+    },
+    {
+      "id": 2,
       "thema": "Mediterran",
       "kochabende": [
         "Fr"
@@ -43,22 +58,7 @@
       "gerichte": [
         {
           "tag": "Fr",
-          "abend": "Tomaten-Linsen-Eintopf mit Feta",
-          "zeit_aktiv": "18m",
-          "zeit_total": "30m"
-        }
-      ]
-    },
-    {
-      "id": 2,
-      "thema": "Mediterran (Variante 2)",
-      "kochabende": [
-        "Fr"
-      ],
-      "gerichte": [
-        {
-          "tag": "Fr",
-          "abend": "Shakshuka mit Feta und Gemüse",
+          "abend": "Shakshuka mit Feta und Spinat",
           "zeit_aktiv": "18m",
           "zeit_total": "25m"
         }
@@ -66,14 +66,14 @@
     },
     {
       "id": 3,
-      "thema": "Mediterran (Variante 3)",
+      "thema": "Nahostlich",
       "kochabende": [
         "Fr"
       ],
       "gerichte": [
         {
           "tag": "Fr",
-          "abend": "Shakshuka mit Feta und Gemüse",
+          "abend": "Shakshuka mit Kichererbsen und optional Merguez",
           "zeit_aktiv": "18m",
           "zeit_total": "25m"
         }
