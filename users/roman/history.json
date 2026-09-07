@@ -1,658 +1,62 @@
 [
   {
-    "planId": "2026-09-06",
-    "date": "2026-09-07",
-    "saved": "7.9.2026",
-    "thema": "Skandinavisch",
-    "personen": 2,
-    "kochabende": 1,
-    "reste": 0,
-    "freeze": 0,
-    "gerichte": [
-      {
-        "tag": "Mo",
-        "abend": "Rote-Bete-Lachs-Salade mit Dill und Sauerrahm"
-      }
-    ],
-    "status": "gekocht",
-    "plan": {
-      "sug": {
-        "id": 3,
-        "thema": "Skandinavisch",
-        "kochabende": [
-          "Mo"
-        ],
-        "gerichte": [
-          {
-            "tag": "Mo",
-            "abend": "Rote-Bete-Lachs-Salade mit Dill und Sauerrahm",
-            "zeit_aktiv": "18m",
-            "zeit_total": "18m",
-            "schritte_vegi": [
-              {
-                "titel": "Rote Bete vorbereiten",
-                "text": "Rote Bete unter kaltem Wasser gründlich abbürsten und abtrocknen.",
-                "timer_min": 0,
-                "zutaten_schritt": [
-                  {
-                    "name": "Rote Bete",
-                    "menge": "300 g"
-                  }
-                ],
-                "zubehoer": [
-                  "Gemuesebuerte"
-                ],
-                "kontrolle": "Rote Bete ist sauber und trocken.",
-                "parallel_hinweis": ""
-              },
-              {
-                "titel": "Rote Bete kochen",
-                "text": "Rote Bete in einen Topf mit Wasser geben und zum Kochen bringen, dann 25 Minuten garen.",
-                "timer_min": 25,
-                "zutaten_schritt": [
-                  {
-                    "name": "Rote Bete",
-                    "menge": "300 g"
-                  }
-                ],
-                "zubehoer": [
-                  "Topf",
-                  "Wasser"
-                ],
-                "kontrolle": "Rote Bete ist weich, wenn die Gabel eingestochen wird.",
-                "parallel_hinweis": "Lachs vorbereiten und Dill schneiden."
-              },
-              {
-                "titel": "Rote Bete abkuehlen",
-                "text": "Gekochte Rote Bete in ein Sieb abseihen und unter kaltem Wasser abkuehlen lassen.",
-                "timer_min": 0,
-                "zutaten_schritt": [
-                  {
-                    "name": "Rote Bete",
-                    "menge": "300 g"
-                  }
-                ],
-                "zubehoer": [
-                  "Sieb"
-                ],
-                "kontrolle": "Rote Bete ist handwarm.",
-                "parallel_hinweis": ""
-              },
-              {
-                "titel": "Rote Bete schaelen",
-                "text": "Abgekühlte Rote Bete mit einem Papiertuch die Schale abreiben und anschliessend in Würfel schneiden.",
-                "timer_min": 0,
-                "zutaten_schritt": [
-                  {
-                    "name": "Rote Bete",
-                    "menge": "300 g"
-                  }
-                ],
-                "zubehoer": [
-                  "Schneidebrett",
-                  "Messer",
-                  "Papiertuecher"
-                ],
-                "kontrolle": "Rote Bete Würfel sind ca. 1 cm gross.",
-                "parallel_hinweis": ""
-              },
-              {
-                "titel": "Dill hacken",
-                "text": "Frischen Dill waschen und die Blaetter fein hacken.",
-                "timer_min": 0,
-                "zutaten_schritt": [
-                  {
-                    "name": "Frischer Dill",
-                    "menge": "15 g"
-                  }
-                ],
-                "zubehoer": [
-                  "Schneidebrett",
-                  "Messer"
-                ],
-                "kontrolle": "Dill ist fein gehackt.",
-                "parallel_hinweis": ""
-              },
-              {
-                "titel": "Zitrone auspressen",
-                "text": "Zitrone halbieren und beide Haelften auspressen.",
-                "timer_min": 0,
-                "zutaten_schritt": [
-                  {
-                    "name": "Zitrone",
-                    "menge": "1 Stueck"
-                  }
-                ],
-                "zubehoer": [
-                  "Zitronenpresse"
-                ],
-                "kontrolle": "Ca. 30 ml Zitronensaft entsteht.",
-                "parallel_hinweis": ""
-              },
-              {
-                "titel": "Sauerrahm-Dressing vorbereiten",
-                "text": "Sauerrahm in eine Schüssel geben, 10 ml Zitronensaft und 2 g Salz hinzufuegen und mit einem Loeffel verruehren.",
-                "timer_min": 0,
-                "zutaten_schritt": [
-                  {
-                    "name": "Sauerrahm",
-                    "menge": "100 g"
-                  },
-                  {
-                    "name": "Zitrone",
-                    "menge": "10 ml"
-                  },
-                  {
-                    "name": "Salz",
-                    "menge": "2 g"
-                  }
-                ],
-                "zubehoer": [
-                  "Schuessel",
-                  "Loeffel"
-                ],
-                "kontrolle": "Dressing ist glatt und cremig verrührt.",
-                "parallel_hinweis": ""
-              },
-              {
-                "titel": "Rucola in Schale geben",
-                "text": "Rucola waschen und in eine Servierschale legen.",
-                "timer_min": 0,
-                "zutaten_schritt": [
-                  {
-                    "name": "Rucola",
-                    "menge": "80 g"
-                  }
-                ],
-                "zubehoer": [
-                  "Servierschale"
-                ],
-                "kontrolle": "Rucola ist in der Schale angerichtet.",
-                "parallel_hinweis": ""
-              }
-            ],
-            "schritte_fleisch": [
-              {
-                "titel": "Lachs vorbereiten",
-                "text": "Lachs-Filet unter kaltem Wasser abspuelen und mit Papiertuch trockentupfen.",
-                "timer_min": 0,
-                "zutaten_schritt": [
-                  {
-                    "name": "Lachs",
-                    "menge": "240 g"
-                  }
-                ],
-                "zubehoer": [
-                  "Papiertuecher"
-                ],
-                "kontrolle": "Lachs ist trocken.",
-                "parallel_hinweis": ""
-              },
-              {
-                "titel": "Lachs in Pfanne braten",
-                "text": "10 ml Olivenoel in einer Pfanne erhitzen und Lachs-Filet mit der Hautseite nach oben einlegen, von der Fleischseite 3 Minuten braten.",
-                "timer_min": 3,
-                "zutaten_schritt": [
-                  {
-                    "name": "Lachs",
-                    "menge": "240 g"
-                  },
-                  {
-                    "name": "Olivenoel",
-                    "menge": "10 ml"
-                  }
-                ],
-                "zubehoer": [
-                  "Pfanne",
-                  "Spatula"
-                ],
-                "kontrolle": "Fleischseite ist hellbraun.",
-                "parallel_hinweis": ""
-              },
-              {
-                "titel": "Lachs wenden und fertig braten",
-                "text": "Lachs-Filet vorsichtig wenden und weitere 2 Minuten von der Hautseite braten.",
-                "timer_min": 2,
-                "zutaten_schritt": [
-                  {
-                    "name": "Lachs",
-                    "menge": "240 g"
-                  }
-                ],
-                "zubehoer": [
-                  "Pfanne",
-                  "Spatula"
-                ],
-                "kontrolle": "Lachs ist durchgebr, Haut ist krispig.",
-                "parallel_hinweis": ""
-              },
-              {
-                "titel": "Lachs kuehlen und zerteilen",
-                "text": "Gegrillten Lachs auf einen Teller legen und ca. 2 Minuten ruhen lassen, dann in groessere Stuecke teilen.",
-                "timer_min": 2,
-                "zutaten_schritt": [
-                  {
-                    "name": "Lachs",
-                    "menge": "240 g"
-                  }
-                ],
-                "zubehoer": [
-                  "Messer",
-                  "Schneidebrett"
-                ],
-                "kontrolle": "Lachs ist in 4-6 Stuecken geteilt.",
-                "parallel_hinweis": ""
-              }
-            ],
-            "zutaten": [
-              {
-                "name": "Lachs",
-                "menge": "240 g"
-              },
-              {
-                "name": "Rote Bete",
-                "menge": "300 g"
-              },
-              {
-                "name": "Sauerrahm",
-                "menge": "100 g"
-              },
-              {
-                "name": "Frischer Dill",
-                "menge": "15 g"
-              },
-              {
-                "name": "Zitrone",
-                "menge": "1 Stueck"
-              },
-              {
-                "name": "Salz",
-                "menge": "2 g"
-              },
-              {
-                "name": "Schwarzer Pfeffer",
-                "menge": "1 g"
-              },
-              {
-                "name": "Olivenoel",
-                "menge": "20 ml"
-              },
-              {
-                "name": "Rucola",
-                "menge": "80 g"
-              }
-            ]
-          }
-        ]
-      },
-      "sel": 2,
-      "n": 1,
-      "personen": 2,
-      "reste": 0,
-      "freeze": 0,
-      "modus": "optional",
-      "days": {
-        "Mo": "schnell",
-        "Di": null,
-        "Mi": null,
-        "Do": null,
-        "Fr": null,
-        "Sa": null,
-        "So": null
-      },
-      "weekStart": "2026-09-06",
-      "saved": "7.9.2026",
-      "bringImportedAt": null,
-      "bringItemCount": 0,
-      "sugsAll": [
-        {
-          "id": 1,
-          "thema": "Mediterran",
-          "kochabende": [
-            "Mo"
-          ],
-          "gerichte": [
-            {
-              "tag": "Mo",
-              "abend": "Shakshuka mit Feta und Spinat",
-              "zeit_aktiv": "18m",
-              "zeit_total": "25m"
-            }
-          ]
-        },
-        {
-          "id": 2,
-          "thema": "Mediterran (Variante 2)",
-          "kochabende": [
-            "Mo"
-          ],
-          "gerichte": [
-            {
-              "tag": "Mo",
-              "abend": "Mediterrane Gemüsepfanne mit Feta und optionalem Huehnchen",
-              "zeit_aktiv": "18m",
-              "zeit_total": "25m"
-            }
-          ]
-        },
-        {
-          "id": 3,
-          "thema": "Skandinavisch",
-          "kochabende": [
-            "Mo"
-          ],
-          "gerichte": [
-            {
-              "tag": "Mo",
-              "abend": "Rote-Bete-Lachs-Salade mit Dill und Sauerrahm",
-              "zeit_aktiv": "18m",
-              "zeit_total": "18m",
-              "schritte_vegi": [
-                {
-                  "titel": "Rote Bete vorbereiten",
-                  "text": "Rote Bete unter kaltem Wasser gründlich abbürsten und abtrocknen.",
-                  "timer_min": 0,
-                  "zutaten_schritt": [
-                    {
-                      "name": "Rote Bete",
-                      "menge": "300 g"
-                    }
-                  ],
-                  "zubehoer": [
-                    "Gemuesebuerte"
-                  ],
-                  "kontrolle": "Rote Bete ist sauber und trocken.",
-                  "parallel_hinweis": ""
-                },
-                {
-                  "titel": "Rote Bete kochen",
-                  "text": "Rote Bete in einen Topf mit Wasser geben und zum Kochen bringen, dann 25 Minuten garen.",
-                  "timer_min": 25,
-                  "zutaten_schritt": [
-                    {
-                      "name": "Rote Bete",
-                      "menge": "300 g"
-                    }
-                  ],
-                  "zubehoer": [
-                    "Topf",
-                    "Wasser"
-                  ],
-                  "kontrolle": "Rote Bete ist weich, wenn die Gabel eingestochen wird.",
-                  "parallel_hinweis": "Lachs vorbereiten und Dill schneiden."
-                },
-                {
-                  "titel": "Rote Bete abkuehlen",
-                  "text": "Gekochte Rote Bete in ein Sieb abseihen und unter kaltem Wasser abkuehlen lassen.",
-                  "timer_min": 0,
-                  "zutaten_schritt": [
-                    {
-                      "name": "Rote Bete",
-                      "menge": "300 g"
-                    }
-                  ],
-                  "zubehoer": [
-                    "Sieb"
-                  ],
-                  "kontrolle": "Rote Bete ist handwarm.",
-                  "parallel_hinweis": ""
-                },
-                {
-                  "titel": "Rote Bete schaelen",
-                  "text": "Abgekühlte Rote Bete mit einem Papiertuch die Schale abreiben und anschliessend in Würfel schneiden.",
-                  "timer_min": 0,
-                  "zutaten_schritt": [
-                    {
-                      "name": "Rote Bete",
-                      "menge": "300 g"
-                    }
-                  ],
-                  "zubehoer": [
-                    "Schneidebrett",
-                    "Messer",
-                    "Papiertuecher"
-                  ],
-                  "kontrolle": "Rote Bete Würfel sind ca. 1 cm gross.",
-                  "parallel_hinweis": ""
-                },
-                {
-                  "titel": "Dill hacken",
-                  "text": "Frischen Dill waschen und die Blaetter fein hacken.",
-                  "timer_min": 0,
-                  "zutaten_schritt": [
-                    {
-                      "name": "Frischer Dill",
-                      "menge": "15 g"
-                    }
-                  ],
-                  "zubehoer": [
-                    "Schneidebrett",
-                    "Messer"
-                  ],
-                  "kontrolle": "Dill ist fein gehackt.",
-                  "parallel_hinweis": ""
-                },
-                {
-                  "titel": "Zitrone auspressen",
-                  "text": "Zitrone halbieren und beide Haelften auspressen.",
-                  "timer_min": 0,
-                  "zutaten_schritt": [
-                    {
-                      "name": "Zitrone",
-                      "menge": "1 Stueck"
-                    }
-                  ],
-                  "zubehoer": [
-                    "Zitronenpresse"
-                  ],
-                  "kontrolle": "Ca. 30 ml Zitronensaft entsteht.",
-                  "parallel_hinweis": ""
-                },
-                {
-                  "titel": "Sauerrahm-Dressing vorbereiten",
-                  "text": "Sauerrahm in eine Schüssel geben, 10 ml Zitronensaft und 2 g Salz hinzufuegen und mit einem Loeffel verruehren.",
-                  "timer_min": 0,
-                  "zutaten_schritt": [
-                    {
-                      "name": "Sauerrahm",
-                      "menge": "100 g"
-                    },
-                    {
-                      "name": "Zitrone",
-                      "menge": "10 ml"
-                    },
-                    {
-                      "name": "Salz",
-                      "menge": "2 g"
-                    }
-                  ],
-                  "zubehoer": [
-                    "Schuessel",
-                    "Loeffel"
-                  ],
-                  "kontrolle": "Dressing ist glatt und cremig verrührt.",
-                  "parallel_hinweis": ""
-                },
-                {
-                  "titel": "Rucola in Schale geben",
-                  "text": "Rucola waschen und in eine Servierschale legen.",
-                  "timer_min": 0,
-                  "zutaten_schritt": [
-                    {
-                      "name": "Rucola",
-                      "menge": "80 g"
-                    }
-                  ],
-                  "zubehoer": [
-                    "Servierschale"
-                  ],
-                  "kontrolle": "Rucola ist in der Schale angerichtet.",
-                  "parallel_hinweis": ""
-                }
-              ],
-              "schritte_fleisch": [
-                {
-                  "titel": "Lachs vorbereiten",
-                  "text": "Lachs-Filet unter kaltem Wasser abspuelen und mit Papiertuch trockentupfen.",
-                  "timer_min": 0,
-                  "zutaten_schritt": [
-                    {
-                      "name": "Lachs",
-                      "menge": "240 g"
-                    }
-                  ],
-                  "zubehoer": [
-                    "Papiertuecher"
-                  ],
-                  "kontrolle": "Lachs ist trocken.",
-                  "parallel_hinweis": ""
-                },
-                {
-                  "titel": "Lachs in Pfanne braten",
-                  "text": "10 ml Olivenoel in einer Pfanne erhitzen und Lachs-Filet mit der Hautseite nach oben einlegen, von der Fleischseite 3 Minuten braten.",
-                  "timer_min": 3,
-                  "zutaten_schritt": [
-                    {
-                      "name": "Lachs",
-                      "menge": "240 g"
-                    },
-                    {
-                      "name": "Olivenoel",
-                      "menge": "10 ml"
-                    }
-                  ],
-                  "zubehoer": [
-                    "Pfanne",
-                    "Spatula"
-                  ],
-                  "kontrolle": "Fleischseite ist hellbraun.",
-                  "parallel_hinweis": ""
-                },
-                {
-                  "titel": "Lachs wenden und fertig braten",
-                  "text": "Lachs-Filet vorsichtig wenden und weitere 2 Minuten von der Hautseite braten.",
-                  "timer_min": 2,
-                  "zutaten_schritt": [
-                    {
-                      "name": "Lachs",
-                      "menge": "240 g"
-                    }
-                  ],
-                  "zubehoer": [
-                    "Pfanne",
-                    "Spatula"
-                  ],
-                  "kontrolle": "Lachs ist durchgebr, Haut ist krispig.",
-                  "parallel_hinweis": ""
-                },
-                {
-                  "titel": "Lachs kuehlen und zerteilen",
-                  "text": "Gegrillten Lachs auf einen Teller legen und ca. 2 Minuten ruhen lassen, dann in groessere Stuecke teilen.",
-                  "timer_min": 2,
-                  "zutaten_schritt": [
-                    {
-                      "name": "Lachs",
-                      "menge": "240 g"
-                    }
-                  ],
-                  "zubehoer": [
-                    "Messer",
-                    "Schneidebrett"
-                  ],
-                  "kontrolle": "Lachs ist in 4-6 Stuecken geteilt.",
-                  "parallel_hinweis": ""
-                }
-              ],
-              "zutaten": [
-                {
-                  "name": "Lachs",
-                  "menge": "240 g"
-                },
-                {
-                  "name": "Rote Bete",
-                  "menge": "300 g"
-                },
-                {
-                  "name": "Sauerrahm",
-                  "menge": "100 g"
-                },
-                {
-                  "name": "Frischer Dill",
-                  "menge": "15 g"
-                },
-                {
-                  "name": "Zitrone",
-                  "menge": "1 Stueck"
-                },
-                {
-                  "name": "Salz",
-                  "menge": "2 g"
-                },
-                {
-                  "name": "Schwarzer Pfeffer",
-                  "menge": "1 g"
-                },
-                {
-                  "name": "Olivenoel",
-                  "menge": "20 ml"
-                },
-                {
-                  "name": "Rucola",
-                  "menge": "80 g"
-                }
-              ]
-            }
-          ]
-        }
-      ],
-      "sugsPartial": false
-    }
-  },
-  {
+    "planId": "941a5562-b211-4b07-9f02-0125a6b15090",
     "date": "2026-09-07",
     "saved": "7.9.2026",
     "thema": "Mediterran (Variante 1)",
-    "personen": 2,
-    "kochabende": 1,
+    "personen": 1,
+    "kochabende": 2,
     "reste": 0,
     "freeze": 0,
     "gerichte": [
       {
-        "tag": "Fr",
-        "abend": "Bruschetta mit Tomaten-Basilikum und gegrilltem Haehnchen"
+        "tag": "Mi",
+        "abend": "Spanischer Tortilla mit Salat"
+      },
+      {
+        "tag": "So",
+        "abend": "Griechischer Horiatiki-Salat mit Feta und Oliven"
       }
     ],
     "status": "geplant",
     "plan": {
+      "planId": "941a5562-b211-4b07-9f02-0125a6b15090",
       "sug": {
         "id": 1,
         "thema": "Mediterran (Variante 1)",
         "kochabende": [
-          "Fr"
+          "Mi",
+          "So"
         ],
         "gerichte": [
           {
-            "tag": "Fr",
-            "abend": "Bruschetta mit Tomaten-Basilikum und gegrilltem Haehnchen",
+            "tag": "Mi",
+            "abend": "Spanischer Tortilla mit Salat",
             "zeit_aktiv": "18m",
-            "zeit_total": "20m"
+            "zeit_total": "25m"
+          },
+          {
+            "tag": "So",
+            "abend": "Griechischer Horiatiki-Salat mit Feta und Oliven",
+            "zeit_aktiv": "12m",
+            "zeit_total": "12m"
           }
         ]
       },
       "sel": 0,
-      "n": 1,
-      "personen": 2,
+      "n": 2,
+      "personen": 1,
       "reste": 0,
       "freeze": 0,
-      "modus": "optional",
+      "modus": "vegi",
       "days": {
         "Mo": null,
         "Di": null,
-        "Mi": null,
+        "Mi": "schnell",
         "Do": null,
-        "Fr": "schnell",
+        "Fr": null,
         "Sa": null,
-        "So": null
+        "So": "schnell"
       },
       "weekStart": "2026-09-06",
       "saved": "7.9.2026",
@@ -663,14 +67,21 @@
           "id": 1,
           "thema": "Mediterran (Variante 1)",
           "kochabende": [
-            "Fr"
+            "Mi",
+            "So"
           ],
           "gerichte": [
             {
-              "tag": "Fr",
-              "abend": "Bruschetta mit Tomaten-Basilikum und gegrilltem Haehnchen",
+              "tag": "Mi",
+              "abend": "Spanischer Tortilla mit Salat",
               "zeit_aktiv": "18m",
-              "zeit_total": "20m"
+              "zeit_total": "25m"
+            },
+            {
+              "tag": "So",
+              "abend": "Griechischer Horiatiki-Salat mit Feta und Oliven",
+              "zeit_aktiv": "12m",
+              "zeit_total": "12m"
             }
           ]
         },
@@ -678,29 +89,43 @@
           "id": 2,
           "thema": "Mediterran",
           "kochabende": [
-            "Fr"
+            "Mi",
+            "So"
           ],
           "gerichte": [
             {
-              "tag": "Fr",
-              "abend": "Shakshuka mit Feta und Spinat",
+              "tag": "Mi",
+              "abend": "Auberginen-Tomaten-Gratin",
               "zeit_aktiv": "18m",
-              "zeit_total": "25m"
+              "zeit_total": "40m"
+            },
+            {
+              "tag": "So",
+              "abend": "Griechischer Horta-Salat mit Feta",
+              "zeit_aktiv": "12m",
+              "zeit_total": "12m"
             }
           ]
         },
         {
           "id": 3,
-          "thema": "Nahostlich",
+          "thema": "Marokkanisch",
           "kochabende": [
-            "Fr"
+            "Mi",
+            "So"
           ],
           "gerichte": [
             {
-              "tag": "Fr",
-              "abend": "Shakshuka mit Kichererbsen und optional Merguez",
+              "tag": "Mi",
+              "abend": "Kichererbsen-Tagine mit Kuerbis",
               "zeit_aktiv": "18m",
-              "zeit_total": "25m"
+              "zeit_total": "32m"
+            },
+            {
+              "tag": "So",
+              "abend": "Couscous-Salat mit gruenen Oliven und Minze",
+              "zeit_aktiv": "15m",
+              "zeit_total": "15m"
             }
           ]
         }
@@ -709,332 +134,110 @@
     }
   },
   {
-    "date": "2026-09-07",
-    "saved": "7.9.2026",
+    "date": "2026-09-05",
+    "saved": "5.9.2026",
     "thema": "Mediterran",
-    "personen": 2,
-    "kochabende": 1,
-    "reste": 0,
-    "freeze": 0,
+    "personen": 1,
+    "kochabende": 3,
+    "reste": 1,
+    "freeze": 1,
     "gerichte": [
       {
-        "tag": "Fr",
-        "abend": "Tomaten-Linsen-Eintopf mit Feta"
+        "tag": "Mo",
+        "abend": "Linsenbolognese mit Pappardelle"
+      },
+      {
+        "tag": "Mi",
+        "abend": "Minestrone-Suppe"
+      },
+      {
+        "tag": "So",
+        "abend": "Auberginen-Tomaten-Auflauf"
       }
     ],
     "status": "geplant",
     "plan": {
       "sug": {
         "id": 1,
-        "thema": "Mediterran",
-        "kochabende": [
-          "Fr"
-        ],
-        "gerichte": [
-          {
-            "tag": "Fr",
-            "abend": "Tomaten-Linsen-Eintopf mit Feta",
-            "zeit_aktiv": "18m",
-            "zeit_total": "30m"
-          }
-        ]
-      },
-      "sel": 0,
-      "n": 1,
-      "personen": 2,
-      "reste": 0,
-      "freeze": 0,
-      "modus": "vegi",
-      "days": {
-        "Mo": null,
-        "Di": null,
-        "Mi": null,
-        "Do": null,
-        "Fr": "schnell",
-        "Sa": null,
-        "So": null
-      },
-      "weekStart": "2026-09-06",
-      "saved": "7.9.2026",
-      "bringImportedAt": null,
-      "bringItemCount": 0,
-      "sugsAll": [
-        {
-          "id": 1,
-          "thema": "Mediterran",
-          "kochabende": [
-            "Fr"
-          ],
-          "gerichte": [
-            {
-              "tag": "Fr",
-              "abend": "Tomaten-Linsen-Eintopf mit Feta",
-              "zeit_aktiv": "18m",
-              "zeit_total": "30m"
-            }
-          ]
-        },
-        {
-          "id": 2,
-          "thema": "Mediterran (Variante 2)",
-          "kochabende": [
-            "Fr"
-          ],
-          "gerichte": [
-            {
-              "tag": "Fr",
-              "abend": "Shakshuka mit Feta und Gemüse",
-              "zeit_aktiv": "18m",
-              "zeit_total": "25m"
-            }
-          ]
-        },
-        {
-          "id": 3,
-          "thema": "Mediterran (Variante 3)",
-          "kochabende": [
-            "Fr"
-          ],
-          "gerichte": [
-            {
-              "tag": "Fr",
-              "abend": "Shakshuka mit Feta und Gemüse",
-              "zeit_aktiv": "18m",
-              "zeit_total": "25m"
-            }
-          ]
-        }
-      ],
-      "sugsPartial": true
-    }
-  },
-  {
-    "date": "2026-09-07",
-    "saved": "7.9.2026",
-    "thema": "Mediterran",
-    "personen": 2,
-    "kochabende": 3,
-    "reste": 0,
-    "freeze": 0,
-    "gerichte": [
-      {
-        "tag": "Mo",
-        "abend": "Shakshuka mit Feta und Gemüse"
-      },
-      {
-        "tag": "Mi",
-        "abend": "Pasta alla Puttanesca mit optional Sardellen"
-      },
-      {
-        "tag": "Fr",
-        "abend": "Gegrillte Zucchini mit Tomaten und Mozzarella"
-      }
-    ],
-    "status": "geplant",
-    "plan": {
-      "sug": {
-        "id": 2,
         "thema": "Mediterran",
         "kochabende": [
           "Mo",
           "Mi",
-          "Fr"
+          "So"
         ],
         "gerichte": [
           {
             "tag": "Mo",
-            "abend": "Shakshuka mit Feta und Gemüse",
-            "zeit_aktiv": "20m",
-            "zeit_total": "30m"
+            "abend": "Linsenbolognese mit Pappardelle",
+            "zeit_aktiv": "25m",
+            "zeit_total": "40m",
+            "mittag_nächster_tag": "Pasta-Reste aufgewärmt"
           },
           {
             "tag": "Mi",
-            "abend": "Pasta alla Puttanesca mit optional Sardellen",
-            "zeit_aktiv": "15m",
-            "zeit_total": "20m"
+            "abend": "Minestrone-Suppe",
+            "zeit_aktiv": "18m",
+            "zeit_total": "25m",
+            "mittag_nächster_tag": "Minestrone aufgewärmt"
           },
           {
-            "tag": "Fr",
-            "abend": "Gegrillte Zucchini mit Tomaten und Mozzarella",
-            "zeit_aktiv": "25m",
-            "zeit_total": "35m"
+            "tag": "So",
+            "abend": "Auberginen-Tomaten-Auflauf",
+            "zeit_aktiv": "35m",
+            "zeit_total": "60m",
+            "mittag_nächster_tag": "Auflauf-Portion zum Einfrieren"
           }
         ]
       },
-      "sel": 1,
+      "sel": 0,
       "n": 3,
-      "personen": 2,
-      "reste": 0,
-      "freeze": 0,
-      "modus": "optional",
+      "personen": 1,
+      "reste": 1,
+      "freeze": 1,
+      "modus": "vegi",
       "days": {
         "Mo": "normal",
         "Di": null,
-        "Mi": "normal",
+        "Mi": "schnell",
         "Do": null,
-        "Fr": "normal",
+        "Fr": null,
         "Sa": null,
-        "So": null
+        "So": "aufwendig"
       },
-      "weekStart": "2026-09-06",
-      "saved": "7.9.2026",
+      "weekStart": "2026-08-30",
+      "saved": "5.9.2026",
       "bringImportedAt": null,
       "bringItemCount": 0,
       "sugsAll": [
         {
           "id": 1,
-          "thema": "Mediterran (Variante 1)",
-          "kochabende": [
-            "Mo",
-            "Mi",
-            "Fr"
-          ],
-          "gerichte": [
-            {
-              "tag": "Mo",
-              "abend": "Gegrillte Gemüseplatte mit Halloumi und optional Lamm-Souvlaki",
-              "zeit_aktiv": "25m",
-              "zeit_total": "40m"
-            },
-            {
-              "tag": "Mi",
-              "abend": "Pasta alla Puttanesca mit Spinat und optional Sardellen",
-              "zeit_aktiv": "15m",
-              "zeit_total": "20m"
-            },
-            {
-              "tag": "Fr",
-              "abend": "Tomaten-Kichererbsen-Eintopf mit Feta",
-              "zeit_aktiv": "20m",
-              "zeit_total": "35m"
-            }
-          ]
-        },
-        {
-          "id": 2,
           "thema": "Mediterran",
           "kochabende": [
             "Mo",
             "Mi",
-            "Fr"
+            "So"
           ],
           "gerichte": [
             {
               "tag": "Mo",
-              "abend": "Shakshuka mit Feta und Gemüse",
-              "zeit_aktiv": "20m",
-              "zeit_total": "30m"
-            },
-            {
-              "tag": "Mi",
-              "abend": "Pasta alla Puttanesca mit optional Sardellen",
-              "zeit_aktiv": "15m",
-              "zeit_total": "20m"
-            },
-            {
-              "tag": "Fr",
-              "abend": "Gegrillte Zucchini mit Tomaten und Mozzarella",
+              "abend": "Linsenbolognese mit Pappardelle",
               "zeit_aktiv": "25m",
-              "zeit_total": "35m"
-            }
-          ]
-        },
-        {
-          "id": 3,
-          "thema": "Nahost",
-          "kochabende": [
-            "Mo",
-            "Mi",
-            "Fr"
-          ],
-          "gerichte": [
-            {
-              "tag": "Mo",
-              "abend": "Hummus-Gemueseplatten mit Falafel und optional Hahnchen-Shawarma",
-              "zeit_aktiv": "25m",
-              "zeit_total": "40m"
+              "zeit_total": "40m",
+              "mittag_nächster_tag": "Pasta-Reste aufgewärmt"
             },
             {
               "tag": "Mi",
-              "abend": "Tabbouleh-Salat mit Kichererbsen und optional Lammfleischbaellen",
-              "zeit_aktiv": "20m",
-              "zeit_total": "20m"
+              "abend": "Minestrone-Suppe",
+              "zeit_aktiv": "18m",
+              "zeit_total": "25m",
+              "mittag_nächster_tag": "Minestrone aufgewärmt"
             },
             {
-              "tag": "Fr",
-              "abend": "Muhammara mit Granatapfel und optional Hahnchen-Kebab",
-              "zeit_aktiv": "15m",
-              "zeit_total": "25m"
-            }
-          ]
-        }
-      ],
-      "sugsPartial": true
-    }
-  },
-  {
-    "date": "2026-09-06",
-    "saved": "6.9.2026",
-    "thema": "Mediterran (Variante 2)",
-    "personen": 2,
-    "kochabende": 1,
-    "reste": 0,
-    "freeze": 0,
-    "gerichte": [
-      {
-        "tag": "Mi",
-        "abend": "Linsen-Gemüse-Eintopf mit Feta"
-      }
-    ],
-    "status": "einkauf",
-    "plan": {
-      "sug": {
-        "id": 2,
-        "thema": "Mediterran (Variante 2)",
-        "kochabende": [
-          "Mi"
-        ],
-        "gerichte": [
-          {
-            "tag": "Mi",
-            "abend": "Linsen-Gemüse-Eintopf mit Feta",
-            "zeit_aktiv": "20m",
-            "zeit_total": "40m"
-          }
-        ]
-      },
-      "sel": 1,
-      "n": 1,
-      "personen": 2,
-      "reste": 0,
-      "freeze": 0,
-      "modus": "vegi",
-      "days": {
-        "Mo": null,
-        "Di": null,
-        "Mi": "normal",
-        "Do": null,
-        "Fr": null,
-        "Sa": null,
-        "So": null
-      },
-      "weekStart": "2026-08-30",
-      "saved": "6.9.2026",
-      "bringImportedAt": null,
-      "bringItemCount": 0,
-      "sugsAll": [
-        {
-          "id": 1,
-          "thema": "Mediterran (Variante 1)",
-          "kochabende": [
-            "Mi"
-          ],
-          "gerichte": [
-            {
-              "tag": "Mi",
-              "abend": "Shakshuka mit Feta und Gemüse",
-              "zeit_aktiv": "20m",
-              "zeit_total": "25m"
+              "tag": "So",
+              "abend": "Auberginen-Tomaten-Auflauf",
+              "zeit_aktiv": "35m",
+              "zeit_total": "60m",
+              "mittag_nächster_tag": "Auflauf-Portion zum Einfrieren"
             }
           ]
         },
@@ -1042,114 +245,31 @@
           "id": 2,
           "thema": "Mediterran (Variante 2)",
           "kochabende": [
-            "Mi"
-          ],
-          "gerichte": [
-            {
-              "tag": "Mi",
-              "abend": "Linsen-Gemüse-Eintopf mit Feta",
-              "zeit_aktiv": "20m",
-              "zeit_total": "40m"
-            }
-          ]
-        },
-        {
-          "id": 3,
-          "thema": "Mediterran",
-          "kochabende": [
-            "Mi"
-          ],
-          "gerichte": [
-            {
-              "tag": "Mi",
-              "abend": "Linsensuppe mit Feta und Spinat",
-              "zeit_aktiv": "20m",
-              "zeit_total": "40m"
-            }
-          ]
-        }
-      ],
-      "sugsPartial": true
-    }
-  },
-  {
-    "date": "2026-09-06",
-    "saved": "6.9.2026",
-    "thema": "Italienisch",
-    "personen": 2,
-    "kochabende": 1,
-    "reste": 0,
-    "freeze": 0,
-    "gerichte": [
-      {
-        "tag": "Mo",
-        "abend": "Pasta al Pomodoro mit Rucolasalat"
-      }
-    ],
-    "status": "gekocht",
-    "plan": {
-      "sug": {
-        "id": 1,
-        "thema": "Italienisch",
-        "kochabende": [
-          "Mo"
-        ],
-        "gerichte": [
-          {
-            "tag": "Mo",
-            "abend": "Pasta al Pomodoro mit Rucolasalat",
-            "zeit_aktiv": "18m",
-            "zeit_total": "25m"
-          }
-        ]
-      },
-      "sel": 0,
-      "n": 1,
-      "personen": 2,
-      "reste": 0,
-      "freeze": 0,
-      "modus": "vegi",
-      "days": {
-        "Mo": "normal",
-        "Di": null,
-        "Mi": null,
-        "Do": null,
-        "Fr": null,
-        "Sa": null,
-        "So": null
-      },
-      "weekStart": "2026-08-30",
-      "saved": "6.9.2026",
-      "bringImportedAt": null,
-      "bringItemCount": 0,
-      "sugsAll": [
-        {
-          "id": 1,
-          "thema": "Italienisch",
-          "kochabende": [
-            "Mo"
+            "Mo",
+            "Mi",
+            "So"
           ],
           "gerichte": [
             {
               "tag": "Mo",
-              "abend": "Pasta al Pomodoro mit Rucolasalat",
-              "zeit_aktiv": "18m",
-              "zeit_total": "25m"
-            }
-          ]
-        },
-        {
-          "id": 2,
-          "thema": "Mediterran",
-          "kochabende": [
-            "Mo"
-          ],
-          "gerichte": [
+              "abend": "Linsenbolognese mit Pappardelle",
+              "zeit_aktiv": "25m",
+              "zeit_total": "40m",
+              "mittag_nächster_tag": "Pasta-Reste aufgewärmt"
+            },
             {
-              "tag": "Mo",
-              "abend": "Pasta e Fagioli",
+              "tag": "Mi",
+              "abend": "Tomaten-Kichererbsen-Eintopf",
               "zeit_aktiv": "15m",
-              "zeit_total": "30m"
+              "zeit_total": "20m",
+              "mittag_nächster_tag": "Eintopf-Reste"
+            },
+            {
+              "tag": "So",
+              "abend": "Auberginen-Tomaten-Auflauf",
+              "zeit_aktiv": "35m",
+              "zeit_total": "60m",
+              "mittag_nächster_tag": "Auflauf-Portion zum Einfrieren"
             }
           ]
         },
@@ -1157,14 +277,31 @@
           "id": 3,
           "thema": "Indisch",
           "kochabende": [
-            "Mo"
+            "Mo",
+            "Mi",
+            "So"
           ],
           "gerichte": [
             {
               "tag": "Mo",
-              "abend": "Chana Masala mit Basmati-Reis",
+              "abend": "Linsenbolognese mit Pappardelle",
               "zeit_aktiv": "25m",
-              "zeit_total": "40m"
+              "zeit_total": "40m",
+              "mittag_nächster_tag": "Pasta-Reste aufgewärmt"
+            },
+            {
+              "tag": "Mi",
+              "abend": "Kichererbsen-Spinat-Curry",
+              "zeit_aktiv": "18m",
+              "zeit_total": "20m",
+              "mittag_nächster_tag": "Curry-Reste"
+            },
+            {
+              "tag": "So",
+              "abend": "Auberginen-Tomaten-Auflauf",
+              "zeit_aktiv": "35m",
+              "zeit_total": "60m",
+              "mittag_nächster_tag": "Auflauf-Portion zum Einfrieren"
             }
           ]
         }
