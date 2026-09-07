@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=yes">
-<title>Menüplan v6.16</title>
+<title>Menüplan v6.17</title>
 <style>
 :root{
   --red:#e8390e;--rl:#fff2ef;--grn:#2e7d32;--grl:#f0faf4;
@@ -153,7 +153,7 @@ input[type=password]{letter-spacing:2px}
 
 <!-- HOME -->
 <div class="scr on" id="sh">
-  <div class="hero"><h1>Menüplan</h1><p id="hsub">v6.16 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
+  <div class="hero"><h1>Menüplan</h1><p id="hsub">v6.17 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
 
   <!-- Active plan card -->
 
@@ -1218,7 +1218,7 @@ function loadBringLists(callback) {
       if (!lists.length) throw new Error('empty');
       G.bLists = lists;
       if ($('blist')) $('blist').innerHTML = lists.map(function(l) {
-        return '<option value="' + l.listUuid + '">' + l.name + '</option>';
+        return '<option value="' + esc(l.listUuid) + '">' + esc(l.name) + '</option>';
       }).join('');
       if ($('blistwrap')) $('blistwrap').style.display = 'block';
       if ($('bfields')) $('bfields').style.display = 'none';
@@ -1439,10 +1439,15 @@ function validateIngredients(gerichte) {
     var sf = g.schritte_fleisch || [];
     for (var j = 0; j < sv.length; j++) allSteps += ' ' + (sv[j].text||'').toLowerCase();
     for (var j = 0; j < sf.length; j++) allSteps += ' ' + (sf[j].text||'').toLowerCase();
-    // Also check zutaten_schritt arrays
+    // Also check zutaten_schritt arrays - Eintraege koennen Strings (altes
+    // Format) oder {name, menge} Objekte (Guided-Cooking-Format) sein.
     for (var j = 0; j < sv.length; j++) {
       var zs = sv[j].zutaten_schritt || [];
-      for (var k = 0; k < zs.length; k++) allSteps += ' ' + zs[k].toLowerCase();
+      for (var k = 0; k < zs.length; k++) {
+        var zsEntry = zs[k];
+        var zsName = (typeof zsEntry === 'string') ? zsEntry : (zsEntry && zsEntry.name) || '';
+        if (zsName) allSteps += ' ' + zsName.toLowerCase();
+      }
     }
 
     // Filter zutaten: keep only those mentioned in steps
@@ -1836,6 +1841,11 @@ function goWeek() {
   callWorker('full', msg, 16000, { dishes: dishList })
   .then(function(raw) {
     var parsed = parseJSON(raw);
+    // Vollstaendigkeit pruefen BEVOR irgendetwas uebernommen wird: eine
+    // unvollstaendige Antwort (z.B. fehlende Kochschritte bei einem Gericht)
+    // darf nicht stillschweigend als vollstaendiger Plan gespeichert werden.
+    var validationError = validateFullRecipe(parsed);
+    if (validationError) throw new Error('Unvollständige Antwort: ' + validationError);
     var fg = parsed.gerichte || [];
     for (var i = 0; i < fg.length && i < sug.gerichte.length; i++) {
       if (fg[i].schritte_vegi)    sug.gerichte[i].schritte_vegi    = fg[i].schritte_vegi;
@@ -1852,11 +1862,16 @@ function goWeek() {
     G.sugsPartial = false;
     // WICHTIG: Plan mit den nachgeladenen Rezepten erneut sichern,
     // sonst fehlen Zutaten/Schritte nach Reload und auf anderen Geraeten.
-    if (G.activePlan && G.sel !== null && G.sugs[G.sel] === sug) persistActivePlan();
+    if (G.activePlan && G.sel !== null && G.sugs[G.sel] === sug) {
+      persistActivePlan();
+      // Verlaufseintrag ebenfalls aktualisieren, sonst zeigt der Verlauf
+      // weiterhin den unvollstaendigen (nur Uebersichts-)Stand des Plans.
+      updateHistoryEntryPlan(G.activePlan);
+    }
     goWeekRender(sug);
   })
   .catch(function(e) {
-    if ($('rlist')) $('rlist').innerHTML = '<div style="padding:14px;color:var(--red);font-size:13px">Fehler beim Laden der Rezepte.<br><br><button class="btn btn-red" onclick="goWeek()" style="font-size:13px;padding:10px;width:100%">Nochmals versuchen</button></div>';
+    if ($('rlist')) $('rlist').innerHTML = '<div style="padding:14px;color:var(--red);font-size:13px">Fehler beim Laden der Rezepte: ' + esc(e.message) + '<br><br><button class="btn btn-red" onclick="goWeek()" style="font-size:13px;padding:10px;width:100%">Nochmals versuchen</button></div>';
     if ($('wsub')) $('wsub').textContent = sug.thema;
   });
 }
@@ -2086,15 +2101,37 @@ var G_cook_port = 2;
 var G_cook_base_port = 2;
 var G_cook_zutaten = [];
 
+// Unicode-Bruchzeichen -> Dezimalwert, fuer haeufige Kochmengen-Angaben
+var FRACTION_MAP = { '½': 0.5, '⅓': 1/3, '⅔': 2/3, '¼': 0.25, '¾': 0.75, '⅕': 0.2, '⅛': 0.125 };
+
 function parseMengeNum(menge) {
   if (!menge) return 0;
-  var m = String(menge).match(/^[\d.,]+/);
-  return m ? parseFloat(m[0].replace(',','.')) : 0;
+  var s = String(menge).trim();
+  var mixedUnicode = s.match(/^(\d+)\s*([½⅓⅔¼¾⅕⅛])/);
+  if (mixedUnicode) return parseInt(mixedUnicode[1], 10) + (FRACTION_MAP[mixedUnicode[2]] || 0);
+  var onlyUnicode = s.match(/^([½⅓⅔¼¾⅕⅛])/);
+  if (onlyUnicode) return FRACTION_MAP[onlyUnicode[1]] || 0;
+  var mixedFraction = s.match(/^(\d+)\s+(\d+)\s*\/\s*(\d+)/);
+  if (mixedFraction) {
+    var whole = parseInt(mixedFraction[1], 10);
+    var num = parseInt(mixedFraction[2], 10);
+    var den = parseInt(mixedFraction[3], 10);
+    return den ? whole + num / den : whole;
+  }
+  var onlyFraction = s.match(/^(\d+)\s*\/\s*(\d+)/);
+  if (onlyFraction) {
+    var n2 = parseInt(onlyFraction[1], 10);
+    var d2 = parseInt(onlyFraction[2], 10);
+    return d2 ? n2 / d2 : 0;
+  }
+  var m = s.match(/^[\d.,]+/);
+  return m ? parseFloat(m[0].replace(',', '.')) : 0;
 }
 
 function parseMengeUnit(menge) {
   if (!menge) return '';
-  return String(menge).replace(/^[\d.,\s]+/, '').trim();
+  var s = String(menge).trim();
+  return s.replace(/^[\d.,\s/½⅓⅔¼¾⅕⅛]+/, '').trim();
 }
 
 function parseMenge(menge) {
@@ -2113,16 +2150,19 @@ function adjPort(d) {
 }
 
 function rescaleZutaten() {
+  // Skaliert sowohl die Zutatenuebersicht VOR dem Kochen (#cing) als auch die
+  // "Zutaten fuer diesen Schritt"-Box WAEHREND des Kochens (#cbody) - beide
+  // nutzen dieselben data-base/data-unit Attribute, daher genuegt ein
+  // gemeinsamer Selektor ueber beide Container hinweg.
   var factor = G_cook_base_port > 0 ? G_cook_port / G_cook_base_port : 1;
-  var rows = document.querySelectorAll('#cing .zutat-row');
+  var rows = document.querySelectorAll('.zutat-row');
   for (var i = 0; i < rows.length; i++) {
     var base = parseFloat(rows[i].dataset.base);
     var unit = rows[i].dataset.unit || '';
     var cell = rows[i].querySelector('.zutat-menge');
     if (cell && !isNaN(base) && base > 0) {
       var scaled = Math.round(base * factor * 10) / 10;
-      // Format nicely: whole numbers without decimal
-      var display = (scaled === Math.floor(scaled)) ? scaled.toString() : scaled.toString();
+      var display = scaled.toString();
       cell.textContent = display + (unit ? ' ' + unit : '');
     }
   }
@@ -2131,6 +2171,7 @@ function rescaleZutaten() {
 function startCook(ri) {
   var g = G.sugs[G.sel].gerichte[ri];
   clearAllCookTimers(); // Timer eines evtl. zuvor gestarteten Gerichts sauber beenden
+  releaseWakeLock();    // wird direkt danach per requestWakeLock() neu angefordert - verhindert doppelte Locks
   G.steps = buildSteps(g);
   G.cur = -1; G.act = 0; G.done = {};
   G.cookingGerichtIdx = ri;
@@ -2224,25 +2265,17 @@ function updHeader() {
   var done = Object.keys(G.done).length;
   var pct = G.steps.length > 0 ? Math.round((done / G.steps.length) * 100) : 0;
   if ($('cprogb')) $('cprogb').style.width = pct + '%';
-  var restMin = estimateRemainingMinutes();
+  // Restzeit-Schaetzung entfernt: bei parallel laufenden Timern (z.B. Ofen +
+  // gleichzeitig Pasta kochen) waere eine simple Summe aller Timer sichtbar
+  // falsch. Lieber nur "Schritt X von Y" ohne eine irrefuehrende Zeitangabe.
   if ($('csteplbl')) {
-    $('csteplbl').textContent = 'Schritt ' + Math.min(G.act + 1, G.steps.length) + ' von ' + G.steps.length +
-      (restMin > 0 && done < G.steps.length ? ' · noch ca. ' + restMin + ' Min.' : '');
+    $('csteplbl').textContent = 'Schritt ' + Math.min(G.act + 1, G.steps.length) + ' von ' + G.steps.length;
   }
 }
 
 // ─── GUIDED COOKING: EIN SCHRITT PRO BILDSCHIRM ─────────────
 // G.cookViewMode: 'step' (Standard) oder 'overview' (alle Schritte als Liste)
 if (typeof G.cookViewMode === 'undefined') G.cookViewMode = 'step';
-
-function estimateRemainingMinutes() {
-  var mins = 0;
-  for (var i = G.act; i < G.steps.length; i++) {
-    if (G.done[i]) continue;
-    mins += G.steps[i].timer_min || 1; // grobe Schaetzung: mind. 1 Min pro Handgriff
-  }
-  return mins;
-}
 
 function renderCookStep() {
   G.cookViewMode = 'step';
@@ -2262,9 +2295,13 @@ function renderCookStep() {
   if (s.zs && s.zs.length) {
     zutatenHtml = '<div style="background:#f9f9f9;border-radius:var(--r);padding:12px;margin-bottom:12px;border:.5px solid var(--bdr)">' +
       '<div style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--gr3);margin-bottom:8px">Zutaten für diesen Schritt</div>' +
-      s.zs.map(function(z) {
-        return '<div style="display:flex;justify-content:space-between;padding:4px 0;font-size:14px">' +
-          '<span>' + esc(z.name) + '</span>' + (z.menge ? '<span style="font-weight:600;color:var(--txt2)">' + esc(z.menge) + '</span>' : '') +
+      s.zs.map(function(z, zi) {
+        var mNum = parseMengeNum(z.menge);
+        var mUnit = parseMengeUnit(z.menge);
+        // data-base/data-unit wie bei der Zutatenuebersicht: Originalmenge bleibt
+        // unveraendert im Datenmodell, nur die ANZEIGE wird bei Portionsaenderung skaliert.
+        return '<div class="zutat-row" data-base="' + mNum + '" data-unit="' + esc(mUnit) + '" style="display:flex;justify-content:space-between;padding:4px 0;font-size:14px">' +
+          '<span>' + esc(z.name) + '</span>' + (z.menge ? '<span class="zutat-menge" style="font-weight:600;color:var(--txt2)">' + esc(z.menge) + '</span>' : '') +
         '</div>';
       }).join('') + '</div>';
   }
@@ -2313,9 +2350,15 @@ function renderCookStep() {
   $('cbody').innerHTML = html;
   updHeader();
   renderTimerBar();
+  rescaleZutaten(); // wendet die aktuell gewaehlte Portionsgroesse sofort auf den neuen Schritt an
   if ($('cook-footer')) $('cook-footer').style.display = 'flex';
   var completeBtn = $('cook-complete-btn');
-  if (completeBtn) completeBtn.textContent = isLast ? 'Fertig kochen &middot; Bewerten' : 'Erledigt &middot; Weiter';
+  if (completeBtn) {
+    // Bereits erledigter Schritt wird nur zum Nachlesen angezeigt (z.B. via
+    // Zurueck-Button) - "Weiter" navigiert dann einfach, ohne den Schritt
+    // (der ja schon erledigt ist) erneut als erledigt zu markieren.
+    completeBtn.textContent = isDone ? 'Weiter' : (isLast ? 'Fertig kochen · Bewerten' : 'Erledigt · Weiter');
+  }
 }
 
 // Klassische Kartenuebersicht - jetzt sekundaere Ansicht, ueber "Alle Schritte" erreichbar
@@ -2352,9 +2395,23 @@ function toggleStepOverview() {
   else renderAllSteps();
 }
 
+// Zentrale Ausstiegsstelle aus dem Kochmodus: raeumt IMMER Timer und
+// Wake-Lock auf, unabhaengig davon von wo aus verlassen wird. Fragt nach,
+// falls noch Timer laufen, damit niemand versehentlich einen laufenden
+// Ofen-Timer "verliert" ohne es zu merken.
+function leaveCookMode(targetScreen) {
+  var hasRunningTimers = Object.keys(G.timers || {}).some(function(k) { return G.timers[k] && !G.timers[k].done; });
+  if (hasRunningTimers && !confirm('Es laufen noch Timer. Kochmodus wirklich verlassen? Die Timer werden dabei beendet.')) {
+    return;
+  }
+  clearAllCookTimers();
+  releaseWakeLock();
+  go(targetScreen);
+}
+
 function cookBackOrOverview() {
   if (G.cookViewMode === 'overview') { renderCookStep(); return; }
-  go('sw');
+  leaveCookMode('sw');
 }
 
 function doComplete(i) {
@@ -2369,6 +2426,8 @@ function doComplete(i) {
     G.act = next >= 0 ? next : Math.min(i + 1, G.steps.length - 1);
   }
   if (Object.keys(G.done).length === G.steps.length) {
+    clearAllCookTimers();
+    releaseWakeLock();
     if (G.cookingGerichtIdx !== undefined && G.cookingGerichtIdx !== null) {
       markEinkaufDoneGekocht();
       showRatingModal(G.cookingGerichtIdx);
@@ -2387,11 +2446,10 @@ function doComplete(i) {
 
 function doStepBack() {
   if (G.act <= 0) return;
-  // Vorherigen Schritt (auch wenn erledigt) erneut anzeigen, ohne "erledigt" ruckgaengig zu machen
-  var prev = G.act - 1;
-  delete G.done[G.act];
-  G.act = prev;
-  delete G.done[G.act];
+  // Nur zum Nachlesen: G.done bleibt komplett unangetastet. "Zurueck" ist
+  // reine Navigation, kein Zuruecksetzen des Fortschritts - dafuer gibt es
+  // separat unDone() als bewusste Aktion.
+  G.act = G.act - 1;
   renderCookStep();
 }
 
@@ -2588,6 +2646,11 @@ var GH_HISTORY = 'history.json';
 function saveToHistory(planData) {
   var sug = planData.sug || (planData.sugs && planData.sugs[planData.sel||0]);
   var entry = {
+    // Stabile ID damit spaetere Aktualisierungen (z.B. nachgeladene
+    // Kochschritte) denselben Verlaufseintrag treffen statt einen neuen
+    // anzulegen. weekStart ist pro Plan eindeutig, faellt sonst auf einen
+    // Zeitstempel zurueck.
+    planId: planData.weekStart || ('p_' + Date.now()),
     date: new Date().toISOString().slice(0,10),
     saved: new Date().toLocaleDateString('de-CH'),
     thema: sug ? sug.thema : 'Menüplan',
@@ -2606,6 +2669,40 @@ function saveToHistory(planData) {
   localStorage.setItem(userKey('local_history'), JSON.stringify(localHist));
   // Save to GH via worker
   saveHistoryToGH(localHist);
+}
+
+// Findet den zu einem Plan gehoerenden Verlaufseintrag: zuerst ueber die
+// stabile planId (neue Eintraege), sonst defensiv ueber Datum+Thema als
+// Fallback (aeltere Eintraege ohne planId, die vor dieser Aenderung entstanden).
+function findHistoryEntryIndex(hist, planData) {
+  var sug = planData.sug || (planData.sugs && planData.sugs[planData.sel||0]);
+  if (planData.weekStart) {
+    var byId = hist.findIndex(function(e) { return e.planId === planData.weekStart; });
+    if (byId >= 0) return byId;
+  }
+  if (sug) {
+    var bySavedTheme = hist.findIndex(function(e) {
+      return e.saved === planData.saved && e.thema === sug.thema;
+    });
+    if (bySavedTheme >= 0) return bySavedTheme;
+  }
+  return -1;
+}
+
+// Aktualisiert einen bestehenden Verlaufseintrag mit dem vollstaendigen Plan
+// (z.B. nachdem goWeek() die Kochschritte nachgeladen hat), statt dass die
+// Aenderung nur lokal in active_plan landet und im Verlauf veraltet bleibt.
+function updateHistoryEntryPlan(planData) {
+  try {
+    var hist = JSON.parse(localStorage.getItem(userKey('local_history')) || '[]');
+    var idx = findHistoryEntryIndex(hist, planData);
+    if (idx < 0) return;
+    var sug = planData.sug || (planData.sugs && planData.sugs[planData.sel||0]);
+    hist[idx].plan = planData;
+    if (sug) hist[idx].gerichte = sug.gerichte.map(function(g){ return {tag:g.tag, abend:g.abend}; });
+    localStorage.setItem(userKey('local_history'), JSON.stringify(hist));
+    saveHistoryToGH(hist);
+  } catch (e) { /* Verlauf-Update ist best-effort, active_plan bleibt in jedem Fall aktuell */ }
 }
 
 
@@ -2813,7 +2910,7 @@ function showRescheduleGericht(ri) {
   var html = gerichte.map(function(tg, ti) {
     if (ti === ri) return '';
     return '<button onclick="doReschedule(' + ri + ',' + ti + ')" class="btn btn-out" style="text-align:left;padding:12px 16px;font-size:14px">' +
-      '<b style="color:var(--red);margin-right:8px">' + (tg.tag||'').slice(0,2) + '</b>' + tg.abend +
+      '<b style="color:var(--red);margin-right:8px">' + esc((tg.tag||'').slice(0,2)) + '</b>' + esc(tg.abend) +
       '</button>';
   }).join('');
   $('rsch-days').innerHTML = html;
@@ -3085,7 +3182,7 @@ function generateReplace() {
     ' Verfuegbare Zutaten der Woche mitnutzen: ' + otherZutaten + '.' +
     ' Fuer ' + (G.personen||2) + ' Personen.' +
     (G.reste ? ' Mit Resteverwertung am naechsten Tag.' : '') +
-    ' NUR valides JSON. Format: {"gerichte":[{"tag":"' + g.tag + '","abend":"Gerichtsname","mittag_naechster_tag":"Restname","zeit_aktiv":"20m","zeit_total":"40m","zutaten":[{"name":"X","menge":"Y"}],"schritte_vegi":[{"titel":"Schritt","text":"Detail","timer_min":0,"zutaten_schritt":["X"]}],"tipp":"Tipp"}]}';
+    ' NUR valides JSON. Format: {"gerichte":[{"tag":"' + g.tag + '","abend":"Gerichtsname","mittag_naechster_tag":"Restname","zeit_aktiv":"20m","zeit_total":"40m","zutaten":[{"name":"X","menge":"Y"}],"schritte_vegi":[{"titel":"Schritt","text":"Detail","timer_min":0,"zutaten_schritt":[{"name":"X","menge":"Y"}],"zubehoer":[],"kontrolle":"","parallel_hinweis":""}],"tipp":"Tipp"}]}';
 
   callWorker('replace', msg, 5000, { dishes: existing })
     .then(function(raw) {
@@ -3105,14 +3202,14 @@ function generateReplace() {
         $('rep-apply').style.display = '';
         $('rep-gen-btn').textContent = '↺ Nochmals';
       } catch(e) {
-        $('rep-result').innerHTML = '<div style="color:var(--red);font-size:13px">Fehler: ' + e.message + '</div>';
+        $('rep-result').innerHTML = '<div style="color:var(--red);font-size:13px">Fehler: ' + esc(e.message) + '</div>';
         $('rep-result').style.display = 'block';
       }
     })
     .catch(function(e) {
       $('rep-load').style.display = 'none';
       $('rep-gen-btn').disabled = false;
-      $('rep-result').innerHTML = '<div style="color:var(--red);font-size:13px">Fehler: ' + e.message + '</div>';
+      $('rep-result').innerHTML = '<div style="color:var(--red);font-size:13px">Fehler: ' + esc(e.message) + '</div>';
       $('rep-result').style.display = 'block';
     });
 }
@@ -3151,6 +3248,29 @@ function applyReplace() {
 }
 
 
+function migrateOldLocalStorageKeys() {
+  // Einmalige Migration: alte, globale Schluessel (aus Zeiten vor der
+  // Benutzertrennung) in die neuen, benutzerspezifischen Schluessel kopieren.
+  // Idempotent: kopiert NUR wenn der neue Schluessel noch nicht existiert.
+  // Alte Daten werden erst geloescht, NACHDEM das Kopieren erfolgreich war -
+  // damit bei einem Fehler nichts verloren geht.
+  var keys = ['active_plan', 'local_history', 'local_ratings', 'foto_rezepte', 'einkauf_checked', 'bs'];
+  keys.forEach(function(key) {
+    try {
+      var newKey = userKey(key);
+      var oldValue = localStorage.getItem(key);
+      if (oldValue === null) return; // nichts zu migrieren
+      var newValueExists = localStorage.getItem(newKey) !== null;
+      if (newValueExists) return; // neuer Schluessel hat schon Daten - alten NICHT ueberschreiben
+      localStorage.setItem(newKey, oldValue);
+      // Erst jetzt, nachdem das Schreiben nachweislich geklappt hat, den alten Schluessel entfernen
+      if (localStorage.getItem(newKey) === oldValue) {
+        localStorage.removeItem(key);
+      }
+    } catch (e) { /* localStorage-Fehler: naechster Login versucht es erneut */ }
+  });
+}
+
 function showLoggedIn() {
   var session = getSession();
   // Hide login, show dashboard
@@ -3159,6 +3279,7 @@ function showLoggedIn() {
   if ($('login-err')) $('login-err').style.display = 'none';
   if ($('login-pw')) $('login-pw').value = '';
   if ($('user-menu-btn')) $('user-menu-btn').style.display = 'flex';
+  migrateOldLocalStorageKeys();
   loadPrefs();
   try {
     var ap = JSON.parse(localStorage.getItem(userKey('active_plan')) || 'null');
@@ -3339,10 +3460,10 @@ function updateDashboard() {
     var isPast = gIdx < todayIdx && !isCooked; // zeitlich vorbei, aber nicht gekocht
     var hasReste = g.mittag_naechster_tag && g.mittag_naechster_tag !== 'Restename' && !isCancelled;
     return '<div style="display:flex;align-items:flex-start;gap:10px;padding:6px 0;border-bottom:.5px solid #f5f5f5">' +
-      '<span style="font-size:11px;font-weight:700;min-width:22px;margin-top:2px;color:' + (isToday?'var(--red)':isPast?'#ccc':'var(--gr3)') + '">' + tag + '</span>' +
-      '<div style="flex:1"><div style="font-size:14px;font-weight:' + (isToday?'700':'500') + ';color:' + (isCooked?'var(--grn)':isCancelled?'#bbb':isPast?'#bbb':'var(--txt)') + ';' + ((isCooked||isCancelled)?'text-decoration:line-through':'') + '">' + (isCooked?'✓ ':isCancelled?'':'') + (g.abend||'') + '</div>' +
+      '<span style="font-size:11px;font-weight:700;min-width:22px;margin-top:2px;color:' + (isToday?'var(--red)':isPast?'#ccc':'var(--gr3)') + '">' + esc(tag) + '</span>' +
+      '<div style="flex:1"><div style="font-size:14px;font-weight:' + (isToday?'700':'500') + ';color:' + (isCooked?'var(--grn)':isCancelled?'#bbb':isPast?'#bbb':'var(--txt)') + ';' + ((isCooked||isCancelled)?'text-decoration:line-through':'') + '">' + (isCooked?'✓ ':isCancelled?'':'') + esc(g.abend||'') + '</div>' +
       (isPast && !isCooked && !isCancelled ? '<div style="font-size:10px;color:#c62828">nicht gekocht</div>' : '') +
-      (hasReste && !isPast ? '<div style="font-size:11px;color:var(--gr3)">↳ ' + g.mittag_naechster_tag + '</div>' : '') + '</div></div>';
+      (hasReste && !isPast ? '<div style="font-size:11px;color:var(--gr3)">↳ ' + esc(g.mittag_naechster_tag) + '</div>' : '') + '</div></div>';
   }).join('');
   if ($('dash-week-days')) $('dash-week-days').innerHTML = weekHtml;
   // Heute / Nächstes
@@ -3422,6 +3543,7 @@ function showRatingModal(ri) {
   G_rating.fotoIdx = null;
   G_rating.stars = 0;
   G_rating.tags = [];
+  G_rating.returnScreen = 'sw'; // nach dem Kochen zurueck zum Wochenplan, wie bisher
   if ($('rm-title')) $('rm-title').textContent = gerichtName;
   if ($('rm-feedback')) $('rm-feedback').value = '';
   if ($('rm-tags')) $('rm-tags').querySelectorAll('.chip').forEach(function(c){ c.classList.remove('on'); });
@@ -3434,7 +3556,7 @@ function showRatingModal(ri) {
   }
   if ($('rating-modal')) $('rating-modal').style.display = 'flex';
 }
-function closeRating() { $('rating-modal').style.display='none'; go('sw'); }
+function closeRating() { $('rating-modal').style.display='none'; go(G_rating.returnScreen || 'sw'); }
 function setStar(n) {
   G_rating.stars = n;
   var stars = $('rm-stars').querySelectorAll('.star-btn');
@@ -3447,41 +3569,61 @@ function submitRating() {
   var feedback = $('rm-feedback').value.trim();
   if (G_rating.historyIdx !== null && G_rating.historyIdx !== undefined) {
     var hist = window._history;
-    if (hist && hist[G_rating.historyIdx]) { hist[G_rating.historyIdx].stars=G_rating.stars; hist[G_rating.historyIdx].ratingFeedback=feedback; localStorage.setItem(userKey('local_history'),JSON.stringify(hist)); saveHistoryToGH(hist); renderHistoryList(hist); }
-    $('rating-modal').style.display='none'; return;
+    if (hist && hist[G_rating.historyIdx]) {
+      hist[G_rating.historyIdx].stars=G_rating.stars;
+      hist[G_rating.historyIdx].ratingFeedback=feedback;
+      hist[G_rating.historyIdx].tags=G_rating.tags.slice();
+      localStorage.setItem(userKey('local_history'),JSON.stringify(hist)); saveHistoryToGH(hist); renderHistoryList(hist);
+    }
+    $('rating-modal').style.display='none';
+    if (G_rating.returnScreen) go(G_rating.returnScreen);
+    return;
   }
   if (G_rating.fotoIdx !== null && G_rating.fotoIdx !== undefined) {
     var saved = JSON.parse(localStorage.getItem(userKey('foto_rezepte'))||'[]');
-    if (saved[G_rating.fotoIdx]) { saved[G_rating.fotoIdx].stars=G_rating.stars; saved[G_rating.fotoIdx].ratingFeedback=feedback; localStorage.setItem(userKey('foto_rezepte'),JSON.stringify(saved)); saveFotoRezepteToGH(saved); loadHistoryRecipes(); }
-    $('rating-modal').style.display='none'; return;
+    if (saved[G_rating.fotoIdx]) {
+      saved[G_rating.fotoIdx].stars=G_rating.stars;
+      saved[G_rating.fotoIdx].ratingFeedback=feedback;
+      saved[G_rating.fotoIdx].tags=G_rating.tags.slice();
+      localStorage.setItem(userKey('foto_rezepte'),JSON.stringify(saved)); saveFotoRezepteToGH(saved); loadHistoryRecipes();
+    }
+    $('rating-modal').style.display='none';
+    if (G_rating.returnScreen) go(G_rating.returnScreen);
+    return;
   }
   var g = G.sugs&&G.sel!==null ? G.sugs[G.sel].gerichte[G_rating.gerichtIdx] : null;
   if (g) {
     var entry = { date:new Date().toISOString().slice(0,10), saved:new Date().toLocaleDateString('de-CH'), thema:G.sugs[G.sel].thema, gericht:g.abend, tag:g.tag, stars:G_rating.stars, label:STAR_LABELS[G_rating.stars], feedback:feedback, tags:G_rating.tags.slice(), personen:G.personen||2, zutaten:(g.zutaten||[]).map(function(z){return z.name;}).join(', ') };
     saveRatingToGH(entry);
     var hist2=JSON.parse(localStorage.getItem(userKey('local_history'))||'[]');
-    if (hist2.length){hist2[0].stars=G_rating.stars;hist2[0].ratingFeedback=feedback;}
+    if (hist2.length){hist2[0].stars=G_rating.stars;hist2[0].ratingFeedback=feedback;hist2[0].tags=G_rating.tags.slice();}
     localStorage.setItem(userKey('local_history'),JSON.stringify(hist2)); saveHistoryToGH(hist2);
   }
-  $('rating-modal').style.display='none'; go('sw');
+  $('rating-modal').style.display='none'; go(G_rating.returnScreen || 'sw');
   setTimeout(function(){var msg=G_rating.stars>=4?'Super! Bewertung gespeichert.':'Bewertung gespeichert.';showSt('ist',msg,'ok');setTimeout(function(){if($('ist'))$('ist').style.display='none';},3000);},300);
 }
 function showHistoryRating(i) {
   var hist=window._history; if(!hist||!hist[i])return;
   var e=hist[i]; G_rating.stars=e.stars||0; G_rating.historyIdx=i; G_rating.fotoIdx=null; G_rating.gerichtIdx=null;
+  G_rating.tags = (e.tags||[]).slice();
+  G_rating.returnScreen = 'sh2';
   $('rm-title').textContent=e.thema||'Menüplan'; $('rm-feedback').value=e.ratingFeedback||''; $('rm-starlbl').textContent=''; $('rm-submit').disabled=false;
   var stars=$('rm-stars').querySelectorAll('.star-btn');
   for(var j=0;j<stars.length;j++){stars[j].style.opacity=j<(e.stars||0)?'1':'.25';stars[j].style.color=j<(e.stars||0)?'#f59e0b':'#888';}
   if(e.stars)$('rm-starlbl').textContent=STAR_LABELS[e.stars]||'';
+  markExistingRmTags(G_rating.tags);
   $('rating-modal').style.display='flex';
 }
 function showFotoRating(i) {
   var saved=JSON.parse(localStorage.getItem(userKey('foto_rezepte'))||'[]'); if(!saved[i])return;
   var r=saved[i]; G_rating.stars=r.stars||0; G_rating.fotoIdx=i; G_rating.historyIdx=null; G_rating.gerichtIdx=null;
+  G_rating.tags = (r.tags||[]).slice();
+  G_rating.returnScreen = 'sh2';
   $('rm-title').textContent=r.name||'Foto-Rezept'; $('rm-feedback').value=r.ratingFeedback||''; $('rm-starlbl').textContent=''; $('rm-submit').disabled=false;
   var stars=$('rm-stars').querySelectorAll('.star-btn');
   for(var j=0;j<stars.length;j++){stars[j].style.opacity=j<(r.stars||0)?'1':'.25';stars[j].style.color=j<(r.stars||0)?'#f59e0b':'#888';}
   if(r.stars)$('rm-starlbl').textContent=STAR_LABELS[r.stars]||'';
+  markExistingRmTags(G_rating.tags);
   $('rating-modal').style.display='flex';
 }
 
@@ -3701,7 +3843,7 @@ function loadSavedFotoRezepte(){
   var saved=JSON.parse(localStorage.getItem(userKey('foto_rezepte'))||'[]');var sec=$('foto-saved-section');
   if(!saved.length){if(sec)sec.style.display='none';return;}
   if(sec)sec.style.display='block';
-  var html=saved.map(function(r,i){return '<div style="background:#fff;border-radius:var(--r);border:.5px solid var(--bdr);padding:10px 14px;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between;gap:8px"><div style="flex:1;min-width:0"><div style="font-size:14px;font-weight:600;color:var(--txt);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+(r.name||'Rezept')+'</div><div style="font-size:11px;color:var(--gr3);margin-top:2px">'+(r.saved||r.date||'')+' · '+(r.portionen||2)+' Personen'+(r.zeit_total?' · '+r.zeit_total:'')+'</div></div><div style="display:flex;gap:6px;flex-shrink:0"><button onclick="loadSavedFotoRezeptDetail('+i+')" class="btn btn-out" style="width:auto;padding:7px 12px;font-size:12px">Öffnen</button><button onclick="deleteSavedFotoRezept('+i+')" style="background:none;border:none;color:var(--gr3);font-size:18px;cursor:pointer;padding:0 4px">✕</button></div></div>';}).join('');
+  var html=saved.map(function(r,i){return '<div style="background:#fff;border-radius:var(--r);border:.5px solid var(--bdr);padding:10px 14px;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between;gap:8px"><div style="flex:1;min-width:0"><div style="font-size:14px;font-weight:600;color:var(--txt);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+esc(r.name||'Rezept')+'</div><div style="font-size:11px;color:var(--gr3);margin-top:2px">'+esc(r.saved||r.date||'')+' · '+(r.portionen||2)+' Personen'+(r.zeit_total?' · '+esc(r.zeit_total):'')+'</div></div><div style="display:flex;gap:6px;flex-shrink:0"><button onclick="loadSavedFotoRezeptDetail('+i+')" class="btn btn-out" style="width:auto;padding:7px 12px;font-size:12px">Öffnen</button><button onclick="deleteSavedFotoRezept('+i+')" style="background:none;border:none;color:var(--gr3);font-size:18px;cursor:pointer;padding:0 4px">✕</button></div></div>';}).join('');
   if($('foto-saved-list'))$('foto-saved-list').innerHTML=html; window._savedFotoRezepte=saved;
 }
 function loadSavedFotoRezeptDetail(i){
@@ -3737,7 +3879,7 @@ function analyzeFoto(){
 }
 function renderFotoRezept(r){
   var zRows=(r.zutaten||[]).map(function(z){return '<div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:.5px solid #f5f5f5"><span style="font-size:14px;font-weight:500">'+esc(z.name)+'</span><span style="font-size:13px;color:var(--gr3)">'+esc(z.menge)+'</span></div>';}).join('');
-  var sRows=(r.schritte||[]).map(function(s,i){var pills=(s.zutaten_schritt||[]).map(function(z){return '<span class="zpill">'+esc(z)+'</span>';}).join('');return '<div style="margin-bottom:14px"><div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><div style="width:24px;height:24px;border-radius:50%;background:var(--red);color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0">'+(i+1)+'</div><b style="font-size:13px;color:var(--txt)">'+esc(s.titel||'')+'</b>'+(s.timer_min>0?'<span style="font-size:11px;color:var(--gr3);background:#f5f5f5;padding:2px 8px;border-radius:100px">⏱ '+s.timer_min+' Min.</span>':'')+'</div>'+(pills?'<div class="zpills" style="margin-bottom:6px">'+pills+'</div>':'')+'<div style="font-size:14px;color:var(--txt);line-height:1.6">'+esc(s.text)+'</div></div>';}).join('');
+  var sRows=(r.schritte||[]).map(function(s,i){var pills=normZs(s.zutaten_schritt).map(function(z){return '<span class="zpill">'+esc(z.name)+(z.menge?' '+esc(z.menge):'')+'</span>';}).join('');return '<div style="margin-bottom:14px"><div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><div style="width:24px;height:24px;border-radius:50%;background:var(--red);color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0">'+(i+1)+'</div><b style="font-size:13px;color:var(--txt)">'+esc(s.titel||'')+'</b>'+(s.timer_min>0?'<span style="font-size:11px;color:var(--gr3);background:#f5f5f5;padding:2px 8px;border-radius:100px">⏱ '+s.timer_min+' Min.</span>':'')+'</div>'+(pills?'<div class="zpills" style="margin-bottom:6px">'+pills+'</div>':'')+'<div style="font-size:14px;color:var(--txt);line-height:1.6">'+esc(s.text)+'</div></div>';}).join('');
   var html='<div class="card"><div class="cp"><div style="font-size:19px;font-weight:800;color:var(--txt);margin-bottom:4px">'+esc(r.name||'Rezept')+'</div>'+(r.beschreibung?'<div style="font-size:13px;color:var(--gr3);margin-bottom:10px">'+esc(r.beschreibung)+'</div>':'')+'<div style="display:flex;gap:12px;margin-bottom:14px">'+(r.zeit_aktiv?'<span style="font-size:12px;color:var(--gr3)">✏ Aktiv: <b style="color:var(--txt2)">'+esc(r.zeit_aktiv)+'</b></span>':'')+(r.zeit_total?'<span style="font-size:12px;color:var(--gr3)">⏰ Total: <b style="color:var(--txt2)">'+esc(r.zeit_total)+'</b></span>':'')+'</div><div class="clbl">Zutaten für '+G_foto.portionen+' Personen</div><div style="margin-bottom:14px">'+zRows+'</div>'+(r.tipp?'<div style="background:#fffde7;border-left:3px solid #f9a825;padding:10px 12px;border-radius:0 8px 8px 0;font-size:13px;margin-bottom:14px"><b>Tipp:</b> '+esc(r.tipp)+'</div>':'')+'</div></div><div class="card"><div class="cp"><div class="clbl">Zubereitung</div>'+sRows+'</div></div><div style="padding:0 10px 10px;display:flex;flex-direction:column;gap:8px"><button class="btn btn-red" onclick="startFotoCook()" style="font-size:13px">👨‍🍳 Jetzt kochen</button><button class="btn btn-out" onclick="importFotoFromResult()" style="font-size:13px">In Bring! importieren</button><div style="display:flex;gap:8px"><button class="btn btn-out" onclick="saveFotoRezept(this)" style="flex:1;font-size:13px">💾 Speichern</button><button class="btn btn-out" onclick="showFotoPrint()" style="flex:1;font-size:13px">🖨 PDF</button></div></div>';
   window._fotoRezept=r; if($('foto-result')){$('foto-result').innerHTML=html;$('foto-result').style.display='block';}
 }
@@ -3788,6 +3930,7 @@ function startFotoCook(){
   };});
   if(!steps.length){alert('Keine Kochschritte vorhanden.');return;}
   clearAllCookTimers();
+  releaseWakeLock();
   G.steps=steps;G.cur=-1;G.act=0;G.done={};G.cookingGerichtIdx=null;
   // Portionsbasis fuer "Portionen anpassen" im Kochmodus: bei Foto-Rezepten
   // gilt G_foto.portionen, nicht die Menueplan-Einstellungen (analog zu startCook()).
@@ -3861,12 +4004,17 @@ function buildLearningProfile(){
   // Positive tags summary
   var positiveTags = ratings.filter(function(r){return r.tags&&r.tags.some(function(t){return t==='unbedingt wieder'||t==='gut zum Einfrieren'||t==='gute Reste';});});
   if(positiveTags.length)profile+='Besonders beliebt: '+positiveTags.slice(0,3).map(function(r){return r.name;}).join(', ')+'. ';
+  // WICHTIG: profile geht ungefiltert an den Anthropic-Prompt (Textkontext, unkritisch)
+  // UND wird in updateProfileDisplay() per innerHTML gerendert - dort wird escaped.
   return profile;
 }
 function updateProfileDisplay(){
   var el=$('prefs-profile');if(!el)return;
   var profile=buildLearningProfile();
-  el.innerHTML=profile?'<div style="font-size:12px;color:var(--txt2);line-height:1.6">'+profile+'</div>':'<div style="font-size:12px;color:var(--gr3);font-style:italic">Noch keine Bewertungen. Koche und bewerte Gerichte für personalisierte Vorschläge.</div>';
+  // profile enthaelt Gerichtsnamen und freien Nutzer-Feedbacktext - hier beim
+  // Rendern escapen (nicht in buildLearningProfile() selbst, da dessen
+  // Rueckgabewert auch unveraendert als Klartext an den Anthropic-Prompt geht).
+  el.innerHTML=profile?'<div style="font-size:12px;color:var(--txt2);line-height:1.6">'+esc(profile)+'</div>':'<div style="font-size:12px;color:var(--gr3);font-style:italic">Noch keine Bewertungen. Koche und bewerte Gerichte für personalisierte Vorschläge.</div>';
 }
 function resetLearningProfile(){
   if(!confirm('Lernprofil zurücksetzen?'))return;
@@ -3894,6 +4042,15 @@ function refreshToken(){
 // ─── RATING ────────────────────────────────────────────────
 var GH_RATINGS = 'ratings.json';
 var G_rating = { gerichtIdx: null, stars: 0, historyIdx: null, fotoIdx: null, tags: [] };
+
+function markExistingRmTags(tags) {
+  if (!$('rm-tags')) return;
+  var chips = $('rm-tags').querySelectorAll('.chip');
+  chips.forEach(function(chip) {
+    chip.classList.remove('on');
+    if (tags && tags.indexOf(chip.textContent.replace(' \u2665', '').trim()) >= 0) chip.classList.add('on');
+  });
+}
 
 function toggleRmTag(btn, tag) {
   btn.classList.toggle('on');
