@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=yes">
-<title>Menüplan v6.12</title>
+<title>Menüplan v6.13</title>
 <style>
 :root{
   --red:#e8390e;--rl:#fff2ef;--grn:#2e7d32;--grl:#f0faf4;
@@ -153,7 +153,7 @@ input[type=password]{letter-spacing:2px}
 
 <!-- HOME -->
 <div class="scr on" id="sh">
-  <div class="hero"><h1>Menüplan</h1><p id="hsub">v6.12 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
+  <div class="hero"><h1>Menüplan</h1><p id="hsub">v6.13 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
 
   <!-- Active plan card -->
 
@@ -1866,6 +1866,7 @@ function goWeek() {
 
 function goWeekRender(sug) {
   releaseWakeLock();
+  clearAllCookTimers();
   if ($('wtit')) $('wtit').textContent = sug.thema;
   if ($('wsub')) $('wsub').textContent = sug.kochabende ? sug.kochabende.join(' - ') : '';
   syncBringUiState();
@@ -1873,6 +1874,19 @@ function goWeekRender(sug) {
   renderRez(sug);
   wtab('e');
   go('sw');
+}
+
+function clearAllCookTimers() {
+  // Beim Verlassen des Kochmodus (Zurueck-Pfeil, Wechsel zu anderem Gericht)
+  // laufende setInterval-Handles beenden, sonst laufen sie unsichtbar im
+  // Hintergrund weiter und koennten spaeter geloeschte/ueberschriebene
+  // Schritte referenzieren.
+  if (typeof G !== 'undefined' && G.timers) {
+    Object.keys(G.timers).forEach(function(k) {
+      if (G.timers[k] && G.timers[k].iv) clearInterval(G.timers[k].iv);
+    });
+    G.timers = {};
+  }
 }
 
 function wtab(t) {
@@ -2116,6 +2130,7 @@ function rescaleZutaten() {
 
 function startCook(ri) {
   var g = G.sugs[G.sel].gerichte[ri];
+  clearAllCookTimers(); // Timer eines evtl. zuvor gestarteten Gerichts sauber beenden
   G.steps = buildSteps(g);
   G.cur = -1; G.act = 0; G.done = {};
   G.cookingGerichtIdx = ri;
@@ -3371,21 +3386,34 @@ function updateDashboard() {
 }
 
 function showRatingModal(ri) {
-  if (!G.sugs || G.sel === null) return;
-  var g = G.sugs[G.sel].gerichte[ri];
+  // Robust gegen alle Zustandsabweichungen: lieber mit Fallback-Namen zeigen
+  // als stumm gar nicht erscheinen (das war schwer zu diagnostizieren, weil
+  // ein fruehes "return" keinerlei Spur hinterlaesst).
+  var g = null;
+  if (G.sugs && G.sel !== null && G.sugs[G.sel] && G.sugs[G.sel].gerichte) {
+    g = G.sugs[G.sel].gerichte[ri];
+  }
+  if (!g && G.activePlan && G.activePlan.sug && G.activePlan.sug.gerichte) {
+    g = G.activePlan.sug.gerichte[ri];
+  }
+  var gerichtName = (g && g.abend) ? g.abend : 'Dein Gericht';
+
   G_rating.gerichtIdx = ri;
   G_rating.historyIdx = null;
   G_rating.fotoIdx = null;
   G_rating.stars = 0;
   G_rating.tags = [];
-  $('rm-title').textContent = g.abend;
-  $('rm-feedback').value = '';
+  if ($('rm-title')) $('rm-title').textContent = gerichtName;
+  if ($('rm-feedback')) $('rm-feedback').value = '';
   if ($('rm-tags')) $('rm-tags').querySelectorAll('.chip').forEach(function(c){ c.classList.remove('on'); });
-  $('rm-starlbl').textContent = '';
-  $('rm-submit').disabled = true;
-  var stars = $('rm-stars').querySelectorAll('.star-btn');
-  for (var i=0;i<stars.length;i++) { stars[i].style.opacity='.3'; stars[i].style.color=''; }
-  $('rating-modal').style.display = 'flex';
+  if ($('rm-starlbl')) $('rm-starlbl').textContent = '';
+  if ($('rm-submit')) $('rm-submit').disabled = true;
+  var starsEl = $('rm-stars');
+  if (starsEl) {
+    var stars = starsEl.querySelectorAll('.star-btn');
+    for (var i=0;i<stars.length;i++) { stars[i].style.opacity='.3'; stars[i].style.color=''; }
+  }
+  if ($('rating-modal')) $('rating-modal').style.display = 'flex';
 }
 function closeRating() { $('rating-modal').style.display='none'; go('sw'); }
 function setStar(n) {
