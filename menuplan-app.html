@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=yes">
-<title>Menüplan v6.17</title>
+<title>Menüplan v6.19</title>
 <style>
 :root{
   --red:#e8390e;--rl:#fff2ef;--grn:#2e7d32;--grl:#f0faf4;
@@ -153,7 +153,7 @@ input[type=password]{letter-spacing:2px}
 
 <!-- HOME -->
 <div class="scr on" id="sh">
-  <div class="hero"><h1>Menüplan</h1><p id="hsub">v6.17 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
+  <div class="hero"><h1>Menüplan</h1><p id="hsub">v6.19 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
 
   <!-- Active plan card -->
 
@@ -1004,7 +1004,12 @@ function ghPut(filename, data, message) {
       })
       .then(function(r) {
         if (r && r.status === 409 && retriesLeft > 0) {
-          // Kurze, leicht zufaellige Pause bevor mit frischer SHA erneut versucht wird
+          // Kurze, leicht zufaellige Pause bevor mit frischer SHA erneut versucht wird.
+          // 5 statt 3 Versuche: bei einem kompletten Kochvorgang koennen mehrere
+          // Funktionen (Rezepte nachladen, als gekocht markieren, bewerten) kurz
+          // hintereinander in dieselbe Datei schreiben wollen - jeder Konflikt
+          // wird durch die Warteschlange ohnehin sauber serialisiert, aber mehr
+          // Versuche geben spuerbar mehr Sicherheitsmarge bei so einer Kette.
           return new Promise(function(resolve) { setTimeout(resolve, 150 + Math.random() * 200); })
             .then(function() { return attempt(retriesLeft - 1); });
         }
@@ -1014,8 +1019,12 @@ function ghPut(filename, data, message) {
 
   // In die Warteschlange dieser Datei einreihen: erst wenn der vorherige
   // Schreibvorgang (egal ob erfolgreich) fertig ist, startet der naechste.
+  // Das serialisiert alle ghPut()-Aufrufe auf dieselbe Datei zuverlaessig -
+  // die in der Konsole sichtbaren 409-Antworten sind erwartete Zwischenschritte
+  // dieser Serialisierung (der Browser loggt jede Non-2xx-Netzwerkantwort),
+  // keine nach aussen durchschlagenden Fehler, solange genug Versuche uebrig bleiben.
   var prev = _ghWriteQueue[filepath] || Promise.resolve();
-  var next = prev.catch(function(){}).then(function() { return attempt(3); });
+  var next = prev.catch(function(){}).then(function() { return attempt(5); });
   _ghWriteQueue[filepath] = next;
   return next;
 }
@@ -1483,7 +1492,20 @@ function validateOverview(data) {
   return null;
 }
 
-function validateFullRecipe(data) {
+// expectedTags: Array der Tage (z.B. ["Montag","Mittwoch"]), die im urspruenglichen
+// Vorschlag standen. Wird die Antwort ohne erwartete Tage geprueft (z.B. Replace-
+// Antworten mit nur einem Gericht), entfaellt die Mengen-/Zuordnungspruefung.
+// Validiert ein einzelnes Foto-Rezept (eigenes Schema: "schritte" statt
+// "schritte_vegi", kein "tag"-Feld, kein "gerichte"-Array-Wrapper).
+function validateFotoRecipe(data) {
+  if (!data) return 'Keine Antwort erhalten';
+  if (!data.name) return 'Rezeptname fehlt';
+  if (!Array.isArray(data.zutaten) || !data.zutaten.length) return 'Zutaten fehlen';
+  if (!Array.isArray(data.schritte) || !data.schritte.length) return 'Kochschritte fehlen';
+  return null;
+}
+
+function validateFullRecipe(data, expectedTags) {
   if (!data || !Array.isArray(data.gerichte)) return 'Feld "gerichte" fehlt';
   if (!data.gerichte.length) return 'Keine Gerichte enthalten';
   for (var i = 0; i < data.gerichte.length; i++) {
@@ -1491,6 +1513,23 @@ function validateFullRecipe(data) {
     if (!g.abend) return 'Gericht ' + (i+1) + ': Name fehlt';
     if (!Array.isArray(g.zutaten) || !g.zutaten.length) return 'Gericht ' + (i+1) + ': Zutaten fehlen';
     if (!Array.isArray(g.schritte_vegi) || !g.schritte_vegi.length) return 'Gericht ' + (i+1) + ': Kochschritte fehlen';
+  }
+  if (expectedTags && expectedTags.length) {
+    if (data.gerichte.length !== expectedTags.length) {
+      return 'Erwartet ' + expectedTags.length + ' Gerichte, erhalten ' + data.gerichte.length;
+    }
+    var returnedTags = data.gerichte.map(function(g) { return g.tag; });
+    var seen = {};
+    for (var j = 0; j < returnedTags.length; j++) {
+      var t = returnedTags[j];
+      if (!t) return 'Gericht ' + (j+1) + ': Feld "tag" fehlt';
+      if (seen[t]) return 'Tag "' + t + '" kommt doppelt vor';
+      seen[t] = true;
+      if (expectedTags.indexOf(t) < 0) return 'Unerwarteter Tag "' + t + '" in der Antwort';
+    }
+    for (var k = 0; k < expectedTags.length; k++) {
+      if (!seen[expectedTags[k]]) return 'Gericht für "' + expectedTags[k] + '" fehlt in der Antwort';
+    }
   }
   return null;
 }
@@ -1785,7 +1824,7 @@ function renderSugs() {
         'style="display:flex;align-items:center;justify-content:space-between;padding:4px 0;border-radius:6px;transition:background .15s">' +
         '<div style="display:flex;align-items:center;gap:6px">' +
           '<span style="color:var(--gr3);font-size:14px;' + dragStyle + '">⠿</span>' +
-          '<b style="color:var(--txt);min-width:22px;display:inline-block">' + tagShort + '</b> ' + esc(g.abend) +
+          '<b style="color:var(--txt);min-width:22px;display:inline-block">' + esc(tagShort) + '</b> ' + esc(g.abend) +
         '</div>' +
         '<button onclick="toggleFix(' + i + ',' + j + ');event.stopPropagation()" title="' + (isFixed?'Fixiert':'Fixieren') + '" style="background:none;border:none;cursor:pointer;font-size:15px;padding:2px 4px;opacity:' + (isFixed?'1':'0.3') + ';transition:opacity .2s" id="fix-btn-' + fixKey + '">' +
           (isFixed ? '🔒' : '🔓') +
@@ -1838,27 +1877,37 @@ function goWeek() {
 
   var msg = 'Erzeuge die vollständigen Kochschritte.';
 
+  var expectedTags = sug.gerichte.map(function(g) { return g.tag; });
+
   callWorker('full', msg, 16000, { dishes: dishList })
   .then(function(raw) {
     var parsed = parseJSON(raw);
-    // Vollstaendigkeit pruefen BEVOR irgendetwas uebernommen wird: eine
-    // unvollstaendige Antwort (z.B. fehlende Kochschritte bei einem Gericht)
-    // darf nicht stillschweigend als vollstaendiger Plan gespeichert werden.
-    var validationError = validateFullRecipe(parsed);
+    // Vollstaendigkeit pruefen BEVOR irgendetwas uebernommen wird: exakte
+    // Anzahl UND Zuordnung ueber "tag" statt Array-Index - eine unvollstaendige
+    // oder in falscher Reihenfolge zurueckgegebene Antwort darf nicht
+    // stillschweigend als vollstaendiger Plan uebernommen werden.
+    var validationError = validateFullRecipe(parsed, expectedTags);
     if (validationError) throw new Error('Unvollständige Antwort: ' + validationError);
     var fg = parsed.gerichte || [];
-    for (var i = 0; i < fg.length && i < sug.gerichte.length; i++) {
-      if (fg[i].schritte_vegi)    sug.gerichte[i].schritte_vegi    = fg[i].schritte_vegi;
-      if (fg[i].schritte_fleisch) sug.gerichte[i].schritte_fleisch = fg[i].schritte_fleisch;
-      if (fg[i].prep_next)        sug.gerichte[i].prep_next        = fg[i].prep_next;
-      if (fg[i].einfrieren)       sug.gerichte[i].einfrieren       = fg[i].einfrieren;
-      if (fg[i].mittag_nächster_tag) sug.gerichte[i].mittag_nächster_tag = fg[i].mittag_nächster_tag;
-      if (fg[i].mittag_tag)       sug.gerichte[i].mittag_tag       = fg[i].mittag_tag;
-      // Also update zutaten if full recipe has them
-      if (fg[i].zutaten && fg[i].zutaten.length) sug.gerichte[i].zutaten = fg[i].zutaten;
-    }
+    // Zuordnung ueber den eindeutigen "tag"-Schluessel, NICHT ueber den
+    // Array-Index - Claude kann die Gerichte in anderer Reihenfolge liefern.
+    var byTag = {};
+    fg.forEach(function(g) { byTag[g.tag] = g; });
+    sug.gerichte.forEach(function(originalGericht) {
+      var match = byTag[originalGericht.tag];
+      if (!match) return; // validateFullRecipe haette das bereits als Fehler abgefangen
+      if (match.schritte_vegi)    originalGericht.schritte_vegi    = match.schritte_vegi;
+      if (match.schritte_fleisch) originalGericht.schritte_fleisch = match.schritte_fleisch;
+      if (match.prep_next)        originalGericht.prep_next        = match.prep_next;
+      if (match.einfrieren)       originalGericht.einfrieren       = match.einfrieren;
+      if (match.mittag_nächster_tag) originalGericht.mittag_nächster_tag = match.mittag_nächster_tag;
+      if (match.mittag_tag)       originalGericht.mittag_tag       = match.mittag_tag;
+      if (match.zutaten && match.zutaten.length) originalGericht.zutaten = match.zutaten;
+    });
     // Validate: remove ingredients not mentioned in steps
     validateIngredients(sug.gerichte);
+    // Erst JETZT, nachdem alle Gerichte erfolgreich ueber "tag" zugeordnet
+    // wurden, gilt der Plan als vollstaendig.
     G.sugsPartial = false;
     // WICHTIG: Plan mit den nachgeladenen Rezepten erneut sichern,
     // sonst fehlen Zutaten/Schritte nach Reload und auf anderen Geraeten.
@@ -1933,10 +1982,17 @@ function mergeMengen(m1, m2) {
 }
 
 function addMengen(a, b) {
-  var pa = parseMenge(a), pb = parseMenge(b);
-  if (pa && pb && pa.unit === pb.unit && pa.unit !== '') {
-    var sum = Math.round((pa.num + pb.num) * 100) / 100;
-    return sum + (pa.unit ? ' ' + pa.unit : '');
+  // Nutzt denselben robusten Parser wie der Guided-Cooking-Modus (Dezimalkomma,
+  // Unicode-Brueche wie ½, normale Brueche wie 1/2, gemischte Brueche wie 1 1/2)
+  // statt des einfacheren parseMenge(), der nur einfache Dezimalzahlen versteht.
+  var numA = parseMengeNum(a), unitA = parseMengeUnit(a);
+  var numB = parseMengeNum(b), unitB = parseMengeUnit(b);
+  // Nur addieren wenn beide Mengen tatsaechlich eine Zahl > 0 hatten UND
+  // die Einheiten uebereinstimmen (Gross-/Kleinschreibung ignorieren) - sonst
+  // waere z.B. "2 EL" + "3 TL" faelschlich zu "5" addiert.
+  if (numA > 0 && numB > 0 && unitA.toLowerCase() === unitB.toLowerCase()) {
+    var sum = Math.round((numA + numB) * 100) / 100;
+    return sum + (unitA ? ' ' + unitA : '');
   }
   return a + ' + ' + b;
 }
@@ -2142,7 +2198,11 @@ function parseMenge(menge) {
 }
 
 function adjPort(d) {
-  G_cook_port = Math.max(1, Math.min(8, G_cook_port + d));
+  // Obergrenze relativ zur tatsaechlichen Ausgangsmenge (G_cook_base_port)
+  // statt eines festen Werts von 8 - sonst wuerde z.B. eine Ausgangsmenge
+  // von 10 (6 Personen + Reste) beim ersten Klick sofort auf 8 herunterspringen.
+  var maxPort = Math.max(20, G_cook_base_port + 10);
+  G_cook_port = Math.max(1, Math.min(maxPort, G_cook_port + d));
   var el = $('port-display');
   if (el) el.textContent = G_cook_port;
   // Rescale ingredient amounts in the displayed list
@@ -2471,10 +2531,14 @@ function startT(i) {
   var s = G.steps[i];
   if (!s || !s.timer_min) return;
 
+  // Eventuell noch laufendes altes Interval fuer diesen Schritt zuerst beenden,
+  // BEVOR G.timers[i] ueberschrieben wird - sonst zeigt .iv bereits auf das neue
+  // (noch leere) Objekt und das alte Interval laeuft unsichtbar im Hintergrund weiter.
+  if (G.timers[i] && G.timers[i].iv) clearInterval(G.timers[i].iv);
+
   var end = Date.now() + s.timer_min * 60 * 1000;
   G.timers[i] = { end: end, total: s.timer_min * 60, done: false, titel: s.titel || 'Timer' };
 
-  clearInterval(G.timers[i].iv);
   G.timers[i].iv = setInterval(function() {
     var t = G.timers[i];
     if (!t) return;
@@ -2645,12 +2709,11 @@ var GH_HISTORY = 'history.json';
 
 function saveToHistory(planData) {
   var sug = planData.sug || (planData.sugs && planData.sugs[planData.sel||0]);
+  // planId sollte bereits am planData haengen (siehe setActivePlanAndGo /
+  // nochmalKochen). Fallback nur fuer Aufrufer die (noch) keine mitgeben.
+  if (!planData.planId) planData.planId = generatePlanId();
   var entry = {
-    // Stabile ID damit spaetere Aktualisierungen (z.B. nachgeladene
-    // Kochschritte) denselben Verlaufseintrag treffen statt einen neuen
-    // anzulegen. weekStart ist pro Plan eindeutig, faellt sonst auf einen
-    // Zeitstempel zurueck.
-    planId: planData.weekStart || ('p_' + Date.now()),
+    planId: planData.planId,
     date: new Date().toISOString().slice(0,10),
     saved: new Date().toLocaleDateString('de-CH'),
     thema: sug ? sug.thema : 'Menüplan',
@@ -2676,10 +2739,12 @@ function saveToHistory(planData) {
 // Fallback (aeltere Eintraege ohne planId, die vor dieser Aenderung entstanden).
 function findHistoryEntryIndex(hist, planData) {
   var sug = planData.sug || (planData.sugs && planData.sugs[planData.sel||0]);
-  if (planData.weekStart) {
-    var byId = hist.findIndex(function(e) { return e.planId === planData.weekStart; });
+  // Primär und ausschliesslich ueber die echte planId zuordnen wenn vorhanden.
+  if (planData.planId) {
+    var byId = hist.findIndex(function(e) { return e.planId === planData.planId; });
     if (byId >= 0) return byId;
   }
+  // Fallback nur fuer Alt-Eintraege ohne planId (vor dieser Aenderung entstanden).
   if (sug) {
     var bySavedTheme = hist.findIndex(function(e) {
       return e.saved === planData.saved && e.thema === sug.thema;
@@ -2748,6 +2813,17 @@ function persistActivePlan() {
   updateDashboard();
 }
 
+// Echte, kollisionsfreie ID pro Plan - unabhaengig von der Kalenderwoche,
+// damit mehrere Plaene fuer dieselbe Woche (z.B. verworfen und neu generiert)
+// sich nicht die planId teilen. crypto.randomUUID() ist in modernen Browsern
+// verfuegbar; Fallback falls nicht (aeltere Browser/manche WebViews).
+function generatePlanId() {
+  if (window.crypto && typeof window.crypto.randomUUID === 'function') {
+    return window.crypto.randomUUID();
+  }
+  return 'p_' + Date.now() + '_' + Math.random().toString(36).slice(2, 10);
+}
+
 function currentWeekStart() {
   var now = new Date();
   var dow = now.getDay() === 0 ? 6 : now.getDay() - 1;
@@ -2759,6 +2835,7 @@ function setActivePlanAndGo() {
   if (G.sel === null) return;
   var sug = G.sugs[G.sel];
   var planData = {
+    planId: generatePlanId(),
     sug: sug, sel: G.sel, n: G.n, personen: G.personen,
     reste: G.reste, freeze: G.freeze, modus: G.modus, days: G.days,
     weekStart: currentWeekStart(),
@@ -2829,12 +2906,15 @@ function markEinkaufDoneGekocht() {
 
   // Verlaufseintrag: nur als "gekocht" markieren wenn WIRKLICH alle Gerichte
   // des Plans gekocht oder abgesagt sind - nicht schon nach dem ersten.
+  // Ueber planId zuordnen statt hist[0] anzunehmen - der aktive Plan muss
+  // nicht zwangslaeufig der neueste Verlaufseintrag sein.
   var hist = JSON.parse(localStorage.getItem(userKey('local_history')) || '[]');
   var alleFertig = G.activePlan && G.activePlan.sug && G.activePlan.sug.gerichte
     ? G.activePlan.sug.gerichte.every(function(g) { return g._gekocht || g._cancelled; })
     : false;
-  if (hist.length && alleFertig && hist[0].status !== 'gekocht') {
-    hist[0].status = 'gekocht';
+  var histIdx = G.activePlan ? findHistoryEntryIndex(hist, G.activePlan) : -1;
+  if (histIdx >= 0 && alleFertig && hist[histIdx].status !== 'gekocht') {
+    hist[histIdx].status = 'gekocht';
     localStorage.setItem(userKey('local_history'), JSON.stringify(hist));
     saveHistoryToGH(hist);
   }
@@ -3190,8 +3270,9 @@ function generateReplace() {
       $('rep-gen-btn').disabled = false;
       try {
         var parsed = parseJSON(raw);
+        var repValidationError = validateFullRecipe(parsed);
+        if (repValidationError) throw new Error(repValidationError);
         var gerichte = parsed.gerichte || [];
-        if (!gerichte.length) throw new Error('Kein Gericht generiert');
         var ng = gerichte[0];
         G_rep.newGericht = ng;
         $('rep-name').textContent = ng.abend;
@@ -3595,8 +3676,11 @@ function submitRating() {
   if (g) {
     var entry = { date:new Date().toISOString().slice(0,10), saved:new Date().toLocaleDateString('de-CH'), thema:G.sugs[G.sel].thema, gericht:g.abend, tag:g.tag, stars:G_rating.stars, label:STAR_LABELS[G_rating.stars], feedback:feedback, tags:G_rating.tags.slice(), personen:G.personen||2, zutaten:(g.zutaten||[]).map(function(z){return z.name;}).join(', ') };
     saveRatingToGH(entry);
+    // Ueber planId zuordnen statt hist2[0] anzunehmen - der gerade gekochte
+    // Plan muss nicht der neueste Verlaufseintrag sein.
     var hist2=JSON.parse(localStorage.getItem(userKey('local_history'))||'[]');
-    if (hist2.length){hist2[0].stars=G_rating.stars;hist2[0].ratingFeedback=feedback;hist2[0].tags=G_rating.tags.slice();}
+    var hIdx = G.activePlan ? findHistoryEntryIndex(hist2, G.activePlan) : -1;
+    if (hIdx >= 0) { hist2[hIdx].stars=G_rating.stars; hist2[hIdx].ratingFeedback=feedback; hist2[hIdx].tags=G_rating.tags.slice(); }
     localStorage.setItem(userKey('local_history'),JSON.stringify(hist2)); saveHistoryToGH(hist2);
   }
   $('rating-modal').style.display='none'; go(G_rating.returnScreen || 'sw');
@@ -3700,6 +3784,7 @@ function nochmalKochen(i) {
     // muessen ebenfalls zurueckgesetzt werden, sonst gilt der reaktivierte
     // Plan sofort als "veraltet" und die Einkaufsliste als "schon uebertragen".
     var newPlan = JSON.parse(JSON.stringify(plan));
+    newPlan.planId = generatePlanId(); // neue ID: dies ist ein NEUER Kochvorgang, kein Update des alten Eintrags
     newPlan.saved = new Date().toLocaleDateString('de-CH');
     newPlan.weekStart = currentWeekStart();
     newPlan.einkaufDone = false;
@@ -3874,7 +3959,10 @@ function analyzeFoto(){
     $('foto-load').style.display='none'; $('foto-btn').disabled=false;
     var raw=(d.content&&d.content[0]&&d.content[0].text)?d.content[0].text:'';
     if(!raw)throw new Error('Keine Antwort');
-    var rezept=parseJSON(raw); renderFotoRezept(rezept);
+    var rezept=parseJSON(raw);
+    var fotoValidationError = validateFotoRecipe(rezept);
+    if (fotoValidationError) throw new Error(fotoValidationError);
+    renderFotoRezept(rezept);
   }).catch(function(e){$('foto-load').style.display='none';$('foto-btn').disabled=false;if($('foto-err')){$('foto-err').textContent='Fehler: '+e.message;$('foto-err').style.display='block';}});
 }
 function renderFotoRezept(r){
@@ -3888,7 +3976,7 @@ function importFotoFromResult(){
   r.status='einkauf'; saveFotoRezeptSilent(r,'einkauf');
   var tmpSug={thema:r.name||'Foto-Rezept',kochabende:[],gerichte:[{tag:'Foto',abend:r.name||'Foto-Rezept',zutaten:r.zutaten||[]}]};
   G.sugs=[tmpSug];G.sel=0;
-  if(G.bLists&&G.bLists.length){$('blist').innerHTML=G.bLists.map(function(l){return '<option value="'+l.listUuid+'">'+l.name+'</option>';}).join('');$('blistwrap').style.display='block';$('bfields').style.display='none';}
+  if(G.bLists&&G.bLists.length){$('blist').innerHTML=G.bLists.map(function(l){return '<option value="'+esc(l.listUuid)+'">'+esc(l.name)+'</option>';}).join('');$('blistwrap').style.display='block';$('bfields').style.display='none';}
   $('wtit').textContent=r.name||'Foto-Rezept';$('wsub').textContent='Foto-Rezept';
   renderEink(tmpSug); go('sw'); wtab('e');
   var oldBack=document.getElementById('foto-back-btn');if(oldBack)oldBack.remove();
