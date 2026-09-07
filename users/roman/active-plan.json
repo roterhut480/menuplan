@@ -1,70 +1,66 @@
 {
-  "planId": "941a5562-b211-4b07-9f02-0125a6b15090",
+  "planId": "fd8b7e00-e201-404f-a858-39511ee76e4d",
   "sug": {
-    "id": 1,
-    "thema": "Mediterran (Variante 1)",
+    "id": 3,
+    "thema": "Marokkanisch",
     "kochabende": [
-      "Mi",
-      "So"
+      "Mo",
+      "Fr"
     ],
     "gerichte": [
       {
-        "tag": "Mi",
-        "abend": "❌ Spanischer Tortilla mit Salat (ausgefallen)",
-        "zeit_aktiv": "18m",
-        "zeit_total": "25m",
-        "_cancelled": true,
-        "_origAbend": "Spanischer Tortilla mit Salat"
+        "tag": "Mo",
+        "abend": "Marokkanische Linsensuppe mit Harissa",
+        "zeit_aktiv": "15m",
+        "zeit_total": "25m"
       },
       {
-        "tag": "So",
-        "abend": "Griechischer Horiatiki-Salat mit Feta und Oliven",
-        "zeit_aktiv": "12m",
-        "zeit_total": "12m"
+        "tag": "Fr",
+        "abend": "Vegetarisches Tajine mit Kichererbsen und Trockenfrüchten",
+        "zeit_aktiv": "25m",
+        "zeit_total": "40m"
       }
     ]
   },
-  "sel": 0,
+  "sel": 2,
   "n": 2,
-  "personen": 1,
+  "personen": 2,
   "reste": 0,
   "freeze": 0,
   "modus": "vegi",
   "days": {
-    "Mo": null,
+    "Mo": "schnell",
     "Di": null,
-    "Mi": "schnell",
+    "Mi": null,
     "Do": null,
-    "Fr": null,
+    "Fr": "aufwendig",
     "Sa": null,
-    "So": "schnell"
+    "So": null
   },
   "weekStart": "2026-09-06",
   "saved": "7.9.2026",
-  "bringImportedAt": "07.09., 16:07",
+  "bringImportedAt": null,
   "bringItemCount": 0,
   "sugsAll": [
     {
       "id": 1,
       "thema": "Mediterran (Variante 1)",
       "kochabende": [
-        "Mi",
-        "So"
+        "Mo",
+        "Fr"
       ],
       "gerichte": [
         {
-          "tag": "Mi",
-          "abend": "❌ Spanischer Tortilla mit Salat (ausgefallen)",
+          "tag": "Mo",
+          "abend": "Shakshuka mit Spinat und Feta",
           "zeit_aktiv": "18m",
-          "zeit_total": "25m",
-          "_cancelled": true,
-          "_origAbend": "Spanischer Tortilla mit Salat"
+          "zeit_total": "25m"
         },
         {
-          "tag": "So",
-          "abend": "Griechischer Horiatiki-Salat mit Feta und Oliven",
-          "zeit_aktiv": "12m",
-          "zeit_total": "12m"
+          "tag": "Fr",
+          "abend": "Auberginen-Tomaten-Auflauf mit Ricotta",
+          "zeit_aktiv": "35m",
+          "zeit_total": "55m"
         }
       ]
     },
@@ -72,21 +68,21 @@
       "id": 2,
       "thema": "Mediterran",
       "kochabende": [
-        "Mi",
-        "So"
+        "Mo",
+        "Fr"
       ],
       "gerichte": [
         {
-          "tag": "Mi",
-          "abend": "Auberginen-Tomaten-Gratin",
+          "tag": "Mo",
+          "abend": "Shakshuka mit Feta und Gemüse",
           "zeit_aktiv": "18m",
-          "zeit_total": "40m"
+          "zeit_total": "25m"
         },
         {
-          "tag": "So",
-          "abend": "Griechischer Horta-Salat mit Feta",
-          "zeit_aktiv": "12m",
-          "zeit_total": "12m"
+          "tag": "Fr",
+          "abend": "Gefüllte Auberginen mit Tomaten und Pinienkernen",
+          "zeit_aktiv": "35m",
+          "zeit_total": "50m"
         }
       ]
     },
@@ -94,26 +90,24 @@
       "id": 3,
       "thema": "Marokkanisch",
       "kochabende": [
-        "Mi",
-        "So"
+        "Mo",
+        "Fr"
       ],
       "gerichte": [
         {
-          "tag": "Mi",
-          "abend": "Kichererbsen-Tagine mit Kuerbis",
-          "zeit_aktiv": "18m",
-          "zeit_total": "32m"
+          "tag": "Mo",
+          "abend": "Marokkanische Linsensuppe mit Harissa",
+          "zeit_aktiv": "15m",
+          "zeit_total": "25m"
         },
         {
-          "tag": "So",
-          "abend": "Couscous-Salat mit gruenen Oliven und Minze",
-          "zeit_aktiv": "15m",
-          "zeit_total": "15m"
+          "tag": "Fr",
+          "abend": "Vegetarisches Tajine mit Kichererbsen und Trockenfrüchten",
+          "zeit_aktiv": "25m",
+          "zeit_total": "40m"
         }
       ]
     }
   ],
-  "sugsPartial": true,
-  "einkaufDone": true,
-  "bringStale": true
+  "sugsPartial": true
 }
