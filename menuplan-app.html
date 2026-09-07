@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=yes">
-<title>Menüplan v6.10</title>
+<title>Menüplan v6.11</title>
 <style>
 :root{
   --red:#e8390e;--rl:#fff2ef;--grn:#2e7d32;--grl:#f0faf4;
@@ -153,7 +153,7 @@ input[type=password]{letter-spacing:2px}
 
 <!-- HOME -->
 <div class="scr on" id="sh">
-  <div class="hero"><h1>Menüplan</h1><p id="hsub">v6.10 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
+  <div class="hero"><h1>Menüplan</h1><p id="hsub">v6.11 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
 
   <!-- Active plan card -->
 
@@ -790,21 +790,21 @@ window.addEventListener('DOMContentLoaded', function() {
   }
   loadBringTokenRemote().then(function(remote) {
     if (remote) { applyBringSession(remote); return; }
-    var bs = localStorage.getItem('bs');
+    var bs = localStorage.getItem(userKey('bs'));
     if (bs) {
       try { applyBringSession(JSON.parse(bs)); }
-      catch(e) { localStorage.removeItem('bs'); }
+      catch(e) { localStorage.removeItem(userKey('bs')); }
     }
   });
   // GitHub
   updateGHUI();
   // Active plan
-  var ap = localStorage.getItem('active_plan');
+  var ap = localStorage.getItem(userKey('active_plan'));
   if (ap) {
     try {
       G.activePlan = JSON.parse(ap);
       renderActivePlan();
-    } catch(e) { localStorage.removeItem('active_plan'); }
+    } catch(e) { localStorage.removeItem(userKey('active_plan')); }
   }
 });
 
@@ -841,7 +841,9 @@ function doLogin() {
       err.style.display = 'block';
       $('login-pw').value = '';
     } else if (r.ok) {
-      localStorage.setItem('gh_session', JSON.stringify({ username: username, pw: pw }));
+      // "verified" merkt sich fuer wen zuletzt eine ECHTE Server-Pruefung
+      // erfolgreich war - nur dieser exakte Nutzer darf spaeter offline rein.
+      localStorage.setItem('gh_session', JSON.stringify({ username: username, pw: pw, verified: true }));
       showLoggedIn();
       syncAllFromGH();
     } else {
@@ -849,20 +851,24 @@ function doLogin() {
       err.style.display = 'block';
     }
   }).catch(function() {
-    // Worker unreachable - save session and continue offline
     if (loginBtn) { loginBtn.disabled = false; loginBtn.textContent = 'Anmelden'; }
-    localStorage.setItem('gh_session', JSON.stringify({ username: username, pw: pw }));
-    showLoggedIn();
+    // Worker nicht erreichbar: NUR erlauben wenn genau dieser Benutzername+Passwort
+    // schon einmal echt (online) verifiziert wurde. Sonst koennte jemand mit
+    // Netzwerk aus/an einfach einen beliebigen Namen eintippen und auf lokal
+    // gespeicherte Daten eines anderen Benutzers zugreifen.
+    var prior = null;
+    try { prior = JSON.parse(localStorage.getItem('gh_session')); } catch(e) {}
+    if (prior && prior.verified && prior.username === username && prior.pw === pw) {
+      showLoggedIn();
+    } else {
+      err.textContent = 'Keine Verbindung zum Server. Offline-Anmeldung ist nur für zuvor bereits online verifizierte Zugangsdaten möglich.';
+      err.style.display = 'block';
+    }
   });
 }
 
 
 
-function startSession(username, pw) {
-  localStorage.setItem('gh_session', JSON.stringify({ username: username, pw: pw }));
-  showLoggedIn();
-  syncAllFromGH();
-}
 
 function getGHToken() {
   var session = getSession();
@@ -882,10 +888,6 @@ function nsKey(key) {
   var s = getSession();
   return s ? key + '_' + s.username : key;
 }
-function nsGet(key) { try { return JSON.parse(localStorage.getItem(nsKey(key)) || localStorage.getItem(key) || 'null'); } catch(e) { return null; } }
-function nsSet(key, val) { var s = getSession(); if(s) localStorage.setItem(key+'_'+s.username, JSON.stringify(val)); localStorage.setItem(key, JSON.stringify(val)); }
-function nsRemove(key) { var s = getSession(); if(s) localStorage.removeItem(key+'_'+s.username); localStorage.removeItem(key); }
-
 function getSession() {
   try { return JSON.parse(localStorage.getItem('gh_session')); } catch(e) { return null; }
 }
@@ -898,12 +900,16 @@ function getUserFolder() {
 function doLogout() {
   localStorage.removeItem('gh_session');
   if ($('loggedin-section')) $('loggedin-section').style.display = 'none';
+  if ($('login-card')) $('login-card').style.display = 'block';
   if ($('login-section')) $('login-section').style.display = 'block';
   if ($('login-pw')) $('login-pw').value = '';
   if ($('login-user')) $('login-user').value = '';
+  if ($('user-menu-btn')) $('user-menu-btn').style.display = 'none';
   // Clear active plan display
-  /* legacy active-plan entfernt */
   G.activePlan = null;
+  G.bToken = null;
+  G.bUUID = null;
+  G.bLists = [];
 }
 
 
@@ -921,7 +927,7 @@ function showInviteLink() {
     modal.id = 'invite-modal';
     modal.innerHTML = '<div style="background:#fff;border-radius:14px;padding:20px;width:100%;max-width:400px">' +
       '<div style="font-size:16px;font-weight:700;margin-bottom:8px">Einladungslink</div>' +
-      '<div style="font-size:12px;color:var(--gr3);margin-bottom:12px">Link teilen - Empfänger wählt eigenen Benutzernamen und Passwort.</div>' +
+      '<div style="font-size:12px;color:var(--gr3);margin-bottom:12px">Link teilen. Wichtig: Der Empfänger kann sich erst anmelden, nachdem du seinen Benutzernamen und ein Passwort selbst in Cloudflare unter MP_USERS eingetragen hast.</div>' +
       '<div style="background:#f5f5f5;border-radius:8px;padding:10px;font-size:11px;word-break:break-all;margin-bottom:12px;font-family:monospace;color:var(--txt2)">' + url + '</div>' +
       '<div style="display:flex;gap:8px">' +
         '<button id="copy-invite-btn" onclick="copyInviteLink()" class="btn btn-red" style="flex:1;padding:10px;font-size:13px">Link kopieren</button>'+
@@ -1032,7 +1038,7 @@ function syncAllFromGH() {
       var plan = decodeGHContent(d);
       if (plan && plan.sug && !plan.cleared) {
         G.activePlan = plan;
-        localStorage.setItem('active_plan', JSON.stringify(plan));
+        localStorage.setItem(userKey('active_plan'), JSON.stringify(plan));
         renderActivePlan();
       }
     }).catch(function(){});
@@ -1041,18 +1047,18 @@ function syncAllFromGH() {
     .then(function(d) {
       var fr = decodeGHContent(d);
       if (!Array.isArray(fr)) return;
-      var local = JSON.parse(localStorage.getItem('foto_rezepte') || '[]');
+      var local = JSON.parse(localStorage.getItem(userKey('foto_rezepte')) || '[]');
       var merged = fr.slice();
       local.forEach(function(l) {
         if (!merged.find(function(g){ return g.name === l.name; })) merged.push(l);
       });
-      localStorage.setItem('foto_rezepte', JSON.stringify(merged));
+      localStorage.setItem(userKey('foto_rezepte'), JSON.stringify(merged));
     }).catch(function(){});
   fetch(PROXY + '/gh/' + ghFile('history.json'), { headers: h })
     .then(function(r) { return r.ok ? r.json() : null; })
     .then(function(d) {
       var hist = decodeGHContent(d);
-      if (Array.isArray(hist)) localStorage.setItem('local_history', JSON.stringify(hist));
+      if (Array.isArray(hist)) localStorage.setItem(userKey('local_history'), JSON.stringify(hist));
     }).catch(function(){});
 }
 
@@ -1069,7 +1075,7 @@ function syncGH(btn) {
         var plan = JSON.parse(decodeURIComponent(escape(atob(d.content.split('\n').join('')))));
         if (plan && plan.sug) {
           G.activePlan = plan;
-          localStorage.setItem('active_plan', JSON.stringify(plan));
+          localStorage.setItem(userKey('active_plan'), JSON.stringify(plan));
           renderActivePlan();
         }
       }
@@ -1129,7 +1135,7 @@ function bringTokenHeaders() {
 
 function saveBringTokenRemote(data) {
   var h = bringTokenHeaders();
-  localStorage.setItem('bs', JSON.stringify(data));   // lokaler Fallback bleibt bestehen
+  localStorage.setItem(userKey('bs'), JSON.stringify(data));   // lokaler Fallback bleibt bestehen
   if (!h) return Promise.resolve();
   return fetch(PROXY + '/bring-token', { method: 'PUT', headers: h, body: JSON.stringify(data) })
     .catch(function() {});
@@ -1145,7 +1151,7 @@ function loadBringTokenRemote() {
 
 function deleteBringTokenRemote() {
   var h = bringTokenHeaders();
-  localStorage.removeItem('bs');
+  localStorage.removeItem(userKey('bs'));
   if (!h) return Promise.resolve();
   return fetch(PROXY + '/bring-token', { method: 'DELETE', headers: h }).catch(function(){});
 }
@@ -1367,7 +1373,7 @@ function doImportItems() {
       })
       .catch(function(e) {
         if (e.message === 'SESSION_EXPIRED') {
-          G.bToken = null; G.bUUID = null; localStorage.removeItem('bs');
+          G.bToken = null; G.bUUID = null; localStorage.removeItem(userKey('bs'));
           if ($('bfields')) $('bfields').style.display = 'block';
           if ($('blistwrap')) $('blistwrap').style.display = 'none';
           var btn2 = $('ibtn');
@@ -1401,7 +1407,7 @@ function doImportItems() {
     } else if (r && r.status === 401) {
       // Session abgelaufen - neu einloggen
       G.bToken = null; G.bUUID = null;
-      localStorage.removeItem('bs');
+      localStorage.removeItem(userKey('bs'));
       if ($('bfields')) $('bfields').style.display = 'block';
       if ($('blistwrap')) $('blistwrap').style.display = 'none';
       btn.innerHTML = 'In Bring! importieren'; btn.disabled = false;
@@ -1733,6 +1739,21 @@ function goSuggest() {
 }
 
 
+
+// ─── XSS-SCHUTZ ─────────────────────────────────────────────
+// Escaped KI-/GitHub-/Bring!-generierte Texte bevor sie in innerHTML landen.
+// Ein manipulierter Gerichtsname wie <img onerror=...> koennte sonst
+// Code ausfuehren und z.B. den localStorage (Passwoerter, Tokens) auslesen.
+function esc(s) {
+  if (s === null || s === undefined) return '';
+  return String(s)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
 function renderSugs() {
   var html = '';
   for (var i = 0; i < G.sugs.length; i++) {
@@ -1757,20 +1778,20 @@ function renderSugs() {
         'style="display:flex;align-items:center;justify-content:space-between;padding:4px 0;border-radius:6px;transition:background .15s">' +
         '<div style="display:flex;align-items:center;gap:6px">' +
           '<span style="color:var(--gr3);font-size:14px;' + dragStyle + '">⠿</span>' +
-          '<b style="color:var(--txt);min-width:22px;display:inline-block">' + tagShort + '</b> ' + g.abend +
+          '<b style="color:var(--txt);min-width:22px;display:inline-block">' + tagShort + '</b> ' + esc(g.abend) +
         '</div>' +
         '<button onclick="toggleFix(' + i + ',' + j + ');event.stopPropagation()" title="' + (isFixed?'Fixiert':'Fixieren') + '" style="background:none;border:none;cursor:pointer;font-size:15px;padding:2px 4px;opacity:' + (isFixed?'1':'0.3') + ';transition:opacity .2s" id="fix-btn-' + fixKey + '">' +
           (isFixed ? '🔒' : '🔓') +
         '</button>' +
       '</div>';
       if (g.mittag_nächster_tag && g.mittag_nächster_tag !== 'Restename') {
-        days += '<div class="sug-nx">&#8627; ' + (g.mittag_tag||'') + ': ' + g.mittag_nächster_tag + '</div>';
+        days += '<div class="sug-nx">&#8627; ' + esc(g.mittag_tag||'') + ': ' + esc(g.mittag_nächster_tag) + '</div>';
       }
     }
     var zeitInfo = s.gerichte.length > 0 && s.gerichte[0].zeit_total ?
-      '<div style="font-size:11px;color:var(--gr3);margin-top:4px">&#9200; ca. ' + s.gerichte[0].zeit_total + ' pro Abend</div>' : '';
+      '<div style="font-size:11px;color:var(--gr3);margin-top:4px">&#9200; ca. ' + esc(s.gerichte[0].zeit_total) + ' pro Abend</div>' : '';
     html += '<div class="sug' + sel + '" onclick="selSug(' + i + ')">' +
-      '<div class="sug-h"><div class="sug-n">Option ' + (i+1) + (sel?' &#10003;':'') + '</div><div class="sug-t">' + s.thema + '</div>' + zeitInfo + '</div>' +
+      '<div class="sug-h"><div class="sug-n">Option ' + (i+1) + (sel?' &#10003;':'') + '</div><div class="sug-t">' + esc(s.thema) + '</div>' + zeitInfo + '</div>' +
       '<div class="sug-b">' + days + '</div></div>';
   }
   $('slist').innerHTML = html;
@@ -1911,7 +1932,7 @@ function renderEink(sug) {
   for (var i = 0; i < items.length; i++) {
     html += '<div class="irow" id="ir' + i + '" onclick="togItem(' + i + ')">' +
       '<div class="ichk" id="ic' + i + '"></div>' +
-      '<div><div class="iname">' + items[i].name + '</div><div class="ispec">' + items[i].menge + '</div></div></div>';
+      '<div><div class="iname">' + esc(items[i].name) + '</div><div class="ispec">' + esc(items[i].menge) + '</div></div></div>';
   }
   $('elist').innerHTML = html;
   updateTransferStatusUI();
@@ -1923,7 +1944,7 @@ function markPlanChangedSinceTransfer() {
   // veralteten "erfolgreich uebertragen"-Status weiter zu behaupten.
   if (!G.activePlan || !G.activePlan.bringImportedAt) return;
   G.activePlan.bringStale = true;
-  localStorage.setItem('active_plan', JSON.stringify(G.activePlan));
+  localStorage.setItem(userKey('active_plan'), JSON.stringify(G.activePlan));
   var box = $('einkauf-transfer-status');
   if (box) {
     box.style.background = '#fff8e1';
@@ -1967,12 +1988,12 @@ function togItem(i) {
   var chk = document.getElementById('ic' + i);
   if (row) row.classList.toggle('done', !!G.checked[i]);
   if (chk) { chk.classList.toggle('on', !!G.checked[i]); chk.textContent = G.checked[i] ? '✓' : ''; }
-  try { localStorage.setItem('einkauf_checked', JSON.stringify(G.checked)); } catch(e) {}
+  try { localStorage.setItem(userKey('einkauf_checked'), JSON.stringify(G.checked)); } catch(e) {}
 }
 
 function loadCheckedItems() {
   try {
-    var saved = JSON.parse(localStorage.getItem('einkauf_checked') || '{}');
+    var saved = JSON.parse(localStorage.getItem(userKey('einkauf_checked')) || '{}');
     G.checked = saved;
     setTimeout(function() {
       var items = document.querySelectorAll('.irow');
@@ -1987,13 +2008,13 @@ function renderRez(sug) {
   var html = '';
   for (var i = 0; i < sug.gerichte.length; i++) {
     var g = sug.gerichte[i];
-    var next = g.mittag_nächster_tag ? ('&#8594; ' + g.mittag_tag + ': ' + g.mittag_nächster_tag) : '';
+    var next = g.mittag_nächster_tag ? ('&#8594; ' + esc(g.mittag_tag) + ': ' + esc(g.mittag_nächster_tag)) : '';
     var zeitHtml = (g.zeit_aktiv || g.zeit_total) ?
       '<div style="display:flex;gap:12px;margin-top:5px">' +
-      (g.zeit_aktiv ? '<span style="font-size:11px;color:var(--gr3)">&#9998; Aktiv: <b style="color:var(--txt2)">' + g.zeit_aktiv + '</b></span>' : '') +
-      (g.zeit_total ? '<span style="font-size:11px;color:var(--gr3)">&#9200; Total: <b style="color:var(--txt2)">' + g.zeit_total + '</b></span>' : '') +
+      (g.zeit_aktiv ? '<span style="font-size:11px;color:var(--gr3)">&#9998; Aktiv: <b style="color:var(--txt2)">' + esc(g.zeit_aktiv) + '</b></span>' : '') +
+      (g.zeit_total ? '<span style="font-size:11px;color:var(--gr3)">&#9200; Total: <b style="color:var(--txt2)">' + esc(g.zeit_total) + '</b></span>' : '') +
       '</div>' : '';
-    html += '<div class="rcard"><div class="rh"><div class="rday">' + g.tag + '</div><div class="rname">' + g.abend + '</div>' +
+    html += '<div class="rcard"><div class="rh"><div class="rday">' + esc(g.tag) + '</div><div class="rname">' + esc(g.abend) + '</div>' +
       zeitHtml +
       (next ? '<div class="rnext">' + next + '</div>' : '') + '</div>' +
       '<div class="ract">' +
@@ -2075,8 +2096,12 @@ function startCook(ri) {
   G.steps = buildSteps(g);
   G.cur = -1; G.act = 0; G.done = {};
   G.cookingGerichtIdx = ri;
-  // Set base portions for scaling
-  G_cook_base_port = G.personen || 2;
+  // Basis fuer die Portionsskalierung: die Zutatenmengen wurden vom Worker
+  // fuer die GESAMTMENGE berechnet (Abend + Resteportionen + Einfrierportionen),
+  // nicht nur fuer G.personen. Sonst skaliert "+1 Portion" viel zu stark.
+  var _mit = (G.reste && !g._cancelled) ? (G.personen || 2) : 0;
+  var _tk  = G.freeze ? 2 : 0;
+  G_cook_base_port = (G.personen || 2) + _mit + _tk;
   G_cook_port = G_cook_base_port;
   G_cook_zutaten = g.zutaten || [];
   clearInterval(G.tiv);
@@ -2097,9 +2122,9 @@ function showIngOverview(g) {
   for (var i = 0; i < zutaten.length; i++) {
     var _mNum = parseMengeNum(zutaten[i].menge);
     var _mUnit = parseMengeUnit(zutaten[i].menge);
-    rows += '<div class="zutat-row" data-base="' + _mNum + '" data-unit="' + _mUnit + '" style="display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:.5px solid #f0f0f0">' +
-      '<span style="font-size:14px;font-weight:500">' + zutaten[i].name + '</span>' +
-      '<span class="zutat-menge" style="font-size:13px;color:var(--gr3);font-weight:500">' + zutaten[i].menge + '</span></div>';
+    rows += '<div class="zutat-row" data-base="' + _mNum + '" data-unit="' + esc(_mUnit) + '" style="display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:.5px solid #f0f0f0">' +
+      '<span style="font-size:14px;font-weight:500">' + esc(zutaten[i].name) + '</span>' +
+      '<span class="zutat-menge" style="font-size:13px;color:var(--gr3);font-weight:500">' + esc(zutaten[i].menge) + '</span></div>';
   }
 
   // Portions-Aufschluesselung transparent machen
@@ -2113,11 +2138,11 @@ function showIngOverview(g) {
   var _portInfo = '<div style="background:#e3f2fd;border-radius:8px;padding:9px 12px;margin-bottom:10px;font-size:12px;color:#1565c0">' +
     '<b>Gesamtmenge: ' + _ges + ' Portionen</b><br>davon ' + _parts.join(', ') + '</div>';
   var html = '<div id="cing">' + _portInfo + '<div class="badge bv">Vor dem Kochen</div>' +
-    '<div style="font-size:16px;font-weight:700;margin-bottom:4px">' + g.abend + '</div>' +
-    (g.mittag_nächster_tag ? '<div style="font-size:13px;color:var(--gr3);margin-bottom:8px">Morgen: ' + g.mittag_nächster_tag + '</div>' : '') +
+    '<div style="font-size:16px;font-weight:700;margin-bottom:4px">' + esc(g.abend) + '</div>' +
+    (g.mittag_nächster_tag ? '<div style="font-size:13px;color:var(--gr3);margin-bottom:8px">Morgen: ' + esc(g.mittag_nächster_tag) + '</div>' : '') +
     ((g.zeit_aktiv || g.zeit_total) ? '<div style="display:flex;gap:12px;margin-bottom:16px">' +
-      (g.zeit_aktiv ? '<span style="font-size:12px;color:var(--gr3)">&#9998; Aktiv: <b style="color:var(--txt2)">' + g.zeit_aktiv + '</b></span>' : '') +
-      (g.zeit_total ? '<span style="font-size:12px;color:var(--gr3)">&#9200; Total: <b style="color:var(--txt2)">' + g.zeit_total + '</b></span>' : '') +
+      (g.zeit_aktiv ? '<span style="font-size:12px;color:var(--gr3)">&#9998; Aktiv: <b style="color:var(--txt2)">' + esc(g.zeit_aktiv) + '</b></span>' : '') +
+      (g.zeit_total ? '<span style="font-size:12px;color:var(--gr3)">&#9200; Total: <b style="color:var(--txt2)">' + esc(g.zeit_total) + '</b></span>' : '') +
       '</div>' : '<div style="margin-bottom:16px"></div>') +
     '<div style="background:#f9f9f9;border-radius:var(--r);padding:0 12px;margin-bottom:16px;border:.5px solid var(--bdr)">' +
     '<div style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--gr3);padding:10px 0 6px">Zutaten</div>' +
@@ -2144,7 +2169,9 @@ function releaseWakeLock() {
 }
 
 function beginCook() {
-  releaseWakeLock();
+  // Wake Lock lief bereits seit der Zutatenuebersicht (requestWakeLock beim
+  // Betreten von sc) - hier NICHT freigeben, sonst geht der Bildschirm
+  // genau beim Start des eigentlichen Kochens wieder aus.
   G.cur = 0; G.act = 0;
   renderSegs();
   renderAllSteps();
@@ -2189,7 +2216,7 @@ function stepBody(i) {
   var pills = '';
   if (s.zs && s.zs.length) {
     pills = '<div class="zpills">';
-    for (var j = 0; j < s.zs.length; j++) pills += '<div class="zpill">' + s.zs[j] + '</div>';
+    for (var j = 0; j < s.zs.length; j++) pills += '<div class="zpill">' + esc(s.zs[j]) + '</div>';
     pills += '</div>';
   }
 
@@ -2199,11 +2226,11 @@ function stepBody(i) {
     var lines = s.text.split('\n');
     txt = '<div class="csml">';
     for (var j = 0; j < lines.length; j++) {
-      if (lines[j].trim()) txt += '<div style="display:flex;gap:8px;margin-bottom:4px"><span style="font-size:12px;font-weight:700;color:var(--red);min-width:16px">' + (j+1) + '.</span><span>' + lines[j] + '</span></div>';
+      if (lines[j].trim()) txt += '<div style="display:flex;gap:8px;margin-bottom:4px"><span style="font-size:12px;font-weight:700;color:var(--red);min-width:16px">' + (j+1) + '.</span><span>' + esc(lines[j]) + '</span></div>';
     }
     txt += '</div>';
   } else {
-    txt = pills + '<div class="cstxt">' + s.text + '</div>';
+    txt = pills + '<div class="cstxt">' + esc(s.text) + '</div>';
   }
 
   // Timer
@@ -2240,7 +2267,7 @@ function renderAllSteps() {
     html += '<div class="' + cardCls + '" id="csc_' + i + '">' +
       '<div class="cstep-head" onclick="toggleStepCard(' + i + ')">' +
         '<div class="cstep-num">' + (isDone ? '&#10003;' : (i+1)) + '</div>' +
-        '<div class="cstep-head-txt">' + (s.titel || title) + '</div>' +
+        '<div class="cstep-head-txt">' + esc(s.titel || title) + '</div>' +
         (!isDone && !isAct ? '<span style="font-size:18px;color:var(--gr3)">&#8250;</span>' : '') +
       '</div>' +
       '<div class="cstep-body"' + (!isAct && !isDone ? ' style="display:none"' : '') + '>' +
@@ -2353,7 +2380,7 @@ function showPrint(ri) {
     var timer = sv[i].timer_min > 0 ? '<span style="display:inline-block;background:#fff3e0;color:#e65100;font-size:11px;padding:2px 7px;border-radius:100px;margin-left:6px;font-weight:600">&#9201; ' + sv[i].timer_min + ' Min.</span>' : '';
     vSteps += '<div style="display:flex;gap:12px;margin-bottom:12px;align-items:flex-start">' +
       '<div style="width:24px;height:24px;border-radius:50%;background:#e8390e;color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0;margin-top:1px">' + (i+1) + '</div>' +
-      '<div style="flex:1"><div style="font-size:13px;line-height:1.6;color:#1a1a1a">' + sv[i].text + '</div>' + timer + '</div>' +
+      '<div style="flex:1"><div style="font-size:13px;line-height:1.6;color:#1a1a1a">' + esc(sv[i].text) + '</div>' + timer + '</div>' +
     '</div>';
   }
 
@@ -2362,37 +2389,40 @@ function showPrint(ri) {
     var timer2 = sf[i].timer_min > 0 ? '<span style="display:inline-block;background:#fff3e0;color:#e65100;font-size:11px;padding:2px 7px;border-radius:100px;margin-left:6px;font-weight:600">&#9201; ' + sf[i].timer_min + ' Min.</span>' : '';
     fSteps += '<div style="display:flex;gap:12px;margin-bottom:12px;align-items:flex-start">' +
       '<div style="width:24px;height:24px;border-radius:50%;background:#e65100;color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0;margin-top:1px">' + (i+1) + '</div>' +
-      '<div style="flex:1;font-size:13px;line-height:1.6;color:#1a1a1a">' + sf[i].text + '</div>' + timer2 +
+      '<div style="flex:1;font-size:13px;line-height:1.6;color:#1a1a1a">' + esc(sf[i].text) + '</div>' + timer2 +
     '</div>';
   }
 
   var pr = g.prep_next || [];
-  for (var i = 0; i < pr.length; i++) prepSteps += '<div style="font-size:12px;padding:3px 0;color:#1565c0">&#8226; ' + pr[i] + '</div>';
+  for (var i = 0; i < pr.length; i++) prepSteps += '<div style="font-size:12px;padding:3px 0;color:#1565c0">&#8226; ' + esc(pr[i]) + '</div>';
 
   var fr = g.einfrieren || [];
-  for (var i = 0; i < fr.length; i++) frzSteps += '<div style="font-size:12px;padding:3px 0;color:#0277bd">&#8226; ' + fr[i] + '</div>';
+  for (var i = 0; i < fr.length; i++) frzSteps += '<div style="font-size:12px;padding:3px 0;color:#0277bd">&#8226; ' + esc(fr[i]) + '</div>';
 
   var gz = g.zutaten || [];
   for (var i = 0; i < gz.length; i++) {
     zRows += '<tr>' +
-      '<td style="padding:7px 0;border-bottom:1px solid #f0f0f0;font-weight:600;font-size:13px;width:30%">' + gz[i].menge + '</td>' +
-      '<td style="padding:7px 0;border-bottom:1px solid #f0f0f0;font-size:13px;color:#333">' + gz[i].name + '</td>' +
+      '<td style="padding:7px 0;border-bottom:1px solid #f0f0f0;font-weight:600;font-size:13px;width:30%">' + esc(gz[i].menge) + '</td>' +
+      '<td style="padding:7px 0;border-bottom:1px solid #f0f0f0;font-size:13px;color:#333">' + esc(gz[i].name) + '</td>' +
     '</tr>';
   }
 
+  var _mitPdf = (G.reste && !g._cancelled) ? (G.personen || 2) : 0;
+  var _tkPdf  = G.freeze ? 2 : 0;
+  var _pdfGesamtPort = (G.personen || 2) + _mitPdf + _tkPdf;
   var metaHtml = '';
   if (g.zeit_aktiv || g.zeit_total) {
     metaHtml = '<div style="display:flex;gap:0;background:#f7f7f7;border-radius:8px;margin-bottom:20px;overflow:hidden">';
-    if (g.zeit_aktiv) metaHtml += '<div style="flex:1;padding:12px 16px;border-right:1px solid #e0e0e0"><div style="font-size:10px;color:#888;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:2px">Aktive Zeit</div><div style="font-size:14px;font-weight:700;color:#1a1a1a">' + g.zeit_aktiv + '</div></div>';
-    if (g.zeit_total) metaHtml += '<div style="flex:1;padding:12px 16px"><div style="font-size:10px;color:#888;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:2px">Gesamtzeit</div><div style="font-size:14px;font-weight:700;color:#1a1a1a">' + g.zeit_total + '</div></div>';
-    metaHtml += '<div style="flex:1;padding:12px 16px;border-left:1px solid #e0e0e0"><div style="font-size:10px;color:#888;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:2px">Portionen</div><div style="font-size:14px;font-weight:700;color:#1a1a1a">' + (G.personen||2) + '</div></div>';
+    if (g.zeit_aktiv) metaHtml += '<div style="flex:1;padding:12px 16px;border-right:1px solid #e0e0e0"><div style="font-size:10px;color:#888;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:2px">Aktive Zeit</div><div style="font-size:14px;font-weight:700;color:#1a1a1a">' + esc(g.zeit_aktiv) + '</div></div>';
+    if (g.zeit_total) metaHtml += '<div style="flex:1;padding:12px 16px"><div style="font-size:10px;color:#888;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:2px">Gesamtzeit</div><div style="font-size:14px;font-weight:700;color:#1a1a1a">' + esc(g.zeit_total) + '</div></div>';
+    metaHtml += '<div style="flex:1;padding:12px 16px;border-left:1px solid #e0e0e0"><div style="font-size:10px;color:#888;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:2px">Zutaten für</div><div style="font-size:14px;font-weight:700;color:#1a1a1a">' + _pdfGesamtPort + ' Portionen</div></div>';
     metaHtml += '</div>';
   }
 
   $('pcon').innerHTML =
     '<div style="border-bottom:3px solid #e8390e;padding-bottom:16px;margin-bottom:20px">' +
-      '<h1 style="font-size:24px;font-weight:800;color:#1a1a1a;margin:0 0 4px">' + g.abend + '</h1>' +
-      (g.mittag_tag ? '<p style="font-size:12px;color:#888;margin:0">&#8594; ' + g.mittag_tag + ': ' + g.mittag_nächster_tag + '</p>' : '') +
+      '<h1 style="font-size:24px;font-weight:800;color:#1a1a1a;margin:0 0 4px">' + esc(g.abend) + '</h1>' +
+      (g.mittag_tag ? '<p style="font-size:12px;color:#888;margin:0">&#8594; ' + esc(g.mittag_tag) + ': ' + esc(g.mittag_nächster_tag) + '</p>' : '') +
     '</div>' +
     metaHtml +
     '<div style="display:grid;grid-template-columns:1fr 1fr;gap:24px">' +
@@ -2406,7 +2436,7 @@ function showPrint(ri) {
         '<h2 style="font-size:14px;font-weight:700;color:#1a1a1a;border-bottom:2px solid #e8390e;padding-bottom:6px;margin-bottom:12px">Zubereitung</h2>' +
         vSteps +
         (fSteps ? '<div style="margin-top:8px"><h3 style="font-size:12px;font-weight:700;color:#e65100;margin-bottom:8px">Fleisch-Beilage (optional)</h3>' + fSteps + '</div>' : '') +
-        (g.tipp ? '<div style="background:#fff8e1;border-left:3px solid #f9a825;padding:10px 12px;border-radius:0 6px 6px 0;margin-top:12px"><div style="font-size:11px;font-weight:700;color:#7d5a00;margin-bottom:4px">TIPP</div><div style="font-size:12px;color:#7d5a00;line-height:1.6">' + g.tipp + '</div></div>' : '') +
+        (g.tipp ? '<div style="background:#fff8e1;border-left:3px solid #f9a825;padding:10px 12px;border-radius:0 6px 6px 0;margin-top:12px"><div style="font-size:11px;font-weight:700;color:#7d5a00;margin-bottom:4px">TIPP</div><div style="font-size:12px;color:#7d5a00;line-height:1.6">' + esc(g.tipp) + '</div></div>' : '') +
       '</div>' +
     '</div>' +
     '<div style="margin-top:24px;padding-top:12px;border-top:1px solid #e0e0e0;font-size:10px;color:#aaa;text-align:right">Erstellt mit Menüplan App</div>';
@@ -2431,17 +2461,17 @@ function saveToHistory(planData) {
     plan: planData
   };
   // Save locally always
-  var localHist = JSON.parse(localStorage.getItem('local_history') || '[]');
+  var localHist = JSON.parse(localStorage.getItem(userKey('local_history')) || '[]');
   localHist.unshift(entry);
   if (localHist.length > 52) localHist = localHist.slice(0,52);
-  localStorage.setItem('local_history', JSON.stringify(localHist));
+  localStorage.setItem(userKey('local_history'), JSON.stringify(localHist));
   // Save to GH via worker
   saveHistoryToGH(localHist);
 }
 
 
 function updateHistoryStatus(savedDate, status) {
-  var hist = JSON.parse(localStorage.getItem('local_history') || '[]');
+  var hist = JSON.parse(localStorage.getItem(userKey('local_history')) || '[]');
   var found = false;
   for (var i = 0; i < hist.length; i++) {
     if (hist[i].saved === savedDate || hist[i].date === savedDate) {
@@ -2449,7 +2479,7 @@ function updateHistoryStatus(savedDate, status) {
     }
   }
   if (!found && hist.length) hist[0].status = status;
-  localStorage.setItem('local_history', JSON.stringify(hist));
+  localStorage.setItem(userKey('local_history'), JSON.stringify(hist));
   saveHistoryToGH(hist);
 }
 
@@ -2459,7 +2489,7 @@ function markEinkaufDone(itemCount) {
   G.activePlan.bringImportedAt = new Date().toLocaleString('de-CH', {day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});
   G.activePlan.bringStale = false;
   if (itemCount) G.activePlan.bringItemCount = itemCount;
-  localStorage.setItem('active_plan', JSON.stringify(G.activePlan));
+  localStorage.setItem(userKey('active_plan'), JSON.stringify(G.activePlan));
   renderActivePlan();
   updateTransferStatusUI();
   saveToGH(G.activePlan);
@@ -2477,30 +2507,33 @@ function persistActivePlan() {
     G.activePlan.sel = G.sel;
   }
   G.activePlan.sugsPartial = G.sugsPartial;
-  try { localStorage.setItem('active_plan', JSON.stringify(G.activePlan)); } catch(e) {}
+  try { localStorage.setItem(userKey('active_plan'), JSON.stringify(G.activePlan)); } catch(e) {}
   saveToGH(G.activePlan);
   updateDashboard();
+}
+
+function currentWeekStart() {
+  var now = new Date();
+  var dow = now.getDay() === 0 ? 6 : now.getDay() - 1;
+  var monday = new Date(now); monday.setDate(now.getDate() - dow); monday.setHours(0,0,0,0);
+  return monday.toISOString().slice(0,10);
 }
 
 function setActivePlanAndGo() {
   if (G.sel === null) return;
   var sug = G.sugs[G.sel];
-  // Wochenbeginn (Montag) festhalten, damit alte Plaene erkennbar sind
-  var now = new Date();
-  var dow = now.getDay() === 0 ? 6 : now.getDay() - 1;
-  var monday = new Date(now); monday.setDate(now.getDate() - dow); monday.setHours(0,0,0,0);
   var planData = {
     sug: sug, sel: G.sel, n: G.n, personen: G.personen,
     reste: G.reste, freeze: G.freeze, modus: G.modus, days: G.days,
-    weekStart: monday.toISOString().slice(0,10),
+    weekStart: currentWeekStart(),
     saved: new Date().toLocaleDateString('de-CH'),
     bringImportedAt: null, bringItemCount: 0,
     sugsAll: G.sugs, sugsPartial: G.sugsPartial
   };
   G.activePlan = planData;
   G.checked = {};
-  localStorage.setItem('active_plan', JSON.stringify(planData));
-  localStorage.removeItem('einkauf_checked');
+  localStorage.setItem(userKey('active_plan'), JSON.stringify(planData));
+  localStorage.removeItem(userKey('einkauf_checked'));
   saveToGH(planData);
   saveToHistory(planData);
   updateDashboard();
@@ -2530,8 +2563,8 @@ function openActivePlan(tab) {
 function clearActivePlan() {
   if (!confirm('Aktiven Plan beenden?')) return;
   G.activePlan = null;
-  nsRemove('active_plan');
-  localStorage.removeItem('einkauf_checked');
+  localStorage.removeItem(userKey('active_plan'));
+  localStorage.removeItem(userKey('einkauf_checked'));
   G.checked = {};
   /* legacy active-plan entfernt */
   // Also clear on GH by saving empty plan marker
@@ -2544,15 +2577,35 @@ function renderActivePlan() {
 
 
 function markEinkaufDoneGekocht() {
-  var hist = JSON.parse(localStorage.getItem('local_history') || '[]');
-  if (hist.length && hist[0].status !== 'gekocht') {
+  // Einzelnes Gericht als gekocht markieren (fuer Dashboard "Heute"-Anzeige),
+  // NICHT den gesamten Wochenplan - der bleibt so lange aktiv bis alle
+  // Gerichte gekocht oder abgesagt sind.
+  var gi = G.cookingGerichtIdx;
+  if (G.activePlan && G.activePlan.sug && G.activePlan.sug.gerichte &&
+      gi !== undefined && gi !== null && G.activePlan.sug.gerichte[gi]) {
+    G.activePlan.sug.gerichte[gi]._gekocht = new Date().toISOString();
+  }
+  // Auch in G.sugs[G.sel] spiegeln, falls das die gleiche Referenz nicht ist
+  if (G.sugs && G.sel !== null && G.sugs[G.sel] && G.sugs[G.sel].gerichte &&
+      gi !== undefined && gi !== null && G.sugs[G.sel].gerichte[gi]) {
+    G.sugs[G.sel].gerichte[gi]._gekocht = new Date().toISOString();
+  }
+
+  // Verlaufseintrag: nur als "gekocht" markieren wenn WIRKLICH alle Gerichte
+  // des Plans gekocht oder abgesagt sind - nicht schon nach dem ersten.
+  var hist = JSON.parse(localStorage.getItem(userKey('local_history')) || '[]');
+  var alleFertig = G.activePlan && G.activePlan.sug && G.activePlan.sug.gerichte
+    ? G.activePlan.sug.gerichte.every(function(g) { return g._gekocht || g._cancelled; })
+    : false;
+  if (hist.length && alleFertig && hist[0].status !== 'gekocht') {
     hist[0].status = 'gekocht';
-    localStorage.setItem('local_history', JSON.stringify(hist));
+    localStorage.setItem(userKey('local_history'), JSON.stringify(hist));
     saveHistoryToGH(hist);
   }
+
   if (G.activePlan) {
     G.activePlan.einkaufDone = true;
-    localStorage.setItem('active_plan', JSON.stringify(G.activePlan));
+    localStorage.setItem(userKey('active_plan'), JSON.stringify(G.activePlan));
     renderActivePlan();
     saveToGH(G.activePlan);
   }
@@ -2793,7 +2846,16 @@ function swapGerichte(sugIdx, fromGi, toGi) {
   G.fixedDishes[key1] = wasFixed2;
   G.fixedDishes[key2] = wasFixed1;
 
-  renderSugs();
+  // Passenden Screen neu rendern UND persistieren, je nachdem ob wir gerade
+  // in der Vorschlagsauswahl (ss) oder im aktiven Wochenplan (sw) sind.
+  var onActiveWeek = G.activePlan && G.sel === sugIdx &&
+    document.getElementById('sw') && document.getElementById('sw').classList.contains('on');
+  if (onActiveWeek) {
+    goWeekRender(sug);
+    persistActivePlan();
+  } else {
+    renderSugs();
+  }
 
   if (warnings) {
     showSwapToast('⚠️ ' + warnings, '#e65100');
@@ -2960,37 +3022,26 @@ function showLoggedIn() {
   if ($('user-menu-btn')) $('user-menu-btn').style.display = 'flex';
   loadPrefs();
   try {
-    var ap = JSON.parse(localStorage.getItem('active_plan') || 'null');
+    var ap = JSON.parse(localStorage.getItem(userKey('active_plan')) || 'null');
     if (ap && ap.sug) { G.activePlan = ap; }
   } catch(e) {}
   // Bring!-Sitzung pruefen (KV, sonst lokal) und Dashboard-Status aktualisieren
   loadBringTokenRemote().then(function(remote) {
     var d = remote;
-    if (!d) { try { d = JSON.parse(localStorage.getItem('bs') || 'null'); } catch(e) { d = null; } }
+    if (!d) { try { d = JSON.parse(localStorage.getItem(userKey('bs')) || 'null'); } catch(e) { d = null; } }
     if (d && d.t) { G.bToken = d.t; G.bUUID = d.u; }
     updateDashboard();
   });
   updateDashboard();
 }
 
-function doManualSetup() {
-  var username = ($('login-user').value || '').trim().toLowerCase().replace(/[^a-z0-9_.@-]/g, '').replace(/[.@-]+$/, '');
-  var pw = $('login-pw').value;
-  var err = $('login-err');
-  if (!username) { err.textContent = 'Bitte Benutzernamen eingeben'; err.style.display = 'block'; return; }
-  if (!pw) { err.textContent = 'Bitte Passwort eingeben'; err.style.display = 'block'; return; }
-  // Just save session - worker handles auth
-  localStorage.setItem('gh_session', JSON.stringify({ username: username, pw: pw }));
-  showLoggedIn();
-  syncAllFromGH();
-}
 
 
 function saveRatingToGH(entry) {
   var h = getAuthHeaders();
-  var local = JSON.parse(localStorage.getItem('local_ratings') || '[]');
+  var local = JSON.parse(localStorage.getItem(userKey('local_ratings')) || '[]');
   local.unshift(entry);
-  localStorage.setItem('local_ratings', JSON.stringify(local.slice(0, 200)));
+  localStorage.setItem(userKey('local_ratings'), JSON.stringify(local.slice(0, 200)));
   if (!h) return;
   ghGet(ghFile('ratings.json')).then(function(d) {
     var ratings = [];
@@ -3010,6 +3061,12 @@ function showChangePassword() {
 }
 
 function doChangePassword() {
+  // WICHTIG: Dies aendert nur die lokale Kopie. Der Worker prueft weiterhin
+  // gegen MP_USERS in Cloudflare - bis ein Admin das dort manuell nachzieht,
+  // wuerde jeder ECHTE Login mit dem neuen Passwort mit 401 fehlschlagen.
+  // Deshalb: session.verified NICHT setzen (kein falscher Offline-Zugriff
+  // vortaeuschen) und den Nutzer deutlich warnen statt eine falsche
+  // Erfolgsmeldung zu zeigen.
   var oldPw = $('pw-old').value;
   var newPw = $('pw-new').value;
   var newPw2 = $('pw-new2').value;
@@ -3019,13 +3076,13 @@ function doChangePassword() {
   if (newPw !== newPw2) { err.textContent = 'Passwörter stimmen nicht überein'; err.style.display='block'; return; }
   var session = getSession();
   if (!session || session.pw !== oldPw) { err.textContent = 'Falsches aktuelles Passwort'; err.style.display='block'; return; }
-  // Update session only (Worker MP_USERS must be updated by admin in Cloudflare)
-  localStorage.setItem('gh_session', JSON.stringify({ username: session.username, pw: newPw }));
+  if (!confirm('Achtung: Das neue Passwort gilt erst, nachdem ein Admin es zusätzlich in Cloudflare (MP_USERS) angepasst hat. Bis dahin funktioniert die Anmeldung mit dem NEUEN Passwort nicht. Trotzdem fortfahren?')) return;
+  localStorage.setItem('gh_session', JSON.stringify({ username: session.username, pw: newPw, verified: false }));
   $('pw-modal').style.display = 'none';
   var ind = document.createElement('div');
-  ind.textContent = '✓ Passwort geändert – bitte Admin bitten MP_USERS in Cloudflare zu aktualisieren';
-  ind.style.cssText = 'position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--grn);color:#fff;padding:12px 16px;border-radius:8px;font-size:13px;font-weight:600;z-index:999;max-width:90vw;text-align:center';
-  document.body.appendChild(ind); setTimeout(function(){ ind.remove(); }, 5000);
+  ind.textContent = '⚠ Lokal gespeichert – bitte Admin bitten, MP_USERS in Cloudflare zu aktualisieren';
+  ind.style.cssText = 'position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#e65100;color:#fff;padding:12px 16px;border-radius:8px;font-size:13px;font-weight:600;z-index:999;max-width:90vw;text-align:center';
+  document.body.appendChild(ind); setTimeout(function(){ ind.remove(); }, 6000);
 }
 
 function resetLocalUsers() {
@@ -3189,15 +3246,20 @@ function updateDashboard() {
   var totalItems = getItems({ gerichte: aktive }).length;
   if (totalItems > 0 && $('dash-einkauf-card')) {
     $('dash-einkauf-card').style.display = 'block';
-    var imported = plan.bringImportedAt;
-    if ($('dash-einkauf-txt')) $('dash-einkauf-txt').textContent = imported
-      ? (plan.bringItemCount || totalItems) + ' Artikel an Bring! übertragen'
-      : 'Noch nicht an Bring! übertragen';
-    if ($('dash-einkauf-sub')) $('dash-einkauf-sub').textContent = imported
-      ? 'Zuletzt: ' + imported + ' · Abhaken in Bring!'
-      : totalItems + ' Artikel bereit zum Übertragen';
-    if ($('dash-einkauf-dot')) $('dash-einkauf-dot').style.background = imported ? 'var(--grn)' : 'var(--gr2)';
-    if ($('dash-einkauf-btn')) $('dash-einkauf-btn').textContent = imported
+    var imported = plan.bringImportedAt && !plan.bringStale;
+    var stale = plan.bringImportedAt && plan.bringStale;
+    if ($('dash-einkauf-txt')) $('dash-einkauf-txt').textContent = stale
+      ? 'Plan geändert – Liste nicht mehr aktuell'
+      : imported
+        ? (plan.bringItemCount || totalItems) + ' Artikel an Bring! übertragen'
+        : 'Noch nicht an Bring! übertragen';
+    if ($('dash-einkauf-sub')) $('dash-einkauf-sub').textContent = stale
+      ? 'Zuletzt übertragen: ' + plan.bringImportedAt + ' · bitte erneut übertragen'
+      : imported
+        ? 'Zuletzt: ' + plan.bringImportedAt + ' · Abhaken in Bring!'
+        : totalItems + ' Artikel bereit zum Übertragen';
+    if ($('dash-einkauf-dot')) $('dash-einkauf-dot').style.background = stale ? '#e65100' : imported ? 'var(--grn)' : 'var(--gr2)';
+    if ($('dash-einkauf-btn')) $('dash-einkauf-btn').textContent = (imported || stale)
       ? 'Liste ansehen / erneut übertragen →' : 'Einkaufsliste öffnen →';
   }
 
@@ -3233,21 +3295,21 @@ function submitRating() {
   var feedback = $('rm-feedback').value.trim();
   if (G_rating.historyIdx !== null && G_rating.historyIdx !== undefined) {
     var hist = window._history;
-    if (hist && hist[G_rating.historyIdx]) { hist[G_rating.historyIdx].stars=G_rating.stars; hist[G_rating.historyIdx].ratingFeedback=feedback; localStorage.setItem('local_history',JSON.stringify(hist)); saveHistoryToGH(hist); renderHistoryList(hist); }
+    if (hist && hist[G_rating.historyIdx]) { hist[G_rating.historyIdx].stars=G_rating.stars; hist[G_rating.historyIdx].ratingFeedback=feedback; localStorage.setItem(userKey('local_history'),JSON.stringify(hist)); saveHistoryToGH(hist); renderHistoryList(hist); }
     $('rating-modal').style.display='none'; return;
   }
   if (G_rating.fotoIdx !== null && G_rating.fotoIdx !== undefined) {
-    var saved = JSON.parse(localStorage.getItem('foto_rezepte')||'[]');
-    if (saved[G_rating.fotoIdx]) { saved[G_rating.fotoIdx].stars=G_rating.stars; saved[G_rating.fotoIdx].ratingFeedback=feedback; localStorage.setItem('foto_rezepte',JSON.stringify(saved)); saveFotoRezepteToGH(saved); loadHistoryRecipes(); }
+    var saved = JSON.parse(localStorage.getItem(userKey('foto_rezepte'))||'[]');
+    if (saved[G_rating.fotoIdx]) { saved[G_rating.fotoIdx].stars=G_rating.stars; saved[G_rating.fotoIdx].ratingFeedback=feedback; localStorage.setItem(userKey('foto_rezepte'),JSON.stringify(saved)); saveFotoRezepteToGH(saved); loadHistoryRecipes(); }
     $('rating-modal').style.display='none'; return;
   }
   var g = G.sugs&&G.sel!==null ? G.sugs[G.sel].gerichte[G_rating.gerichtIdx] : null;
   if (g) {
     var entry = { date:new Date().toISOString().slice(0,10), saved:new Date().toLocaleDateString('de-CH'), thema:G.sugs[G.sel].thema, gericht:g.abend, tag:g.tag, stars:G_rating.stars, label:STAR_LABELS[G_rating.stars], feedback:feedback, tags:G_rating.tags.slice(), personen:G.personen||2, zutaten:(g.zutaten||[]).map(function(z){return z.name;}).join(', ') };
     saveRatingToGH(entry);
-    var hist2=JSON.parse(localStorage.getItem('local_history')||'[]');
+    var hist2=JSON.parse(localStorage.getItem(userKey('local_history'))||'[]');
     if (hist2.length){hist2[0].stars=G_rating.stars;hist2[0].ratingFeedback=feedback;}
-    localStorage.setItem('local_history',JSON.stringify(hist2)); saveHistoryToGH(hist2);
+    localStorage.setItem(userKey('local_history'),JSON.stringify(hist2)); saveHistoryToGH(hist2);
   }
   $('rating-modal').style.display='none'; go('sw');
   setTimeout(function(){var msg=G_rating.stars>=4?'Super! Bewertung gespeichert.':'Bewertung gespeichert.';showSt('ist',msg,'ok');setTimeout(function(){if($('ist'))$('ist').style.display='none';},3000);},300);
@@ -3262,7 +3324,7 @@ function showHistoryRating(i) {
   $('rating-modal').style.display='flex';
 }
 function showFotoRating(i) {
-  var saved=JSON.parse(localStorage.getItem('foto_rezepte')||'[]'); if(!saved[i])return;
+  var saved=JSON.parse(localStorage.getItem(userKey('foto_rezepte'))||'[]'); if(!saved[i])return;
   var r=saved[i]; G_rating.stars=r.stars||0; G_rating.fotoIdx=i; G_rating.historyIdx=null; G_rating.gerichtIdx=null;
   $('rm-title').textContent=r.name||'Foto-Rezept'; $('rm-feedback').value=r.ratingFeedback||''; $('rm-starlbl').textContent=''; $('rm-submit').disabled=false;
   var stars=$('rm-stars').querySelectorAll('.star-btn');
@@ -3296,21 +3358,21 @@ function loadHistory() {
   var fetchProm=url?fetch(url,{headers:h}).then(function(r){if(!r.ok)return[];return r.json().then(function(d){if(!d||!d.content)return[];return JSON.parse(decodeURIComponent(escape(atob(d.content.split('\n').join('')))));});}):Promise.resolve([]);
   fetchProm.then(function(history){
     if($('hload'))$('hload').style.display='none';
-    if(!history||!history.length){var lh=JSON.parse(localStorage.getItem('local_history')||'[]');if(lh.length){renderHistoryList(lh);return;} if($('hlist'))$('hlist').innerHTML='<div style="text-align:center;padding:40px;color:var(--gr3);font-size:13px">Noch keine gespeicherten Pläne.</div>';return;}
+    if(!history||!history.length){var lh=JSON.parse(localStorage.getItem(userKey('local_history'))||'[]');if(lh.length){renderHistoryList(lh);return;} if($('hlist'))$('hlist').innerHTML='<div style="text-align:center;padding:40px;color:var(--gr3);font-size:13px">Noch keine gespeicherten Pläne.</div>';return;}
     renderHistoryList(history);
-  }).catch(function(){if($('hload'))$('hload').style.display='none';var lh=JSON.parse(localStorage.getItem('local_history')||'[]');if(lh.length){renderHistoryList(lh);}else{if($('hlist'))$('hlist').innerHTML='<div style="text-align:center;padding:40px;color:var(--gr3);font-size:13px">Verlauf nicht verfügbar.</div>';}});
+  }).catch(function(){if($('hload'))$('hload').style.display='none';var lh=JSON.parse(localStorage.getItem(userKey('local_history'))||'[]');if(lh.length){renderHistoryList(lh);}else{if($('hlist'))$('hlist').innerHTML='<div style="text-align:center;padding:40px;color:var(--gr3);font-size:13px">Verlauf nicht verfügbar.</div>';}});
 }
 function renderHistoryList(history) {
   var html='';
   for(var i=0;i<history.length;i++){
     var e=history[i]; var status=e.status||'geplant'; var stars=e.stars?'<span style="color:#f59e0b">'+('★'.repeat(e.stars))+'</span>':'';
-    var dishes=(e.gerichte||[]).map(function(g){return '<div style="display:flex;gap:6px;padding:2px 0"><span style="font-size:11px;font-weight:700;color:var(--red);min-width:20px">'+(g.tag||'').slice(0,2)+'</span><span style="font-size:13px;color:var(--txt2)">'+(g.abend||'')+'</span></div>';}).join('');
+    var dishes=(e.gerichte||[]).map(function(g){return '<div style="display:flex;gap:6px;padding:2px 0"><span style="font-size:11px;font-weight:700;color:var(--red);min-width:20px">'+esc((g.tag||'').slice(0,2))+'</span><span style="font-size:13px;color:var(--txt2)">'+esc(g.abend||'')+'</span></div>';}).join('');
     var isLoved = (e.stars || 0) >= 4;
     html+='<div style="background:#fff;border-radius:var(--rlg);border:.5px solid var(--bdr);margin-bottom:8px;overflow:hidden">'
       +'<div style="padding:10px 14px;border-bottom:.5px solid var(--gr)">'
-        +'<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:6px"><div style="font-size:15px;font-weight:700;color:var(--txt);flex:1">'+(e.thema||'Menüplan')+stars+'</div>'+statusBadge(status)+'</div>'
+        +'<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:6px"><div style="font-size:15px;font-weight:700;color:var(--txt);flex:1">'+esc(e.thema||'Menüplan')+stars+'</div>'+statusBadge(status)+'</div>'
         +(isLoved && e.tags && e.tags.includes && e.tags.includes('unbedingt wieder') ? '<div style="font-size:11px;color:var(--red);font-weight:600;margin-bottom:4px">♥ unbedingt wieder</div>' : '')
-        +'<div style="font-size:11px;color:var(--gr3)">'+(e.saved||e.date||'')+' · '+(e.personen||2)+' Pers. · '+(e.kochabende||3)+' Abende</div>'
+        +'<div style="font-size:11px;color:var(--gr3)">'+esc(e.saved||e.date||'')+' · '+(e.personen||2)+' Pers. · '+(e.kochabende||3)+' Abende</div>'
       +'</div>'
       +'<div style="padding:8px 14px">'+dishes+'</div>'
       +'<div style="padding:0 14px 10px;display:flex;flex-direction:column;gap:6px">'
@@ -3325,7 +3387,7 @@ function renderHistoryList(history) {
 }
 function loadHistoryEntry(i) {
   var e=window._history; if(!e||!e[i]||!e[i].plan)return;
-  var plan=e[i].plan; G.activePlan=plan; localStorage.setItem('active_plan',JSON.stringify(plan));
+  var plan=e[i].plan; G.activePlan=plan; localStorage.setItem(userKey('active_plan'),JSON.stringify(plan));
   if(plan.sug){G.sugs=[plan.sug];G.sel=0;G.n=plan.n||3;G.personen=plan.personen||2;G.reste=plan.reste!==undefined?plan.reste:1;G.freeze=plan.freeze!==undefined?plan.freeze:1;G.sugsPartial=false;renderActivePlan();goWeekRender(G.sugs[G.sel]);}
 }
 
@@ -3340,14 +3402,24 @@ function nochmalKochen(i) {
     'Abbrechen = Nur ansehen'
   );
   if (choice) {
-    // Set as new active plan with fresh date
+    // Set as new active plan with fresh date - weekStart und Bring-Status
+    // muessen ebenfalls zurueckgesetzt werden, sonst gilt der reaktivierte
+    // Plan sofort als "veraltet" und die Einkaufsliste als "schon uebertragen".
     var newPlan = JSON.parse(JSON.stringify(plan));
     newPlan.saved = new Date().toLocaleDateString('de-CH');
+    newPlan.weekStart = currentWeekStart();
     newPlan.einkaufDone = false;
+    newPlan.bringImportedAt = null;
+    newPlan.bringItemCount = 0;
+    newPlan.bringStale = false;
+    // Gekocht-Markierungen der einzelnen Gerichte ebenfalls zuruecksetzen
+    if (newPlan.sug && newPlan.sug.gerichte) {
+      newPlan.sug.gerichte.forEach(function(g) { delete g._gekocht; });
+    }
     G.activePlan = newPlan;
     G.checked = {};
-    localStorage.setItem('active_plan', JSON.stringify(newPlan));
-    localStorage.removeItem('einkauf_checked');
+    localStorage.setItem(userKey('active_plan'), JSON.stringify(newPlan));
+    localStorage.removeItem(userKey('einkauf_checked'));
     saveToGH(newPlan);
     saveToHistory(newPlan);
     updateDashboard();
@@ -3370,28 +3442,28 @@ function deleteHistoryPlan(i) {
   if (G.activePlan && G.activePlan.saved === hist[i].saved && G.activePlan.sug &&
       G.activePlan.sug.thema === hist[i].thema) {
     G.activePlan = null;
-    localStorage.removeItem('active_plan');
-    localStorage.removeItem('einkauf_checked');
+    localStorage.removeItem(userKey('active_plan'));
+    localStorage.removeItem(userKey('einkauf_checked'));
     ghPut('active-plan.json', { cleared: true, date: new Date().toISOString() }, 'Plan gelöscht').catch(function(){});
     updateDashboard();
   }
 
   hist.splice(i, 1);
-  localStorage.setItem('local_history', JSON.stringify(hist));
+  localStorage.setItem(userKey('local_history'), JSON.stringify(hist));
   saveHistoryToGH(hist);
   renderHistoryList(hist);
 }
 
 function markHistoryKekocht(i) {
   var hist=window._history; if(!hist||!hist[i])return;
-  hist[i].status='gekocht'; localStorage.setItem('local_history',JSON.stringify(hist)); saveHistoryToGH(hist); renderHistoryList(hist);
+  hist[i].status='gekocht'; localStorage.setItem(userKey('local_history'),JSON.stringify(hist)); saveHistoryToGH(hist); renderHistoryList(hist);
 }
 function resetHistoryStatus(i) {
   var hist=window._history; if(!hist||!hist[i])return;
-  hist[i].status='geplant'; localStorage.setItem('local_history',JSON.stringify(hist)); saveHistoryToGH(hist); renderHistoryList(hist);
+  hist[i].status='geplant'; localStorage.setItem(userKey('local_history'),JSON.stringify(hist)); saveHistoryToGH(hist); renderHistoryList(hist);
 }
 function loadHistoryRecipes() {
-  var saved=JSON.parse(localStorage.getItem('foto_rezepte')||'[]'); var el=$('hrecipes-list'); if(!el)return;
+  var saved=JSON.parse(localStorage.getItem(userKey('foto_rezepte'))||'[]'); var el=$('hrecipes-list'); if(!el)return;
   if(!saved.length){el.innerHTML='<div style="text-align:center;padding:40px 24px;color:var(--gr3);font-size:13px">Noch keine gespeicherten Rezepte.<br><span style="font-size:12px;opacity:.8">Hier erscheinen Rezepte, die über 📷 Foto-Rezept erstellt wurden. Menüpläne findest du im Tab "Menüpläne".</span></div>';return;}
   var html=saved.map(function(r,i){
     var zCount=(r.zutaten||[]).length; var sCount=(r.schritte||[]).length;
@@ -3399,8 +3471,8 @@ function loadHistoryRecipes() {
       +'<div style="padding:12px 14px;border-bottom:.5px solid var(--gr);display:flex;align-items:center;gap:10px">'
         +'<div style="width:36px;height:36px;border-radius:8px;background:var(--rl);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0">🍽</div>'
         +'<div style="flex:1;min-width:0">'
-          +'<div style="display:flex;align-items:center;gap:6px"><div style="font-size:15px;font-weight:700;color:var(--txt);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+(r.name||'Rezept')+'</div>'+(r.stars?'<span style="color:#f59e0b;font-size:13px">'+('&#9733;'.repeat(r.stars))+'</span>':'')+'</div>'
-          +'<div style="font-size:11px;color:var(--gr3);margin-top:2px">'+(r.saved||r.date||'')+' · '+(r.portionen||2)+' Personen'+(r.zeit_total?' · '+r.zeit_total:'')+' · '+zCount+' Zutaten</div>'
+          +'<div style="display:flex;align-items:center;gap:6px"><div style="font-size:15px;font-weight:700;color:var(--txt);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+esc(r.name||'Rezept')+'</div>'+(r.stars?'<span style="color:#f59e0b;font-size:13px">'+('&#9733;'.repeat(r.stars))+'</span>':'')+'</div>'
+          +'<div style="font-size:11px;color:var(--gr3);margin-top:2px">'+esc(r.saved||r.date||'')+' · '+(r.portionen||2)+' Personen'+(r.zeit_total?' · '+esc(r.zeit_total):'')+' · '+zCount+' Zutaten</div>'
         +'</div>'
       +'</div>'
       +'<div style="padding:8px 14px;display:flex;flex-direction:column;gap:6px">'
@@ -3413,18 +3485,18 @@ function loadHistoryRecipes() {
   el.innerHTML=html; window._historyRecipes=saved;
 }
 function openHistoryRecipe(i) {
-  var saved=JSON.parse(localStorage.getItem('foto_rezepte')||'[]'); var r=saved[i]; if(!r)return;
+  var saved=JSON.parse(localStorage.getItem(userKey('foto_rezepte'))||'[]'); var r=saved[i]; if(!r)return;
   window._fotoRezept=r; G_foto.portionen=r.portionen||2;
   go('sf'); $('foto-upload-area').style.display='none'; $('foto-preview').style.display='none';
   loadSavedFotoRezepte(); renderFotoRezept(r);
   setTimeout(function(){if($('foto-result'))$('foto-result').scrollIntoView({behavior:'smooth',block:'start'});},150);
 }
 function importHistoryRecipeToBring(i) {
-  var saved=JSON.parse(localStorage.getItem('foto_rezepte')||'[]'); var r=saved[i]; if(!r)return;
+  var saved=JSON.parse(localStorage.getItem(userKey('foto_rezepte'))||'[]'); var r=saved[i]; if(!r)return;
   window._fotoRezept=r; G_foto.portionen=r.portionen||2; importFotoFromResult();
 }
 function nochmalKochenFoto(i) {
-  var saved = JSON.parse(localStorage.getItem('foto_rezepte') || '[]');
+  var saved = JSON.parse(localStorage.getItem(userKey('foto_rezepte')) || '[]');
   var r = saved[i]; if (!r) return;
   window._fotoRezept = r;
   G_foto.portionen = r.portionen || 2;
@@ -3434,16 +3506,21 @@ function nochmalKochenFoto(i) {
 }
 
 function markFotoRezeptGekocht(i) {
-  var saved=JSON.parse(localStorage.getItem('foto_rezepte')||'[]'); if(!saved[i])return;
-  saved[i].status='gekocht'; localStorage.setItem('foto_rezepte',JSON.stringify(saved)); saveFotoRezepteToGH(saved); loadHistoryRecipes(); loadSavedFotoRezepte();
+  var saved=JSON.parse(localStorage.getItem(userKey('foto_rezepte'))||'[]'); if(!saved[i])return;
+  saved[i].status='gekocht'; localStorage.setItem(userKey('foto_rezepte'),JSON.stringify(saved)); saveFotoRezepteToGH(saved); loadHistoryRecipes(); loadSavedFotoRezepte();
 }
 function resetFotoRezeptStatus(i) {
-  var saved=JSON.parse(localStorage.getItem('foto_rezepte')||'[]'); if(!saved[i])return;
-  saved[i].status='geplant'; localStorage.setItem('foto_rezepte',JSON.stringify(saved)); saveFotoRezepteToGH(saved); loadHistoryRecipes(); loadSavedFotoRezepte();
+  var saved=JSON.parse(localStorage.getItem(userKey('foto_rezepte'))||'[]'); if(!saved[i])return;
+  saved[i].status='geplant'; localStorage.setItem(userKey('foto_rezepte'),JSON.stringify(saved)); saveFotoRezepteToGH(saved); loadHistoryRecipes(); loadSavedFotoRezepte();
 }
 function deleteHistoryRecipe(i) {
   if(!confirm('Rezept löschen?'))return;
-  var saved=JSON.parse(localStorage.getItem('foto_rezepte')||'[]'); saved.splice(i,1); localStorage.setItem('foto_rezepte',JSON.stringify(saved)); loadHistoryRecipes(); loadSavedFotoRezepte();
+  var saved=JSON.parse(localStorage.getItem(userKey('foto_rezepte'))||'[]');
+  saved.splice(i,1);
+  localStorage.setItem(userKey('foto_rezepte'),JSON.stringify(saved));
+  saveFotoRezepteToGH(saved);
+  loadHistoryRecipes();
+  loadSavedFotoRezepte();
 }
 
 // ─── FOTO REZEPT ───────────────────────────────────────────
@@ -3464,27 +3541,27 @@ function syncFotoRezepte(btn){
   fetch(PROXY+'/gh/'+ghFile('foto-rezepte.json'),{headers:h||{}})
     .then(function(r){return r.ok?r.json():null;})
     .then(function(d){
-      if(d&&d.content){var fr=JSON.parse(decodeURIComponent(escape(atob(d.content.split('\n').join('')))));if(Array.isArray(fr)){var local=JSON.parse(localStorage.getItem('foto_rezepte')||'[]');var merged=fr.slice();local.forEach(function(l){if(!merged.find(function(g){return g.name===l.name;}))merged.push(l);});localStorage.setItem('foto_rezepte',JSON.stringify(merged));loadSavedFotoRezepte();}}
+      if(d&&d.content){var fr=JSON.parse(decodeURIComponent(escape(atob(d.content.split('\n').join('')))));if(Array.isArray(fr)){var local=JSON.parse(localStorage.getItem(userKey('foto_rezepte'))||'[]');var merged=fr.slice();local.forEach(function(l){if(!merged.find(function(g){return g.name===l.name;}))merged.push(l);});localStorage.setItem(userKey('foto_rezepte'),JSON.stringify(merged));loadSavedFotoRezepte();}}
       if(btn){btn.textContent='OK';setTimeout(function(){btn.textContent=origText;btn.disabled=false;},1500);}
     }).catch(function(){if(btn){btn.textContent='Err';setTimeout(function(){btn.textContent=origText;btn.disabled=false;},1500);}});
 }
 function loadSavedFotoRezepte(){
-  var saved=JSON.parse(localStorage.getItem('foto_rezepte')||'[]');var sec=$('foto-saved-section');
+  var saved=JSON.parse(localStorage.getItem(userKey('foto_rezepte'))||'[]');var sec=$('foto-saved-section');
   if(!saved.length){if(sec)sec.style.display='none';return;}
   if(sec)sec.style.display='block';
   var html=saved.map(function(r,i){return '<div style="background:#fff;border-radius:var(--r);border:.5px solid var(--bdr);padding:10px 14px;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between;gap:8px"><div style="flex:1;min-width:0"><div style="font-size:14px;font-weight:600;color:var(--txt);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+(r.name||'Rezept')+'</div><div style="font-size:11px;color:var(--gr3);margin-top:2px">'+(r.saved||r.date||'')+' · '+(r.portionen||2)+' Personen'+(r.zeit_total?' · '+r.zeit_total:'')+'</div></div><div style="display:flex;gap:6px;flex-shrink:0"><button onclick="loadSavedFotoRezeptDetail('+i+')" class="btn btn-out" style="width:auto;padding:7px 12px;font-size:12px">Öffnen</button><button onclick="deleteSavedFotoRezept('+i+')" style="background:none;border:none;color:var(--gr3);font-size:18px;cursor:pointer;padding:0 4px">✕</button></div></div>';}).join('');
   if($('foto-saved-list'))$('foto-saved-list').innerHTML=html; window._savedFotoRezepte=saved;
 }
 function loadSavedFotoRezeptDetail(i){
-  var saved=JSON.parse(localStorage.getItem('foto_rezepte')||'[]');var r=saved[i];if(!r)return;
+  var saved=JSON.parse(localStorage.getItem(userKey('foto_rezepte'))||'[]');var r=saved[i];if(!r)return;
   window._fotoRezept=r;window._savedFotoRezepte=saved;G_foto.portionen=r.portionen||2;
   $('foto-upload-area').style.display='none';$('foto-preview').style.display='none';$('foto-result').style.display='none';if($('foto-err'))$('foto-err').style.display='none';
   renderFotoRezept(r);setTimeout(function(){var el=$('foto-result');if(el)el.scrollIntoView({behavior:'smooth',block:'start'});},150);
 }
 function deleteSavedFotoRezept(i){
-  var saved=JSON.parse(localStorage.getItem('foto_rezepte')||'[]');
+  var saved=JSON.parse(localStorage.getItem(userKey('foto_rezepte'))||'[]');
   saved.splice(i,1);
-  localStorage.setItem('foto_rezepte',JSON.stringify(saved));
+  localStorage.setItem(userKey('foto_rezepte'),JSON.stringify(saved));
   saveFotoRezepteToGH(saved);
   loadSavedFotoRezepte();
 }
@@ -3507,9 +3584,9 @@ function analyzeFoto(){
   }).catch(function(e){$('foto-load').style.display='none';$('foto-btn').disabled=false;if($('foto-err')){$('foto-err').textContent='Fehler: '+e.message;$('foto-err').style.display='block';}});
 }
 function renderFotoRezept(r){
-  var zRows=(r.zutaten||[]).map(function(z){return '<div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:.5px solid #f5f5f5"><span style="font-size:14px;font-weight:500">'+z.name+'</span><span style="font-size:13px;color:var(--gr3)">'+z.menge+'</span></div>';}).join('');
-  var sRows=(r.schritte||[]).map(function(s,i){var pills=(s.zutaten_schritt||[]).map(function(z){return '<span class="zpill">'+z+'</span>';}).join('');return '<div style="margin-bottom:14px"><div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><div style="width:24px;height:24px;border-radius:50%;background:var(--red);color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0">'+(i+1)+'</div><b style="font-size:13px;color:var(--txt)">'+(s.titel||'')+'</b>'+(s.timer_min>0?'<span style="font-size:11px;color:var(--gr3);background:#f5f5f5;padding:2px 8px;border-radius:100px">⏱ '+s.timer_min+' Min.</span>':'')+'</div>'+(pills?'<div class="zpills" style="margin-bottom:6px">'+pills+'</div>':'')+'<div style="font-size:14px;color:var(--txt);line-height:1.6">'+s.text+'</div></div>';}).join('');
-  var html='<div class="card"><div class="cp"><div style="font-size:19px;font-weight:800;color:var(--txt);margin-bottom:4px">'+(r.name||'Rezept')+'</div>'+(r.beschreibung?'<div style="font-size:13px;color:var(--gr3);margin-bottom:10px">'+r.beschreibung+'</div>':'')+'<div style="display:flex;gap:12px;margin-bottom:14px">'+(r.zeit_aktiv?'<span style="font-size:12px;color:var(--gr3)">✏ Aktiv: <b style="color:var(--txt2)">'+r.zeit_aktiv+'</b></span>':'')+(r.zeit_total?'<span style="font-size:12px;color:var(--gr3)">⏰ Total: <b style="color:var(--txt2)">'+r.zeit_total+'</b></span>':'')+'</div><div class="clbl">Zutaten für '+G_foto.portionen+' Personen</div><div style="margin-bottom:14px">'+zRows+'</div>'+(r.tipp?'<div style="background:#fffde7;border-left:3px solid #f9a825;padding:10px 12px;border-radius:0 8px 8px 0;font-size:13px;margin-bottom:14px"><b>Tipp:</b> '+r.tipp+'</div>':'')+'</div></div><div class="card"><div class="cp"><div class="clbl">Zubereitung</div>'+sRows+'</div></div><div style="padding:0 10px 10px;display:flex;flex-direction:column;gap:8px"><button class="btn btn-red" onclick="startFotoCook()" style="font-size:13px">👨‍🍳 Jetzt kochen</button><button class="btn btn-out" onclick="importFotoFromResult()" style="font-size:13px">In Bring! importieren</button><div style="display:flex;gap:8px"><button class="btn btn-out" onclick="saveFotoRezept(this)" style="flex:1;font-size:13px">💾 Speichern</button><button class="btn btn-out" onclick="showFotoPrint()" style="flex:1;font-size:13px">🖨 PDF</button></div></div>';
+  var zRows=(r.zutaten||[]).map(function(z){return '<div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:.5px solid #f5f5f5"><span style="font-size:14px;font-weight:500">'+esc(z.name)+'</span><span style="font-size:13px;color:var(--gr3)">'+esc(z.menge)+'</span></div>';}).join('');
+  var sRows=(r.schritte||[]).map(function(s,i){var pills=(s.zutaten_schritt||[]).map(function(z){return '<span class="zpill">'+esc(z)+'</span>';}).join('');return '<div style="margin-bottom:14px"><div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><div style="width:24px;height:24px;border-radius:50%;background:var(--red);color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0">'+(i+1)+'</div><b style="font-size:13px;color:var(--txt)">'+esc(s.titel||'')+'</b>'+(s.timer_min>0?'<span style="font-size:11px;color:var(--gr3);background:#f5f5f5;padding:2px 8px;border-radius:100px">⏱ '+s.timer_min+' Min.</span>':'')+'</div>'+(pills?'<div class="zpills" style="margin-bottom:6px">'+pills+'</div>':'')+'<div style="font-size:14px;color:var(--txt);line-height:1.6">'+esc(s.text)+'</div></div>';}).join('');
+  var html='<div class="card"><div class="cp"><div style="font-size:19px;font-weight:800;color:var(--txt);margin-bottom:4px">'+esc(r.name||'Rezept')+'</div>'+(r.beschreibung?'<div style="font-size:13px;color:var(--gr3);margin-bottom:10px">'+esc(r.beschreibung)+'</div>':'')+'<div style="display:flex;gap:12px;margin-bottom:14px">'+(r.zeit_aktiv?'<span style="font-size:12px;color:var(--gr3)">✏ Aktiv: <b style="color:var(--txt2)">'+esc(r.zeit_aktiv)+'</b></span>':'')+(r.zeit_total?'<span style="font-size:12px;color:var(--gr3)">⏰ Total: <b style="color:var(--txt2)">'+esc(r.zeit_total)+'</b></span>':'')+'</div><div class="clbl">Zutaten für '+G_foto.portionen+' Personen</div><div style="margin-bottom:14px">'+zRows+'</div>'+(r.tipp?'<div style="background:#fffde7;border-left:3px solid #f9a825;padding:10px 12px;border-radius:0 8px 8px 0;font-size:13px;margin-bottom:14px"><b>Tipp:</b> '+esc(r.tipp)+'</div>':'')+'</div></div><div class="card"><div class="cp"><div class="clbl">Zubereitung</div>'+sRows+'</div></div><div style="padding:0 10px 10px;display:flex;flex-direction:column;gap:8px"><button class="btn btn-red" onclick="startFotoCook()" style="font-size:13px">👨‍🍳 Jetzt kochen</button><button class="btn btn-out" onclick="importFotoFromResult()" style="font-size:13px">In Bring! importieren</button><div style="display:flex;gap:8px"><button class="btn btn-out" onclick="saveFotoRezept(this)" style="flex:1;font-size:13px">💾 Speichern</button><button class="btn btn-out" onclick="showFotoPrint()" style="flex:1;font-size:13px">🖨 PDF</button></div></div>';
   window._fotoRezept=r; if($('foto-result')){$('foto-result').innerHTML=html;$('foto-result').style.display='block';}
 }
 function importFotoFromResult(){
@@ -3527,11 +3604,11 @@ function importFotoFromResult(){
 }
 function saveFotoRezeptSilent(r,status){
   var entry={id:Date.now(),date:new Date().toISOString().slice(0,10),saved:new Date().toLocaleDateString('de-CH'),name:r.name||'Foto-Rezept',beschreibung:r.beschreibung||'',zeit_aktiv:r.zeit_aktiv||'',zeit_total:r.zeit_total||'',portionen:G_foto.portionen,zutaten:r.zutaten||[],schritte:r.schritte||[],tipp:r.tipp||'',status:status||r.status||'geplant',stars:r.stars,ratingFeedback:r.ratingFeedback};
-  var saved=JSON.parse(localStorage.getItem('foto_rezepte')||'[]');
+  var saved=JSON.parse(localStorage.getItem(userKey('foto_rezepte'))||'[]');
   var exists=saved.findIndex(function(s){return s.name===entry.name;});
   if(exists>=0)saved[exists]=entry; else saved.unshift(entry);
   if(saved.length>100)saved=saved.slice(0,100);
-  localStorage.setItem('foto_rezepte',JSON.stringify(saved));
+  localStorage.setItem(userKey('foto_rezepte'),JSON.stringify(saved));
   saveFotoRezepteToGH(saved);
 }
 function saveFotoRezept(btn){
@@ -3545,9 +3622,9 @@ function saveFotoRezepteToGH(saved){
 }
 function showFotoPrint(){
   if(!window._fotoRezept)return; var r=window._fotoRezept;
-  var zRows=(r.zutaten||[]).map(function(z){return '<tr><td style="padding:5px 0;border-bottom:1px solid #eee;font-weight:500">☐ '+z.name+'</td><td style="padding:5px 0;border-bottom:1px solid #eee;color:#888;text-align:right">'+z.menge+'</td></tr>';}).join('');
-  var sRows=(r.schritte||[]).map(function(s,i){return '<div style="margin-bottom:10px;font-size:13px"><strong style="color:#e8390e">'+(i+1)+'.</strong> '+s.text+(s.timer_min>0?' ['+s.timer_min+' Min.]':'')+'</div>';}).join('');
-  $('pcon').innerHTML='<h1 style="font-size:20px;font-weight:800;margin-bottom:4px">'+(r.name||'Rezept')+'</h1>'+(r.beschreibung?'<p style="color:#888;margin-bottom:12px;font-size:13px">'+r.beschreibung+'</p>':'')+(r.zeit_total?'<p style="font-size:12px;color:#888;margin-bottom:16px">Aktiv: '+(r.zeit_aktiv||'?')+' · Total: '+r.zeit_total+' · '+G_foto.portionen+' Personen</p>':'')+'<h2 style="font-size:14px;font-weight:700;margin-bottom:8px;color:#e8390e">Zutaten</h2><table style="width:100%;border-collapse:collapse;margin-bottom:16px">'+zRows+'</table><h2 style="font-size:14px;font-weight:700;margin-bottom:8px;color:#2e7d32">Zubereitung</h2>'+sRows+(r.tipp?'<div style="background:#fff9c4;border-left:3px solid #f9a825;padding:10px;margin-top:12px;border-radius:4px;font-size:13px"><strong>Tipp:</strong> '+r.tipp+'</div>':'');
+  var zRows=(r.zutaten||[]).map(function(z){return '<tr><td style="padding:5px 0;border-bottom:1px solid #eee;font-weight:500">☐ '+esc(z.name)+'</td><td style="padding:5px 0;border-bottom:1px solid #eee;color:#888;text-align:right">'+esc(z.menge)+'</td></tr>';}).join('');
+  var sRows=(r.schritte||[]).map(function(s,i){return '<div style="margin-bottom:10px;font-size:13px"><strong style="color:#e8390e">'+(i+1)+'.</strong> '+esc(s.text)+(s.timer_min>0?' ['+s.timer_min+' Min.]':'')+'</div>';}).join('');
+  $('pcon').innerHTML='<h1 style="font-size:20px;font-weight:800;margin-bottom:4px">'+esc(r.name||'Rezept')+'</h1>'+(r.beschreibung?'<p style="color:#888;margin-bottom:12px;font-size:13px">'+esc(r.beschreibung)+'</p>':'')+(r.zeit_total?'<p style="font-size:12px;color:#888;margin-bottom:16px">Aktiv: '+esc(r.zeit_aktiv||'?')+' · Total: '+esc(r.zeit_total)+' · '+G_foto.portionen+' Personen</p>':'')+'<h2 style="font-size:14px;font-weight:700;margin-bottom:8px;color:#e8390e">Zutaten</h2><table style="width:100%;border-collapse:collapse;margin-bottom:16px">'+zRows+'</table><h2 style="font-size:14px;font-weight:700;margin-bottom:8px;color:#2e7d32">Zubereitung</h2>'+sRows+(r.tipp?'<div style="background:#fff9c4;border-left:3px solid #f9a825;padding:10px;margin-top:12px;border-radius:4px;font-size:13px"><strong>Tipp:</strong> '+esc(r.tipp)+'</div>':'');
   go('sp');
 }
 function startFotoCook(){
@@ -3606,9 +3683,9 @@ function buildLearningProfile(){
   var _reset=_prefs.profileReset?new Date(_prefs.profileReset):null;
   function _after(it){ if(!_reset||!it.date) return true; return new Date(it.date)>_reset; }
   try{
-    var lr=JSON.parse(localStorage.getItem('local_ratings')||'[]');
-    var hist=JSON.parse(localStorage.getItem('local_history')||'[]');
-    var fotos=JSON.parse(localStorage.getItem('foto_rezepte')||'[]');
+    var lr=JSON.parse(localStorage.getItem(userKey('local_ratings'))||'[]');
+    var hist=JSON.parse(localStorage.getItem(userKey('local_history'))||'[]');
+    var fotos=JSON.parse(localStorage.getItem(userKey('foto_rezepte'))||'[]');
     lr.forEach(function(r){if(r.stars&&_after(r))ratings.push({name:r.gericht,stars:r.stars,feedback:r.feedback||'',tags:r.tags||[]});});
     hist.forEach(function(h){if(h.stars&&_after(h))ratings.push({name:h.thema,stars:h.stars,feedback:h.ratingFeedback||'',tags:h.tags||[]});});
     fotos.forEach(function(f){if(f.stars&&_after(f))ratings.push({name:f.name,stars:f.stars,feedback:f.ratingFeedback||'',tags:f.tags||[]});});
@@ -3666,16 +3743,10 @@ var STAR_LABELS = ['', 'Nicht so gut', 'Geht so', 'Gut', 'Sehr gut', 'Ausgezeich
 
 
 // ─── STATUS BADGE ───────────────────────────────────────────
-var STATUS_CFG = {
-  'geplant': {label:'Geplant', bg:'#f5f5f5', color:'#888', icon:'&#128197;'},
-  'einkauf': {label:'Eingekauft', bg:'#e3f2fd', color:'#1565c0', icon:'&#9989;'},
-  'gekocht': {label:'Gekocht', bg:'#e8f5e9', color:'#2e7d32', icon:'&#127859;'}
-};
 
 // ─── HISTORY ───────────────────────────────────────────────
 
 // ─── FOTO REZEPT ───────────────────────────────────────────
-var G_foto={base64:null,mime:null,portionen:2};
 
 // ─── PRÄFERENZEN & USER MENU ────────────────────────────────
 
