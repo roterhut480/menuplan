@@ -2,6 +2,106 @@
   {
     "date": "2026-09-07",
     "saved": "7.9.2026",
+    "thema": "Mediterran (Variante 1)",
+    "personen": 2,
+    "kochabende": 1,
+    "reste": 0,
+    "freeze": 0,
+    "gerichte": [
+      {
+        "tag": "Fr",
+        "abend": "Bruschetta mit Tomaten-Basilikum und gegrilltem Haehnchen"
+      }
+    ],
+    "status": "geplant",
+    "plan": {
+      "sug": {
+        "id": 1,
+        "thema": "Mediterran (Variante 1)",
+        "kochabende": [
+          "Fr"
+        ],
+        "gerichte": [
+          {
+            "tag": "Fr",
+            "abend": "Bruschetta mit Tomaten-Basilikum und gegrilltem Haehnchen",
+            "zeit_aktiv": "18m",
+            "zeit_total": "20m"
+          }
+        ]
+      },
+      "sel": 0,
+      "n": 1,
+      "personen": 2,
+      "reste": 0,
+      "freeze": 0,
+      "modus": "optional",
+      "days": {
+        "Mo": null,
+        "Di": null,
+        "Mi": null,
+        "Do": null,
+        "Fr": "schnell",
+        "Sa": null,
+        "So": null
+      },
+      "weekStart": "2026-09-06",
+      "saved": "7.9.2026",
+      "bringImportedAt": null,
+      "bringItemCount": 0,
+      "sugsAll": [
+        {
+          "id": 1,
+          "thema": "Mediterran (Variante 1)",
+          "kochabende": [
+            "Fr"
+          ],
+          "gerichte": [
+            {
+              "tag": "Fr",
+              "abend": "Bruschetta mit Tomaten-Basilikum und gegrilltem Haehnchen",
+              "zeit_aktiv": "18m",
+              "zeit_total": "20m"
+            }
+          ]
+        },
+        {
+          "id": 2,
+          "thema": "Mediterran",
+          "kochabende": [
+            "Fr"
+          ],
+          "gerichte": [
+            {
+              "tag": "Fr",
+              "abend": "Shakshuka mit Feta und Spinat",
+              "zeit_aktiv": "18m",
+              "zeit_total": "25m"
+            }
+          ]
+        },
+        {
+          "id": 3,
+          "thema": "Nahostlich",
+          "kochabende": [
+            "Fr"
+          ],
+          "gerichte": [
+            {
+              "tag": "Fr",
+              "abend": "Shakshuka mit Kichererbsen und optional Merguez",
+              "zeit_aktiv": "18m",
+              "zeit_total": "25m"
+            }
+          ]
+        }
+      ],
+      "sugsPartial": true
+    }
+  },
+  {
+    "date": "2026-09-07",
+    "saved": "7.9.2026",
     "thema": "Mediterran",
     "personen": 2,
     "kochabende": 1,
