@@ -1,45 +1,31 @@
 {
   "sug": {
-    "id": 2,
+    "id": 1,
     "thema": "Mediterran",
     "kochabende": [
-      "Mo",
-      "Mi",
       "Fr"
     ],
     "gerichte": [
       {
-        "tag": "Mo",
-        "abend": "Shakshuka mit Feta und Gemüse",
-        "zeit_aktiv": "20m",
-        "zeit_total": "30m"
-      },
-      {
-        "tag": "Mi",
-        "abend": "Pasta alla Puttanesca mit optional Sardellen",
-        "zeit_aktiv": "15m",
-        "zeit_total": "20m"
-      },
-      {
         "tag": "Fr",
-        "abend": "Gegrillte Zucchini mit Tomaten und Mozzarella",
-        "zeit_aktiv": "25m",
-        "zeit_total": "35m"
+        "abend": "Tomaten-Linsen-Eintopf mit Feta",
+        "zeit_aktiv": "18m",
+        "zeit_total": "30m"
       }
     ]
   },
-  "sel": 1,
-  "n": 3,
+  "sel": 0,
+  "n": 1,
   "personen": 2,
   "reste": 0,
   "freeze": 0,
-  "modus": "optional",
+  "modus": "vegi",
   "days": {
-    "Mo": "normal",
+    "Mo": null,
     "Di": null,
-    "Mi": "normal",
+    "Mi": null,
     "Do": null,
-    "Fr": "normal",
+    "Fr": "schnell",
     "Sa": null,
     "So": null
   },
@@ -50,87 +36,45 @@
   "sugsAll": [
     {
       "id": 1,
-      "thema": "Mediterran (Variante 1)",
+      "thema": "Mediterran",
       "kochabende": [
-        "Mo",
-        "Mi",
         "Fr"
       ],
       "gerichte": [
         {
-          "tag": "Mo",
-          "abend": "Gegrillte Gemüseplatte mit Halloumi und optional Lamm-Souvlaki",
-          "zeit_aktiv": "25m",
-          "zeit_total": "40m"
-        },
-        {
-          "tag": "Mi",
-          "abend": "Pasta alla Puttanesca mit Spinat und optional Sardellen",
-          "zeit_aktiv": "15m",
-          "zeit_total": "20m"
-        },
-        {
           "tag": "Fr",
-          "abend": "Tomaten-Kichererbsen-Eintopf mit Feta",
-          "zeit_aktiv": "20m",
-          "zeit_total": "35m"
+          "abend": "Tomaten-Linsen-Eintopf mit Feta",
+          "zeit_aktiv": "18m",
+          "zeit_total": "30m"
         }
       ]
     },
     {
       "id": 2,
-      "thema": "Mediterran",
+      "thema": "Mediterran (Variante 2)",
       "kochabende": [
-        "Mo",
-        "Mi",
         "Fr"
       ],
       "gerichte": [
         {
-          "tag": "Mo",
-          "abend": "Shakshuka mit Feta und Gemüse",
-          "zeit_aktiv": "20m",
-          "zeit_total": "30m"
-        },
-        {
-          "tag": "Mi",
-          "abend": "Pasta alla Puttanesca mit optional Sardellen",
-          "zeit_aktiv": "15m",
-          "zeit_total": "20m"
-        },
-        {
           "tag": "Fr",
-          "abend": "Gegrillte Zucchini mit Tomaten und Mozzarella",
-          "zeit_aktiv": "25m",
-          "zeit_total": "35m"
+          "abend": "Shakshuka mit Feta und Gemüse",
+          "zeit_aktiv": "18m",
+          "zeit_total": "25m"
         }
       ]
     },
     {
       "id": 3,
-      "thema": "Nahost",
+      "thema": "Mediterran (Variante 3)",
       "kochabende": [
-        "Mo",
-        "Mi",
         "Fr"
       ],
       "gerichte": [
         {
-          "tag": "Mo",
-          "abend": "Hummus-Gemueseplatten mit Falafel und optional Hahnchen-Shawarma",
-          "zeit_aktiv": "25m",
-          "zeit_total": "40m"
-        },
-        {
-          "tag": "Mi",
-          "abend": "Tabbouleh-Salat mit Kichererbsen und optional Lammfleischbaellen",
-          "zeit_aktiv": "20m",
-          "zeit_total": "20m"
-        },
-        {
           "tag": "Fr",
-          "abend": "Muhammara mit Granatapfel und optional Hahnchen-Kebab",
-          "zeit_aktiv": "15m",
+          "abend": "Shakshuka mit Feta und Gemüse",
+          "zeit_aktiv": "18m",
           "zeit_total": "25m"
         }
       ]
