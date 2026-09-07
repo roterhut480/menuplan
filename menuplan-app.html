@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=yes">
-<title>Menüplan v6.19</title>
+<title>Menüplan v6.20</title>
 <style>
 :root{
   --red:#e8390e;--rl:#fff2ef;--grn:#2e7d32;--grl:#f0faf4;
@@ -153,7 +153,7 @@ input[type=password]{letter-spacing:2px}
 
 <!-- HOME -->
 <div class="scr on" id="sh">
-  <div class="hero"><h1>Menüplan</h1><p id="hsub">v6.19 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
+  <div class="hero"><h1>Menüplan</h1><p id="hsub">v6.20 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
 
   <!-- Active plan card -->
 
@@ -1478,7 +1478,10 @@ function validateIngredients(gerichte) {
   return gerichte;
 }
 
-function validateOverview(data) {
+// expectedCount: erwartete Anzahl Gerichte pro Vorschlag (G.n).
+// expectedTags: Array der ausgewaehlten Kochtage (z.B. ["Mo","Mi","Fr"]) -
+// jeder muss GENAU EINMAL vorkommen, nicht mehr und nicht weniger.
+function validateOverview(data, expectedCount, expectedTags) {
   if (!data || !Array.isArray(data.vorschlaege)) return 'Feld "vorschlaege" fehlt';
   if (!data.vorschlaege.length) return 'Keine Vorschläge erhalten';
   for (var i = 0; i < data.vorschlaege.length; i++) {
@@ -1487,6 +1490,18 @@ function validateOverview(data) {
     if (!Array.isArray(v.gerichte) || !v.gerichte.length) return 'Vorschlag ' + (i+1) + ': Gerichte fehlen';
     for (var j = 0; j < v.gerichte.length; j++) {
       if (!v.gerichte[j].abend) return 'Vorschlag ' + (i+1) + ', Gericht ' + (j+1) + ': Name fehlt';
+    }
+    if (expectedCount && v.gerichte.length !== expectedCount) {
+      return 'Vorschlag ' + (i+1) + ': erwartet ' + expectedCount + ' Gerichte, erhalten ' + v.gerichte.length;
+    }
+    if (expectedTags && expectedTags.length) {
+      var tagCounts = {};
+      v.gerichte.forEach(function(g) { if (g.tag) tagCounts[g.tag] = (tagCounts[g.tag] || 0) + 1; });
+      for (var k = 0; k < expectedTags.length; k++) {
+        var t = expectedTags[k];
+        if (!tagCounts[t]) return 'Vorschlag ' + (i+1) + ': Kochtag "' + t + '" fehlt';
+        if (tagCounts[t] > 1) return 'Vorschlag ' + (i+1) + ': Kochtag "' + t + '" kommt mehrfach vor';
+      }
     }
   }
   return null;
@@ -1678,6 +1693,11 @@ function goSuggest() {
   }, 1000);
   G._loadIv = loadIv;
 
+  // Erwartete Kochtage einmalig berechnen: nur Tage mit aktivem Kochmodus,
+  // "auswaerts" zaehlt nicht als Kochtag. Wird an validateOverview() uebergeben,
+  // damit eine Antwort mit falscher/doppelter Tagzuordnung erkannt wird.
+  var expectedCookingTags = DAYS_ORDER.filter(function(d){ return G.days[d] && G.days[d] !== 'auswaerts'; });
+
   var p = G.personen || 2;
   var modusText = G.modus === 'vegi' ? 'vegetarisch' : G.modus === 'fleisch' ? 'mit Fleisch' : 'vegi+Fleisch optional';
 
@@ -1725,7 +1745,7 @@ function goSuggest() {
       .then(function(raw) {
         try {
           var parsed = parseJSON(raw);
-          var validErr = validateOverview(parsed);
+          var validErr = validateOverview(parsed, G.n, expectedCookingTags);
           if (validErr) throw new Error(validErr);
           var sugs = parsed.vorschlaege || [];
           if (sugs.length > 0) {
@@ -1857,8 +1877,13 @@ function selSug(i) {
 function goWeek() {
   if (G.sel === null) return;
   var sug = G.sugs[G.sel];
-  // Steps already loaded - go directly
-  if (sug.gerichte[0] && sug.gerichte[0].schritte_vegi && sug.gerichte[0].schritte_vegi.length > 0) {
+  // Steps already loaded - go directly. ALLE Gerichte pruefen (nicht nur das
+  // erste) - sonst wuerde z.B. ein spaeter ausgetauschtes Gericht mit noch
+  // fehlenden Kochschritten uebersehen, waehrend Gericht 1 bereits vollstaendig ist.
+  var alleSchritteVorhanden = sug.gerichte.every(function(g) {
+    return g.schritte_vegi && g.schritte_vegi.length > 0;
+  });
+  if (alleSchritteVorhanden) {
     goWeekRender(sug); return;
   }
   // Need to load full recipes
@@ -2771,15 +2796,15 @@ function updateHistoryEntryPlan(planData) {
 }
 
 
-function updateHistoryStatus(savedDate, status) {
+function updateHistoryStatus(planData, status) {
+  // Ueber planId zuordnen statt ueber saved/date zu suchen (mehrere Plaene
+  // koennen dasselbe Datum haben) und NICHT auf hist[0] zurueckfallen, wenn
+  // kein Treffer gefunden wird - dann bleibt der Verlauf lieber unveraendert
+  // statt einen falschen (zufaelligen) Eintrag zu markieren.
   var hist = JSON.parse(localStorage.getItem(userKey('local_history')) || '[]');
-  var found = false;
-  for (var i = 0; i < hist.length; i++) {
-    if (hist[i].saved === savedDate || hist[i].date === savedDate) {
-      hist[i].status = status; found = true; break;
-    }
-  }
-  if (!found && hist.length) hist[0].status = status;
+  var idx = planData ? findHistoryEntryIndex(hist, planData) : -1;
+  if (idx < 0) return;
+  hist[idx].status = status;
   localStorage.setItem(userKey('local_history'), JSON.stringify(hist));
   saveHistoryToGH(hist);
 }
@@ -2794,7 +2819,7 @@ function markEinkaufDone(itemCount) {
   renderActivePlan();
   updateTransferStatusUI();
   saveToGH(G.activePlan);
-  updateHistoryStatus(G.activePlan.saved || G.activePlan.date, 'einkauf');
+  updateHistoryStatus(G.activePlan, 'einkauf');
 }
 // ─── ACTIVE PLAN ───────────────────────────────────────────
 
@@ -3262,7 +3287,7 @@ function generateReplace() {
     ' Verfuegbare Zutaten der Woche mitnutzen: ' + otherZutaten + '.' +
     ' Fuer ' + (G.personen||2) + ' Personen.' +
     (G.reste ? ' Mit Resteverwertung am naechsten Tag.' : '') +
-    ' NUR valides JSON. Format: {"gerichte":[{"tag":"' + g.tag + '","abend":"Gerichtsname","mittag_naechster_tag":"Restname","zeit_aktiv":"20m","zeit_total":"40m","zutaten":[{"name":"X","menge":"Y"}],"schritte_vegi":[{"titel":"Schritt","text":"Detail","timer_min":0,"zutaten_schritt":[{"name":"X","menge":"Y"}],"zubehoer":[],"kontrolle":"","parallel_hinweis":""}],"tipp":"Tipp"}]}';
+    ' NUR valides JSON. Format: {"gerichte":[{"tag":"' + g.tag + '","abend":"Gerichtsname","mittag_nächster_tag":"Restname","zeit_aktiv":"20m","zeit_total":"40m","zutaten":[{"name":"X","menge":"Y"}],"schritte_vegi":[{"titel":"Schritt","text":"Detail","timer_min":0,"zutaten_schritt":[{"name":"X","menge":"Y"}],"zubehoer":[],"kontrolle":"","parallel_hinweis":""}],"tipp":"Tipp"}]}';
 
   callWorker('replace', msg, 5000, { dishes: existing })
     .then(function(raw) {
@@ -3273,6 +3298,11 @@ function generateReplace() {
         var repValidationError = validateFullRecipe(parsed);
         if (repValidationError) throw new Error(repValidationError);
         var gerichte = parsed.gerichte || [];
+        // Exakt EIN Ersatzgericht erwartet - mehrere wuerden stillschweigend
+        // bis auf das erste verworfen, was auf eine fehlerhafte Antwort hindeutet.
+        if (gerichte.length !== 1) {
+          throw new Error('Erwartet genau 1 Ersatzgericht, erhalten ' + gerichte.length);
+        }
         var ng = gerichte[0];
         G_rep.newGericht = ng;
         $('rep-name').textContent = ng.abend;
@@ -3305,8 +3335,8 @@ function applyReplace() {
   // Keep scheduling info from original
   ng.tag = oldG.tag;
   if (oldG.mittag_tag) ng.mittag_tag = oldG.mittag_tag;
-  if (!ng.mittag_naechster_tag && oldG.mittag_naechster_tag) {
-    ng.mittag_naechster_tag = ng.abend + ' Reste';
+  if (!ng.mittag_nächster_tag && oldG.mittag_nächster_tag) {
+    ng.mittag_nächster_tag = ng.abend + ' Reste';
   }
 
   sug.gerichte[ri] = ng;
@@ -3352,6 +3382,21 @@ function migrateOldLocalStorageKeys() {
   });
 }
 
+// Migriert aeltere gespeicherte Plaene, die noch das ASCII-Feld
+// "mittag_naechster_tag" verwenden (vor der Vereinheitlichung), auf die
+// kanonische Schreibweise "mittag_nächster_tag" (so wie sie Claude ueber
+// den Worker-Prompt tatsaechlich liefert).
+function normalizeMittagFeld(sug) {
+  if (!sug || !sug.gerichte) return sug;
+  sug.gerichte.forEach(function(g) {
+    if (g.mittag_naechster_tag && !g.mittag_nächster_tag) {
+      g.mittag_nächster_tag = g.mittag_naechster_tag;
+      delete g.mittag_naechster_tag;
+    }
+  });
+  return sug;
+}
+
 function showLoggedIn() {
   var session = getSession();
   // Hide login, show dashboard
@@ -3364,7 +3409,7 @@ function showLoggedIn() {
   loadPrefs();
   try {
     var ap = JSON.parse(localStorage.getItem(userKey('active_plan')) || 'null');
-    if (ap && ap.sug) { G.activePlan = ap; }
+    if (ap && ap.sug) { normalizeMittagFeld(ap.sug); G.activePlan = ap; }
   } catch(e) {}
   // Bring!-Sitzung pruefen (KV, sonst lokal) und Dashboard-Status aktualisieren
   loadBringTokenRemote().then(function(remote) {
@@ -3539,12 +3584,12 @@ function updateDashboard() {
     var isCooked = !!g._gekocht;               // nur wirklich Gekochtes abhaken
     var isCancelled = !!g._cancelled;
     var isPast = gIdx < todayIdx && !isCooked; // zeitlich vorbei, aber nicht gekocht
-    var hasReste = g.mittag_naechster_tag && g.mittag_naechster_tag !== 'Restename' && !isCancelled;
+    var hasReste = g.mittag_nächster_tag && g.mittag_nächster_tag !== 'Restename' && !isCancelled;
     return '<div style="display:flex;align-items:flex-start;gap:10px;padding:6px 0;border-bottom:.5px solid #f5f5f5">' +
       '<span style="font-size:11px;font-weight:700;min-width:22px;margin-top:2px;color:' + (isToday?'var(--red)':isPast?'#ccc':'var(--gr3)') + '">' + esc(tag) + '</span>' +
       '<div style="flex:1"><div style="font-size:14px;font-weight:' + (isToday?'700':'500') + ';color:' + (isCooked?'var(--grn)':isCancelled?'#bbb':isPast?'#bbb':'var(--txt)') + ';' + ((isCooked||isCancelled)?'text-decoration:line-through':'') + '">' + (isCooked?'✓ ':isCancelled?'':'') + esc(g.abend||'') + '</div>' +
       (isPast && !isCooked && !isCancelled ? '<div style="font-size:10px;color:#c62828">nicht gekocht</div>' : '') +
-      (hasReste && !isPast ? '<div style="font-size:11px;color:var(--gr3)">↳ ' + esc(g.mittag_naechster_tag) + '</div>' : '') + '</div></div>';
+      (hasReste && !isPast ? '<div style="font-size:11px;color:var(--gr3)">↳ ' + esc(g.mittag_nächster_tag) + '</div>' : '') + '</div></div>';
   }).join('');
   if ($('dash-week-days')) $('dash-week-days').innerHTML = weekHtml;
   // Heute / Nächstes
@@ -3765,7 +3810,9 @@ function renderHistoryList(history) {
 }
 function loadHistoryEntry(i) {
   var e=window._history; if(!e||!e[i]||!e[i].plan)return;
-  var plan=e[i].plan; G.activePlan=plan; localStorage.setItem(userKey('active_plan'),JSON.stringify(plan));
+  var plan=e[i].plan;
+  if (plan.sug) normalizeMittagFeld(plan.sug);
+  G.activePlan=plan; localStorage.setItem(userKey('active_plan'),JSON.stringify(plan));
   if(plan.sug){G.sugs=[plan.sug];G.sel=0;G.n=plan.n||3;G.personen=plan.personen||2;G.reste=plan.reste!==undefined?plan.reste:1;G.freeze=plan.freeze!==undefined?plan.freeze:1;G.sugsPartial=false;renderActivePlan();goWeekRender(G.sugs[G.sel]);}
 }
 
@@ -4026,7 +4073,7 @@ function startFotoCook(){
   G_cook_port = G_cook_base_port;
   G_cook_zutaten = r.zutaten || [];
   if($('ctit'))$('ctit').textContent=r.name||'Foto-Rezept';
-  var fakeGericht={abend:r.name||'Foto-Rezept',mittag_naechster_tag:null,zutaten:r.zutaten||[],zeit_aktiv:r.zeit_aktiv||'',zeit_total:r.zeit_total||''};
+  var fakeGericht={abend:r.name||'Foto-Rezept',mittag_nächster_tag:null,zutaten:r.zutaten||[],zeit_aktiv:r.zeit_aktiv||'',zeit_total:r.zeit_total||''};
   showIngOverview(fakeGericht); go('sc');
   if(navigator.wakeLock){navigator.wakeLock.request('screen').then(function(lock){G._wakeLock=lock;}).catch(function(){});}
 }
