@@ -1,31 +1,31 @@
 {
   "sug": {
-    "id": 1,
-    "thema": "Mediterran (Variante 1)",
+    "id": 3,
+    "thema": "Skandinavisch",
     "kochabende": [
-      "Fr"
+      "Mo"
     ],
     "gerichte": [
       {
-        "tag": "Fr",
-        "abend": "Bruschetta mit Tomaten-Basilikum und gegrilltem Haehnchen",
+        "tag": "Mo",
+        "abend": "Rote-Bete-Lachs-Salade mit Dill und Sauerrahm",
         "zeit_aktiv": "18m",
-        "zeit_total": "20m"
+        "zeit_total": "18m"
       }
     ]
   },
-  "sel": 0,
+  "sel": 2,
   "n": 1,
   "personen": 2,
   "reste": 0,
   "freeze": 0,
   "modus": "optional",
   "days": {
-    "Mo": null,
+    "Mo": "schnell",
     "Di": null,
     "Mi": null,
     "Do": null,
-    "Fr": "schnell",
+    "Fr": null,
     "Sa": null,
     "So": null
   },
@@ -36,28 +36,13 @@
   "sugsAll": [
     {
       "id": 1,
-      "thema": "Mediterran (Variante 1)",
-      "kochabende": [
-        "Fr"
-      ],
-      "gerichte": [
-        {
-          "tag": "Fr",
-          "abend": "Bruschetta mit Tomaten-Basilikum und gegrilltem Haehnchen",
-          "zeit_aktiv": "18m",
-          "zeit_total": "20m"
-        }
-      ]
-    },
-    {
-      "id": 2,
       "thema": "Mediterran",
       "kochabende": [
-        "Fr"
+        "Mo"
       ],
       "gerichte": [
         {
-          "tag": "Fr",
+          "tag": "Mo",
           "abend": "Shakshuka mit Feta und Spinat",
           "zeit_aktiv": "18m",
           "zeit_total": "25m"
@@ -65,17 +50,32 @@
       ]
     },
     {
-      "id": 3,
-      "thema": "Nahostlich",
+      "id": 2,
+      "thema": "Mediterran (Variante 2)",
       "kochabende": [
-        "Fr"
+        "Mo"
       ],
       "gerichte": [
         {
-          "tag": "Fr",
-          "abend": "Shakshuka mit Kichererbsen und optional Merguez",
+          "tag": "Mo",
+          "abend": "Mediterrane Gemüsepfanne mit Feta und optionalem Huehnchen",
           "zeit_aktiv": "18m",
           "zeit_total": "25m"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "thema": "Skandinavisch",
+      "kochabende": [
+        "Mo"
+      ],
+      "gerichte": [
+        {
+          "tag": "Mo",
+          "abend": "Rote-Bete-Lachs-Salade mit Dill und Sauerrahm",
+          "zeit_aktiv": "18m",
+          "zeit_total": "18m"
         }
       ]
     }
