@@ -1,309 +1,140 @@
 {
   "sug": {
     "id": 2,
-    "thema": "Mediterran (Variante 2)",
+    "thema": "Mediterran",
     "kochabende": [
-      "Mi"
+      "Mo",
+      "Mi",
+      "Fr"
     ],
     "gerichte": [
       {
+        "tag": "Mo",
+        "abend": "Shakshuka mit Feta und Gemüse",
+        "zeit_aktiv": "20m",
+        "zeit_total": "30m"
+      },
+      {
         "tag": "Mi",
-        "abend": "❌ Linsen-Gemüse-Auflauf mit Feta (ausgefallen)",
+        "abend": "Pasta alla Puttanesca mit optional Sardellen",
+        "zeit_aktiv": "15m",
+        "zeit_total": "20m"
+      },
+      {
+        "tag": "Fr",
+        "abend": "Gegrillte Zucchini mit Tomaten und Mozzarella",
         "zeit_aktiv": "25m",
-        "zeit_total": "50m",
-        "zutaten": [
-          {
-            "name": "Rote Linsen",
-            "menge": "150g"
-          },
-          {
-            "name": "Zucchini",
-            "menge": "250g"
-          },
-          {
-            "name": "Paprika rot",
-            "menge": "1 Stück (200g)"
-          },
-          {
-            "name": "Zwiebel",
-            "menge": "1 Stück (100g)"
-          },
-          {
-            "name": "Knoblauch",
-            "menge": "2 Zehen (6g)"
-          },
-          {
-            "name": "Gemüsebrühe",
-            "menge": "400ml"
-          },
-          {
-            "name": "Feta",
-            "menge": "120g"
-          },
-          {
-            "name": "Olivenöl",
-            "menge": "30ml"
-          },
-          {
-            "name": "Tomatenmark",
-            "menge": "30g"
-          },
-          {
-            "name": "Oregano getrocknet",
-            "menge": "3g"
-          },
-          {
-            "name": "Salz",
-            "menge": "4g"
-          },
-          {
-            "name": "Pfeffer schwarz",
-            "menge": "2g"
-          }
-        ],
-        "schritte_vegi": [
-          {
-            "titel": "Gemüse schneiden",
-            "text": "Zucchini waschen und in 1cm dicke Scheiben schneiden. Paprika waschen, entkernen und in 2cm große Würfel schneiden. Zwiebel schälen und fein würfeln. Knoblauch schälen und minieren.",
-            "timer_min": 0,
-            "zutaten_schritt": [
-              "Zucchini",
-              "Paprika rot",
-              "Zwiebel",
-              "Knoblauch"
-            ]
-          },
-          {
-            "titel": "Basis anbraten",
-            "text": "Olivenöl in großer Pfanne bei mittlerer Hitze erhitzen. Zwiebel und Knoblauch zugeben und 2 Minuten glasig andünsten. Tomatenmark einrühren und 1 Minute mitbraten.",
-            "timer_min": 3,
-            "zutaten_schritt": [
-              "Olivenöl",
-              "Zwiebel",
-              "Knoblauch",
-              "Tomatenmark"
-            ]
-          },
-          {
-            "titel": "Gemüse zugeben",
-            "text": "Zucchini und Paprika in die Pfanne geben. Mit Oregano, Salz und Pfeffer würzen. Gut durchmischen und 3 Minuten anbraten.",
-            "timer_min": 3,
-            "zutaten_schritt": [
-              "Zucchini",
-              "Paprika rot",
-              "Oregano getrocknet",
-              "Salz",
-              "Pfeffer schwarz"
-            ]
-          },
-          {
-            "titel": "Linsen kochen",
-            "text": "Rote Linsen und Gemüsebrühe zur Pfanne geben. Aufkochen, dann Hitze reduzieren und 15 Minuten leicht köchelnd garen bis Linsen weich sind.",
-            "timer_min": 15,
-            "zutaten_schritt": [
-              "Rote Linsen",
-              "Gemüsebrühe"
-            ]
-          },
-          {
-            "titel": "Auflauf schichten",
-            "text": "Linsenmischung in Auflaufform umfüllen. Feta in grobe Würfel zerlegen und gleichmäßig über die Mischung verteilen.",
-            "timer_min": 0,
-            "zutaten_schritt": [
-              "Feta"
-            ]
-          },
-          {
-            "titel": "Backen",
-            "text": "Auflauf im vorgeheizten Ofen bei 200°C Ober-/Unterhitze für 18-20 Minuten backen bis Feta leicht gebräunt ist.",
-            "timer_min": 20,
-            "zutaten_schritt": []
-          }
-        ],
-        "tipp": "Auflauf direkt aus dem Ofen servieren wenn Feta noch cremig ist. Optional mit frischen Kräutern oder Petersilie garnieren.",
-        "_cancelled": true,
-        "_origAbend": "Linsen-Gemüse-Auflauf mit Feta"
+        "zeit_total": "35m"
       }
     ]
   },
   "sel": 1,
-  "n": 1,
+  "n": 3,
   "personen": 2,
   "reste": 0,
   "freeze": 0,
-  "modus": "vegi",
+  "modus": "optional",
   "days": {
-    "Mo": null,
+    "Mo": "normal",
     "Di": null,
     "Mi": "normal",
     "Do": null,
-    "Fr": null,
+    "Fr": "normal",
     "Sa": null,
     "So": null
   },
-  "weekStart": "2026-08-30",
-  "saved": "6.9.2026",
-  "bringImportedAt": "06.09., 11:25",
-  "bringItemCount": 13,
+  "weekStart": "2026-09-06",
+  "saved": "7.9.2026",
+  "bringImportedAt": null,
+  "bringItemCount": 0,
   "sugsAll": [
     {
       "id": 1,
       "thema": "Mediterran (Variante 1)",
       "kochabende": [
-        "Mi"
+        "Mo",
+        "Mi",
+        "Fr"
       ],
       "gerichte": [
         {
+          "tag": "Mo",
+          "abend": "Gegrillte Gemüseplatte mit Halloumi und optional Lamm-Souvlaki",
+          "zeit_aktiv": "25m",
+          "zeit_total": "40m"
+        },
+        {
           "tag": "Mi",
-          "abend": "Shakshuka mit Feta und Gemüse",
+          "abend": "Pasta alla Puttanesca mit Spinat und optional Sardellen",
+          "zeit_aktiv": "15m",
+          "zeit_total": "20m"
+        },
+        {
+          "tag": "Fr",
+          "abend": "Tomaten-Kichererbsen-Eintopf mit Feta",
           "zeit_aktiv": "20m",
-          "zeit_total": "25m"
+          "zeit_total": "35m"
         }
       ]
     },
     {
       "id": 2,
-      "thema": "Mediterran (Variante 2)",
+      "thema": "Mediterran",
       "kochabende": [
-        "Mi"
+        "Mo",
+        "Mi",
+        "Fr"
       ],
       "gerichte": [
         {
+          "tag": "Mo",
+          "abend": "Shakshuka mit Feta und Gemüse",
+          "zeit_aktiv": "20m",
+          "zeit_total": "30m"
+        },
+        {
           "tag": "Mi",
-          "abend": "❌ Linsen-Gemüse-Auflauf mit Feta (ausgefallen)",
+          "abend": "Pasta alla Puttanesca mit optional Sardellen",
+          "zeit_aktiv": "15m",
+          "zeit_total": "20m"
+        },
+        {
+          "tag": "Fr",
+          "abend": "Gegrillte Zucchini mit Tomaten und Mozzarella",
           "zeit_aktiv": "25m",
-          "zeit_total": "50m",
-          "zutaten": [
-            {
-              "name": "Rote Linsen",
-              "menge": "150g"
-            },
-            {
-              "name": "Zucchini",
-              "menge": "250g"
-            },
-            {
-              "name": "Paprika rot",
-              "menge": "1 Stück (200g)"
-            },
-            {
-              "name": "Zwiebel",
-              "menge": "1 Stück (100g)"
-            },
-            {
-              "name": "Knoblauch",
-              "menge": "2 Zehen (6g)"
-            },
-            {
-              "name": "Gemüsebrühe",
-              "menge": "400ml"
-            },
-            {
-              "name": "Feta",
-              "menge": "120g"
-            },
-            {
-              "name": "Olivenöl",
-              "menge": "30ml"
-            },
-            {
-              "name": "Tomatenmark",
-              "menge": "30g"
-            },
-            {
-              "name": "Oregano getrocknet",
-              "menge": "3g"
-            },
-            {
-              "name": "Salz",
-              "menge": "4g"
-            },
-            {
-              "name": "Pfeffer schwarz",
-              "menge": "2g"
-            }
-          ],
-          "schritte_vegi": [
-            {
-              "titel": "Gemüse schneiden",
-              "text": "Zucchini waschen und in 1cm dicke Scheiben schneiden. Paprika waschen, entkernen und in 2cm große Würfel schneiden. Zwiebel schälen und fein würfeln. Knoblauch schälen und minieren.",
-              "timer_min": 0,
-              "zutaten_schritt": [
-                "Zucchini",
-                "Paprika rot",
-                "Zwiebel",
-                "Knoblauch"
-              ]
-            },
-            {
-              "titel": "Basis anbraten",
-              "text": "Olivenöl in großer Pfanne bei mittlerer Hitze erhitzen. Zwiebel und Knoblauch zugeben und 2 Minuten glasig andünsten. Tomatenmark einrühren und 1 Minute mitbraten.",
-              "timer_min": 3,
-              "zutaten_schritt": [
-                "Olivenöl",
-                "Zwiebel",
-                "Knoblauch",
-                "Tomatenmark"
-              ]
-            },
-            {
-              "titel": "Gemüse zugeben",
-              "text": "Zucchini und Paprika in die Pfanne geben. Mit Oregano, Salz und Pfeffer würzen. Gut durchmischen und 3 Minuten anbraten.",
-              "timer_min": 3,
-              "zutaten_schritt": [
-                "Zucchini",
-                "Paprika rot",
-                "Oregano getrocknet",
-                "Salz",
-                "Pfeffer schwarz"
-              ]
-            },
-            {
-              "titel": "Linsen kochen",
-              "text": "Rote Linsen und Gemüsebrühe zur Pfanne geben. Aufkochen, dann Hitze reduzieren und 15 Minuten leicht köchelnd garen bis Linsen weich sind.",
-              "timer_min": 15,
-              "zutaten_schritt": [
-                "Rote Linsen",
-                "Gemüsebrühe"
-              ]
-            },
-            {
-              "titel": "Auflauf schichten",
-              "text": "Linsenmischung in Auflaufform umfüllen. Feta in grobe Würfel zerlegen und gleichmäßig über die Mischung verteilen.",
-              "timer_min": 0,
-              "zutaten_schritt": [
-                "Feta"
-              ]
-            },
-            {
-              "titel": "Backen",
-              "text": "Auflauf im vorgeheizten Ofen bei 200°C Ober-/Unterhitze für 18-20 Minuten backen bis Feta leicht gebräunt ist.",
-              "timer_min": 20,
-              "zutaten_schritt": []
-            }
-          ],
-          "tipp": "Auflauf direkt aus dem Ofen servieren wenn Feta noch cremig ist. Optional mit frischen Kräutern oder Petersilie garnieren.",
-          "_cancelled": true,
-          "_origAbend": "Linsen-Gemüse-Auflauf mit Feta"
+          "zeit_total": "35m"
         }
       ]
     },
     {
       "id": 3,
-      "thema": "Mediterran",
+      "thema": "Nahost",
       "kochabende": [
-        "Mi"
+        "Mo",
+        "Mi",
+        "Fr"
       ],
       "gerichte": [
         {
-          "tag": "Mi",
-          "abend": "Linsensuppe mit Feta und Spinat",
-          "zeit_aktiv": "20m",
+          "tag": "Mo",
+          "abend": "Hummus-Gemueseplatten mit Falafel und optional Hahnchen-Shawarma",
+          "zeit_aktiv": "25m",
           "zeit_total": "40m"
+        },
+        {
+          "tag": "Mi",
+          "abend": "Tabbouleh-Salat mit Kichererbsen und optional Lammfleischbaellen",
+          "zeit_aktiv": "20m",
+          "zeit_total": "20m"
+        },
+        {
+          "tag": "Fr",
+          "abend": "Muhammara mit Granatapfel und optional Hahnchen-Kebab",
+          "zeit_aktiv": "15m",
+          "zeit_total": "25m"
         }
       ]
     }
   ],
-  "sugsPartial": false,
-  "einkaufDone": true
+  "sugsPartial": true
 }
