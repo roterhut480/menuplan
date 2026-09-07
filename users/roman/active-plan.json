@@ -10,7 +10,261 @@
         "tag": "Mo",
         "abend": "Rote-Bete-Lachs-Salade mit Dill und Sauerrahm",
         "zeit_aktiv": "18m",
-        "zeit_total": "18m"
+        "zeit_total": "18m",
+        "schritte_vegi": [
+          {
+            "titel": "Rote Bete vorbereiten",
+            "text": "Rote Bete unter kaltem Wasser gründlich abbürsten und abtrocknen.",
+            "timer_min": 0,
+            "zutaten_schritt": [
+              {
+                "name": "Rote Bete",
+                "menge": "300 g"
+              }
+            ],
+            "zubehoer": [
+              "Gemuesebuerte"
+            ],
+            "kontrolle": "Rote Bete ist sauber und trocken.",
+            "parallel_hinweis": ""
+          },
+          {
+            "titel": "Rote Bete kochen",
+            "text": "Rote Bete in einen Topf mit Wasser geben und zum Kochen bringen, dann 25 Minuten garen.",
+            "timer_min": 25,
+            "zutaten_schritt": [
+              {
+                "name": "Rote Bete",
+                "menge": "300 g"
+              }
+            ],
+            "zubehoer": [
+              "Topf",
+              "Wasser"
+            ],
+            "kontrolle": "Rote Bete ist weich, wenn die Gabel eingestochen wird.",
+            "parallel_hinweis": "Lachs vorbereiten und Dill schneiden."
+          },
+          {
+            "titel": "Rote Bete abkuehlen",
+            "text": "Gekochte Rote Bete in ein Sieb abseihen und unter kaltem Wasser abkuehlen lassen.",
+            "timer_min": 0,
+            "zutaten_schritt": [
+              {
+                "name": "Rote Bete",
+                "menge": "300 g"
+              }
+            ],
+            "zubehoer": [
+              "Sieb"
+            ],
+            "kontrolle": "Rote Bete ist handwarm.",
+            "parallel_hinweis": ""
+          },
+          {
+            "titel": "Rote Bete schaelen",
+            "text": "Abgekühlte Rote Bete mit einem Papiertuch die Schale abreiben und anschliessend in Würfel schneiden.",
+            "timer_min": 0,
+            "zutaten_schritt": [
+              {
+                "name": "Rote Bete",
+                "menge": "300 g"
+              }
+            ],
+            "zubehoer": [
+              "Schneidebrett",
+              "Messer",
+              "Papiertuecher"
+            ],
+            "kontrolle": "Rote Bete Würfel sind ca. 1 cm gross.",
+            "parallel_hinweis": ""
+          },
+          {
+            "titel": "Dill hacken",
+            "text": "Frischen Dill waschen und die Blaetter fein hacken.",
+            "timer_min": 0,
+            "zutaten_schritt": [
+              {
+                "name": "Frischer Dill",
+                "menge": "15 g"
+              }
+            ],
+            "zubehoer": [
+              "Schneidebrett",
+              "Messer"
+            ],
+            "kontrolle": "Dill ist fein gehackt.",
+            "parallel_hinweis": ""
+          },
+          {
+            "titel": "Zitrone auspressen",
+            "text": "Zitrone halbieren und beide Haelften auspressen.",
+            "timer_min": 0,
+            "zutaten_schritt": [
+              {
+                "name": "Zitrone",
+                "menge": "1 Stueck"
+              }
+            ],
+            "zubehoer": [
+              "Zitronenpresse"
+            ],
+            "kontrolle": "Ca. 30 ml Zitronensaft entsteht.",
+            "parallel_hinweis": ""
+          },
+          {
+            "titel": "Sauerrahm-Dressing vorbereiten",
+            "text": "Sauerrahm in eine Schüssel geben, 10 ml Zitronensaft und 2 g Salz hinzufuegen und mit einem Loeffel verruehren.",
+            "timer_min": 0,
+            "zutaten_schritt": [
+              {
+                "name": "Sauerrahm",
+                "menge": "100 g"
+              },
+              {
+                "name": "Zitrone",
+                "menge": "10 ml"
+              },
+              {
+                "name": "Salz",
+                "menge": "2 g"
+              }
+            ],
+            "zubehoer": [
+              "Schuessel",
+              "Loeffel"
+            ],
+            "kontrolle": "Dressing ist glatt und cremig verrührt.",
+            "parallel_hinweis": ""
+          },
+          {
+            "titel": "Rucola in Schale geben",
+            "text": "Rucola waschen und in eine Servierschale legen.",
+            "timer_min": 0,
+            "zutaten_schritt": [
+              {
+                "name": "Rucola",
+                "menge": "80 g"
+              }
+            ],
+            "zubehoer": [
+              "Servierschale"
+            ],
+            "kontrolle": "Rucola ist in der Schale angerichtet.",
+            "parallel_hinweis": ""
+          }
+        ],
+        "schritte_fleisch": [
+          {
+            "titel": "Lachs vorbereiten",
+            "text": "Lachs-Filet unter kaltem Wasser abspuelen und mit Papiertuch trockentupfen.",
+            "timer_min": 0,
+            "zutaten_schritt": [
+              {
+                "name": "Lachs",
+                "menge": "240 g"
+              }
+            ],
+            "zubehoer": [
+              "Papiertuecher"
+            ],
+            "kontrolle": "Lachs ist trocken.",
+            "parallel_hinweis": ""
+          },
+          {
+            "titel": "Lachs in Pfanne braten",
+            "text": "10 ml Olivenoel in einer Pfanne erhitzen und Lachs-Filet mit der Hautseite nach oben einlegen, von der Fleischseite 3 Minuten braten.",
+            "timer_min": 3,
+            "zutaten_schritt": [
+              {
+                "name": "Lachs",
+                "menge": "240 g"
+              },
+              {
+                "name": "Olivenoel",
+                "menge": "10 ml"
+              }
+            ],
+            "zubehoer": [
+              "Pfanne",
+              "Spatula"
+            ],
+            "kontrolle": "Fleischseite ist hellbraun.",
+            "parallel_hinweis": ""
+          },
+          {
+            "titel": "Lachs wenden und fertig braten",
+            "text": "Lachs-Filet vorsichtig wenden und weitere 2 Minuten von der Hautseite braten.",
+            "timer_min": 2,
+            "zutaten_schritt": [
+              {
+                "name": "Lachs",
+                "menge": "240 g"
+              }
+            ],
+            "zubehoer": [
+              "Pfanne",
+              "Spatula"
+            ],
+            "kontrolle": "Lachs ist durchgebr, Haut ist krispig.",
+            "parallel_hinweis": ""
+          },
+          {
+            "titel": "Lachs kuehlen und zerteilen",
+            "text": "Gegrillten Lachs auf einen Teller legen und ca. 2 Minuten ruhen lassen, dann in groessere Stuecke teilen.",
+            "timer_min": 2,
+            "zutaten_schritt": [
+              {
+                "name": "Lachs",
+                "menge": "240 g"
+              }
+            ],
+            "zubehoer": [
+              "Messer",
+              "Schneidebrett"
+            ],
+            "kontrolle": "Lachs ist in 4-6 Stuecken geteilt.",
+            "parallel_hinweis": ""
+          }
+        ],
+        "zutaten": [
+          {
+            "name": "Lachs",
+            "menge": "240 g"
+          },
+          {
+            "name": "Rote Bete",
+            "menge": "300 g"
+          },
+          {
+            "name": "Sauerrahm",
+            "menge": "100 g"
+          },
+          {
+            "name": "Frischer Dill",
+            "menge": "15 g"
+          },
+          {
+            "name": "Zitrone",
+            "menge": "1 Stueck"
+          },
+          {
+            "name": "Salz",
+            "menge": "2 g"
+          },
+          {
+            "name": "Schwarzer Pfeffer",
+            "menge": "1 g"
+          },
+          {
+            "name": "Olivenoel",
+            "menge": "20 ml"
+          },
+          {
+            "name": "Rucola",
+            "menge": "80 g"
+          }
+        ]
       }
     ]
   },
@@ -75,10 +329,264 @@
           "tag": "Mo",
           "abend": "Rote-Bete-Lachs-Salade mit Dill und Sauerrahm",
           "zeit_aktiv": "18m",
-          "zeit_total": "18m"
+          "zeit_total": "18m",
+          "schritte_vegi": [
+            {
+              "titel": "Rote Bete vorbereiten",
+              "text": "Rote Bete unter kaltem Wasser gründlich abbürsten und abtrocknen.",
+              "timer_min": 0,
+              "zutaten_schritt": [
+                {
+                  "name": "Rote Bete",
+                  "menge": "300 g"
+                }
+              ],
+              "zubehoer": [
+                "Gemuesebuerte"
+              ],
+              "kontrolle": "Rote Bete ist sauber und trocken.",
+              "parallel_hinweis": ""
+            },
+            {
+              "titel": "Rote Bete kochen",
+              "text": "Rote Bete in einen Topf mit Wasser geben und zum Kochen bringen, dann 25 Minuten garen.",
+              "timer_min": 25,
+              "zutaten_schritt": [
+                {
+                  "name": "Rote Bete",
+                  "menge": "300 g"
+                }
+              ],
+              "zubehoer": [
+                "Topf",
+                "Wasser"
+              ],
+              "kontrolle": "Rote Bete ist weich, wenn die Gabel eingestochen wird.",
+              "parallel_hinweis": "Lachs vorbereiten und Dill schneiden."
+            },
+            {
+              "titel": "Rote Bete abkuehlen",
+              "text": "Gekochte Rote Bete in ein Sieb abseihen und unter kaltem Wasser abkuehlen lassen.",
+              "timer_min": 0,
+              "zutaten_schritt": [
+                {
+                  "name": "Rote Bete",
+                  "menge": "300 g"
+                }
+              ],
+              "zubehoer": [
+                "Sieb"
+              ],
+              "kontrolle": "Rote Bete ist handwarm.",
+              "parallel_hinweis": ""
+            },
+            {
+              "titel": "Rote Bete schaelen",
+              "text": "Abgekühlte Rote Bete mit einem Papiertuch die Schale abreiben und anschliessend in Würfel schneiden.",
+              "timer_min": 0,
+              "zutaten_schritt": [
+                {
+                  "name": "Rote Bete",
+                  "menge": "300 g"
+                }
+              ],
+              "zubehoer": [
+                "Schneidebrett",
+                "Messer",
+                "Papiertuecher"
+              ],
+              "kontrolle": "Rote Bete Würfel sind ca. 1 cm gross.",
+              "parallel_hinweis": ""
+            },
+            {
+              "titel": "Dill hacken",
+              "text": "Frischen Dill waschen und die Blaetter fein hacken.",
+              "timer_min": 0,
+              "zutaten_schritt": [
+                {
+                  "name": "Frischer Dill",
+                  "menge": "15 g"
+                }
+              ],
+              "zubehoer": [
+                "Schneidebrett",
+                "Messer"
+              ],
+              "kontrolle": "Dill ist fein gehackt.",
+              "parallel_hinweis": ""
+            },
+            {
+              "titel": "Zitrone auspressen",
+              "text": "Zitrone halbieren und beide Haelften auspressen.",
+              "timer_min": 0,
+              "zutaten_schritt": [
+                {
+                  "name": "Zitrone",
+                  "menge": "1 Stueck"
+                }
+              ],
+              "zubehoer": [
+                "Zitronenpresse"
+              ],
+              "kontrolle": "Ca. 30 ml Zitronensaft entsteht.",
+              "parallel_hinweis": ""
+            },
+            {
+              "titel": "Sauerrahm-Dressing vorbereiten",
+              "text": "Sauerrahm in eine Schüssel geben, 10 ml Zitronensaft und 2 g Salz hinzufuegen und mit einem Loeffel verruehren.",
+              "timer_min": 0,
+              "zutaten_schritt": [
+                {
+                  "name": "Sauerrahm",
+                  "menge": "100 g"
+                },
+                {
+                  "name": "Zitrone",
+                  "menge": "10 ml"
+                },
+                {
+                  "name": "Salz",
+                  "menge": "2 g"
+                }
+              ],
+              "zubehoer": [
+                "Schuessel",
+                "Loeffel"
+              ],
+              "kontrolle": "Dressing ist glatt und cremig verrührt.",
+              "parallel_hinweis": ""
+            },
+            {
+              "titel": "Rucola in Schale geben",
+              "text": "Rucola waschen und in eine Servierschale legen.",
+              "timer_min": 0,
+              "zutaten_schritt": [
+                {
+                  "name": "Rucola",
+                  "menge": "80 g"
+                }
+              ],
+              "zubehoer": [
+                "Servierschale"
+              ],
+              "kontrolle": "Rucola ist in der Schale angerichtet.",
+              "parallel_hinweis": ""
+            }
+          ],
+          "schritte_fleisch": [
+            {
+              "titel": "Lachs vorbereiten",
+              "text": "Lachs-Filet unter kaltem Wasser abspuelen und mit Papiertuch trockentupfen.",
+              "timer_min": 0,
+              "zutaten_schritt": [
+                {
+                  "name": "Lachs",
+                  "menge": "240 g"
+                }
+              ],
+              "zubehoer": [
+                "Papiertuecher"
+              ],
+              "kontrolle": "Lachs ist trocken.",
+              "parallel_hinweis": ""
+            },
+            {
+              "titel": "Lachs in Pfanne braten",
+              "text": "10 ml Olivenoel in einer Pfanne erhitzen und Lachs-Filet mit der Hautseite nach oben einlegen, von der Fleischseite 3 Minuten braten.",
+              "timer_min": 3,
+              "zutaten_schritt": [
+                {
+                  "name": "Lachs",
+                  "menge": "240 g"
+                },
+                {
+                  "name": "Olivenoel",
+                  "menge": "10 ml"
+                }
+              ],
+              "zubehoer": [
+                "Pfanne",
+                "Spatula"
+              ],
+              "kontrolle": "Fleischseite ist hellbraun.",
+              "parallel_hinweis": ""
+            },
+            {
+              "titel": "Lachs wenden und fertig braten",
+              "text": "Lachs-Filet vorsichtig wenden und weitere 2 Minuten von der Hautseite braten.",
+              "timer_min": 2,
+              "zutaten_schritt": [
+                {
+                  "name": "Lachs",
+                  "menge": "240 g"
+                }
+              ],
+              "zubehoer": [
+                "Pfanne",
+                "Spatula"
+              ],
+              "kontrolle": "Lachs ist durchgebr, Haut ist krispig.",
+              "parallel_hinweis": ""
+            },
+            {
+              "titel": "Lachs kuehlen und zerteilen",
+              "text": "Gegrillten Lachs auf einen Teller legen und ca. 2 Minuten ruhen lassen, dann in groessere Stuecke teilen.",
+              "timer_min": 2,
+              "zutaten_schritt": [
+                {
+                  "name": "Lachs",
+                  "menge": "240 g"
+                }
+              ],
+              "zubehoer": [
+                "Messer",
+                "Schneidebrett"
+              ],
+              "kontrolle": "Lachs ist in 4-6 Stuecken geteilt.",
+              "parallel_hinweis": ""
+            }
+          ],
+          "zutaten": [
+            {
+              "name": "Lachs",
+              "menge": "240 g"
+            },
+            {
+              "name": "Rote Bete",
+              "menge": "300 g"
+            },
+            {
+              "name": "Sauerrahm",
+              "menge": "100 g"
+            },
+            {
+              "name": "Frischer Dill",
+              "menge": "15 g"
+            },
+            {
+              "name": "Zitrone",
+              "menge": "1 Stueck"
+            },
+            {
+              "name": "Salz",
+              "menge": "2 g"
+            },
+            {
+              "name": "Schwarzer Pfeffer",
+              "menge": "1 g"
+            },
+            {
+              "name": "Olivenoel",
+              "menge": "20 ml"
+            },
+            {
+              "name": "Rucola",
+              "menge": "80 g"
+            }
+          ]
         }
       ]
     }
   ],
-  "sugsPartial": true
+  "sugsPartial": false
 }
