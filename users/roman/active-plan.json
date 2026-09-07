@@ -10,9 +10,11 @@
     "gerichte": [
       {
         "tag": "Mi",
-        "abend": "Spanischer Tortilla mit Salat",
+        "abend": "❌ Spanischer Tortilla mit Salat (ausgefallen)",
         "zeit_aktiv": "18m",
-        "zeit_total": "25m"
+        "zeit_total": "25m",
+        "_cancelled": true,
+        "_origAbend": "Spanischer Tortilla mit Salat"
       },
       {
         "tag": "So",
@@ -39,7 +41,7 @@
   },
   "weekStart": "2026-09-06",
   "saved": "7.9.2026",
-  "bringImportedAt": null,
+  "bringImportedAt": "07.09., 16:07",
   "bringItemCount": 0,
   "sugsAll": [
     {
@@ -52,9 +54,11 @@
       "gerichte": [
         {
           "tag": "Mi",
-          "abend": "Spanischer Tortilla mit Salat",
+          "abend": "❌ Spanischer Tortilla mit Salat (ausgefallen)",
           "zeit_aktiv": "18m",
-          "zeit_total": "25m"
+          "zeit_total": "25m",
+          "_cancelled": true,
+          "_origAbend": "Spanischer Tortilla mit Salat"
         },
         {
           "tag": "So",
@@ -109,5 +113,7 @@
       ]
     }
   ],
-  "sugsPartial": true
+  "sugsPartial": true,
+  "einkaufDone": true,
+  "bringStale": true
 }
