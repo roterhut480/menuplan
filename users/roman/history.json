@@ -1,5 +1,106 @@
 [
   {
+    "planId": "2026-09-06",
+    "date": "2026-09-07",
+    "saved": "7.9.2026",
+    "thema": "Skandinavisch",
+    "personen": 2,
+    "kochabende": 1,
+    "reste": 0,
+    "freeze": 0,
+    "gerichte": [
+      {
+        "tag": "Mo",
+        "abend": "Rote-Bete-Lachs-Salade mit Dill und Sauerrahm"
+      }
+    ],
+    "status": "geplant",
+    "plan": {
+      "sug": {
+        "id": 3,
+        "thema": "Skandinavisch",
+        "kochabende": [
+          "Mo"
+        ],
+        "gerichte": [
+          {
+            "tag": "Mo",
+            "abend": "Rote-Bete-Lachs-Salade mit Dill und Sauerrahm",
+            "zeit_aktiv": "18m",
+            "zeit_total": "18m"
+          }
+        ]
+      },
+      "sel": 2,
+      "n": 1,
+      "personen": 2,
+      "reste": 0,
+      "freeze": 0,
+      "modus": "optional",
+      "days": {
+        "Mo": "schnell",
+        "Di": null,
+        "Mi": null,
+        "Do": null,
+        "Fr": null,
+        "Sa": null,
+        "So": null
+      },
+      "weekStart": "2026-09-06",
+      "saved": "7.9.2026",
+      "bringImportedAt": null,
+      "bringItemCount": 0,
+      "sugsAll": [
+        {
+          "id": 1,
+          "thema": "Mediterran",
+          "kochabende": [
+            "Mo"
+          ],
+          "gerichte": [
+            {
+              "tag": "Mo",
+              "abend": "Shakshuka mit Feta und Spinat",
+              "zeit_aktiv": "18m",
+              "zeit_total": "25m"
+            }
+          ]
+        },
+        {
+          "id": 2,
+          "thema": "Mediterran (Variante 2)",
+          "kochabende": [
+            "Mo"
+          ],
+          "gerichte": [
+            {
+              "tag": "Mo",
+              "abend": "Mediterrane Gemüsepfanne mit Feta und optionalem Huehnchen",
+              "zeit_aktiv": "18m",
+              "zeit_total": "25m"
+            }
+          ]
+        },
+        {
+          "id": 3,
+          "thema": "Skandinavisch",
+          "kochabende": [
+            "Mo"
+          ],
+          "gerichte": [
+            {
+              "tag": "Mo",
+              "abend": "Rote-Bete-Lachs-Salade mit Dill und Sauerrahm",
+              "zeit_aktiv": "18m",
+              "zeit_total": "18m"
+            }
+          ]
+        }
+      ],
+      "sugsPartial": true
+    }
+  },
+  {
     "date": "2026-09-07",
     "saved": "7.9.2026",
     "thema": "Mediterran (Variante 1)",
