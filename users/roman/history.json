@@ -1,5 +1,139 @@
 [
   {
+    "planId": "fd8b7e00-e201-404f-a858-39511ee76e4d",
+    "date": "2026-09-07",
+    "saved": "7.9.2026",
+    "thema": "Marokkanisch",
+    "personen": 2,
+    "kochabende": 2,
+    "reste": 0,
+    "freeze": 0,
+    "gerichte": [
+      {
+        "tag": "Mo",
+        "abend": "Marokkanische Linsensuppe mit Harissa"
+      },
+      {
+        "tag": "Fr",
+        "abend": "Vegetarisches Tajine mit Kichererbsen und Trockenfrüchten"
+      }
+    ],
+    "status": "geplant",
+    "plan": {
+      "planId": "fd8b7e00-e201-404f-a858-39511ee76e4d",
+      "sug": {
+        "id": 3,
+        "thema": "Marokkanisch",
+        "kochabende": [
+          "Mo",
+          "Fr"
+        ],
+        "gerichte": [
+          {
+            "tag": "Mo",
+            "abend": "Marokkanische Linsensuppe mit Harissa",
+            "zeit_aktiv": "15m",
+            "zeit_total": "25m"
+          },
+          {
+            "tag": "Fr",
+            "abend": "Vegetarisches Tajine mit Kichererbsen und Trockenfrüchten",
+            "zeit_aktiv": "25m",
+            "zeit_total": "40m"
+          }
+        ]
+      },
+      "sel": 2,
+      "n": 2,
+      "personen": 2,
+      "reste": 0,
+      "freeze": 0,
+      "modus": "vegi",
+      "days": {
+        "Mo": "schnell",
+        "Di": null,
+        "Mi": null,
+        "Do": null,
+        "Fr": "aufwendig",
+        "Sa": null,
+        "So": null
+      },
+      "weekStart": "2026-09-06",
+      "saved": "7.9.2026",
+      "bringImportedAt": null,
+      "bringItemCount": 0,
+      "sugsAll": [
+        {
+          "id": 1,
+          "thema": "Mediterran (Variante 1)",
+          "kochabende": [
+            "Mo",
+            "Fr"
+          ],
+          "gerichte": [
+            {
+              "tag": "Mo",
+              "abend": "Shakshuka mit Spinat und Feta",
+              "zeit_aktiv": "18m",
+              "zeit_total": "25m"
+            },
+            {
+              "tag": "Fr",
+              "abend": "Auberginen-Tomaten-Auflauf mit Ricotta",
+              "zeit_aktiv": "35m",
+              "zeit_total": "55m"
+            }
+          ]
+        },
+        {
+          "id": 2,
+          "thema": "Mediterran",
+          "kochabende": [
+            "Mo",
+            "Fr"
+          ],
+          "gerichte": [
+            {
+              "tag": "Mo",
+              "abend": "Shakshuka mit Feta und Gemüse",
+              "zeit_aktiv": "18m",
+              "zeit_total": "25m"
+            },
+            {
+              "tag": "Fr",
+              "abend": "Gefüllte Auberginen mit Tomaten und Pinienkernen",
+              "zeit_aktiv": "35m",
+              "zeit_total": "50m"
+            }
+          ]
+        },
+        {
+          "id": 3,
+          "thema": "Marokkanisch",
+          "kochabende": [
+            "Mo",
+            "Fr"
+          ],
+          "gerichte": [
+            {
+              "tag": "Mo",
+              "abend": "Marokkanische Linsensuppe mit Harissa",
+              "zeit_aktiv": "15m",
+              "zeit_total": "25m"
+            },
+            {
+              "tag": "Fr",
+              "abend": "Vegetarisches Tajine mit Kichererbsen und Trockenfrüchten",
+              "zeit_aktiv": "25m",
+              "zeit_total": "40m"
+            }
+          ]
+        }
+      ],
+      "sugsPartial": true
+    }
+  },
+  {
     "planId": "941a5562-b211-4b07-9f02-0125a6b15090",
     "date": "2026-09-07",
     "saved": "7.9.2026",
