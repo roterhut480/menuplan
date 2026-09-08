@@ -8,14 +8,7 @@
       "Mi",
       "Fr"
     ],
-    "gerichte": [
-      {
-        "tag": "Mo",
-        "abend": "Pasta mit Tomaten-Zucchini-Sauce und optional Hackfleisch",
-        "zeit_aktiv": "25m",
-        "zeit_total": "40m"
-      }
-    ]
+    "gerichte": []
   },
   "sel": 0,
   "n": 3,
@@ -45,14 +38,7 @@
         "Mi",
         "Fr"
       ],
-      "gerichte": [
-        {
-          "tag": "Mo",
-          "abend": "Pasta mit Tomaten-Zucchini-Sauce und optional Hackfleisch",
-          "zeit_aktiv": "25m",
-          "zeit_total": "40m"
-        }
-      ]
+      "gerichte": []
     }
   ],
   "sugsPartial": true
