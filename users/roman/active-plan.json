@@ -10,8 +10,395 @@
       {
         "tag": "Mi",
         "abend": "Auberginen-Tomaten-Gratin mit Feta",
-        "zeit_aktiv": "25m",
-        "zeit_total": "45m"
+        "zeit_aktiv": "25 min",
+        "zeit_total": "60 min",
+        "schritte_vegi": [
+          {
+            "titel": "Auberginen vorbereiten",
+            "text": "Auberginen waschen und die Enden abschneiden.",
+            "timer_min": 0,
+            "zutaten_schritt": [
+              {
+                "name": "Auberginen",
+                "menge": "600 g"
+              }
+            ],
+            "zubehoer": [
+              "Schneidebrett",
+              "Messer"
+            ],
+            "kontrolle": "Auberginen sind gereinigt und gekürzt.",
+            "parallel_hinweis": ""
+          },
+          {
+            "titel": "Auberginen schneiden",
+            "text": "Auberginen in 5mm dicke Scheiben schneiden.",
+            "timer_min": 0,
+            "zutaten_schritt": [
+              {
+                "name": "Auberginen",
+                "menge": "600 g"
+              }
+            ],
+            "zubehoer": [
+              "Schneidebrett",
+              "Messer"
+            ],
+            "kontrolle": "Scheiben sind gleichmässig dünn.",
+            "parallel_hinweis": ""
+          },
+          {
+            "titel": "Auberginen salzen",
+            "text": "Auberginenscheiben mit 1g Salz bestreuen und 10 Minuten ruhen lassen.",
+            "timer_min": 10,
+            "zutaten_schritt": [
+              {
+                "name": "Salz",
+                "menge": "1 g"
+              }
+            ],
+            "zubehoer": [],
+            "kontrolle": "Auberginen haben leicht Flüssigkeit abgegeben.",
+            "parallel_hinweis": "Knoblauch schälen und Tomaten vorbereiten."
+          },
+          {
+            "titel": "Knoblauch schälen",
+            "text": "Knoblauchzehen schälen und fein hacken.",
+            "timer_min": 0,
+            "zutaten_schritt": [
+              {
+                "name": "Knoblauch",
+                "menge": "2 Zehen"
+              }
+            ],
+            "zubehoer": [
+              "Schneidebrett",
+              "Messer"
+            ],
+            "kontrolle": "Knoblauch ist fein gehackt.",
+            "parallel_hinweis": ""
+          },
+          {
+            "titel": "Tomaten vorbereiten",
+            "text": "Tomaten waschen und in 8mm dicke Scheiben schneiden.",
+            "timer_min": 0,
+            "zutaten_schritt": [
+              {
+                "name": "Tomaten",
+                "menge": "400 g"
+              }
+            ],
+            "zubehoer": [
+              "Schneidebrett",
+              "Messer"
+            ],
+            "kontrolle": "Tomatenscheiben sind gleichmässig.",
+            "parallel_hinweis": ""
+          },
+          {
+            "titel": "Feta zerbröckeln",
+            "text": "Feta mit den Händen in grosse Bröckel zerbröckeln.",
+            "timer_min": 0,
+            "zutaten_schritt": [
+              {
+                "name": "Feta",
+                "menge": "150 g"
+              }
+            ],
+            "zubehoer": [],
+            "kontrolle": "Feta ist in ungleichmässige Bröckel zerlegt.",
+            "parallel_hinweis": ""
+          },
+          {
+            "titel": "Auberginen trocken tupfen",
+            "text": "Auberginenscheiben mit Papiertüchern trocken tupfen.",
+            "timer_min": 0,
+            "zutaten_schritt": [
+              {
+                "name": "Auberginen",
+                "menge": "600 g"
+              }
+            ],
+            "zubehoer": [
+              "Papiertücher"
+            ],
+            "kontrolle": "Auberginen sind trocken.",
+            "parallel_hinweis": ""
+          },
+          {
+            "titel": "Backblech vorbereiten",
+            "text": "Backblech mit 10ml Olivenöl dünn ausstreichen.",
+            "timer_min": 0,
+            "zutaten_schritt": [
+              {
+                "name": "Olivenöl",
+                "menge": "10 ml"
+              }
+            ],
+            "zubehoer": [
+              "Backblech",
+              "Backpinsel"
+            ],
+            "kontrolle": "Blech ist leicht geölt.",
+            "parallel_hinweis": ""
+          },
+          {
+            "titel": "Erste Auberginen-Schicht legen",
+            "text": "Ein Drittel der Auberginenscheiben auf das Backblech legen.",
+            "timer_min": 0,
+            "zutaten_schritt": [
+              {
+                "name": "Auberginen",
+                "menge": "200 g"
+              }
+            ],
+            "zubehoer": [
+              "Backblech"
+            ],
+            "kontrolle": "Scheiben bedecken den Boden gleichmässig.",
+            "parallel_hinweis": ""
+          },
+          {
+            "titel": "Knoblauch und Oregano aufstreuen",
+            "text": "Die Hälfte des Knoblauchs und 0,5 TL Oregano auf die Auberginen streuen.",
+            "timer_min": 0,
+            "zutaten_schritt": [
+              {
+                "name": "Knoblauch",
+                "menge": "1 Zehe"
+              },
+              {
+                "name": "Oregano",
+                "menge": "0.5 TL"
+              }
+            ],
+            "zubehoer": [],
+            "kontrolle": "Gewürze sind verteilt.",
+            "parallel_hinweis": ""
+          },
+          {
+            "titel": "Erste Tomaten-Schicht legen",
+            "text": "Die Hälfte der Tomatenscheiben auf die Auberginen legen.",
+            "timer_min": 0,
+            "zutaten_schritt": [
+              {
+                "name": "Tomaten",
+                "menge": "200 g"
+              }
+            ],
+            "zubehoer": [
+              "Backblech"
+            ],
+            "kontrolle": "Tomaten bedecken die Schicht gleichmässig.",
+            "parallel_hinweis": ""
+          },
+          {
+            "titel": "Mit 1g Salz und Pfeffer würzen",
+            "text": "Die erste Schicht mit 1g Salz und 0,5g Pfeffer würzen.",
+            "timer_min": 0,
+            "zutaten_schritt": [
+              {
+                "name": "Salz",
+                "menge": "1 g"
+              },
+              {
+                "name": "Pfeffer",
+                "menge": "0.5 g"
+              }
+            ],
+            "zubehoer": [],
+            "kontrolle": "Salz und Pfeffer sind verteilt.",
+            "parallel_hinweis": ""
+          },
+          {
+            "titel": "Zweite Auberginen-Schicht legen",
+            "text": "Zweites Drittel der Auberginenscheiben auf die Tomaten legen.",
+            "timer_min": 0,
+            "zutaten_schritt": [
+              {
+                "name": "Auberginen",
+                "menge": "200 g"
+              }
+            ],
+            "zubehoer": [
+              "Backblech"
+            ],
+            "kontrolle": "Scheiben bedecken die vorherige Schicht gleichmässig.",
+            "parallel_hinweis": ""
+          },
+          {
+            "titel": "Restlichen Knoblauch aufstreuen",
+            "text": "Den restlichen Knoblauch und 0,5 TL Oregano aufstreuen.",
+            "timer_min": 0,
+            "zutaten_schritt": [
+              {
+                "name": "Knoblauch",
+                "menge": "1 Zehe"
+              },
+              {
+                "name": "Oregano",
+                "menge": "0.5 TL"
+              }
+            ],
+            "zubehoer": [],
+            "kontrolle": "Gewürze sind verteilt.",
+            "parallel_hinweis": ""
+          },
+          {
+            "titel": "Zweite Tomaten-Schicht legen",
+            "text": "Die restlichen Tomatenscheiben auf die Auberginen legen.",
+            "timer_min": 0,
+            "zutaten_schritt": [
+              {
+                "name": "Tomaten",
+                "menge": "200 g"
+              }
+            ],
+            "zubehoer": [
+              "Backblech"
+            ],
+            "kontrolle": "Tomaten bedecken die Schicht.",
+            "parallel_hinweis": ""
+          },
+          {
+            "titel": "Mit Salz und Pfeffer würzen",
+            "text": "Die zweite Schicht mit 0,5g Pfeffer würzen.",
+            "timer_min": 0,
+            "zutaten_schritt": [
+              {
+                "name": "Pfeffer",
+                "menge": "0.5 g"
+              }
+            ],
+            "zubehoer": [],
+            "kontrolle": "Pfeffer ist verteilt.",
+            "parallel_hinweis": ""
+          },
+          {
+            "titel": "Restliche Auberginen-Schicht legen",
+            "text": "Das letzte Drittel der Auberginenscheiben auf die Tomaten legen.",
+            "timer_min": 0,
+            "zutaten_schritt": [
+              {
+                "name": "Auberginen",
+                "menge": "200 g"
+              }
+            ],
+            "zubehoer": [
+              "Backblech"
+            ],
+            "kontrolle": "Scheiben bedecken die Schicht.",
+            "parallel_hinweis": ""
+          },
+          {
+            "titel": "Mit Olivenöl beträufeln",
+            "text": "Die oberste Schicht mit 30ml Olivenöl beträufeln.",
+            "timer_min": 0,
+            "zutaten_schritt": [
+              {
+                "name": "Olivenöl",
+                "menge": "30 ml"
+              }
+            ],
+            "zubehoer": [],
+            "kontrolle": "Öl ist gleichmässig verteilt.",
+            "parallel_hinweis": ""
+          },
+          {
+            "titel": "Feta verteilen",
+            "text": "Die Feta-Bröckel gleichmässig über das Gratin verteilen.",
+            "timer_min": 0,
+            "zutaten_schritt": [
+              {
+                "name": "Feta",
+                "menge": "150 g"
+              }
+            ],
+            "zubehoer": [],
+            "kontrolle": "Feta ist gleichmässig verteilt.",
+            "parallel_hinweis": ""
+          },
+          {
+            "titel": "Ofen vorheizen",
+            "text": "Ofen auf 200 Grad Celsius Ober- und Unterhitze vorheizen.",
+            "timer_min": 0,
+            "zutaten_schritt": [],
+            "zubehoer": [
+              "Ofen"
+            ],
+            "kontrolle": "Ofen zeigt 200 Grad an.",
+            "parallel_hinweis": ""
+          },
+          {
+            "titel": "Gratin backen",
+            "text": "Backblech in den vorgeheizten Ofen stellen und 35 Minuten backen.",
+            "timer_min": 35,
+            "zutaten_schritt": [],
+            "zubehoer": [
+              "Ofen",
+              "Backblech"
+            ],
+            "kontrolle": "Auberginen sind weich und Feta leicht gebräunt.",
+            "parallel_hinweis": "Tisch decken und Getränke vorbereiten."
+          },
+          {
+            "titel": "Gratin ruhen lassen",
+            "text": "Gratin aus dem Ofen nehmen und 3 Minuten ruhen lassen.",
+            "timer_min": 3,
+            "zutaten_schritt": [],
+            "zubehoer": [
+              "Topfhandschuhe"
+            ],
+            "kontrolle": "Gratin ist nur noch leicht dampfend.",
+            "parallel_hinweis": ""
+          },
+          {
+            "titel": "Gratin servieren",
+            "text": "Gratin direkt auf Teller portionieren und servieren.",
+            "timer_min": 0,
+            "zutaten_schritt": [],
+            "zubehoer": [
+              "Servierspaten"
+            ],
+            "kontrolle": "Gratin ist noch warm und appetitlich angerichtet.",
+            "parallel_hinweis": ""
+          }
+        ],
+        "zutaten": [
+          {
+            "name": "Auberginen",
+            "menge": "600 g"
+          },
+          {
+            "name": "Tomaten",
+            "menge": "400 g"
+          },
+          {
+            "name": "Feta",
+            "menge": "150 g"
+          },
+          {
+            "name": "Olivenöl",
+            "menge": "40 ml"
+          },
+          {
+            "name": "Knoblauch",
+            "menge": "2 Zehen"
+          },
+          {
+            "name": "Oregano",
+            "menge": "1 TL"
+          },
+          {
+            "name": "Salz",
+            "menge": "2 g"
+          },
+          {
+            "name": "Pfeffer",
+            "menge": "1 g"
+          }
+        ],
+        "tipp": "Das Auberginen-Tomaten-Gratin schmeckt auch lauwarm sehr gut und kann einfach mit frischem Brot serviert werden. Für mehr Würze kann eine Prise Chili-Pulver hinzugefügt werden."
       }
     ]
   },
@@ -76,11 +463,398 @@
         {
           "tag": "Mi",
           "abend": "Auberginen-Tomaten-Gratin mit Feta",
-          "zeit_aktiv": "25m",
-          "zeit_total": "45m"
+          "zeit_aktiv": "25 min",
+          "zeit_total": "60 min",
+          "schritte_vegi": [
+            {
+              "titel": "Auberginen vorbereiten",
+              "text": "Auberginen waschen und die Enden abschneiden.",
+              "timer_min": 0,
+              "zutaten_schritt": [
+                {
+                  "name": "Auberginen",
+                  "menge": "600 g"
+                }
+              ],
+              "zubehoer": [
+                "Schneidebrett",
+                "Messer"
+              ],
+              "kontrolle": "Auberginen sind gereinigt und gekürzt.",
+              "parallel_hinweis": ""
+            },
+            {
+              "titel": "Auberginen schneiden",
+              "text": "Auberginen in 5mm dicke Scheiben schneiden.",
+              "timer_min": 0,
+              "zutaten_schritt": [
+                {
+                  "name": "Auberginen",
+                  "menge": "600 g"
+                }
+              ],
+              "zubehoer": [
+                "Schneidebrett",
+                "Messer"
+              ],
+              "kontrolle": "Scheiben sind gleichmässig dünn.",
+              "parallel_hinweis": ""
+            },
+            {
+              "titel": "Auberginen salzen",
+              "text": "Auberginenscheiben mit 1g Salz bestreuen und 10 Minuten ruhen lassen.",
+              "timer_min": 10,
+              "zutaten_schritt": [
+                {
+                  "name": "Salz",
+                  "menge": "1 g"
+                }
+              ],
+              "zubehoer": [],
+              "kontrolle": "Auberginen haben leicht Flüssigkeit abgegeben.",
+              "parallel_hinweis": "Knoblauch schälen und Tomaten vorbereiten."
+            },
+            {
+              "titel": "Knoblauch schälen",
+              "text": "Knoblauchzehen schälen und fein hacken.",
+              "timer_min": 0,
+              "zutaten_schritt": [
+                {
+                  "name": "Knoblauch",
+                  "menge": "2 Zehen"
+                }
+              ],
+              "zubehoer": [
+                "Schneidebrett",
+                "Messer"
+              ],
+              "kontrolle": "Knoblauch ist fein gehackt.",
+              "parallel_hinweis": ""
+            },
+            {
+              "titel": "Tomaten vorbereiten",
+              "text": "Tomaten waschen und in 8mm dicke Scheiben schneiden.",
+              "timer_min": 0,
+              "zutaten_schritt": [
+                {
+                  "name": "Tomaten",
+                  "menge": "400 g"
+                }
+              ],
+              "zubehoer": [
+                "Schneidebrett",
+                "Messer"
+              ],
+              "kontrolle": "Tomatenscheiben sind gleichmässig.",
+              "parallel_hinweis": ""
+            },
+            {
+              "titel": "Feta zerbröckeln",
+              "text": "Feta mit den Händen in grosse Bröckel zerbröckeln.",
+              "timer_min": 0,
+              "zutaten_schritt": [
+                {
+                  "name": "Feta",
+                  "menge": "150 g"
+                }
+              ],
+              "zubehoer": [],
+              "kontrolle": "Feta ist in ungleichmässige Bröckel zerlegt.",
+              "parallel_hinweis": ""
+            },
+            {
+              "titel": "Auberginen trocken tupfen",
+              "text": "Auberginenscheiben mit Papiertüchern trocken tupfen.",
+              "timer_min": 0,
+              "zutaten_schritt": [
+                {
+                  "name": "Auberginen",
+                  "menge": "600 g"
+                }
+              ],
+              "zubehoer": [
+                "Papiertücher"
+              ],
+              "kontrolle": "Auberginen sind trocken.",
+              "parallel_hinweis": ""
+            },
+            {
+              "titel": "Backblech vorbereiten",
+              "text": "Backblech mit 10ml Olivenöl dünn ausstreichen.",
+              "timer_min": 0,
+              "zutaten_schritt": [
+                {
+                  "name": "Olivenöl",
+                  "menge": "10 ml"
+                }
+              ],
+              "zubehoer": [
+                "Backblech",
+                "Backpinsel"
+              ],
+              "kontrolle": "Blech ist leicht geölt.",
+              "parallel_hinweis": ""
+            },
+            {
+              "titel": "Erste Auberginen-Schicht legen",
+              "text": "Ein Drittel der Auberginenscheiben auf das Backblech legen.",
+              "timer_min": 0,
+              "zutaten_schritt": [
+                {
+                  "name": "Auberginen",
+                  "menge": "200 g"
+                }
+              ],
+              "zubehoer": [
+                "Backblech"
+              ],
+              "kontrolle": "Scheiben bedecken den Boden gleichmässig.",
+              "parallel_hinweis": ""
+            },
+            {
+              "titel": "Knoblauch und Oregano aufstreuen",
+              "text": "Die Hälfte des Knoblauchs und 0,5 TL Oregano auf die Auberginen streuen.",
+              "timer_min": 0,
+              "zutaten_schritt": [
+                {
+                  "name": "Knoblauch",
+                  "menge": "1 Zehe"
+                },
+                {
+                  "name": "Oregano",
+                  "menge": "0.5 TL"
+                }
+              ],
+              "zubehoer": [],
+              "kontrolle": "Gewürze sind verteilt.",
+              "parallel_hinweis": ""
+            },
+            {
+              "titel": "Erste Tomaten-Schicht legen",
+              "text": "Die Hälfte der Tomatenscheiben auf die Auberginen legen.",
+              "timer_min": 0,
+              "zutaten_schritt": [
+                {
+                  "name": "Tomaten",
+                  "menge": "200 g"
+                }
+              ],
+              "zubehoer": [
+                "Backblech"
+              ],
+              "kontrolle": "Tomaten bedecken die Schicht gleichmässig.",
+              "parallel_hinweis": ""
+            },
+            {
+              "titel": "Mit 1g Salz und Pfeffer würzen",
+              "text": "Die erste Schicht mit 1g Salz und 0,5g Pfeffer würzen.",
+              "timer_min": 0,
+              "zutaten_schritt": [
+                {
+                  "name": "Salz",
+                  "menge": "1 g"
+                },
+                {
+                  "name": "Pfeffer",
+                  "menge": "0.5 g"
+                }
+              ],
+              "zubehoer": [],
+              "kontrolle": "Salz und Pfeffer sind verteilt.",
+              "parallel_hinweis": ""
+            },
+            {
+              "titel": "Zweite Auberginen-Schicht legen",
+              "text": "Zweites Drittel der Auberginenscheiben auf die Tomaten legen.",
+              "timer_min": 0,
+              "zutaten_schritt": [
+                {
+                  "name": "Auberginen",
+                  "menge": "200 g"
+                }
+              ],
+              "zubehoer": [
+                "Backblech"
+              ],
+              "kontrolle": "Scheiben bedecken die vorherige Schicht gleichmässig.",
+              "parallel_hinweis": ""
+            },
+            {
+              "titel": "Restlichen Knoblauch aufstreuen",
+              "text": "Den restlichen Knoblauch und 0,5 TL Oregano aufstreuen.",
+              "timer_min": 0,
+              "zutaten_schritt": [
+                {
+                  "name": "Knoblauch",
+                  "menge": "1 Zehe"
+                },
+                {
+                  "name": "Oregano",
+                  "menge": "0.5 TL"
+                }
+              ],
+              "zubehoer": [],
+              "kontrolle": "Gewürze sind verteilt.",
+              "parallel_hinweis": ""
+            },
+            {
+              "titel": "Zweite Tomaten-Schicht legen",
+              "text": "Die restlichen Tomatenscheiben auf die Auberginen legen.",
+              "timer_min": 0,
+              "zutaten_schritt": [
+                {
+                  "name": "Tomaten",
+                  "menge": "200 g"
+                }
+              ],
+              "zubehoer": [
+                "Backblech"
+              ],
+              "kontrolle": "Tomaten bedecken die Schicht.",
+              "parallel_hinweis": ""
+            },
+            {
+              "titel": "Mit Salz und Pfeffer würzen",
+              "text": "Die zweite Schicht mit 0,5g Pfeffer würzen.",
+              "timer_min": 0,
+              "zutaten_schritt": [
+                {
+                  "name": "Pfeffer",
+                  "menge": "0.5 g"
+                }
+              ],
+              "zubehoer": [],
+              "kontrolle": "Pfeffer ist verteilt.",
+              "parallel_hinweis": ""
+            },
+            {
+              "titel": "Restliche Auberginen-Schicht legen",
+              "text": "Das letzte Drittel der Auberginenscheiben auf die Tomaten legen.",
+              "timer_min": 0,
+              "zutaten_schritt": [
+                {
+                  "name": "Auberginen",
+                  "menge": "200 g"
+                }
+              ],
+              "zubehoer": [
+                "Backblech"
+              ],
+              "kontrolle": "Scheiben bedecken die Schicht.",
+              "parallel_hinweis": ""
+            },
+            {
+              "titel": "Mit Olivenöl beträufeln",
+              "text": "Die oberste Schicht mit 30ml Olivenöl beträufeln.",
+              "timer_min": 0,
+              "zutaten_schritt": [
+                {
+                  "name": "Olivenöl",
+                  "menge": "30 ml"
+                }
+              ],
+              "zubehoer": [],
+              "kontrolle": "Öl ist gleichmässig verteilt.",
+              "parallel_hinweis": ""
+            },
+            {
+              "titel": "Feta verteilen",
+              "text": "Die Feta-Bröckel gleichmässig über das Gratin verteilen.",
+              "timer_min": 0,
+              "zutaten_schritt": [
+                {
+                  "name": "Feta",
+                  "menge": "150 g"
+                }
+              ],
+              "zubehoer": [],
+              "kontrolle": "Feta ist gleichmässig verteilt.",
+              "parallel_hinweis": ""
+            },
+            {
+              "titel": "Ofen vorheizen",
+              "text": "Ofen auf 200 Grad Celsius Ober- und Unterhitze vorheizen.",
+              "timer_min": 0,
+              "zutaten_schritt": [],
+              "zubehoer": [
+                "Ofen"
+              ],
+              "kontrolle": "Ofen zeigt 200 Grad an.",
+              "parallel_hinweis": ""
+            },
+            {
+              "titel": "Gratin backen",
+              "text": "Backblech in den vorgeheizten Ofen stellen und 35 Minuten backen.",
+              "timer_min": 35,
+              "zutaten_schritt": [],
+              "zubehoer": [
+                "Ofen",
+                "Backblech"
+              ],
+              "kontrolle": "Auberginen sind weich und Feta leicht gebräunt.",
+              "parallel_hinweis": "Tisch decken und Getränke vorbereiten."
+            },
+            {
+              "titel": "Gratin ruhen lassen",
+              "text": "Gratin aus dem Ofen nehmen und 3 Minuten ruhen lassen.",
+              "timer_min": 3,
+              "zutaten_schritt": [],
+              "zubehoer": [
+                "Topfhandschuhe"
+              ],
+              "kontrolle": "Gratin ist nur noch leicht dampfend.",
+              "parallel_hinweis": ""
+            },
+            {
+              "titel": "Gratin servieren",
+              "text": "Gratin direkt auf Teller portionieren und servieren.",
+              "timer_min": 0,
+              "zutaten_schritt": [],
+              "zubehoer": [
+                "Servierspaten"
+              ],
+              "kontrolle": "Gratin ist noch warm und appetitlich angerichtet.",
+              "parallel_hinweis": ""
+            }
+          ],
+          "zutaten": [
+            {
+              "name": "Auberginen",
+              "menge": "600 g"
+            },
+            {
+              "name": "Tomaten",
+              "menge": "400 g"
+            },
+            {
+              "name": "Feta",
+              "menge": "150 g"
+            },
+            {
+              "name": "Olivenöl",
+              "menge": "40 ml"
+            },
+            {
+              "name": "Knoblauch",
+              "menge": "2 Zehen"
+            },
+            {
+              "name": "Oregano",
+              "menge": "1 TL"
+            },
+            {
+              "name": "Salz",
+              "menge": "2 g"
+            },
+            {
+              "name": "Pfeffer",
+              "menge": "1 g"
+            }
+          ],
+          "tipp": "Das Auberginen-Tomaten-Gratin schmeckt auch lauwarm sehr gut und kann einfach mit frischem Brot serviert werden. Für mehr Würze kann eine Prise Chili-Pulver hinzugefügt werden."
         }
       ]
     }
   ],
-  "sugsPartial": true
+  "sugsPartial": false
 }
