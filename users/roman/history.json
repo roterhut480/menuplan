@@ -1,5 +1,139 @@
 [
   {
+    "planId": "032d738e-518c-49d1-b1f4-3695fafb4a1d",
+    "date": "2026-09-08",
+    "saved": "8.9.2026",
+    "thema": "Mediterran",
+    "personen": 2,
+    "kochabende": 2,
+    "reste": 0,
+    "freeze": 0,
+    "gerichte": [
+      {
+        "tag": "Di",
+        "abend": "Auberginen-Tomaten-Auflauf mit Mozzarella"
+      },
+      {
+        "tag": "Fr",
+        "abend": "Griechischer Kichererbsen-Salat"
+      }
+    ],
+    "status": "geplant",
+    "plan": {
+      "planId": "032d738e-518c-49d1-b1f4-3695fafb4a1d",
+      "sug": {
+        "id": 1,
+        "thema": "Mediterran",
+        "kochabende": [
+          "Di",
+          "Fr"
+        ],
+        "gerichte": [
+          {
+            "tag": "Di",
+            "abend": "Auberginen-Tomaten-Auflauf mit Mozzarella",
+            "zeit_aktiv": "25m",
+            "zeit_total": "50m"
+          },
+          {
+            "tag": "Fr",
+            "abend": "Griechischer Kichererbsen-Salat",
+            "zeit_aktiv": "15m",
+            "zeit_total": "15m"
+          }
+        ]
+      },
+      "sel": 0,
+      "n": 2,
+      "personen": 2,
+      "reste": 0,
+      "freeze": 0,
+      "modus": "vegi",
+      "days": {
+        "Mo": null,
+        "Di": "normal",
+        "Mi": null,
+        "Do": null,
+        "Fr": "schnell",
+        "Sa": null,
+        "So": null
+      },
+      "weekStart": "2026-09-06",
+      "saved": "8.9.2026",
+      "bringImportedAt": null,
+      "bringItemCount": 0,
+      "sugsAll": [
+        {
+          "id": 1,
+          "thema": "Mediterran",
+          "kochabende": [
+            "Di",
+            "Fr"
+          ],
+          "gerichte": [
+            {
+              "tag": "Di",
+              "abend": "Auberginen-Tomaten-Auflauf mit Mozzarella",
+              "zeit_aktiv": "25m",
+              "zeit_total": "50m"
+            },
+            {
+              "tag": "Fr",
+              "abend": "Griechischer Kichererbsen-Salat",
+              "zeit_aktiv": "15m",
+              "zeit_total": "15m"
+            }
+          ]
+        },
+        {
+          "id": 2,
+          "thema": "Mediterran (Variante 2)",
+          "kochabende": [
+            "Di",
+            "Fr"
+          ],
+          "gerichte": [
+            {
+              "tag": "Di",
+              "abend": "Auberginen-Tomaten-Pasta",
+              "zeit_aktiv": "25m",
+              "zeit_total": "40m"
+            },
+            {
+              "tag": "Fr",
+              "abend": "Kichererbsen-Salat mit Feta",
+              "zeit_aktiv": "15m",
+              "zeit_total": "15m"
+            }
+          ]
+        },
+        {
+          "id": 3,
+          "thema": "Mittelmeerisch",
+          "kochabende": [
+            "Di",
+            "Fr"
+          ],
+          "gerichte": [
+            {
+              "tag": "Di",
+              "abend": "Shakshuka mit Feta und Gemüse",
+              "zeit_aktiv": "25m",
+              "zeit_total": "35m"
+            },
+            {
+              "tag": "Fr",
+              "abend": "Hummus-Wrap mit Roastgemüse",
+              "zeit_aktiv": "18m",
+              "zeit_total": "18m"
+            }
+          ]
+        }
+      ],
+      "sugsPartial": true
+    }
+  },
+  {
     "planId": "5bf26ed5-bba5-4ddf-ad83-1c5f967ed086",
     "date": "2026-09-08",
     "saved": "8.9.2026",
