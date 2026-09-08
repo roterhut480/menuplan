@@ -14,12 +14,6 @@
         "abend": "Pasta mit Tomaten-Zucchini-Sauce und optional Hackfleisch",
         "zeit_aktiv": "25m",
         "zeit_total": "40m"
-      },
-      {
-        "tag": "Fr",
-        "abend": "Risotto mit Spinat und Feta",
-        "zeit_aktiv": "30m",
-        "zeit_total": "45m"
       }
     ]
   },
@@ -57,12 +51,6 @@
           "abend": "Pasta mit Tomaten-Zucchini-Sauce und optional Hackfleisch",
           "zeit_aktiv": "25m",
           "zeit_total": "40m"
-        },
-        {
-          "tag": "Fr",
-          "abend": "Risotto mit Spinat und Feta",
-          "zeit_aktiv": "30m",
-          "zeit_total": "45m"
         }
       ]
     }
