@@ -16,12 +16,6 @@
         "zeit_total": "40m"
       },
       {
-        "tag": "Mi",
-        "abend": "Griechischer Salat mit Feta, Oliven und Kichererbsen",
-        "zeit_aktiv": "15m",
-        "zeit_total": "15m"
-      },
-      {
         "tag": "Fr",
         "abend": "Risotto mit Spinat und Feta",
         "zeit_aktiv": "30m",
@@ -63,12 +57,6 @@
           "abend": "Pasta mit Tomaten-Zucchini-Sauce und optional Hackfleisch",
           "zeit_aktiv": "25m",
           "zeit_total": "40m"
-        },
-        {
-          "tag": "Mi",
-          "abend": "Griechischer Salat mit Feta, Oliven und Kichererbsen",
-          "zeit_aktiv": "15m",
-          "zeit_total": "15m"
         },
         {
           "tag": "Fr",
