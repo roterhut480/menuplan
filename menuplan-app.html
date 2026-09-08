@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=yes">
-<title>Menüplan v6.28</title>
+<title>Menüplan v6.30</title>
 <meta name="theme-color" content="#e8390e">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -182,7 +182,7 @@ input[type=password]{letter-spacing:2px}
 
 <!-- HOME -->
 <div class="scr on" id="sh">
-  <div class="hero"><h1>Menüplan</h1><p id="hsub">v6.28 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
+  <div class="hero"><h1>Menüplan</h1><p id="hsub">v6.30 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
 
   <!-- Active plan card -->
 
@@ -674,6 +674,17 @@ var BH = {
   'Content-Type': 'application/x-www-form-urlencoded'
 };
 
+// Der /bring/-Proxy im Worker ist ab v4.4 nicht mehr offen erreichbar, sondern
+// verlangt dieselben Session-Header wie /generate und /gh/. Ohne sie
+// antwortet er mit 401. Diese Funktion haengt sie an beliebige Header an.
+function withMpAuth(headers) {
+  var out = {};
+  if (headers) for (var k in headers) out[k] = headers[k];
+  var s = getSession();
+  if (s) { out['X-MP-User'] = s.username; out['X-MP-Pass'] = s.pw; }
+  return out;
+}
+
 // ─── STATE ─────────────────────────────────────────────────
 var G = {
   n: 3, personen: 2, modus: 'optional', reste: 1, freeze: 1, resteMode: 'mikro', sugsPartial: false, fixedDishes: {},
@@ -840,11 +851,6 @@ function setF(v) {
 }
 
 
-
-
-
-
-
 // ─── INIT ──────────────────────────────────────────────────
 window.addEventListener('DOMContentLoaded', function() {
   // Bring!-Sitzung: zuerst geräteübergreifend aus KV, sonst lokal
@@ -880,7 +886,6 @@ window.addEventListener('DOMContentLoaded', function() {
 // Im Browser liegt nur die Session: gh_session = {username, pw}.
 // Der GitHub-Token verlaesst den Worker nie.
 // Current session: gh_session = {username, password}
-
 
 
 function doLogin() {
@@ -932,8 +937,6 @@ function doLogin() {
     }
   });
 }
-
-
 
 
 function getGHToken() {
@@ -1138,6 +1141,69 @@ function saveHistoryToGH(hist) {
     .catch(function(e){ setSyncState('fail', e && e.status ? 'Status ' + e.status : ''); });
 }
 
+// Der Marker traegt ein ISO-Datum. Wir merken uns, fuer welchen Marker der
+// Nutzer bereits entschieden hat, damit nicht bei jedem Sync erneut gefragt wird.
+function remoteClearedSeenKey() { return userKey('remote_cleared_seen'); }
+
+function handleRemoteCleared(marker) {
+  var stamp = (marker && marker.date) ? String(marker.date) : 'unbekannt';
+  var seen = '';
+  try { seen = localStorage.getItem(remoteClearedSeenKey()) || ''; } catch(e) {}
+  if (seen === stamp) return;                 // schon entschieden
+  if (!G.activePlan || !G.activePlan.sug) {   // lokal gibt es nichts zu retten
+    try { localStorage.setItem(remoteClearedSeenKey(), stamp); } catch(e) {}
+    return;
+  }
+  showRemoteClearedBanner(stamp);
+}
+
+function showRemoteClearedBanner(stamp) {
+  var old = document.getElementById('remote-cleared-banner');
+  if (old) old.remove();
+  var thema = (G.activePlan && G.activePlan.sug && G.activePlan.sug.thema) || 'Menüplan';
+  var el = document.createElement('div');
+  el.id = 'remote-cleared-banner';
+  el.style.cssText = 'position:fixed;left:0;right:0;bottom:0;background:#fff;border-top:.5px solid var(--bdr);' +
+    'box-shadow:0 -4px 16px rgba(0,0,0,.12);padding:14px 14px calc(14px + env(safe-area-inset-bottom));z-index:450';
+  var head = document.createElement('div');
+  head.style.cssText = 'font-size:13px;color:var(--txt);font-weight:600;margin-bottom:4px';
+  head.textContent = 'Plan auf einem anderen Gerät beendet';
+  var body = document.createElement('div');
+  body.style.cssText = 'font-size:12px;color:var(--gr3);margin-bottom:10px;line-height:1.4';
+  body.textContent = '"' + thema + '" wurde anderswo beendet, liegt hier aber noch vor. Hier ebenfalls entfernen oder wiederherstellen?';
+  var row = document.createElement('div');
+  row.style.cssText = 'display:flex;gap:8px';
+
+  var bRemove = document.createElement('button');
+  bRemove.className = 'btn btn-red';
+  bRemove.style.cssText = 'flex:1;padding:10px;font-size:13px';
+  bRemove.textContent = 'Hier entfernen';
+  bRemove.onclick = function() {
+    try { localStorage.removeItem(userKey('active_plan')); } catch(e) {}
+    try { localStorage.setItem(remoteClearedSeenKey(), stamp); } catch(e) {}
+    G.activePlan = null; G.viewOnly = false;
+    el.remove();
+    renderActivePlan();
+    updateDashboard();
+  };
+
+  var bKeep = document.createElement('button');
+  bKeep.className = 'btn btn-out';
+  bKeep.style.cssText = 'flex:1;padding:10px;font-size:13px';
+  bKeep.textContent = 'Wiederherstellen';
+  bKeep.onclick = function() {
+    try { localStorage.setItem(remoteClearedSeenKey(), stamp); } catch(e) {}
+    el.remove();
+    // Lokalen Plan wieder als massgeblich in die Cloud schreiben und damit den
+    // cleared-Marker ueberschreiben, sonst fragt das naechste Geraet erneut.
+    persistActivePlan();
+  };
+
+  row.appendChild(bRemove); row.appendChild(bKeep);
+  el.appendChild(head); el.appendChild(body); el.appendChild(row);
+  (document.getElementById('app-shell') || document.body).appendChild(el);
+}
+
 function syncAllFromGH() {
   var h = getAuthHeaders();
   if (!h) return;
@@ -1148,7 +1214,13 @@ function syncAllFromGH() {
     .then(function(r) { return r.ok ? r.json() : null; })
     .then(function(d) {
       var plan = decodeGHContent(d);
-      if (plan && plan.sug && !plan.cleared) {
+      if (plan && plan.cleared) {
+        // Auf einem anderen Geraet beendet/geloescht. Der Marker wurde bisher
+        // nur ignoriert - der lokale Plan blieb stehen und wurde bei der
+        // naechsten Mutation wieder hochgeladen, wodurch der geloeschte Plan
+        // zurueckkam. Jetzt wird nachgefragt statt still zu entscheiden.
+        handleRemoteCleared(plan);
+      } else if (plan && plan.sug) {
         G.activePlan = plan;
         localStorage.setItem(userKey('active_plan'), JSON.stringify(plan));
         renderActivePlan();
@@ -1199,25 +1271,7 @@ function syncGH(btn) {
 }
 
 
-
-
-
-
-
-
-
-
-
-
-
  // legacy noop
-
-
-
-
-
-
-
 
 
 function loadSaved() {
@@ -1318,7 +1372,7 @@ function loadBringLists(callback) {
   headers['Authorization'] = G.bToken;
   headers['X-BRING-USER-UUID'] = G.bUUID;
   headers['Content-Type'] = 'application/json';
-  fetch(BAPI + '/bringusers/' + G.bUUID + '/lists', { headers: headers })
+  fetch(BAPI + '/bringusers/' + G.bUUID + '/lists', { headers: withMpAuth(headers) })
     .then(function(r) {
       if (r.status === 401 || r.status === 403) throw new Error('expired');
       return r.ok ? r.json() : null;
@@ -1401,7 +1455,7 @@ function doImport() {
     if (!hasCreds) { clearWatch(); fail('Bitte E-Mail und Passwort eingeben.'); return; }
     busy('Anmelden...');
     fetch(BAPI + '/v2/bringauth', {
-      method: 'POST', headers: BH,
+      method: 'POST', headers: withMpAuth(BH),
       body: new URLSearchParams({ email: email, password: pw }).toString()
     })
       .then(function(r) { return r.json().then(function(d) { return { ok: r.ok, d: d }; }); })
@@ -1466,7 +1520,7 @@ function doImportItems() {
 
   // Clear if needed
   if (clearFirst) {
-    promise = fetch(BAPI + '/v2/bringlists/' + listUuid, { headers: hJson })
+    promise = fetch(BAPI + '/v2/bringlists/' + listUuid, { headers: withMpAuth(hJson) })
       .then(function(r) { return r.ok ? r.json() : null; })
       .then(function(d) {
         if (!d) return;
@@ -1479,7 +1533,7 @@ function doImportItems() {
         console.log('Clearing', removes.length, 'items from list');
         if (removes.length === 0) return;
         return fetch(BAPI + '/v2/bringlists/' + listUuid + '/items', {
-          method: 'PUT', headers: hJson,
+          method: 'PUT', headers: withMpAuth(hJson),
           body: JSON.stringify({ changes: removes, sender: '' })
         }).then(function(r) {
           if (r && r.status === 401) throw new Error('SESSION_EXPIRED');
@@ -1506,7 +1560,7 @@ function doImportItems() {
       return { itemId: it.name, spec: it.menge, operation: 'TO_PURCHASE', accuracy: '0.0', altitude: '0.0', latitude: '0.0', longitude: '0.0' };
     });
     return fetch(BAPI + '/v2/bringlists/' + listUuid + '/items', {
-      method: 'PUT', headers: hJson,
+      method: 'PUT', headers: withMpAuth(hJson),
       body: JSON.stringify({ changes: changes, sender: '' })
     });
   })
@@ -1717,6 +1771,9 @@ function currentOpts(extra) {
   return o;
 }
 
+// callClaude() und callClaudeHaiku() wurden entfernt: sie riefen den alten
+// /anthropic-Endpunkt auf, der ab Worker v4.4 nicht mehr existiert, und waren
+// im gesamten Frontend nirgends mehr referenziert.
 function callWorker(kind, message, maxTokens, opts, model) {
   var s = getSession();
   var h = { 'Content-Type': 'application/json' };
@@ -1742,49 +1799,6 @@ function callWorker(kind, message, maxTokens, opts, model) {
   });
 }
 
-function callClaudeHaiku(sys, msg, maxTokens) {
-  var session = getSession();
-  var authHeaders = { 'Content-Type': 'application/json' };
-  if (session) { authHeaders['X-MP-User'] = session.username; authHeaders['X-MP-Pass'] = session.pw; }
-  return fetch(PROXY + '/anthropic', {
-    method: 'POST',
-    headers: authHeaders,
-    body: JSON.stringify({
-      model: 'claude-haiku-4-5-20251001',
-      max_tokens: maxTokens,
-      system: sys,
-      messages: [{ role: 'user', content: msg }]
-    })
-  })
-  .then(function(r) {
-    return r.json();
-  })
-  .then(function(d) {
-    console.log('API response type:', d.type, 'error:', d.error);
-    if (d.error) throw new Error(d.error.message || d.error.type || 'API Fehler');
-    return (d.content && d.content[0] && d.content[0].text) ? d.content[0].text : '';
-  })
-  .catch(function(e) {
-    if (e.name === 'AbortError') throw new Error('Zeitüberschreitung (60s) – bitte nochmals versuchen');
-    throw e;
-  });
-}
-
-function callClaude(sys, msg, maxTokens) {
-  var session = getSession();
-  var authHeaders = { 'Content-Type': 'application/json' };
-  if (session) { authHeaders['X-MP-User'] = session.username; authHeaders['X-MP-Pass'] = session.pw; }
-  return fetch(PROXY + '/anthropic', {
-    method: 'POST',
-    headers: authHeaders,
-    body: JSON.stringify({ model: 'claude-sonnet-4-5', max_tokens: maxTokens, system: sys, messages: [{ role: 'user', content: msg }] })
-  })
-  .then(function(r) { return r.json(); })
-  .then(function(d) {
-    if (d.error) throw new Error(d.error.message || 'API Fehler');
-    return (d.content && d.content[0] && d.content[0].text) ? d.content[0].text : '';
-  });
-}
 
 function goSuggest() {
   // Ohne Kochtag gibt es nichts zu planen. Frueher wurde G.n auf 1 gezwungen
@@ -1960,7 +1974,6 @@ function goSuggest() {
 }
 
 
-
 // ─── XSS-SCHUTZ ─────────────────────────────────────────────
 // Escaped KI-/GitHub-/Bring!-generierte Texte bevor sie in innerHTML landen.
 // Ein manipulierter Gerichtsname wie <img onerror=...> koennte sonst
@@ -2096,6 +2109,12 @@ function goWeek() {
       if (match.mittag_nächster_tag) originalGericht.mittag_nächster_tag = match.mittag_nächster_tag;
       if (match.mittag_tag)       originalGericht.mittag_tag       = match.mittag_tag;
       if (match.zutaten && match.zutaten.length) originalGericht.zutaten = match.zutaten;
+      // Diese drei Felder liefert der Full-Prompt mit, wurden aber nie
+      // uebernommen - Tipp und Zeiten blieben deshalb auf dem groberen Stand
+      // aus der Uebersicht bzw. fehlten ganz.
+      if (match.tipp)       originalGericht.tipp       = match.tipp;
+      if (match.zeit_aktiv) originalGericht.zeit_aktiv = match.zeit_aktiv;
+      if (match.zeit_total) originalGericht.zeit_total = match.zeit_total;
     });
     // Validate: remove ingredients not mentioned in steps
     validateIngredients(sug.gerichte);
@@ -2528,14 +2547,18 @@ function renderRez(sug) {
       html += '<div id="timeline-today-anchor"></div>';
       todayAnchorInserted = true;
     }
+    // Wrapper mit ISO-Datum: der IntersectionObserver in
+    // initTimelineLabelObserver() liest daraus den gerade sichtbaren Tag.
+    var inner = '';
     var entry = days[iso];
     if (entry) {
       if (isToday && !G_timelineInitialized) G_timelineOpen = iso; // NUR beim allerersten Rendern automatisch oeffnen
-      html += renderTimelineDayCard(entry, isToday, iso);
+      inner = renderTimelineDayCard(entry, isToday, iso);
     } else {
       var isFuture = cursor > today;
-      html += renderTimelineEmptyCard(new Date(cursor), isToday, isFuture);
+      inner = renderTimelineEmptyCard(new Date(cursor), isToday, isFuture);
     }
+    html += '<div class="tl-day" data-tliso="' + iso + '">' + inner + '</div>';
     cursor.setDate(cursor.getDate() + 1);
   }
 
@@ -2553,12 +2576,61 @@ function renderRez(sug) {
 
   $('rlist').innerHTML = html;
   G_timelineInitialized = true;
-  updateTimelineVisibleLabel();
+  initTimelineLabelObserver();
 }
 
-function updateTimelineVisibleLabel() {
+var G_tlObserver = null;
+var G_tlVisible = {};   // iso -> true, solange die Zeile im Blickfeld ist
+
+// Zeigt den gerade sichtbaren Tag an. Frueher wurde hier einmalig das HEUTIGE
+// Datum gesetzt und nie wieder aktualisiert - beim Zurueckscrollen stand oben
+// also weiterhin "heute", obwohl man Wochen davor las.
+function initTimelineLabelObserver() {
+  if (G_tlObserver) { G_tlObserver.disconnect(); G_tlObserver = null; }
+  G_tlVisible = {};
   var lbl = $('timeline-visible-label');
-  if (lbl) lbl.textContent = new Date().toLocaleDateString('de-CH', {day:'numeric', month:'long'});
+  var list = $('rlist');
+  if (!lbl || !list) return;
+  var rows = list.querySelectorAll('.tl-day');
+  if (!rows.length) { lbl.textContent = ''; return; }
+
+  if (typeof IntersectionObserver !== 'function') {
+    // Aelterer Browser: statisch auf den ersten Tag setzen statt falsch zu bleiben.
+    setTimelineLabel(rows[0].getAttribute('data-tliso'));
+    return;
+  }
+
+  G_tlObserver = new IntersectionObserver(function(entries) {
+    entries.forEach(function(e) {
+      var iso = e.target.getAttribute('data-tliso');
+      if (!iso) return;
+      if (e.isIntersecting) G_tlVisible[iso] = true;
+      else delete G_tlVisible[iso];
+    });
+    var visible = Object.keys(G_tlVisible).sort();
+    if (visible.length) setTimelineLabel(visible[0]);
+  }, {
+    // Ganzer Bereich unterhalb der Sticky-Leiste. Ein schmales Band (z.B.
+    // -70% unten) sieht praeziser aus, laesst aber Luecken: liegt keine Zeile
+    // darin, bliebe das Label auf einem alten Tag stehen. Stattdessen alle
+    // sichtbaren Zeilen sammeln und die oberste anzeigen.
+    root: null,
+    rootMargin: '-56px 0px 0px 0px',
+    threshold: 0
+  });
+
+  for (var i = 0; i < rows.length; i++) G_tlObserver.observe(rows[i]);
+  setTimelineLabel(rows[0].getAttribute('data-tliso'));
+}
+
+function setTimelineLabel(iso) {
+  var lbl = $('timeline-visible-label');
+  if (!lbl || !iso) return;
+  var d = new Date(iso + 'T00:00:00');
+  if (isNaN(d.getTime())) { lbl.textContent = ''; return; }
+  var todayIso = isoDateLocal(new Date());
+  lbl.textContent = d.toLocaleDateString('de-CH', { day: 'numeric', month: 'long' }) +
+    (iso === todayIso ? ' · Heute' : '');
 }
 
 // ─── COOKING ───────────────────────────────────────────────
@@ -3874,7 +3946,7 @@ function generateReplace() {
     (G.reste ? ' Mit Resteverwertung am naechsten Tag.' : '') +
     ' NUR valides JSON. Format: {"gerichte":[{"tag":"' + g.tag + '","abend":"Gerichtsname","mittag_nächster_tag":"Restname","zeit_aktiv":"20m","zeit_total":"40m","zutaten":[{"name":"X","menge":"Y"}],"schritte_vegi":[{"titel":"Schritt","text":"Detail","timer_min":0,"zutaten_schritt":[{"name":"X","menge":"Y"}],"zubehoer":[],"kontrolle":"","parallel_hinweis":""}],"tipp":"Tipp"}]}';
 
-  callWorker('replace', msg, 5000, { dishes: existing })
+  callWorker('replace', msg, 5000, { dishes: existing, tag: g.tag })
     .then(function(raw) {
       $('rep-load').style.display = 'none';
       $('rep-gen-btn').disabled = false;
@@ -4007,7 +4079,6 @@ function showLoggedIn() {
 }
 
 
-
 function saveRatingToGH(entry) {
   var h = getAuthHeaders();
   var local = JSON.parse(localStorage.getItem(userKey('local_ratings')) || '[]');
@@ -4096,7 +4167,7 @@ function connectBringFromDashboard() {
   }, 15000);
 
   fetch(BAPI + '/v2/bringauth', {
-    method: 'POST', headers: BH,
+    method: 'POST', headers: withMpAuth(BH),
     body: new URLSearchParams({ email: email, password: pw }).toString()
   })
     .then(function(r) { return r.json().then(function(d) { return { ok: r.ok, d: d }; }); })
