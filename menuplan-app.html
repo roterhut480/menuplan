@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=yes">
-<title>Menüplan v6.27</title>
+<title>Menüplan v6.28</title>
 <meta name="theme-color" content="#e8390e">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -182,7 +182,7 @@ input[type=password]{letter-spacing:2px}
 
 <!-- HOME -->
 <div class="scr on" id="sh">
-  <div class="hero"><h1>Menüplan</h1><p id="hsub">v6.27 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
+  <div class="hero"><h1>Menüplan</h1><p id="hsub">v6.28 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
 
   <!-- Active plan card -->
 
@@ -756,9 +756,15 @@ function setDayMode(d, mode) {
   G.days[d] = mode;
 }
 
+function cookingDays() {
+  return DAYS_ORDER.filter(function(d){ return G.days[d] && G.days[d] !== 'auswaerts'; });
+}
+
 function updateNFromDays() {
-  var count = DAYS_ORDER.filter(function(d){ return G.days[d] && G.days[d] !== 'auswaerts'; }).length;
-  G.n = Math.max(1, count);
+  // Kein Math.max(1, ...) mehr: bei null gewaehlten Kochtagen war G.n frueher 1
+  // und Claude generierte trotzdem ein Gericht. Die Null wird jetzt sichtbar und
+  // goSuggest() blockiert mit einer verstaendlichen Meldung.
+  G.n = cookingDays().length;
   if ($('n-display')) $('n-display').textContent = G.n;
 }
 
@@ -774,10 +780,20 @@ function getDayPlanText() {
   return 'Koche an diesen Tagen: ' + parts.join(', ') + '. Weise jedem Gericht den passenden Tag zu.';
 }
 
+// Bevorzugte Reihenfolge beim Ableiten der Kochtage aus einer reinen Anzahl:
+// gut verteilt statt Mo-Di-Mi am Stueck.
+var N_DAY_PREFERENCE = ['Mo', 'Mi', 'Fr', 'So', 'Di', 'Do', 'Sa'];
+
 function setN(n) {
   n = Math.max(1, Math.min(7, n));
-  G.n = n;
-  if ($('n-display')) $('n-display').textContent = n;
+  // G.days mitziehen, sonst setzte initDayPicker()/updateNFromDays() die
+  // Anzahl sofort wieder auf die Zahl der Standardtage zurueck und die
+  // Einstellung "Standard Kochabende" blieb wirkungslos.
+  DAYS_ORDER.forEach(function(d) { if (G.days[d] !== 'auswaerts') G.days[d] = null; });
+  N_DAY_PREFERENCE.slice(0, n).forEach(function(d) { G.days[d] = 'normal'; });
+  G.n = cookingDays().length;
+  if ($('n-display')) $('n-display').textContent = G.n;
+  if ($('dc-Mo')) initDayPicker();
 }
 
 function setP(n) {
@@ -1061,6 +1077,15 @@ function ghPut(filename, data, message) {
           return new Promise(function(resolve) { setTimeout(resolve, 150 + Math.random() * 200); })
             .then(function() { return attempt(retriesLeft - 1); });
         }
+        // Nach ausgeschoepften Retries: jede nicht erfolgreiche Antwort (401,
+        // 403, 409, 500, ...) muss rejecten. Frueher wurde sie als erfuellte
+        // Promise durchgereicht - die UI meldete dann "gespeichert", obwohl nur
+        // lokal geschrieben wurde.
+        if (!r || !r.ok) {
+          var err = new Error('GitHub-Sync fehlgeschlagen (Status ' + (r ? r.status : 'kein Response') + ')');
+          err.status = r ? r.status : 0;
+          throw err;
+        }
         return r;
       });
   }
@@ -1077,12 +1102,40 @@ function ghPut(filename, data, message) {
   return next;
 }
 
+// Sichtbarer Unterschied zwischen "lokal gespeichert" und "in der Cloud".
+// Frueher wurde ein fehlgeschlagener GitHub-Sync stillschweigend verschluckt -
+// der Nutzer glaubte, seine Aenderung sei ueberall angekommen.
+function setSyncState(state, detail) {
+  G.syncState = state;                 // 'ok' | 'fail'
+  G.syncDetail = detail || '';
+  var el = document.getElementById('sync-warn');
+  if (!el) {
+    if (state === 'ok') return;
+    el = document.createElement('div');
+    el.id = 'sync-warn';
+    el.style.cssText = 'position:fixed;left:0;right:0;bottom:0;background:#e65100;color:#fff;' +
+      'padding:8px 12px calc(8px + env(safe-area-inset-bottom));font-size:12px;font-weight:600;' +
+      'text-align:center;z-index:400;cursor:pointer';
+    el.title = 'Antippen zum Ausblenden';
+    el.onclick = function() { el.remove(); };
+    var shell = document.getElementById('app-shell') || document.body;
+    shell.appendChild(el);
+  }
+  if (state === 'ok') { el.remove(); return; }
+  el.textContent = '⚠ Nur lokal gespeichert – Cloud-Sync fehlgeschlagen' +
+    (G.syncDetail ? ' (' + G.syncDetail + ')' : '');
+}
+
 function saveToGH(data) {
-  ghPut('active-plan.json', data, 'Aktiver Plan').catch(function(){});
+  ghPut('active-plan.json', data, 'Aktiver Plan')
+    .then(function(){ setSyncState('ok'); })
+    .catch(function(e){ setSyncState('fail', e && e.status ? 'Status ' + e.status : ''); });
 }
 
 function saveHistoryToGH(hist) {
-  ghPut('history.json', hist, 'History aktualisiert').catch(function(){});
+  ghPut('history.json', hist, 'History aktualisiert')
+    .then(function(){ setSyncState('ok'); })
+    .catch(function(e){ setSyncState('fail', e && e.status ? 'Status ' + e.status : ''); });
 }
 
 function syncAllFromGH() {
@@ -1378,8 +1431,11 @@ function doImport() {
 }
 
 function doImportItems() {
-  if (G.sel === null) { showSt('ist', 'Bitte zuerst eine Menüwoche auswählen.', 'er'); return; }
-  var sug = G.sugs[G.sel];
+  // G.fotoImport ist der getrennte Import-Kontext fuer Foto-Rezepte. Frueher
+  // wurde dafuer G.sugs/G.sel ueberschrieben - danach liefen Aktionen im
+  // Rezept-Tab auf dem falschen Gericht.
+  var sug = G.fotoImport || (G.sel !== null && G.sugs ? G.sugs[G.sel] : null);
+  if (!sug) { showSt('ist', 'Bitte zuerst eine Menüwoche auswählen.', 'er'); return; }
   var listUuid = $('blist') ? $('blist').value : '';
   if (!listUuid) {
     if (!G.bToken) showSt('ist', 'Bitte zuerst bei Bring! anmelden.', 'er');
@@ -1462,7 +1518,15 @@ function doImportItems() {
     if (r && r.ok) {
       showSt('ist', items.length + ' Artikel in Bring! importiert!', 'ok');
       btn.innerHTML = 'Importiert';
-      markEinkaufDone(items ? items.length : 0);
+      if (G.fotoImport) {
+        // Erst JETZT den Foto-Status setzen. Frueher geschah das schon beim
+        // Oeffnen des Imports - ein abgebrochener oder fehlgeschlagener Import
+        // wurde dadurch faelschlich als erledigt gespeichert.
+        var fr = window._fotoRezept;
+        if (fr) { fr.status = 'einkauf'; saveFotoRezeptSilent(fr, 'einkauf'); }
+      } else {
+        markEinkaufDone(items ? items.length : 0);
+      }
     } else if (r && r.status === 401) {
       // Session abgelaufen - neu einloggen
       G.bToken = null; G.bUUID = null;
@@ -1723,6 +1787,15 @@ function callClaude(sys, msg, maxTokens) {
 }
 
 function goSuggest() {
+  // Ohne Kochtag gibt es nichts zu planen. Frueher wurde G.n auf 1 gezwungen
+  // und Claude generierte trotzdem ein Gericht fuer einen Tag, den der Nutzer
+  // ausdruecklich abgewaehlt hatte.
+  if (!cookingDays().length) {
+    var wEl = $('serr') || null;
+    alert('Bitte mindestens einen Kochtag auswählen.');
+    if (wEl) { wEl.className = 'st er'; wEl.textContent = 'Bitte mindestens einen Kochtag auswählen.'; wEl.style.display = 'block'; }
+    return;
+  }
   go('ss');
   $('sload').style.display = 'block';
   $('slist').innerHTML = '';
@@ -2032,10 +2105,8 @@ function goWeek() {
     // WICHTIG: Plan mit den nachgeladenen Rezepten erneut sichern,
     // sonst fehlen Zutaten/Schritte nach Reload und auf anderen Geraeten.
     if (G.activePlan && G.sel !== null && G.sugs[G.sel] === sug) {
+      // persistActivePlan() schreibt active_plan UND den Verlaufseintrag.
       persistActivePlan();
-      // Verlaufseintrag ebenfalls aktualisieren, sonst zeigt der Verlauf
-      // weiterhin den unvollstaendigen (nur Uebersichts-)Stand des Plans.
-      updateHistoryEntryPlan(G.activePlan);
     }
     goWeekRender(sug);
   })
@@ -2046,16 +2117,37 @@ function goWeek() {
 }
 
 
-function goWeekRender(sug) {
+function clearFotoImportContext() {
+  // Temporaeren Foto-Import-Kontext und dessen Navigation restlos entfernen.
+  // Sonst blieb der Button "Zurueck zum Foto-Rezept" auch im normalen
+  // Wochenplan stehen und der Import haette weiter auf dem Foto-Sug gearbeitet.
+  G.fotoImport = null;
+  var b = document.getElementById('foto-back-btn');
+  if (b) b.remove();
+}
+
+// keepTab: bei Mutationen (verschieben, absagen, austauschen, ...) soll die
+// Ansicht im aktuell offenen Tab bleiben. Frueher sprang goWeekRender() immer
+// auf "Einkauf" und riss den Nutzer aus der Rezept-Zeitachse heraus.
+function currentWeekTab() {
+  var tr = $('tr');
+  return (tr && tr.style.display !== 'none') ? 'r' : 'e';
+}
+
+function goWeekRender(sug, opts) {
   releaseWakeLock();
   clearAllCookTimers();
+  clearFotoImportContext();
+  var swOn = $('sw') && $('sw').classList.contains('on');
+  var keepTab = opts && opts.keepTab;
+  var targetTab = (keepTab && swOn) ? currentWeekTab() : 'e';
   if ($('wtit')) $('wtit').textContent = sug.thema;
   if ($('wsub')) $('wsub').textContent = sug.kochabende ? sug.kochabende.join(' - ') : '';
   syncBringUiState();
   renderEink(sug);
   G_timelineOpen = null; G_timelineInitialized = false; G_timelineScrolled = false; // frischer Zustand bei jedem Betreten
   renderRez(sug);
-  wtab('e');
+  wtab(targetTab);
   go('sw');
 }
 
@@ -2147,6 +2239,9 @@ function getItems(sug) {
 
 function renderEink(sug) {
   var items = getItems(sug);
+  // Aktuelle Liste merken: der Check-Zustand haengt am Zutaten-Key, nicht am
+  // Array-Index - sonst verrutschen die Haken, sobald sich die Liste aendert.
+  G.einkaufItems = items;
   var html = '';
   for (var i = 0; i < items.length; i++) {
     html += '<div class="irow" id="ir' + i + '" onclick="togItem(' + i + ')">' +
@@ -2154,6 +2249,7 @@ function renderEink(sug) {
       '<div><div class="iname">' + esc(items[i].name) + '</div><div class="ispec">' + esc(items[i].menge) + '</div></div></div>';
   }
   $('elist').innerHTML = html;
+  applyCheckedItems();
   updateTransferStatusUI();
 }
 
@@ -2200,27 +2296,56 @@ function updateTransferStatusUI() {
   }
 }
 
-function togItem(i) {
-  G.checked = G.checked || {};
-  G.checked[i] = !G.checked[i];
-  var row = document.getElementById('ir' + i);
-  var chk = document.getElementById('ic' + i);
-  if (row) row.classList.toggle('done', !!G.checked[i]);
-  if (chk) { chk.classList.toggle('on', !!G.checked[i]); chk.textContent = G.checked[i] ? '✓' : ''; }
-  try { localStorage.setItem(userKey('einkauf_checked'), JSON.stringify(G.checked)); } catch(e) {}
+// Stabiler Schluessel eines Einkaufsartikels - identisch normalisiert wie in
+// getItems(), damit derselbe Artikel ueber Renderings hinweg wiedererkannt wird.
+function itemKey(item) {
+  return item && item.name ? String(item.name).toLowerCase().trim() : '';
 }
 
-function loadCheckedItems() {
-  try {
-    var saved = JSON.parse(localStorage.getItem(userKey('einkauf_checked')) || '{}');
-    G.checked = saved;
-    setTimeout(function() {
-      var items = document.querySelectorAll('.irow');
-      Object.keys(saved).forEach(function(i) {
-        if (saved[i] && items[parseInt(i)]) items[parseInt(i)].classList.add('checked');
-      });
-    }, 150);
-  } catch(e) {}
+function loadCheckedState() {
+  try { return JSON.parse(localStorage.getItem(userKey('einkauf_checked')) || '{}'); }
+  catch(e) { return {}; }
+}
+
+function saveCheckedState() {
+  try { localStorage.setItem(userKey('einkauf_checked'), JSON.stringify(G.checked || {})); } catch(e) {}
+}
+
+function togItem(i) {
+  var items = G.einkaufItems || [];
+  var key = itemKey(items[i]);
+  if (!key) return;
+  G.checked = G.checked || {};
+  G.checked[key] = !G.checked[key];
+  var row = document.getElementById('ir' + i);
+  var chk = document.getElementById('ic' + i);
+  if (row) row.classList.toggle('done', !!G.checked[key]);
+  if (chk) { chk.classList.toggle('on', !!G.checked[key]); chk.textContent = G.checked[key] ? '✓' : ''; }
+  saveCheckedState();
+  updateDashboard();
+}
+
+// Gespeicherte Haken auf die aktuell gerenderte Liste anwenden. Verwendet die
+// gleichen CSS-Klassen wie togItem() ("done"/"on") - die alte Funktion setzte
+// "checked", eine Klasse die es gar nicht gibt, und wurde zudem nie aufgerufen.
+// Nebenbei werden Keys verworfen, die es in der Liste nicht mehr gibt.
+function applyCheckedItems() {
+  var items = G.einkaufItems || [];
+  var saved = loadCheckedState();
+  var valid = {}, changed = false;
+  items.forEach(function(it) { valid[itemKey(it)] = true; });
+  Object.keys(saved).forEach(function(k) { if (!valid[k]) changed = true; });
+  var cleaned = {};
+  Object.keys(saved).forEach(function(k) { if (valid[k]) cleaned[k] = saved[k]; });
+  G.checked = cleaned;
+  if (changed) saveCheckedState();
+  for (var i = 0; i < items.length; i++) {
+    var on = !!cleaned[itemKey(items[i])];
+    var row = document.getElementById('ir' + i);
+    var chk = document.getElementById('ic' + i);
+    if (row) row.classList.toggle('done', on);
+    if (chk) { chk.classList.toggle('on', on); chk.textContent = on ? '✓' : ''; }
+  }
 }
 
 // ─── ZEITACHSE: RENDERING ────────────────────────────────────
@@ -3058,10 +3183,13 @@ function findHistoryEntryIndex(hist, planData) {
   var sug = planData.sug || (planData.sugs && planData.sugs[planData.sel||0]);
   // Primär und ausschliesslich ueber die echte planId zuordnen wenn vorhanden.
   if (planData.planId) {
-    var byId = hist.findIndex(function(e) { return e.planId === planData.planId; });
-    if (byId >= 0) return byId;
+    // Hat der Plan eine planId, ist sie die EINZIGE gueltige Zuordnung. Wird sie
+    // nicht gefunden, gehoert der Plan nicht in den Verlauf - dann darf nicht auf
+    // Datum/Thema zurueckgefallen werden, sonst wird ein fremder Eintrag (z.B. ein
+    // zweiter Plan derselben Woche mit gleichem Thema) ueberschrieben.
+    return hist.findIndex(function(e) { return e.planId === planData.planId; });
   }
-  // Fallback nur fuer Alt-Eintraege ohne planId (vor dieser Aenderung entstanden).
+  // Fallback ausschliesslich fuer Alt-Eintraege ohne planId.
   if (sug) {
     var bySavedTheme = hist.findIndex(function(e) {
       return e.saved === planData.saved && e.thema === sug.thema;
@@ -3105,16 +3233,21 @@ function buildTimelineDays() {
   var days = {}; // key: ISO-Datum -> Tag-Eintrag
   var activePlanId = G.activePlan ? G.activePlan.planId : null;
 
-  function addPlanDays(planData, isActivePlan) {
+  function addPlanDays(planData, isActivePlan, fallbackDateIso) {
     if (!planData) return;
     var sug = planData.sug || (planData.sugs && planData.sugs[planData.sel != null ? planData.sel : 0]);
     if (!sug || !Array.isArray(sug.gerichte)) return;
-    // weekStart ist die Grundlage; bei sehr alten Eintraegen ohne weekStart
-    // defensiv auf saved/date zurueckfallen (ergibt dann keine exakten
-    // Tage, aber wenigstens keinen Absturz - diese Plaene werden separat
-    // als "kompakte Alt-Eintraege" behandelt, siehe unten).
+    // weekStart ist die Grundlage. Alt-Eintraege aus der Zeit vor der
+    // weekStart-Einfuehrung haben keinen - fuer die wird er aus dem
+    // Speicherdatum abgeleitet (Montag jener Woche). Das ist genauer als sie
+    // ganz auszublenden, wie es hier frueher geschah, obwohl der Kommentar
+    // eine Ersatzdarstellung ankuendigte.
     var weekStart = planData.weekStart;
-    if (!weekStart) return; // ohne weekStart keine verlaessliche Tageszuordnung moeglich
+    if (!weekStart && fallbackDateIso) {
+      var fb = new Date(fallbackDateIso + 'T00:00:00');
+      if (!isNaN(fb.getTime())) weekStart = isoDateLocal(mondayOf(fb));
+    }
+    if (!weekStart) return; // wirklich keine Datumsbasis vorhanden
 
     for (var i = 0; i < sug.gerichte.length; i++) {
       var g = sug.gerichte[i];
@@ -3140,18 +3273,24 @@ function buildTimelineDays() {
     }
   }
 
-  // 1) Verlauf zuerst (chronologisch aeltere Basis)
+  // 1) Verlauf zuerst (chronologisch aeltere Basis).
+  // WICHTIG: local_history wird per unshift() gefuellt, steht also NEUESTE
+  // ZUERST. Ohne Umkehr wuerde der aelteste Plan zuletzt geschrieben und den
+  // neueren ueberschreiben - bei zwei Plaenen derselben Woche zeigte die
+  // Zeitachse dann das falsche Gericht. Rueckwaerts iterieren = aeltester
+  // zuerst, neuester gewinnt.
   var hist = collectHistoryPlans();
-  hist.forEach(function(entry) {
-    if (!entry) return; // defensiv gegen kaputte/leere Verlaufseintraege
+  for (var hi = hist.length - 1; hi >= 0; hi--) {
+    var entry = hist[hi];
+    if (!entry) continue; // defensiv gegen kaputte/leere Verlaufseintraege
     // Aktiven Plan NICHT doppelt aus dem Verlauf einlesen - er wird unten
     // explizit und mit hoeherer Prioritaet ergaenzt.
-    if (activePlanId && entry.planId === activePlanId) return;
-    addPlanDays(entry.plan, false);
-  });
+    if (activePlanId && entry.planId === activePlanId) continue;
+    addPlanDays(entry.plan, false, entry.date);
+  }
 
   // 2) Aktiver Plan zuletzt (hat Vorrang bei Datumsueberschneidungen)
-  if (G.activePlan) addPlanDays(G.activePlan, true);
+  if (G.activePlan) addPlanDays(G.activePlan, true, G.activePlan.date);
 
   return days;
 }
@@ -3186,8 +3325,16 @@ function markEinkaufDone(itemCount) {
 // ─── AKTIVER PLAN: EINE Quelle der Wahrheit ────────────────
 // G.activePlan.sug ist massgeblich. sugsAll dient nur der Anzeige
 // alternativer Vorschlaege und wird nie zum Wiederherstellen benutzt.
+// EINZIGER Persistenz-Pfad fuer jede Mutation am aktiven Plan (austauschen,
+// verschieben, absagen, auswaerts, loeschen, gekocht markieren, Rezepte
+// nachladen). Schreibt localStorage, active-plan.json UND den passenden
+// history.json-Eintrag. Frueher aktualisierten die Mutationen nur den aktiven
+// Plan - der Verlauf zeigte danach weiter den alten Stand.
 function persistActivePlan() {
   if (!G.activePlan) return;
+  // In der Nur-Ansicht eines Verlaufsplans darf nichts geschrieben werden -
+  // sonst wuerde G.sugs[G.sel] (der angesehene Plan) den aktiven ueberschreiben.
+  if (G.viewOnly) return;
   if (G.sel !== null && G.sugs && G.sugs[G.sel]) {
     G.activePlan.sug = G.sugs[G.sel];
     G.activePlan.sel = G.sel;
@@ -3195,6 +3342,7 @@ function persistActivePlan() {
   G.activePlan.sugsPartial = G.sugsPartial;
   try { localStorage.setItem(userKey('active_plan'), JSON.stringify(G.activePlan)); } catch(e) {}
   saveToGH(G.activePlan);
+  updateHistoryEntryPlan(G.activePlan);
   updateDashboard();
 }
 
@@ -3216,11 +3364,17 @@ function einkaufstagIndex() {
   return idx >= 0 ? idx : 0;
 }
 
-// Letzten (oder heutigen) Einkaufstag als Referenzdatum fuer den Plan.
-// Ersetzt die alte, fest auf Montag verdrahtete currentWeekStart() - der
-// Plan "beginnt" jetzt am gewaehlten Einkaufstag statt zwingend am Montag,
-// damit z.B. ein Mittwochs-Einkaeufer nicht faelschlich mit "Montag frisch
-// eingekauft" rechnet, wenn tatsaechlich am Mittwoch eingekauft wird.
+// Letzten (oder heutigen) Einkaufstag als konkretes Datum. Nur fuer Frische-
+// und Promptlogik ("wie lange liegt der Einkauf zurueck") - NICHT als weekStart.
+function lastEinkaufstag(ref) {
+  var now = ref ? new Date(ref.getTime()) : new Date();
+  now.setHours(0, 0, 0, 0);
+  var todayIdx = now.getDay() === 0 ? 6 : now.getDay() - 1;
+  var diff = (todayIdx - einkaufstagIndex() + 7) % 7;
+  now.setDate(now.getDate() - diff);
+  return now;
+}
+
 // Rechnet ein Tageskuerzel ("Mo".."So") + weekStart (Montag der Woche, ISO
 // "YYYY-MM-DD") zu einem konkreten Date-Objekt um. Keine Index-Ratung - die
 // Zuordnung ist immer explizit ueber das Kuerzel selbst.
@@ -3240,17 +3394,29 @@ function isoDateLocal(d) {
   return y + '-' + m + '-' + day;
 }
 
+// Montag der Woche, in der ein Datum liegt - lokal gerechnet, ohne UTC-Umweg.
+function mondayOf(d) {
+  var x = new Date(d.getTime());
+  var idx = x.getDay() === 0 ? 6 : x.getDay() - 1; // 0=Mo ... 6=So
+  x.setHours(0, 0, 0, 0);
+  x.setDate(x.getDate() - idx);
+  return x;
+}
+
+// weekStart ist IMMER der lokale Kalendermontag der laufenden Woche.
+// Frueher wurde hier der gewaehlte Einkaufstag zurueckgegeben - das war falsch,
+// weil dateFromTag() den weekStart zwingend als Montag (DAYS_ORDER-Index 0)
+// interpretiert. Bei Einkaufstag "Mi" landete "Mo" dadurch auf einem Mittwoch.
+// Der Einkaufstag wird separat am Plan gespeichert und nur fuer Frische- und
+// Promptlogik verwendet. Ausserdem kein toISOString(): das rechnet in UTC um
+// und macht aus der lokalen Mitternacht eines Montags in Zuerich den Sonntag.
 function currentWeekStart() {
-  var now = new Date();
-  var todayIdx = now.getDay() === 0 ? 6 : now.getDay() - 1; // 0=Mo ... 6=So
-  var targetIdx = einkaufstagIndex();
-  var diff = (todayIdx - targetIdx + 7) % 7; // Tage seit dem letzten Einkaufstag (0 = heute)
-  var start = new Date(now); start.setDate(now.getDate() - diff); start.setHours(0,0,0,0);
-  return start.toISOString().slice(0,10);
+  return isoDateLocal(mondayOf(new Date()));
 }
 
 function setActivePlanAndGo() {
   if (G.sel === null) return;
+  G.viewOnly = false;
   var sug = G.sugs[G.sel];
   // Dedupe-Zusatz "(Variante N)" entfernen: der war nur zur Unterscheidung
   // mehrerer Vorschlaege gedacht - sobald einer ausgewaehlt und aktiviert
@@ -3261,7 +3427,8 @@ function setActivePlanAndGo() {
     planId: generatePlanId(),
     sug: sug, sel: G.sel, n: G.n, personen: G.personen,
     reste: G.reste, freeze: G.freeze, modus: G.modus, days: G.days,
-    weekStart: currentWeekStart(),
+    weekStart: currentWeekStart(),        // immer Kalendermontag
+    einkaufstag: G.einkaufstag || 'Mo',   // separat: nur Frische-/Promptlogik
     saved: new Date().toLocaleDateString('de-CH'),
     bringImportedAt: null, bringItemCount: 0,
     sugsAll: G.sugs, sugsPartial: G.sugsPartial
@@ -3280,6 +3447,7 @@ function setActivePlanAndGo() {
 
 function openActivePlan(tab) {
   if (!G.activePlan || !G.activePlan.sug) return;
+  G.viewOnly = false;   // wir verlassen eine eventuelle Nur-Ansicht
   // sug ist massgeblich; sugsAll nur zur Anzeige der Alternativen
   var all = G.activePlan.sugsAll || [];
   var sel = G.activePlan.sel || 0;
@@ -3344,9 +3512,9 @@ function markEinkaufDoneGekocht() {
 
   if (G.activePlan) {
     G.activePlan.einkaufDone = true;
-    localStorage.setItem(userKey('active_plan'), JSON.stringify(G.activePlan));
-    renderActivePlan();
-    saveToGH(G.activePlan);
+    // Zentral speichern, damit die _gekocht-Markierung auch im Verlaufseintrag
+    // landet - frueher wurde dort nur der Status, nie der Plan selbst aktualisiert.
+    persistActivePlan();
   }
 }
 
@@ -3439,7 +3607,7 @@ function deleteGerichtFromPlan(ri) {
   if (!confirm('"' + (g.abend || 'Dieses Gericht') + '" endgültig aus dem Plan entfernen? Das kann nicht rückgängig gemacht werden.')) return;
   sug.gerichte.splice(ri, 1);
   markPlanChangedSinceTransfer();
-  try { goWeekRender(sug); } catch(e) { console.warn("render:", e.message); }
+  try { goWeekRender(sug, {keepTab:true}); } catch(e) { console.warn("render:", e.message); }
   persistActivePlan();
   updateDashboard();
   showSwapToast('Gericht entfernt.', '#555');
@@ -3455,7 +3623,7 @@ function cancelGericht(ri) {
   g._origAbend = g.abend;
   g.abend = '❌ ' + g.abend + ' (ausgefallen)';
   markPlanChangedSinceTransfer();
-  try { goWeekRender(sug); } catch(e) { console.warn("render:", e.message); }
+  try { goWeekRender(sug, {keepTab:true}); } catch(e) { console.warn("render:", e.message); }
   persistActivePlan();
   updateDashboard();
   showSwapToast('Kochabend ausgefallen – kein Einkauf nötig.', '#555');
@@ -3470,7 +3638,7 @@ function auswaartsGericht(ri) {
   g._origAbend = origName;
   g.abend = '🍽 Auswärts (' + (g.tag||'').slice(0,2) + ')';
   markPlanChangedSinceTransfer();
-  try { goWeekRender(sug); } catch(e) { console.warn("render:", e.message); }
+  try { goWeekRender(sug, {keepTab:true}); } catch(e) { console.warn("render:", e.message); }
   persistActivePlan();
   updateDashboard();
   showSwapToast('Auswärts markiert', '#555');
@@ -3609,7 +3777,7 @@ function swapGerichte(sugIdx, fromGi, toGi) {
   var onActiveWeek = G.activePlan && G.sel === sugIdx &&
     document.getElementById('sw') && document.getElementById('sw').classList.contains('on');
   if (onActiveWeek) {
-    goWeekRender(sug);
+    goWeekRender(sug, {keepTab:true});
     persistActivePlan();
   } else {
     renderSugs();
@@ -3978,9 +4146,8 @@ function updateDashboard() {
   // Plan aus einer frueheren Woche? -> Hinweis statt stiller Weiterverwendung
   var isStale = false;
   if (hasPlan && plan.weekStart) {
-    // Dieselbe Referenz wie currentWeekStart() nutzen (gewaehlter Einkaufstag,
-    // nicht fest Montag) - sonst widersprechen sich Plan-Erstellung und
-    // Veraltungs-Pruefung und der Hinweis erscheint trotz aktuellem Plan.
+    // Beide Seiten sind jetzt Kalendermontage, der String-Vergleich auf
+    // ISO-Datum ist damit korrekt und zeitzonenfest.
     isStale = plan.weekStart < currentWeekStart();
   }
   var staleEl = $('dash-stale');
@@ -3990,18 +4157,30 @@ function updateDashboard() {
   if (!hasPlan) return;
   var gerichte = plan.sug.gerichte || [];
   if ($('dash-thema')) $('dash-thema').textContent = plan.sug.thema || '';
-  var DAYS = ['Mo','Di','Mi','Do','Fr','Sa','So'];
-  var dow = new Date().getDay();
-  var todayIdx = dow === 0 ? 6 : dow - 1;
-  var todayTag = DAYS[todayIdx];
+  var todayIso = isoDateLocal(new Date());
+  // Status ueber das VOLLE Datum bestimmen, nicht ueber den Wochentag-Index.
+  // Sonst gilt bei einem Plan aus einer frueheren Woche der heutige Wochentag
+  // faelschlich als "heute" und vergangene Tage derselben Woche als Zukunft.
+  function dayInfo(g) {
+    var tag = (g.tag || '').slice(0, 2);
+    var d = plan.weekStart ? dateFromTag(plan.weekStart, tag) : null;
+    var iso = d ? isoDateLocal(d) : null;
+    return {
+      tag: tag,
+      iso: iso,
+      isToday: !!iso && iso === todayIso,
+      isPastDay: !!iso && iso < todayIso,
+      isFutureDay: !!iso && iso > todayIso
+    };
+  }
   // Diese Woche
   var weekHtml = gerichte.map(function(g) {
-    var tag = (g.tag||'').slice(0,2);
-    var gIdx = DAYS.indexOf(tag);
-    var isToday = tag === todayTag;
+    var info = dayInfo(g);
+    var tag = info.tag;
+    var isToday = info.isToday;
     var isCooked = !!g._gekocht;               // nur wirklich Gekochtes abhaken
     var isCancelled = !!g._cancelled;
-    var isPast = gIdx < todayIdx && !isCooked; // zeitlich vorbei, aber nicht gekocht
+    var isPast = info.isPastDay && !isCooked;  // zeitlich vorbei, aber nicht gekocht
     var hasReste = g.mittag_nächster_tag && g.mittag_nächster_tag !== 'Restename' && !isCancelled;
     return '<div style="display:flex;align-items:flex-start;gap:10px;padding:6px 0;border-bottom:.5px solid #f5f5f5">' +
       '<span style="font-size:11px;font-weight:700;min-width:22px;margin-top:2px;color:' + (isToday?'var(--red)':isPast?'#ccc':'var(--gr3)') + '">' + esc(tag) + '</span>' +
@@ -4013,11 +4192,12 @@ function updateDashboard() {
   // Heute / Nächstes
   var todayDish = null, nextDish = null;
   for (var i = 0; i < gerichte.length; i++) {
-    var gTag = (gerichte[i].tag||'').slice(0,2);
-    var gIdx2 = DAYS.indexOf(gTag);
+    var gi_info = dayInfo(gerichte[i]);
     if (gerichte[i]._cancelled) continue;   // ausgefallen/auswaerts ueberspringen
-    if (gTag === todayTag) { todayDish = gerichte[i]; break; }
-    if (gIdx2 > todayIdx && !nextDish) nextDish = gerichte[i];
+    // Bereits Gekochtes nicht erneut als Kochaktion anbieten.
+    if (gerichte[i]._gekocht) continue;
+    if (gi_info.isToday) { todayDish = gerichte[i]; break; }
+    if (gi_info.isFutureDay && !nextDish) nextDish = gerichte[i];
   }
   var featured = todayDish || nextDish;
   if (featured && $('dash-today-card')) {
@@ -4048,6 +4228,11 @@ function updateDashboard() {
   // Einkauf: Status der Uebertragung an Bring! (dort wird abgehakt, nicht hier)
   var aktive = gerichte.filter(function(g){ return !g._cancelled; });
   var totalItems = getItems({ gerichte: aktive }).length;
+  if (totalItems === 0 && $('dash-einkauf-card')) {
+    // Alle Gerichte abgesagt/auswaerts -> es gibt nichts einzukaufen. Frueher
+    // blieb die alte Karte mit veralteter Artikelzahl stehen.
+    $('dash-einkauf-card').style.display = 'none';
+  }
   if (totalItems > 0 && $('dash-einkauf-card')) {
     $('dash-einkauf-card').style.display = 'block';
     var imported = plan.bringImportedAt && !plan.bringStale;
@@ -4218,7 +4403,7 @@ function renderHistoryList(history) {
       +'<div style="padding:8px 14px">'+dishes+'</div>'
       +'<div style="padding:0 14px 10px;display:flex;flex-direction:column;gap:6px">'
         +(isLoved ? '<button class="btn btn-red" onclick="nochmalKochen('+i+')" style="padding:9px;font-size:13px;font-weight:700">🔁 Nochmal kochen</button>' : '')
-        +'<div style="display:flex;gap:6px"><button class="btn btn-out" onclick="loadHistoryEntry('+i+')" style="flex:1;padding:9px;font-size:12px">Plan laden</button><button class="btn btn-out" onclick="showHistoryRating('+i+')" style="flex:1;padding:9px;font-size:12px">★ Bewerten</button></div>'
+        +'<div style="display:flex;gap:6px"><button class="btn btn-out" onclick="viewHistoryEntry('+i+')" style="flex:1;padding:9px;font-size:12px">👁 Ansehen</button><button class="btn btn-out" onclick="nochmalKochen('+i+')" style="flex:1;padding:9px;font-size:12px">🔁 Erneut verwenden</button><button class="btn btn-out" onclick="showHistoryRating('+i+')" style="flex:1;padding:9px;font-size:12px">★ Bewerten</button></div>'
         +'<div style="display:flex;gap:6px">'+(status!=='gekocht'?'<button class="btn btn-out" onclick="markHistoryKekocht('+i+')" style="flex:1;padding:9px;font-size:12px">🍽 Gekocht</button>':'')+(status!=='geplant'?'<button class="btn btn-out" onclick="resetHistoryStatus('+i+')" style="padding:9px;font-size:12px">✕ Reset</button>':'')+'<button onclick="deleteHistoryPlan('+i+')" style="background:none;border:.5px solid var(--bdr);border-radius:8px;padding:9px 12px;color:var(--gr3);cursor:pointer;font-size:16px" title="Löschen">✕</button>'+'</div>'
       +'</div>'
     +'</div>';
@@ -4226,13 +4411,24 @@ function renderHistoryList(history) {
   if($('hlist'))$('hlist').innerHTML=html||'<div style="text-align:center;padding:40px;color:var(--gr3);font-size:13px">Noch keine gespeicherten Pläne.</div>';
   window._history=history;
 }
-function loadHistoryEntry(i) {
+// NUR ANSEHEN. Ersetzt den aktiven Plan ausdruecklich NICHT - frueher tat
+// "Plan laden" das still, obwohl die Beschriftung nach Ansehen klang, und die
+// Aenderung wurde nicht einmal auf GitHub gespeichert. Zum Weiterverwenden
+// gibt es "Erneut verwenden" (nochmalKochen), das einen neuen Plan mit eigener
+// planId und aktuellem weekStart anlegt.
+function viewHistoryEntry(i) {
   var e=window._history; if(!e||!e[i]||!e[i].plan)return;
-  var plan=e[i].plan;
+  var plan=JSON.parse(JSON.stringify(e[i].plan));
   if (plan.sug) normalizeMittagFeld(plan.sug);
-  G.activePlan=plan; localStorage.setItem(userKey('active_plan'),JSON.stringify(plan));
-  if(plan.sug){G.sugs=[plan.sug];G.sel=0;G.n=plan.n||3;G.personen=plan.personen||2;G.reste=plan.reste!==undefined?plan.reste:1;G.freeze=plan.freeze!==undefined?plan.freeze:1;G.sugsPartial=false;renderActivePlan();goWeekRender(G.sugs[G.sel]);}
+  if(!plan.sug) return;
+  G.viewOnly = true;
+  G.sugs=[plan.sug];G.sel=0;G.sugsPartial=false;
+  goWeekRender(G.sugs[G.sel]);
+  showSwapToast('Nur-Ansicht – der aktive Plan bleibt unverändert.', '#1565c0');
 }
+
+// Alter Name bleibt als Alias erhalten, falls noch irgendwo referenziert.
+function loadHistoryEntry(i) { viewHistoryEntry(i); }
 
 function nochmalKochen(i) {
   var e = window._history;
@@ -4252,6 +4448,7 @@ function nochmalKochen(i) {
     newPlan.planId = generatePlanId(); // neue ID: dies ist ein NEUER Kochvorgang, kein Update des alten Eintrags
     newPlan.saved = new Date().toLocaleDateString('de-CH');
     newPlan.weekStart = currentWeekStart();
+    newPlan.einkaufstag = G.einkaufstag || 'Mo';
     newPlan.einkaufDone = false;
     newPlan.bringImportedAt = null;
     newPlan.bringItemCount = 0;
@@ -4282,9 +4479,20 @@ function deleteHistoryPlan(i) {
   var name = hist[i].thema || 'Menüplan';
   if (!confirm('"' + name + '" endgültig aus dem Verlauf löschen?')) return;
 
-  // Falls es gerade der aktive Plan ist, diesen ebenfalls beenden
-  if (G.activePlan && G.activePlan.saved === hist[i].saved && G.activePlan.sug &&
-      G.activePlan.sug.thema === hist[i].thema) {
+  // Falls es gerade der aktive Plan ist, diesen ebenfalls beenden.
+  // Primaer ueber planId vergleichen - saved+thema ist nicht eindeutig, sobald
+  // zwei Plaene derselben Woche dasselbe Thema tragen. Der saved/thema-Vergleich
+  // bleibt nur als Fallback fuer Alt-Eintraege ohne planId.
+  var isActive = false;
+  if (G.activePlan) {
+    if (G.activePlan.planId && hist[i].planId) {
+      isActive = G.activePlan.planId === hist[i].planId;
+    } else {
+      isActive = G.activePlan.saved === hist[i].saved &&
+                 !!G.activePlan.sug && G.activePlan.sug.thema === hist[i].thema;
+    }
+  }
+  if (isActive) {
     G.activePlan = null;
     localStorage.removeItem(userKey('active_plan'));
     localStorage.removeItem(userKey('einkauf_checked'));
@@ -4438,9 +4646,10 @@ function renderFotoRezept(r){
 }
 function importFotoFromResult(){
   if(!window._fotoRezept)return; var r=window._fotoRezept;
-  r.status='einkauf'; saveFotoRezeptSilent(r,'einkauf');
+  // Status NICHT hier setzen - erst nach erfolgreicher Bring!-Antwort.
   var tmpSug={thema:r.name||'Foto-Rezept',kochabende:[],gerichte:[{tag:'Foto',abend:r.name||'Foto-Rezept',zutaten:r.zutaten||[]}]};
-  G.sugs=[tmpSug];G.sel=0;
+  // Getrennter Kontext: G.sugs/G.sel des aktiven Wochenplans bleiben unangetastet.
+  G.fotoImport = tmpSug;
   if(G.bLists&&G.bLists.length){$('blist').innerHTML=G.bLists.map(function(l){return '<option value="'+esc(l.listUuid)+'">'+esc(l.name)+'</option>';}).join('');$('blistwrap').style.display='block';$('bfields').style.display='none';}
   $('wtit').textContent=r.name||'Foto-Rezept';$('wsub').textContent='Foto-Rezept';
   renderEink(tmpSug); go('sw'); wtab('e');
@@ -4449,10 +4658,26 @@ function importFotoFromResult(){
   backBtn.innerHTML='<button class="btn btn-out" onclick="openFotoScreen()" style="font-size:13px;padding:10px">← Zurück zum Foto-Rezept</button>';
   var te=$('te');if(te&&te.firstChild)te.insertBefore(backBtn,te.firstChild);
 }
+function fotoRezeptId(r){
+  // Stabile ID: einmal vergeben, bleibt am Rezept. Der frueher benutzte
+  // Namensvergleich fuehrte dazu, dass auf einem Geraet geloeschte Rezepte
+  // beim Sync von einem anderen Geraet wieder auftauchten.
+  if (r && r._id) return r._id;
+  var id = (window.crypto && typeof window.crypto.randomUUID === 'function')
+    ? window.crypto.randomUUID()
+    : 'f_' + Date.now() + '_' + Math.random().toString(36).slice(2, 10);
+  if (r) r._id = id;
+  return id;
+}
+
 function saveFotoRezeptSilent(r,status){
-  var entry={id:Date.now(),date:new Date().toISOString().slice(0,10),saved:new Date().toLocaleDateString('de-CH'),name:r.name||'Foto-Rezept',beschreibung:r.beschreibung||'',zeit_aktiv:r.zeit_aktiv||'',zeit_total:r.zeit_total||'',portionen:G_foto.portionen,zutaten:r.zutaten||[],schritte:r.schritte||[],tipp:r.tipp||'',status:status||r.status||'geplant',stars:r.stars,ratingFeedback:r.ratingFeedback};
+  var _fid=fotoRezeptId(r);
+  var entry={_id:_fid,id:Date.now(),date:new Date().toISOString().slice(0,10),saved:new Date().toLocaleDateString('de-CH'),name:r.name||'Foto-Rezept',beschreibung:r.beschreibung||'',zeit_aktiv:r.zeit_aktiv||'',zeit_total:r.zeit_total||'',portionen:G_foto.portionen,zutaten:r.zutaten||[],schritte:r.schritte||[],tipp:r.tipp||'',status:status||r.status||'geplant',stars:r.stars,ratingFeedback:r.ratingFeedback};
   var saved=JSON.parse(localStorage.getItem(userKey('foto_rezepte'))||'[]');
-  var exists=saved.findIndex(function(s){return s.name===entry.name;});
+  // Primaer ueber die stabile _id zuordnen; Namensvergleich nur noch als
+  // Fallback fuer Alt-Eintraege, die noch keine _id haben.
+  var exists=saved.findIndex(function(s){return s._id && s._id===entry._id;});
+  if(exists<0)exists=saved.findIndex(function(s){return !s._id && s.name===entry.name;});
   if(exists>=0)saved[exists]=entry; else saved.unshift(entry);
   if(saved.length>100)saved=saved.slice(0,100);
   localStorage.setItem(userKey('foto_rezepte'),JSON.stringify(saved));
@@ -4510,6 +4735,9 @@ function loadPrefs(){
   return prefs;}catch(e){return{};}
 }
 function openPrefs(){
+  // Unbestaetigte Auswahl aus einem frueheren, abgebrochenen Besuch verwerfen -
+  // sonst wurde sie beim naechsten Speichern stillschweigend uebernommen.
+  window._tempPrefs = {};
   var session=getSession(); if($('prefs-username'))$('prefs-username').textContent=session?session.username:'';
   var prefs=loadPrefs(); var p=prefs.personen||G.personen||2; var m=prefs.modus||G.modus||'optional'; var n=prefs.n||G.n||3; var r=prefs.reste!==undefined?prefs.reste:G.reste; var f=prefs.freeze!==undefined?prefs.freeze:G.freeze;
   var chips;
