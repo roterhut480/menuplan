@@ -1,22 +1,22 @@
 {
-  "planId": "da1b3564-60aa-4499-88cf-32c8c65f4e66",
+  "planId": "5bf26ed5-bba5-4ddf-ad83-1c5f967ed086",
   "sug": {
     "id": 1,
     "thema": "Mediterran",
     "kochabende": [
-      "Mo",
+      "Di",
       "Fr"
     ],
     "gerichte": [
       {
-        "tag": "Mo",
-        "abend": "Shakshuka mit Tomaten und Spinat",
-        "zeit_aktiv": "18m",
-        "zeit_total": "25m"
+        "tag": "Di",
+        "abend": "Auberginen-Tomaten-Pasta",
+        "zeit_aktiv": "25m",
+        "zeit_total": "40m"
       },
       {
         "tag": "Fr",
-        "abend": "Griechischer Salat mit Kichererbsen",
+        "abend": "Kichererbsen-Spinat-Salat",
         "zeit_aktiv": "15m",
         "zeit_total": "15m"
       }
@@ -29,8 +29,8 @@
   "freeze": 0,
   "modus": "vegi",
   "days": {
-    "Mo": "schnell",
-    "Di": null,
+    "Mo": null,
+    "Di": "normal",
     "Mi": null,
     "Do": null,
     "Fr": "schnell",
@@ -46,19 +46,19 @@
       "id": 1,
       "thema": "Mediterran",
       "kochabende": [
-        "Mo",
+        "Di",
         "Fr"
       ],
       "gerichte": [
         {
-          "tag": "Mo",
-          "abend": "Shakshuka mit Tomaten und Spinat",
-          "zeit_aktiv": "18m",
-          "zeit_total": "25m"
+          "tag": "Di",
+          "abend": "Auberginen-Tomaten-Pasta",
+          "zeit_aktiv": "25m",
+          "zeit_total": "40m"
         },
         {
           "tag": "Fr",
-          "abend": "Griechischer Salat mit Kichererbsen",
+          "abend": "Kichererbsen-Spinat-Salat",
           "zeit_aktiv": "15m",
           "zeit_total": "15m"
         }
@@ -66,45 +66,45 @@
     },
     {
       "id": 2,
-      "thema": "Mediterran (Variante 2)",
+      "thema": "Mediterran",
       "kochabende": [
-        "Mo",
+        "Di",
         "Fr"
       ],
       "gerichte": [
         {
-          "tag": "Mo",
-          "abend": "Shakshuka mit Feta und Gemüse",
-          "zeit_aktiv": "18m",
-          "zeit_total": "25m"
+          "tag": "Di",
+          "abend": "Auberginen-Tomaten-Pasta",
+          "zeit_aktiv": "25m",
+          "zeit_total": "40m"
         },
         {
           "tag": "Fr",
-          "abend": "Geroestete Kichererbsen mit Spinat und Zitrone",
+          "abend": "Feta-Oliven-Salat mit Kichererbsen",
           "zeit_aktiv": "15m",
-          "zeit_total": "30m"
+          "zeit_total": "15m"
         }
       ]
     },
     {
       "id": 3,
-      "thema": "Mediterran (Variante 3)",
+      "thema": "Orientalisch",
       "kochabende": [
-        "Mo",
+        "Di",
         "Fr"
       ],
       "gerichte": [
         {
-          "tag": "Mo",
-          "abend": "Hummus mit Gemüsesticks und Fladenbrot",
-          "zeit_aktiv": "15m",
-          "zeit_total": "15m"
+          "tag": "Di",
+          "abend": "Shakshuka mit Kichererbsen und Spinat",
+          "zeit_aktiv": "25m",
+          "zeit_total": "35m"
         },
         {
           "tag": "Fr",
-          "abend": "Griechischer Salat mit Feta und Oliven",
-          "zeit_aktiv": "20m",
-          "zeit_total": "20m"
+          "abend": "Hummus-Gemüse-Wrap",
+          "zeit_aktiv": "15m",
+          "zeit_total": "15m"
         }
       ]
     }
