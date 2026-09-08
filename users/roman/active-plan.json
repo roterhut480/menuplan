@@ -1,44 +1,85 @@
 {
-  "planId": "f9e9685b-3fe6-4680-858b-348c44a81dc8",
+  "planId": "2c7a6ffd-382e-451c-9082-a1bffdcfdcb9",
   "sug": {
-    "id": 1,
+    "id": 3,
     "thema": "Mediterran",
     "kochabende": [
-      "Mo",
-      "Mi",
-      "Fr"
+      "Mi"
     ],
-    "gerichte": []
+    "gerichte": [
+      {
+        "tag": "Mi",
+        "abend": "Auberginen-Tomaten-Gratin mit Feta",
+        "zeit_aktiv": "25m",
+        "zeit_total": "45m"
+      }
+    ]
   },
-  "sel": 0,
-  "n": 3,
+  "sel": 2,
+  "n": 1,
   "personen": 2,
   "reste": 0,
-  "freeze": 1,
-  "modus": "optional",
+  "freeze": 0,
+  "modus": "vegi",
   "days": {
-    "Mo": "normal",
+    "Mo": null,
     "Di": null,
     "Mi": "normal",
     "Do": null,
-    "Fr": "normal",
+    "Fr": null,
     "Sa": null,
     "So": null
   },
-  "weekStart": "2026-09-06",
+  "weekStart": "2026-09-07",
+  "einkaufstag": "Mi",
   "saved": "8.9.2026",
   "bringImportedAt": null,
   "bringItemCount": 0,
   "sugsAll": [
     {
       "id": 1,
+      "thema": "Mediterran (Variante 1)",
+      "kochabende": [
+        "Mi"
+      ],
+      "gerichte": [
+        {
+          "tag": "Mi",
+          "abend": "Vegetarische Moussaka mit Auberginen und Zucchini",
+          "zeit_aktiv": "25m",
+          "zeit_total": "50m"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "thema": "Italienisch",
+      "kochabende": [
+        "Mi"
+      ],
+      "gerichte": [
+        {
+          "tag": "Mi",
+          "abend": "Auberginen-Parmigiana",
+          "zeit_aktiv": "25m",
+          "zeit_total": "50m"
+        }
+      ]
+    },
+    {
+      "id": 3,
       "thema": "Mediterran",
       "kochabende": [
-        "Mo",
-        "Mi",
-        "Fr"
+        "Mi"
       ],
-      "gerichte": []
+      "gerichte": [
+        {
+          "tag": "Mi",
+          "abend": "Auberginen-Tomaten-Gratin mit Feta",
+          "zeit_aktiv": "25m",
+          "zeit_total": "45m"
+        }
+      ]
     }
   ],
   "sugsPartial": true
