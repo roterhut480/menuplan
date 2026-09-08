@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=yes">
-<title>Menüplan v6.25</title>
+<title>Menüplan v6.27</title>
 <meta name="theme-color" content="#e8390e">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -19,6 +19,11 @@
 }
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f3f3f3;color:var(--txt);min-height:100vh}
+/* Desktop-Zentrierung: begrenzt die App auf Handybreite und zentriert sie.
+   transform:translateZ(0) ist zwingend - es macht #app-shell zum Containing
+   Block fuer position:fixed-Kinder (Cook-Footer, Modals, Toasts). Ein blosses
+   position:relative reicht dafuer NICHT aus. */
+#app-shell{max-width:480px;margin:0 auto;position:relative;transform:translateZ(0);min-height:100vh;background:#f3f3f3;box-shadow:0 0 24px rgba(0,0,0,.06)}
 .scr{display:none;min-height:100vh;background:#f3f3f3;padding-bottom:32px}
 .scr.on{display:block}
 /* topbar */
@@ -147,6 +152,7 @@ input[type=password]{letter-spacing:2px}
 /* print */
 @media print{
   body{background:#fff;margin:0;padding:0}
+  #app-shell{max-width:none;margin:0;transform:none;box-shadow:none;background:#fff}
   .noprint{display:none!important}
   .scr{display:none!important;background:#fff;padding:0}
   #sp{display:block!important;padding:0}
@@ -172,10 +178,11 @@ input[type=password]{letter-spacing:2px}
 </script>
 </head>
 <body>
+<div id="app-shell">
 
 <!-- HOME -->
 <div class="scr on" id="sh">
-  <div class="hero"><h1>Menüplan</h1><p id="hsub">v6.25 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
+  <div class="hero"><h1>Menüplan</h1><p id="hsub">v6.27 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
 
   <!-- Active plan card -->
 
@@ -1730,11 +1737,24 @@ function goSuggest() {
 
   var loadEl = $('sload').querySelector('div:last-child');
   var loadStart = Date.now();
-  if (loadEl) loadEl.textContent = 'Claude generiert Vorschläge...';
-  var loadIv = setInterval(function() {
+
+  // Fortschritt der drei parallelen Vorschlags-Requests.
+  // Die Ladeanzeige darf ERST verschwinden, wenn alle drei abgeschlossen sind
+  // (egal ob erfolgreich oder fehlgeschlagen). Frueher wurde sie bereits beim
+  // ersten Treffer ausgeblendet - dadurch sah der Nutzer nur 1 statt 3 Vorschlaege.
+  var TOTAL_SUGS = 3;
+  var sugDone = 0;
+  var sugErrors = [];
+
+  function updateLoadText() {
+    if (!loadEl) return;
     var sec = Math.round((Date.now() - loadStart) / 1000);
-    if (loadEl) loadEl.textContent = 'Claude generiert Vorschläge... (' + sec + 's)';
-  }, 1000);
+    loadEl.textContent = 'Claude generiert Vorschläge... ' +
+      sugDone + '/' + TOTAL_SUGS + ' fertig (' + sec + 's)';
+  }
+
+  updateLoadText();
+  var loadIv = setInterval(updateLoadText, 1000);
   G._loadIv = loadIv;
 
   // Erwartete Kochtage einmalig berechnen: nur Tage mit aktivem Kochmodus,
@@ -1787,54 +1807,72 @@ function goSuggest() {
   function loadOne(id) {
     return callWorker('overview', msg + ' Vorschlag ' + id + ' von 3. Wähle eine andere Küche als die anderen Vorschläge.', 400)
       .then(function(raw) {
-        try {
           var parsed = parseJSON(raw);
           var validErr = validateOverview(parsed, G.n, expectedCookingTags);
           if (validErr) throw new Error(validErr);
           var sugs = parsed.vorschlaege || [];
-          if (sugs.length > 0) {
-            sugs[0].id = id;
-            // Dedupe by thema — bei Dublette Thema eindeutig machen statt verwerfen
-            var exists = G.sugs.some(function(s){ return s.thema === sugs[0].thema; });
-            if (exists) sugs[0].thema = sugs[0].thema + ' (Variante ' + id + ')';
-            G.sugs.push(sugs[0]);
-            G.sugs.sort(function(a,b){ return a.id - b.id; });
-            // Fixierte Gerichte in JEDEN neuen Vorschlag zurückschreiben
-            var fixedSnap = G.fixedSnapshot || [];
-            if (fixedSnap.length) {
-              G.sugs.forEach(function(sg, si) {
-                if (!sg.gerichte) return;
-                fixedSnap.forEach(function(f) {
-                  if (f.j < sg.gerichte.length) sg.gerichte[f.j] = JSON.parse(JSON.stringify(f.gericht));
-                });
-                // Fix-Markierungen auf den neuen Index übertragen
-                fixedSnap.forEach(function(f) { G.fixedDishes[si + '_' + f.j] = true; });
+          if (!sugs.length) throw new Error('Antwort enthielt keinen Vorschlag');
+          sugs[0].id = id;
+          // Dedupe by thema — bei Dublette Thema eindeutig machen statt verwerfen
+          var exists = G.sugs.some(function(s){ return s.thema === sugs[0].thema; });
+          if (exists) sugs[0].thema = sugs[0].thema + ' (Variante ' + id + ')';
+          G.sugs.push(sugs[0]);
+          G.sugs.sort(function(a,b){ return a.id - b.id; });
+          // Fixierte Gerichte in JEDEN neuen Vorschlag zurückschreiben
+          var fixedSnap = G.fixedSnapshot || [];
+          if (fixedSnap.length) {
+            G.sugs.forEach(function(sg, si) {
+              if (!sg.gerichte) return;
+              fixedSnap.forEach(function(f) {
+                if (f.j < sg.gerichte.length) sg.gerichte[f.j] = JSON.parse(JSON.stringify(f.gericht));
               });
-            }
-            renderSugs();
-            if (G.sugs.length === 1) {
-              $('sload').style.display = 'none';
-              $('scta').style.display = 'block';
-              if (G._loadIv) { clearInterval(G._loadIv); G._loadIv = null; }
-              if ($('feedback')) $('feedback').value = '';
-            }
+              // Fix-Markierungen auf den neuen Index übertragen
+              fixedSnap.forEach(function(f) { G.fixedDishes[si + '_' + f.j] = true; });
+            });
           }
-        } catch(e) {
-          console.warn('Parse error id ' + id + ':', e.message);
-        }
+          // Teilergebnis sofort anzeigen - die Ladeanzeige bleibt aber
+          // sichtbar, bis alle drei Requests durch sind.
+          renderSugs();
       })
+      .catch(function(e) {
+        // Jeder Vorschlag scheitert unabhaengig: so bricht ein einzelner
+        // Netzwerk-/Parse-Fehler nicht das ganze Promise.all ab, und der Fehler
+        // wird dem Nutzer am Ende angezeigt statt nur in die Konsole geloggt.
+        var m = (e && e.message) ? e.message : 'unbekannter Fehler';
+        console.warn('Vorschlag ' + id + ' fehlgeschlagen:', m);
+        sugErrors.push('Vorschlag ' + id + ': ' + m);
+      })
+      .then(function() {
+        sugDone++;
+        updateLoadText();
+      });
   }
 
   Promise.all([loadOne(1), loadOne(2), loadOne(3)])
     .then(function() {
       if (G._loadIv) { clearInterval(G._loadIv); G._loadIv = null; }
       $('sload').style.display = 'none';
+      var el = $('serr');
       if (G.sugs.length === 0) {
-        var el = $('serr');
         el.className = 'st er';
-        el.textContent = getSession() ? 'Keine Vorschläge erhalten. Bitte nochmals versuchen.' : 'Bitte zuerst anmelden.';
+        el.textContent = getSession()
+          ? 'Keine Vorschläge erhalten. Bitte nochmals versuchen.' +
+            (sugErrors.length ? ' (' + sugErrors.join(' · ') + ')' : '')
+          : 'Bitte zuerst anmelden.';
         el.style.display = 'block';
+      } else if (G.sugs.length < TOTAL_SUGS) {
+        // Teilerfolg: Vorschlaege anzeigen, aber transparent machen, dass und
+        // warum welche fehlen - statt sie stillschweigend verschwinden zu lassen.
+        el.className = 'st inf';
+        el.textContent = 'Nur ' + G.sugs.length + ' von ' + TOTAL_SUGS +
+          ' Vorschlägen erhalten.' + (sugErrors.length ? ' ' + sugErrors.join(' · ') : '') +
+          ' Mit "Neue Vorschläge generieren" nochmals versuchen.';
+        el.style.display = 'block';
+      } else {
+        el.textContent = '';
+        el.style.display = 'none';
       }
+      if ($('feedback')) $('feedback').value = '';
       $('scta').style.display = 'block';
     })
     .catch(function(e) {
@@ -1866,6 +1904,15 @@ function esc(s) {
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&#39;');
+}
+
+// Aeltere/aus Fotos importierte Rezepte haben teilweise keine Mengenangabe.
+// Eine leere Spalte sieht dort wie ein Renderfehler aus - deshalb explizit
+// "Menge unbekannt" ausgeben statt nichts. Gibt bereits escaptes HTML zurueck.
+function mengeTxt(m) {
+  var s = (m === null || m === undefined) ? '' : String(m).trim();
+  if (!s) return '<i style="opacity:.55;font-style:normal">Menge unbekannt</i>';
+  return esc(s);
 }
 
 function renderSugs() {
@@ -2202,7 +2249,7 @@ function timelineZutatenHtml(g) {
   if (!zutaten.length) return '';
   var rows = zutaten.map(function(z) {
     return '<div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:.5px solid #f0f0f0;font-size:13px">' +
-      '<span>' + esc(z.name) + '</span><span style="color:var(--gr3);font-weight:500">' + esc(z.menge) + '</span></div>';
+      '<span>' + esc(z.name) + '</span><span style="color:var(--gr3);font-weight:500">' + mengeTxt(z.menge) + '</span></div>';
   }).join('');
   return '<div style="background:#f9f9f9;border-radius:var(--r);padding:10px 12px;margin-top:8px">' +
     '<div style="font-size:10px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--gr3);margin-bottom:4px">Zutaten</div>' +
@@ -2533,7 +2580,7 @@ function showIngOverview(g) {
     var _mUnit = parseMengeUnit(zutaten[i].menge);
     rows += '<div class="zutat-row" data-base="' + _mNum + '" data-unit="' + esc(_mUnit) + '" style="display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:.5px solid #f0f0f0">' +
       '<span style="font-size:14px;font-weight:500">' + esc(zutaten[i].name) + '</span>' +
-      '<span class="zutat-menge" style="font-size:13px;color:var(--gr3);font-weight:500">' + esc(zutaten[i].menge) + '</span></div>';
+      '<span class="zutat-menge" style="font-size:13px;color:var(--gr3);font-weight:500">' + mengeTxt(zutaten[i].menge) + '</span></div>';
   }
 
   // Portions-Aufschluesselung transparent machen.
@@ -2933,7 +2980,7 @@ function showPrint(ri) {
   var gz = g.zutaten || [];
   for (var i = 0; i < gz.length; i++) {
     zRows += '<tr>' +
-      '<td style="padding:7px 0;border-bottom:1px solid #f0f0f0;font-weight:600;font-size:13px;width:30%">' + esc(gz[i].menge) + '</td>' +
+      '<td style="padding:7px 0;border-bottom:1px solid #f0f0f0;font-weight:600;font-size:13px;width:30%">' + mengeTxt(gz[i].menge) + '</td>' +
       '<td style="padding:7px 0;border-bottom:1px solid #f0f0f0;font-size:13px;color:#333">' + esc(gz[i].name) + '</td>' +
     '</tr>';
   }
@@ -4384,7 +4431,7 @@ function analyzeFoto(){
   }).catch(function(e){$('foto-load').style.display='none';$('foto-btn').disabled=false;if($('foto-err')){$('foto-err').textContent='Fehler: '+e.message;$('foto-err').style.display='block';}});
 }
 function renderFotoRezept(r){
-  var zRows=(r.zutaten||[]).map(function(z){return '<div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:.5px solid #f5f5f5"><span style="font-size:14px;font-weight:500">'+esc(z.name)+'</span><span style="font-size:13px;color:var(--gr3)">'+esc(z.menge)+'</span></div>';}).join('');
+  var zRows=(r.zutaten||[]).map(function(z){return '<div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:.5px solid #f5f5f5"><span style="font-size:14px;font-weight:500">'+esc(z.name)+'</span><span style="font-size:13px;color:var(--gr3)">'+mengeTxt(z.menge)+'</span></div>';}).join('');
   var sRows=(r.schritte||[]).map(function(s,i){var pills=normZs(s.zutaten_schritt).map(function(z){return '<span class="zpill">'+esc(z.name)+(z.menge?' '+esc(z.menge):'')+'</span>';}).join('');return '<div style="margin-bottom:14px"><div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><div style="width:24px;height:24px;border-radius:50%;background:var(--red);color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0">'+(i+1)+'</div><b style="font-size:13px;color:var(--txt)">'+esc(s.titel||'')+'</b>'+(s.timer_min>0?'<span style="font-size:11px;color:var(--gr3);background:#f5f5f5;padding:2px 8px;border-radius:100px">⏱ '+s.timer_min+' Min.</span>':'')+'</div>'+(pills?'<div class="zpills" style="margin-bottom:6px">'+pills+'</div>':'')+'<div style="font-size:14px;color:var(--txt);line-height:1.6">'+esc(s.text)+'</div></div>';}).join('');
   var html='<div class="card"><div class="cp"><div style="font-size:19px;font-weight:800;color:var(--txt);margin-bottom:4px">'+esc(r.name||'Rezept')+'</div>'+(r.beschreibung?'<div style="font-size:13px;color:var(--gr3);margin-bottom:10px">'+esc(r.beschreibung)+'</div>':'')+'<div style="display:flex;gap:12px;margin-bottom:14px">'+(r.zeit_aktiv?'<span style="font-size:12px;color:var(--gr3)">✏ Aktiv: <b style="color:var(--txt2)">'+esc(r.zeit_aktiv)+'</b></span>':'')+(r.zeit_total?'<span style="font-size:12px;color:var(--gr3)">⏰ Total: <b style="color:var(--txt2)">'+esc(r.zeit_total)+'</b></span>':'')+'</div><div class="clbl">Zutaten für '+G_foto.portionen+' Personen</div><div style="margin-bottom:14px">'+zRows+'</div>'+(r.tipp?'<div style="background:#fffde7;border-left:3px solid #f9a825;padding:10px 12px;border-radius:0 8px 8px 0;font-size:13px;margin-bottom:14px"><b>Tipp:</b> '+esc(r.tipp)+'</div>':'')+'</div></div><div class="card"><div class="cp"><div class="clbl">Zubereitung</div>'+sRows+'</div></div><div style="padding:0 10px 10px;display:flex;flex-direction:column;gap:8px"><button class="btn btn-red" onclick="startFotoCook()" style="font-size:13px">👨‍🍳 Jetzt kochen</button><button class="btn btn-out" onclick="importFotoFromResult()" style="font-size:13px">In Bring! importieren</button><div style="display:flex;gap:8px"><button class="btn btn-out" onclick="saveFotoRezept(this)" style="flex:1;font-size:13px">💾 Speichern</button><button class="btn btn-out" onclick="showFotoPrint()" style="flex:1;font-size:13px">🖨 PDF</button></div></div>';
   window._fotoRezept=r; if($('foto-result')){$('foto-result').innerHTML=html;$('foto-result').style.display='block';}
@@ -4422,7 +4469,7 @@ function saveFotoRezepteToGH(saved){
 }
 function showFotoPrint(){
   if(!window._fotoRezept)return; var r=window._fotoRezept;
-  var zRows=(r.zutaten||[]).map(function(z){return '<tr><td style="padding:5px 0;border-bottom:1px solid #eee;font-weight:500">☐ '+esc(z.name)+'</td><td style="padding:5px 0;border-bottom:1px solid #eee;color:#888;text-align:right">'+esc(z.menge)+'</td></tr>';}).join('');
+  var zRows=(r.zutaten||[]).map(function(z){return '<tr><td style="padding:5px 0;border-bottom:1px solid #eee;font-weight:500">☐ '+esc(z.name)+'</td><td style="padding:5px 0;border-bottom:1px solid #eee;color:#888;text-align:right">'+mengeTxt(z.menge)+'</td></tr>';}).join('');
   var sRows=(r.schritte||[]).map(function(s,i){return '<div style="margin-bottom:10px;font-size:13px"><strong style="color:#e8390e">'+(i+1)+'.</strong> '+esc(s.text)+(s.timer_min>0?' ['+s.timer_min+' Min.]':'')+'</div>';}).join('');
   $('pcon').innerHTML='<h1 style="font-size:20px;font-weight:800;margin-bottom:4px">'+esc(r.name||'Rezept')+'</h1>'+(r.beschreibung?'<p style="color:#888;margin-bottom:12px;font-size:13px">'+esc(r.beschreibung)+'</p>':'')+(r.zeit_total?'<p style="font-size:12px;color:#888;margin-bottom:16px">Aktiv: '+esc(r.zeit_aktiv||'?')+' · Total: '+esc(r.zeit_total)+' · '+G_foto.portionen+' Personen</p>':'')+'<h2 style="font-size:14px;font-weight:700;margin-bottom:8px;color:#e8390e">Zutaten</h2><table style="width:100%;border-collapse:collapse;margin-bottom:16px">'+zRows+'</table><h2 style="font-size:14px;font-weight:700;margin-bottom:8px;color:#2e7d32">Zubereitung</h2>'+sRows+(r.tipp?'<div style="background:#fff9c4;border-left:3px solid #f9a825;padding:10px;margin-top:12px;border-radius:4px;font-size:13px"><strong>Tipp:</strong> '+esc(r.tipp)+'</div>':'');
   go('sp');
@@ -4700,5 +4747,6 @@ var STAR_LABELS = ['', 'Nicht so gut', 'Geht so', 'Gut', 'Sehr gut', 'Ausgezeich
   <input type="password" id="new-token" placeholder="ghp_...">
 </div>
 
+</div><!-- /app-shell -->
 </body>
 </html>
