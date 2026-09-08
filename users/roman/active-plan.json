@@ -1,8 +1,8 @@
 {
-  "planId": "fd8b7e00-e201-404f-a858-39511ee76e4d",
+  "planId": "da1b3564-60aa-4499-88cf-32c8c65f4e66",
   "sug": {
-    "id": 3,
-    "thema": "Marokkanisch",
+    "id": 1,
+    "thema": "Mediterran",
     "kochabende": [
       "Mo",
       "Fr"
@@ -10,19 +10,19 @@
     "gerichte": [
       {
         "tag": "Mo",
-        "abend": "Marokkanische Linsensuppe mit Harissa",
-        "zeit_aktiv": "15m",
+        "abend": "Shakshuka mit Tomaten und Spinat",
+        "zeit_aktiv": "18m",
         "zeit_total": "25m"
       },
       {
         "tag": "Fr",
-        "abend": "Vegetarisches Tajine mit Kichererbsen und Trockenfrüchten",
-        "zeit_aktiv": "25m",
-        "zeit_total": "40m"
+        "abend": "Griechischer Salat mit Kichererbsen",
+        "zeit_aktiv": "15m",
+        "zeit_total": "15m"
       }
     ]
   },
-  "sel": 2,
+  "sel": 0,
   "n": 2,
   "personen": 2,
   "reste": 0,
@@ -33,18 +33,18 @@
     "Di": null,
     "Mi": null,
     "Do": null,
-    "Fr": "aufwendig",
+    "Fr": "schnell",
     "Sa": null,
     "So": null
   },
   "weekStart": "2026-09-06",
-  "saved": "7.9.2026",
+  "saved": "8.9.2026",
   "bringImportedAt": null,
   "bringItemCount": 0,
   "sugsAll": [
     {
       "id": 1,
-      "thema": "Mediterran (Variante 1)",
+      "thema": "Mediterran",
       "kochabende": [
         "Mo",
         "Fr"
@@ -52,21 +52,21 @@
       "gerichte": [
         {
           "tag": "Mo",
-          "abend": "Shakshuka mit Spinat und Feta",
+          "abend": "Shakshuka mit Tomaten und Spinat",
           "zeit_aktiv": "18m",
           "zeit_total": "25m"
         },
         {
           "tag": "Fr",
-          "abend": "Auberginen-Tomaten-Auflauf mit Ricotta",
-          "zeit_aktiv": "35m",
-          "zeit_total": "55m"
+          "abend": "Griechischer Salat mit Kichererbsen",
+          "zeit_aktiv": "15m",
+          "zeit_total": "15m"
         }
       ]
     },
     {
       "id": 2,
-      "thema": "Mediterran",
+      "thema": "Mediterran (Variante 2)",
       "kochabende": [
         "Mo",
         "Fr"
@@ -80,15 +80,15 @@
         },
         {
           "tag": "Fr",
-          "abend": "Gefüllte Auberginen mit Tomaten und Pinienkernen",
-          "zeit_aktiv": "35m",
-          "zeit_total": "50m"
+          "abend": "Geroestete Kichererbsen mit Spinat und Zitrone",
+          "zeit_aktiv": "15m",
+          "zeit_total": "30m"
         }
       ]
     },
     {
       "id": 3,
-      "thema": "Marokkanisch",
+      "thema": "Mediterran (Variante 3)",
       "kochabende": [
         "Mo",
         "Fr"
@@ -96,15 +96,15 @@
       "gerichte": [
         {
           "tag": "Mo",
-          "abend": "Marokkanische Linsensuppe mit Harissa",
+          "abend": "Hummus mit Gemüsesticks und Fladenbrot",
           "zeit_aktiv": "15m",
-          "zeit_total": "25m"
+          "zeit_total": "15m"
         },
         {
           "tag": "Fr",
-          "abend": "Vegetarisches Tajine mit Kichererbsen und Trockenfrüchten",
-          "zeit_aktiv": "25m",
-          "zeit_total": "40m"
+          "abend": "Griechischer Salat mit Feta und Oliven",
+          "zeit_aktiv": "20m",
+          "zeit_total": "20m"
         }
       ]
     }
