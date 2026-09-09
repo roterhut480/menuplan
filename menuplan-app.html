@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=yes">
-<title>Menüplan v6.42</title>
+<title>Menüplan v6.43</title>
 <meta name="theme-color" content="#e8390e">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -182,7 +182,7 @@ input[type=password]{letter-spacing:2px}
 
 <!-- HOME -->
 <div class="scr on" id="sh">
-  <div class="hero"><h1>Menüplan</h1><p id="hsub">v6.42 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
+  <div class="hero"><h1>Menüplan</h1><p id="hsub">v6.43 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
 
   <!-- Active plan card -->
 
@@ -1950,10 +1950,17 @@ function currentOpts(extra) {
 // callClaude() und callClaudeHaiku() wurden entfernt: sie riefen den alten
 // /anthropic-Endpunkt auf, der ab Worker v4.4 nicht mehr existiert, und waren
 // im gesamten Frontend nirgends mehr referenziert.
-// Wartezeit ohne einen einzigen empfangenen Byte, nach der abgebrochen wird.
-// Muss deutlich unter dem NAT-Timeout der Mobilfunkanbieter liegen (30-60s),
-// aber ueber der Zeit bis zum ersten Token.
-var STREAM_IDLE_MS = 25000;
+// ZWEI getrennte Fristen. Sie zu vermischen war ein Konstruktionsfehler:
+// eine einzige Frist lief bereits, waehrend die App noch auf die Antwort-
+// kopfzeilen wartete. Bei einem Worker OHNE Streaming kommen die erst nach
+// der kompletten Generierung - der Abbruch war damit garantiert, bevor
+// ueberhaupt feststand, ob gestreamt wird.
+var HEADER_TIMEOUT_MS = 150000;  // bis die Kopfzeilen da sind (deckt auch alte Worker ab)
+var STREAM_IDLE_MS = 25000;      // danach: Pause zwischen zwei Datenpaketen
+
+// Letzte Diagnose des juengsten Aufrufs - hilft, Streaming von Nicht-Streaming
+// zu unterscheiden, ohne die Entwicklerkonsole oeffnen zu muessen.
+var G_lastCall = null;
 
 // Liest eine Server-Sent-Events-Antwort von Anthropic und setzt den Text
 // zusammen. onProgress wird bei jedem Datenpaket aufgerufen - so laesst sich
@@ -2027,41 +2034,54 @@ function callWorker(kind, message, maxTokens, opts, model, onProgress) {
 
   function attempt() {
     var ctrl = (typeof AbortController === 'function') ? new AbortController() : null;
-    var idleTimer = null;
-    function resetIdle() {
+    var timer = null;
+    var phase = 'kopfzeilen';               // 'kopfzeilen' -> 'stream'
+    var t0 = Date.now();
+    function arm(ms) {
       if (!ctrl) return;
-      if (idleTimer) clearTimeout(idleTimer);
-      idleTimer = setTimeout(function() {
-        try { ctrl.abort(); } catch(e) {}
-      }, STREAM_IDLE_MS);
+      if (timer) clearTimeout(timer);
+      timer = setTimeout(function() { try { ctrl.abort(); } catch(e) {} }, ms);
     }
-    function stopIdle() { if (idleTimer) { clearTimeout(idleTimer); idleTimer = null; } }
+    function disarm() { if (timer) { clearTimeout(timer); timer = null; } }
 
-    resetIdle();
+    arm(HEADER_TIMEOUT_MS);
     return fetch(PROXY + '/generate', {
       method: 'POST', headers: h, body: payload,
       signal: ctrl ? ctrl.signal : undefined
     })
     .then(function(r) {
-      if (r.status === 401) { stopIdle(); throw new Error('Nicht angemeldet oder Zugangsdaten ungültig.'); }
       var ct = r.headers.get('Content-Type') || '';
-      // Kein Stream (aelterer Worker oder Fehlerantwort): wie bisher als JSON lesen.
-      if (ct.indexOf('text/event-stream') < 0 || !r.body || !r.body.getReader) {
-        stopIdle();
+      var gestreamt = ct.indexOf('text/event-stream') >= 0 && r.body && r.body.getReader;
+      G_lastCall = {
+        kind: kind, status: r.status, contentType: ct, gestreamt: !!gestreamt,
+        kopfzeilenNachMs: Date.now() - t0
+      };
+      if (r.status === 401) { disarm(); throw new Error('Nicht angemeldet oder Zugangsdaten ungültig.'); }
+      if (!gestreamt) {
+        // Alter Worker oder Fehlerantwort: als JSON lesen, Kopfzeilen sind da.
+        disarm();
         return r.json().then(function(d) {
           if (d.error) throw new Error(d.error.message || d.error || 'API Fehler');
           return (d.content && d.content[0] && d.content[0].text) ? d.content[0].text : '';
         });
       }
+      // Ab jetzt gilt die kurze Frist zwischen zwei Datenpaketen.
+      phase = 'stream';
+      arm(STREAM_IDLE_MS);
       return readAnthropicStream(r, function(len) {
-        resetIdle();                       // Daten geflossen: Frist neu starten
+        arm(STREAM_IDLE_MS);               // Daten geflossen: Frist neu starten
+        if (G_lastCall) G_lastCall.zeichen = len;
         if (onProgress) onProgress(len);
-      }).then(function(t) { stopIdle(); return t; },
-              function(e) { stopIdle(); throw e; });
+      }).then(function(t) { disarm(); return t; },
+              function(e) { disarm(); throw e; });
     })
     .catch(function(e) {
-      stopIdle();
+      disarm();
       if (e && e.name === 'AbortError') {
+        if (phase === 'kopfzeilen') {
+          throw new Error('Keine Antwort vom Server nach ' +
+                          Math.round(HEADER_TIMEOUT_MS / 1000) + 's.');
+        }
         throw new Error('Verbindung unterbrochen (keine Daten für ' +
                         Math.round(STREAM_IDLE_MS / 1000) + 's).');
       }
@@ -2413,7 +2433,20 @@ function goWeek() {
     goWeekRender(sug);
   })
   .catch(function(e) {
-    if ($('rlist')) $('rlist').innerHTML = '<div style="padding:14px;color:var(--red);font-size:13px">Fehler beim Laden der Rezepte: ' + esc(e.message) + '<br><br><button class="btn btn-red" onclick="goWeek()" style="font-size:13px;padding:10px;width:100%">Nochmals versuchen</button></div>';
+    // Diagnose mitanzeigen: ob ueberhaupt gestreamt wurde, wie lange die
+    // Kopfzeilen brauchten und wie viel Text ankam. Ohne das laesst sich ein
+    // Verbindungsabbruch nicht von einem nicht-streamenden Worker unterscheiden.
+    var diag = '';
+    if (G_lastCall) {
+      diag = '<div style="margin-top:10px;font-family:ui-monospace,monospace;font-size:11px;' +
+        'color:var(--gr3);background:var(--gr);padding:8px;border-radius:6px;line-height:1.5">' +
+        'Streaming: ' + (G_lastCall.gestreamt ? 'ja' : 'NEIN') + '<br>' +
+        'Antworttyp: ' + esc(G_lastCall.contentType || '–') + '<br>' +
+        'Status: ' + esc(String(G_lastCall.status)) + '<br>' +
+        'Kopfzeilen nach: ' + Math.round(G_lastCall.kopfzeilenNachMs / 100) / 10 + 's<br>' +
+        'Zeichen empfangen: ' + (G_lastCall.zeichen || 0) + '</div>';
+    }
+    if ($('rlist')) $('rlist').innerHTML = '<div style="padding:14px;color:var(--red);font-size:13px">Fehler beim Laden der Rezepte: ' + esc(e.message) + diag + '<br><button class="btn btn-red" onclick="goWeek()" style="font-size:13px;padding:10px;width:100%">Nochmals versuchen</button></div>';
     if ($('wsub')) $('wsub').textContent = sug.thema;
   });
 }
