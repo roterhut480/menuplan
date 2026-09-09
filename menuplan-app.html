@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=yes">
-<title>Menüplan v6.37</title>
+<title>Menüplan v6.38</title>
 <meta name="theme-color" content="#e8390e">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -182,7 +182,7 @@ input[type=password]{letter-spacing:2px}
 
 <!-- HOME -->
 <div class="scr on" id="sh">
-  <div class="hero"><h1>Menüplan</h1><p id="hsub">v6.37 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
+  <div class="hero"><h1>Menüplan</h1><p id="hsub">v6.38 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
 
   <!-- Active plan card -->
 
@@ -1292,8 +1292,11 @@ function syncAllFromGH() {
       if (!Array.isArray(fr)) return;
       var local = JSON.parse(localStorage.getItem(userKey('foto_rezepte')) || '[]');
       var merged = fr.slice();
+      // Dieselbe _id-Logik wie in syncFotoRezepte(). Zwei unterschiedliche
+      // Zusammenfuehrungen fuer dieselben Daten waren die Ursache dafuer, dass
+      // geloeschte Rezepte je nach Sync-Weg wieder auftauchten.
       local.forEach(function(l) {
-        if (!merged.find(function(g){ return g.name === l.name; })) merged.push(l);
+        if (!findFotoDup(merged, l)) merged.push(l);
       });
       localStorage.setItem(userKey('foto_rezepte'), JSON.stringify(merged));
     }).catch(function(){});
@@ -2249,7 +2252,9 @@ function goWeek() {
   // erste) - sonst wuerde z.B. ein spaeter ausgetauschtes Gericht mit noch
   // fehlenden Kochschritten uebersehen, waehrend Gericht 1 bereits vollstaendig ist.
   var alleSchritteVorhanden = sug.gerichte.every(function(g) {
-    return hatSchritte(g);
+    // Modusabhaengig pruefen: im optionalen Modus reicht EINE Variante nicht,
+    // dort muessen schritte_vegi UND schritte_fleisch vorliegen.
+    return !fehlendeSchritte(g, G.modus);
   });
   if (alleSchritteVorhanden) {
     goWeekRender(sug); return;
@@ -3344,6 +3349,11 @@ function showPrint(ri) {
 
   var vSteps = '', fSteps = '', prepSteps = '', frzSteps = '', zRows = '';
 
+  // Bei einem reinen Fleischrezept liefert rezeptSchritte() dieselben Schritte
+  // wie schritte_fleisch. Ohne diese Unterscheidung stuenden sie erst als
+  // normale Zubereitung und danach nochmals als "Fleisch-Beilage (optional)"
+  // auf dem Ausdruck.
+  var hatVegi = Array.isArray(g.schritte_vegi) && g.schritte_vegi.length > 0;
   var sv = rezeptSchritte(g);
   for (var i = 0; i < sv.length; i++) {
     var timer = sv[i].timer_min > 0 ? '<span style="display:inline-block;background:#fff3e0;color:#e65100;font-size:11px;padding:2px 7px;border-radius:100px;margin-left:6px;font-weight:600">&#9201; ' + sv[i].timer_min + ' Min.</span>' : '';
@@ -3353,7 +3363,7 @@ function showPrint(ri) {
     '</div>';
   }
 
-  var sf = g.schritte_fleisch || [];
+  var sf = hatVegi ? (g.schritte_fleisch || []) : [];
   for (var i = 0; i < sf.length; i++) {
     var timer2 = sf[i].timer_min > 0 ? '<span style="display:inline-block;background:#fff3e0;color:#e65100;font-size:11px;padding:2px 7px;border-radius:100px;margin-left:6px;font-weight:600">&#9201; ' + sf[i].timer_min + ' Min.</span>' : '';
     fSteps += '<div style="display:flex;gap:12px;margin-bottom:12px;align-items:flex-start">' +
@@ -3538,7 +3548,7 @@ function buildTimelineDays() {
         // Fallback fuer Alt-Eintraege: dort wurde beim "Gekocht"-Knopf nur der
         // Status des Verlaufseintrags gesetzt, nie _gekocht am Gericht.
         entryStatus: entryStatus || null,
-        hasFullRecipe: hatSchritte(g)
+        hasFullRecipe: !fehlendeSchritte(g, G.modus)
       };
     }
   }
@@ -3692,7 +3702,8 @@ function setActivePlanAndGo() {
   var planData = {
     planId: generatePlanId(),
     sug: sug, sel: G.sel, n: G.n, personen: G.personen,
-    reste: G.reste, freeze: G.freeze, budget: G.budget, modus: G.modus, days: G.days,
+    reste: G.reste, freeze: G.freeze, budget: G.budget, modus: G.modus,
+    resteMode: G.resteMode, days: G.days,
     weekStart: currentWeekStart(),        // immer Kalendermontag
     einkaufstag: G.einkaufstag || 'Mo',   // separat: nur Frische-/Promptlogik
     saved: new Date().toLocaleDateString('de-CH'),
@@ -3723,6 +3734,13 @@ function openActivePlan(tab) {
   G.personen = G.activePlan.personen || 2;
   G.reste = G.activePlan.reste !== undefined ? G.activePlan.reste : 1;
   G.freeze = G.activePlan.freeze !== undefined ? G.activePlan.freeze : 1;
+  // Auch diese vier gehoeren zum Plan. Fehlten sie, wurde ein Ersatzgericht
+  // mit anderen Einstellungen erzeugt als der urspruengliche Plan - etwa
+  // vegetarisch statt mit Fleisch oder ohne den gewaehlten Budget-Modus.
+  if (G.activePlan.modus) G.modus = G.activePlan.modus;
+  if (G.activePlan.budget !== undefined) G.budget = G.activePlan.budget;
+  if (G.activePlan.einkaufstag) G.einkaufstag = G.activePlan.einkaufstag;
+  if (G.activePlan.resteMode) G.resteMode = G.activePlan.resteMode;
   if (G.activePlan.days) G.days = G.activePlan.days;
   G.sugsPartial = G.activePlan.sugsPartial || false;
   goWeekRender(G.sugs[G.sel]);
@@ -4896,9 +4914,11 @@ function closeHistoryView() {
 function reuseFromHistoryView() {
   var hv = G.histView;
   if (!hv) return;
-  var idx = hv.index;
-  G.histView = null;
-  nochmalKochen(idx);
+  // Kontext NICHT vorab loeschen: bricht der Nutzer die Rueckfrage ab, soll er
+  // in der Nur-Ansicht bleiben statt in einem leeren Zustand zu landen.
+  var vorher = G.activePlan;
+  nochmalKochen(hv.index);
+  if (G.activePlan !== vorher) G.histView = null;   // nur bei echter Uebernahme
 }
 
 // Alter Name bleibt als Alias erhalten, falls noch irgendwo referenziert.
@@ -4912,7 +4932,7 @@ function nochmalKochen(i) {
   var choice = confirm(
     '"' + (e[i].thema||'Menüplan') + '" wieder kochen?\n\n' +
     'OK = Als neuen aktiven Plan setzen\n' +
-    'Abbrechen = Nur ansehen'
+    'Abbrechen = nichts tun'
   );
   if (choice) {
     // Set as new active plan with fresh date - weekStart und Bring-Status
@@ -4940,11 +4960,10 @@ function nochmalKochen(i) {
     updateDashboard();
     go('sh');
     showSwapToast('🔁 Plan wieder aktiv gesetzt!');
-  } else {
-    // Load for viewing
-    loadHistoryEntry(i);
-    go('sw');
   }
+  // Abbrechen bedeutet ABBRECHEN. Frueher oeffnete es die Nur-Ansicht und
+  // sprang danach trotzdem auf 'sw' - man sah also womoeglich den aktiven
+  // statt des historischen Plans. Zum Ansehen gibt es den eigenen Knopf.
 }
 
 function deleteHistoryPlan(i) {
@@ -5002,6 +5021,9 @@ function markHistoryKekocht(i) {
   if (G.activePlan && G.activePlan.planId && G.activePlan.planId === hist[i].planId) {
     G.activePlan.sug = hist[i].plan.sug;   // aktiven Plan mitziehen
     try { localStorage.setItem(userKey('active_plan'), JSON.stringify(G.activePlan)); } catch(e) {}
+    // active-plan.json ebenfalls schreiben, sonst liefert ein anderes Geraet
+    // beim naechsten Sync wieder den alten Zustand zurueck.
+    saveToGH(G.activePlan);
     updateDashboard();
   }
 }
@@ -5013,6 +5035,7 @@ function resetHistoryStatus(i) {
   if (G.activePlan && G.activePlan.planId && G.activePlan.planId === hist[i].planId) {
     G.activePlan.sug = hist[i].plan.sug;
     try { localStorage.setItem(userKey('active_plan'), JSON.stringify(G.activePlan)); } catch(e) {}
+    saveToGH(G.activePlan);
     updateDashboard();
   }
 }
@@ -5095,7 +5118,7 @@ function syncFotoRezepte(btn){
   fetch(PROXY+'/gh/'+ghFile('foto-rezepte.json'),{headers:h||{}})
     .then(function(r){return r.ok?r.json():null;})
     .then(function(d){
-      if(d&&d.content){var fr=JSON.parse(decodeURIComponent(escape(atob(d.content.split('\n').join('')))));if(Array.isArray(fr)){var local=JSON.parse(localStorage.getItem(userKey('foto_rezepte'))||'[]');var merged=fr.slice();local.forEach(function(l){var lid=l._id;var dup=merged.find(function(g){return (lid&&g._id)?g._id===lid:(!g._id&&!lid&&g.name===l.name);});if(!dup)merged.push(l);});localStorage.setItem(userKey('foto_rezepte'),JSON.stringify(merged));loadSavedFotoRezepte();}}
+      if(d&&d.content){var fr=JSON.parse(decodeURIComponent(escape(atob(d.content.split('\n').join('')))));if(Array.isArray(fr)){var local=JSON.parse(localStorage.getItem(userKey('foto_rezepte'))||'[]');var merged=fr.slice();local.forEach(function(l){if(!findFotoDup(merged,l))merged.push(l);});localStorage.setItem(userKey('foto_rezepte'),JSON.stringify(merged));loadSavedFotoRezepte();}}
       if(btn){btn.textContent='OK';setTimeout(function(){btn.textContent=origText;btn.disabled=false;},1500);}
     }).catch(function(){if(btn){btn.textContent='Err';setTimeout(function(){btn.textContent=origText;btn.disabled=false;},1500);}});
 }
@@ -5160,6 +5183,17 @@ function importFotoFromResult(){
   backBtn.innerHTML='<button class="btn btn-out" onclick="openFotoScreen()" style="font-size:13px;padding:10px">← Zurück zum Foto-Rezept</button>';
   var te=$('te');if(te&&te.firstChild)te.insertBefore(backBtn,te.firstChild);
 }
+// EINE Zuordnungsregel fuer beide Sync-Wege: primaer die stabile _id,
+// Namensvergleich nur noch fuer Alt-Eintraege, die beide keine _id haben.
+function findFotoDup(list, item) {
+  var id = item && item._id;
+  return (list || []).find(function(g) {
+    if (id && g._id) return g._id === id;
+    if (!id && !g._id) return g.name === item.name;
+    return false;
+  }) || null;
+}
+
 function fotoRezeptId(r){
   // Stabile ID: einmal vergeben, bleibt am Rezept. Der frueher benutzte
   // Namensvergleich fuehrte dazu, dass auf einem Geraet geloeschte Rezepte
@@ -5192,7 +5226,11 @@ function saveFotoRezept(btn){
     setTimeout(function(){btn.textContent='💾 Speichern';btn.style.color='';btn.style.borderColor='';},2000); }
 }
 function saveFotoRezepteToGH(saved){
-  ghPut('foto-rezepte.json',saved,'Foto-Rezepte').then(function(r){if(r&&r.ok)console.log('Foto-Rezepte gespeichert');}).catch(function(){});
+  // Fehler sichtbar melden statt still zu schlucken - sonst zeigt die
+  // Oberflaeche "Gespeichert!", obwohl nur lokal geschrieben wurde.
+  ghPut('foto-rezepte.json',saved,'Foto-Rezepte')
+    .then(function(){ setSyncState('ok'); })
+    .catch(function(e){ setSyncState('fail', e && e.status ? 'Status ' + e.status : 'Foto-Rezepte'); });
 }
 function showFotoPrint(){
   if(!window._fotoRezept)return; var r=window._fotoRezept;
