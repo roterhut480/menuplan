@@ -1,34 +1,176 @@
 [
   {
-    "planId": "0e97fe47-43df-4f00-ac36-ce2b67faadc6",
+    "planId": "6d6e4f42-8316-4834-9d61-679db5a7c8b5",
     "date": "2026-09-09",
     "saved": "9.9.2026",
     "thema": "Mediterran",
     "personen": 2,
+    "kochabende": 1,
+    "reste": 0,
+    "freeze": 0,
+    "budget": 1,
+    "gerichte": [],
+    "status": "geplant",
+    "plan": {
+      "planId": "6d6e4f42-8316-4834-9d61-679db5a7c8b5",
+      "sug": {
+        "id": 3,
+        "thema": "Mediterran",
+        "kochabende": [
+          "Mi"
+        ],
+        "gerichte": [],
+        "einkaufsliste": [
+          "Lauch",
+          "Feta",
+          "Eier",
+          "Milch",
+          "Mehl",
+          "Butter",
+          "Salz",
+          "Pfeffer",
+          "Muskatnuss",
+          "Zwiebeln",
+          "Knoblauch",
+          "Olivenöl",
+          "Gemüsebrühe",
+          "Tomaten konserviert",
+          "Oregano",
+          "Hühnerbrust optional",
+          "Salatmix",
+          "Brot"
+        ]
+      },
+      "sel": 2,
+      "n": 1,
+      "personen": 2,
+      "reste": 0,
+      "freeze": 0,
+      "budget": 1,
+      "modus": "optional",
+      "resteMode": "nein",
+      "days": {
+        "Mo": null,
+        "Di": null,
+        "Mi": "normal",
+        "Do": null,
+        "Fr": null,
+        "Sa": null,
+        "So": null
+      },
+      "weekStart": "2026-09-07",
+      "einkaufstag": "Mi",
+      "saved": "9.9.2026",
+      "bringImportedAt": null,
+      "bringItemCount": 0,
+      "sugsAll": [
+        {
+          "id": 1,
+          "thema": "Mediterranisch",
+          "kochabende": [
+            "Mi"
+          ],
+          "gerichte": [
+            {
+              "tag": "Mi",
+              "abend": "Lauch-Tomaten-Gratin mit Hackfleisch",
+              "zeit_aktiv": "25m",
+              "zeit_total": "45m"
+            }
+          ],
+          "einkauf": [
+            "Lauch",
+            "Tomaten",
+            "Zwiebeln",
+            "Knoblauch",
+            "Rinderhackfleisch",
+            "Gruyère",
+            "Rahm",
+            "Brot",
+            "Salat",
+            "Olivenöl",
+            "Basilikum",
+            "Kartoffeln",
+            "Petersilie"
+          ]
+        },
+        {
+          "id": 2,
+          "thema": "Mediterran",
+          "kochabende": [
+            "Mi"
+          ],
+          "gerichte": [
+            {
+              "tag": "Mi",
+              "abend": "Lauch-Kartoffel-Gratin mit Schinken",
+              "zeit_aktiv": "25m",
+              "zeit_total": "50m"
+            }
+          ]
+        },
+        {
+          "id": 3,
+          "thema": "Mediterran",
+          "kochabende": [
+            "Mi"
+          ],
+          "gerichte": [],
+          "einkaufsliste": [
+            "Lauch",
+            "Feta",
+            "Eier",
+            "Milch",
+            "Mehl",
+            "Butter",
+            "Salz",
+            "Pfeffer",
+            "Muskatnuss",
+            "Zwiebeln",
+            "Knoblauch",
+            "Olivenöl",
+            "Gemüsebrühe",
+            "Tomaten konserviert",
+            "Oregano",
+            "Hühnerbrust optional",
+            "Salatmix",
+            "Brot"
+          ]
+        }
+      ],
+      "sugsPartial": true
+    }
+  },
+  {
+    "planId": "0895a500-9bf4-472d-b6a3-7e465b3863b8",
+    "date": "2026-09-09",
+    "saved": "9.9.2026",
+    "thema": "Mediterranisch",
+    "personen": 2,
     "kochabende": 3,
-    "reste": 1,
-    "freeze": 1,
+    "reste": 0,
+    "freeze": 0,
     "budget": 1,
     "gerichte": [
       {
         "tag": "Mo",
-        "abend": "Linsensuppe mit Gemüse und Speck (optional)"
+        "abend": "Linsensuppe mit Tomaten und Spinat"
       },
       {
         "tag": "Mi",
-        "abend": "Pasta all'Amatriciana (mit Speck optional)"
+        "abend": "Auberginen-Tomaten-Gratin mit Feta"
       },
       {
         "tag": "Fr",
-        "abend": "Risotto mit Pilzen und Tomaten"
+        "abend": "Kichererbsen-Salat mit Zitrone und Kräutern"
       }
     ],
     "status": "geplant",
     "plan": {
-      "planId": "0e97fe47-43df-4f00-ac36-ce2b67faadc6",
+      "planId": "0895a500-9bf4-472d-b6a3-7e465b3863b8",
       "sug": {
-        "id": 1,
-        "thema": "Mediterran",
+        "id": 2,
+        "thema": "Mediterranisch",
         "kochabende": [
           "Mo",
           "Mi",
@@ -37,35 +179,32 @@
         "gerichte": [
           {
             "tag": "Mo",
-            "abend": "Linsensuppe mit Gemüse und Speck (optional)",
+            "abend": "Linsensuppe mit Tomaten und Spinat",
             "zeit_aktiv": "20m",
-            "zeit_total": "45m",
-            "mittag_nächster_tag": "Linsensuppe aufgewärmt"
+            "zeit_total": "40m"
           },
           {
             "tag": "Mi",
-            "abend": "Pasta all'Amatriciana (mit Speck optional)",
-            "zeit_aktiv": "15m",
-            "zeit_total": "25m",
-            "mittag_nächster_tag": "Pasta-Reste aufgewärmt"
+            "abend": "Auberginen-Tomaten-Gratin mit Feta",
+            "zeit_aktiv": "25m",
+            "zeit_total": "50m"
           },
           {
             "tag": "Fr",
-            "abend": "Risotto mit Pilzen und Tomaten",
-            "zeit_aktiv": "25m",
-            "zeit_total": "40m",
-            "mittag_nächster_tag": "Risotto aufgewärmt"
+            "abend": "Kichererbsen-Salat mit Zitrone und Kräutern",
+            "zeit_aktiv": "15m",
+            "zeit_total": "15m"
           }
         ]
       },
-      "sel": 0,
+      "sel": 1,
       "n": 3,
       "personen": 2,
-      "reste": 1,
-      "freeze": 1,
+      "reste": 0,
+      "freeze": 0,
       "budget": 1,
-      "modus": "optional",
-      "resteMode": "mikro",
+      "modus": "vegi",
+      "resteMode": "nein",
       "days": {
         "Mo": "normal",
         "Di": null,
@@ -92,30 +231,27 @@
           "gerichte": [
             {
               "tag": "Mo",
-              "abend": "Linsensuppe mit Gemüse und Speck (optional)",
+              "abend": "Linsensuppe mit Tomaten und Spinat",
               "zeit_aktiv": "20m",
-              "zeit_total": "45m",
-              "mittag_nächster_tag": "Linsensuppe aufgewärmt"
+              "zeit_total": "40m"
             },
             {
               "tag": "Mi",
-              "abend": "Pasta all'Amatriciana (mit Speck optional)",
-              "zeit_aktiv": "15m",
-              "zeit_total": "25m",
-              "mittag_nächster_tag": "Pasta-Reste aufgewärmt"
+              "abend": "Auberginen-Tomaten-Auflauf mit Käse",
+              "zeit_aktiv": "25m",
+              "zeit_total": "50m"
             },
             {
               "tag": "Fr",
-              "abend": "Risotto mit Pilzen und Tomaten",
-              "zeit_aktiv": "25m",
-              "zeit_total": "40m",
-              "mittag_nächster_tag": "Risotto aufgewärmt"
+              "abend": "Kichererbsen-Salat mit Zitrone und Kräutern",
+              "zeit_aktiv": "15m",
+              "zeit_total": "15m"
             }
           ]
         },
         {
           "id": 2,
-          "thema": "Mittelmeer & Südeuropa",
+          "thema": "Mediterranisch",
           "kochabende": [
             "Mo",
             "Mi",
@@ -124,50 +260,27 @@
           "gerichte": [
             {
               "tag": "Mo",
-              "abend": "Linsensuppe mit Gemüse und Wurst",
+              "abend": "Linsensuppe mit Tomaten und Spinat",
               "zeit_aktiv": "20m",
-              "zeit_total": "45m",
-              "mittag_nächster_tag": "Linsensuppe aufgewärmt"
+              "zeit_total": "40m"
             },
             {
               "tag": "Mi",
-              "abend": "Pasta all'Amatriciana (mit Speck optional)",
-              "zeit_aktiv": "15m",
-              "zeit_total": "25m",
-              "mittag_nächster_tag": "Pasta-Reste aufgewärmt"
+              "abend": "Auberginen-Tomaten-Gratin mit Feta",
+              "zeit_aktiv": "25m",
+              "zeit_total": "50m"
             },
             {
               "tag": "Fr",
-              "abend": "Fischauflauf mit Kartoffeln und Spinat",
-              "zeit_aktiv": "25m",
-              "zeit_total": "50m",
-              "mittag_nächster_tag": "Fischauflauf aufgewärmt"
+              "abend": "Kichererbsen-Salat mit Zitrone und Kräutern",
+              "zeit_aktiv": "15m",
+              "zeit_total": "15m"
             }
-          ],
-          "einkaufsliste": [
-            "Rote Linsen",
-            "Möhren",
-            "Sellerie",
-            "Zwiebeln",
-            "Knoblauch",
-            "Gemüsebrühe",
-            "Wurst oder Speck",
-            "Tomaten passiert",
-            "Pasta Rigatoni",
-            "Dorsch oder Kabeljau",
-            "Kartoffeln",
-            "Spinat frisch",
-            "Milch",
-            "Käse gerieben",
-            "Olivenöl",
-            "Salz, Pfeffer",
-            "Oregano",
-            "Petersilie frisch"
           ]
         },
         {
           "id": 3,
-          "thema": "Orientalisch",
+          "thema": "Mediterran (Variante 3)",
           "kochabende": [
             "Mo",
             "Mi",
@@ -176,24 +289,191 @@
           "gerichte": [
             {
               "tag": "Mo",
-              "abend": "Linsensuppe mit Gemüse",
-              "zeit_aktiv": "15m",
-              "zeit_total": "40m",
-              "mittag_nächster_tag": "Linsensuppe aufgewärmt"
+              "abend": "Linsensuppe mit Tomaten und Spinat",
+              "zeit_aktiv": "20m",
+              "zeit_total": "40m"
             },
             {
               "tag": "Mi",
-              "abend": "Pasta all'Amatriciana (mit Speck optional)",
-              "zeit_aktiv": "15m",
-              "zeit_total": "25m",
-              "mittag_nächster_tag": "Pasta-Reste aufgewärmt"
+              "abend": "Griechischer Kartoffel-Feta-Auflauf",
+              "zeit_aktiv": "20m",
+              "zeit_total": "50m"
             },
             {
               "tag": "Fr",
-              "abend": "Lamm-Gemüse-Eintopf",
+              "abend": "Kichererbsen-Salat mit Zitrone und Kräutern",
+              "zeit_aktiv": "15m",
+              "zeit_total": "15m"
+            }
+          ]
+        }
+      ],
+      "sugsPartial": true
+    }
+  },
+  {
+    "planId": "0a93eefc-010c-4da7-8759-f89a75cfe912",
+    "date": "2026-09-09",
+    "saved": "9.9.2026",
+    "thema": "Mediterran",
+    "personen": 2,
+    "kochabende": 3,
+    "reste": 0,
+    "freeze": 0,
+    "budget": 1,
+    "gerichte": [
+      {
+        "tag": "Mo",
+        "abend": "Linsen-Gemüse-Eintopf mit Feta"
+      },
+      {
+        "tag": "Mi",
+        "abend": "Kichererbsen-Gemüse-Pfanne mit Minze"
+      },
+      {
+        "tag": "Fr",
+        "abend": "Tomaten-Zucchini-Frittata"
+      }
+    ],
+    "status": "geplant",
+    "plan": {
+      "planId": "0a93eefc-010c-4da7-8759-f89a75cfe912",
+      "sug": {
+        "id": 2,
+        "thema": "Mediterran",
+        "kochabende": [
+          "Mo",
+          "Mi",
+          "Fr"
+        ],
+        "gerichte": [
+          {
+            "tag": "Mo",
+            "abend": "Linsen-Gemüse-Eintopf mit Feta",
+            "zeit_aktiv": "20m",
+            "zeit_total": "40m"
+          },
+          {
+            "tag": "Mi",
+            "abend": "Kichererbsen-Gemüse-Pfanne mit Minze",
+            "zeit_aktiv": "22m",
+            "zeit_total": "35m"
+          },
+          {
+            "tag": "Fr",
+            "abend": "Tomaten-Zucchini-Frittata",
+            "zeit_aktiv": "18m",
+            "zeit_total": "30m"
+          }
+        ]
+      },
+      "sel": 1,
+      "n": 3,
+      "personen": 2,
+      "reste": 0,
+      "freeze": 0,
+      "budget": 1,
+      "modus": "vegi",
+      "resteMode": "nein",
+      "days": {
+        "Mo": "normal",
+        "Di": null,
+        "Mi": "normal",
+        "Do": null,
+        "Fr": "normal",
+        "Sa": null,
+        "So": null
+      },
+      "weekStart": "2026-09-07",
+      "einkaufstag": "Mi",
+      "saved": "9.9.2026",
+      "bringImportedAt": null,
+      "bringItemCount": 0,
+      "sugsAll": [
+        {
+          "id": 1,
+          "thema": "Mediterran",
+          "kochabende": [
+            "Mo",
+            "Mi",
+            "Fr"
+          ],
+          "gerichte": [
+            {
+              "tag": "Mo",
+              "abend": "Auberginen-Tomaten-Gratin",
               "zeit_aktiv": "25m",
-              "zeit_total": "50m",
-              "mittag_nächster_tag": "Eintopf aufgewärmt"
+              "zeit_total": "50m"
+            },
+            {
+              "tag": "Mi",
+              "abend": "Linsensuppe mit Lauch und Karotten",
+              "zeit_aktiv": "20m",
+              "zeit_total": "40m"
+            },
+            {
+              "tag": "Fr",
+              "abend": "Spinat-Kichererbsen-Curry mit Reis",
+              "zeit_aktiv": "22m",
+              "zeit_total": "38m"
+            }
+          ]
+        },
+        {
+          "id": 2,
+          "thema": "Mediterran",
+          "kochabende": [
+            "Mo",
+            "Mi",
+            "Fr"
+          ],
+          "gerichte": [
+            {
+              "tag": "Mo",
+              "abend": "Linsen-Gemüse-Eintopf mit Feta",
+              "zeit_aktiv": "20m",
+              "zeit_total": "40m"
+            },
+            {
+              "tag": "Mi",
+              "abend": "Kichererbsen-Gemüse-Pfanne mit Minze",
+              "zeit_aktiv": "22m",
+              "zeit_total": "35m"
+            },
+            {
+              "tag": "Fr",
+              "abend": "Tomaten-Zucchini-Frittata",
+              "zeit_aktiv": "18m",
+              "zeit_total": "30m"
+            }
+          ]
+        },
+        {
+          "id": 3,
+          "thema": "Mediterranisch",
+          "kochabende": [
+            "Mo",
+            "Mi",
+            "Fr"
+          ],
+          "gerichte": [
+            {
+              "tag": "Mo",
+              "abend": "Auberginen-Tomaten-Gratin",
+              "zeit_aktiv": "25m",
+              "zeit_total": "50m"
+            },
+            {
+              "tag": "Mi",
+              "abend": "Kichererbsen-Spinat-Curry",
+              "zeit_aktiv": "20m",
+              "zeit_total": "35m"
+            },
+            {
+              "tag": "Fr",
+              "abend": "Polenta mit Pilz-Ragout",
+              "zeit_aktiv": "22m",
+              "zeit_total": "40m"
             }
           ]
         }
