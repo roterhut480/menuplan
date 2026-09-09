@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=yes">
-<title>Menüplan v6.40</title>
+<title>Menüplan v6.41</title>
 <meta name="theme-color" content="#e8390e">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -182,7 +182,7 @@ input[type=password]{letter-spacing:2px}
 
 <!-- HOME -->
 <div class="scr on" id="sh">
-  <div class="hero"><h1>Menüplan</h1><p id="hsub">v6.40 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
+  <div class="hero"><h1>Menüplan</h1><p id="hsub">v6.41 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
 
   <!-- Active plan card -->
 
@@ -1285,34 +1285,7 @@ function syncAllFromGH() {
         renderActivePlan();
       }
     }).catch(function(){});
-  // Erst die Loeschliste holen, dann die Rezepte: ohne die Tombstones des
-  // anderen Geraets wuerde ein dort geloeschtes Rezept hier wieder auftauchen.
-  fetch(PROXY + '/gh/' + ghFile('foto-geloescht.json'), { headers: h })
-    .then(function(r) { return r.ok ? r.json() : null; })
-    .then(function(d) {
-      var remoteTomb = decodeGHContent(d);
-      var tomb = loadFotoTombstones();
-      if (remoteTomb && typeof remoteTomb === 'object' && !Array.isArray(remoteTomb)) {
-        // Vereinigen: eine Loeschung auf IRGENDEINEM Geraet gilt ueberall.
-        Object.keys(remoteTomb).forEach(function(k) {
-          if (!tomb[k] || remoteTomb[k] < tomb[k]) tomb[k] = remoteTomb[k];
-        });
-        try { localStorage.setItem(userKey('foto_deleted'), JSON.stringify(tomb)); } catch(e) {}
-      }
-      return tomb;
-    })
-    .catch(function() { return loadFotoTombstones(); })
-    .then(function(tomb) {
-      return fetch(PROXY + '/gh/' + ghFile('foto-rezepte.json'), { headers: h })
-        .then(function(r) { return r.ok ? r.json() : null; })
-        .then(function(d) {
-          var fr = decodeGHContent(d);
-          if (!Array.isArray(fr)) return;
-          var local = JSON.parse(localStorage.getItem(userKey('foto_rezepte')) || '[]');
-          var merged = mergeFotoRezepte(fr, local, tomb);
-          localStorage.setItem(userKey('foto_rezepte'), JSON.stringify(merged));
-        });
-    }).catch(function(){});
+  syncFotoFromGH(h).catch(function(){});
   fetch(PROXY + '/gh/' + ghFile('history.json'), { headers: h })
     .then(function(r) { return r.ok ? r.json() : null; })
     .then(function(d) {
@@ -5133,10 +5106,12 @@ function openFotoScreen(){go('sf');loadSavedFotoRezepte();}
 function syncFotoRezepte(btn){
   var origText=btn?btn.textContent:''; if(btn){btn.textContent='...';btn.disabled=true;}
   var h=getAuthHeaders();
-  fetch(PROXY+'/gh/'+ghFile('foto-rezepte.json'),{headers:h||{}})
-    .then(function(r){return r.ok?r.json():null;})
-    .then(function(d){
-      if(d&&d.content){var fr=JSON.parse(decodeURIComponent(escape(atob(d.content.split('\n').join('')))));if(Array.isArray(fr)){var local=JSON.parse(localStorage.getItem(userKey('foto_rezepte'))||'[]');var merged=mergeFotoRezepte(fr,local);localStorage.setItem(userKey('foto_rezepte'),JSON.stringify(merged));loadSavedFotoRezepte();}}
+  // Gleicher Weg wie beim Login-Sync: erst die Loeschliste, dann die Rezepte.
+  // Frueher lud dieser Knopf nur foto-rezepte.json und holte damit auf einem
+  // anderen Geraet geloeschte Rezepte zurueck.
+  syncFotoFromGH(h)
+    .then(function(merged){
+      if(merged)loadSavedFotoRezepte();
       if(btn){btn.textContent='OK';setTimeout(function(){btn.textContent=origText;btn.disabled=false;},1500);}
     }).catch(function(){if(btn){btn.textContent='Err';setTimeout(function(){btn.textContent=origText;btn.disabled=false;},1500);}});
 }
@@ -5155,6 +5130,11 @@ function loadSavedFotoRezeptDetail(i){
 }
 function deleteSavedFotoRezept(i){
   var saved=JSON.parse(localStorage.getItem(userKey('foto_rezepte'))||'[]');
+  // Gleiche Reihenfolge wie in deleteHistoryRecipe(): erst IDs sicherstellen,
+  // dann Tombstone setzen, dann entfernen. Ohne das kam ein hier geloeschtes
+  // Rezept beim naechsten Sync von einem anderen Geraet zurueck.
+  migrateFotoIds(saved);
+  if (saved[i]) addFotoTombstone(saved[i]);
   saved.splice(i,1);
   localStorage.setItem(userKey('foto_rezepte'),JSON.stringify(saved));
   saveFotoRezepteToGH(saved);
@@ -5211,9 +5191,24 @@ function importFotoFromResult(){
 // ID. Eine Zufalls-ID wuerde dazu fuehren, dass dieselbe Kopie auf zwei
 // Geraeten unterschiedliche IDs erhaelt und danach doppelt erscheint.
 function legacyFotoId(r) {
-  var base = ((r && r.name) || 'rezept') + '|' + ((r && r.date) || r && r.saved || '');
-  return 'legacy_' + base.toLowerCase()
-    .replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 60);
+  // Beste Quelle ist das bereits vorhandene id-Feld (Date.now() beim Anlegen).
+  // Es wird mitsynchronisiert, ist also auf allen Geraeten gleich UND fuer
+  // jedes Rezept verschieden.
+  if (r && r.id) return 'legacy_id_' + String(r.id);
+  // Nur wenn das fehlt: aus Name, Datum UND Zutaten ableiten. Name und Datum
+  // allein reichen nicht - zwei verschiedene Rezepte mit gleichem Namen am
+  // selben Tag bekaemen dieselbe ID und eines verschwaende beim Zusammenfuehren.
+  var zut = ((r && r.zutaten) || []).map(function(z) {
+    return (z && z.name ? z.name : String(z)) + ':' + ((z && z.menge) || '');
+  }).join(',');
+  var base = ((r && r.name) || 'rezept') + '|' + ((r && (r.date || r.saved)) || '') + '|' + zut;
+  // Kurzer Hash ueber den Gesamttext, damit lange Zutatenlisten nicht
+  // abgeschnitten werden und dadurch doch wieder kollidieren.
+  var hash = 0;
+  for (var i = 0; i < base.length; i++) { hash = ((hash << 5) - hash + base.charCodeAt(i)) | 0; }
+  var slug = ((r && r.name) || 'rezept').toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 40);
+  return 'legacy_' + slug + '_' + (hash >>> 0).toString(36);
 }
 
 function migrateFotoIds(list) {
@@ -5258,6 +5253,43 @@ function findFotoDup(list, item) {
 
 // Remote- und lokale Liste zusammenfuehren: erst IDs vereinheitlichen, dann
 // Geloeschtes entfernen, dann ergaenzen.
+// Entfernte Loeschliste holen und mit der lokalen vereinigen. Wird von BEIDEN
+// Sync-Wegen genutzt (Login-Sync und manueller Knopf) - vorher kannte nur der
+// Login-Sync die Tombstones, ein manueller Sync holte geloeschte Rezepte zurueck.
+function fetchFotoTombstones(headers) {
+  return fetch(PROXY + '/gh/' + ghFile('foto-geloescht.json'), { headers: headers || {} })
+    .then(function(r) { return r.ok ? r.json() : null; })
+    .then(function(d) {
+      var remoteTomb = decodeGHContent(d);
+      var tomb = loadFotoTombstones();
+      if (remoteTomb && typeof remoteTomb === 'object' && !Array.isArray(remoteTomb)) {
+        Object.keys(remoteTomb).forEach(function(k) {
+          // Neueren Zeitpunkt behalten, siehe saveFotoTombstones().
+          if (!tomb[k] || remoteTomb[k] > tomb[k]) tomb[k] = remoteTomb[k];
+        });
+        try { localStorage.setItem(userKey('foto_deleted'), JSON.stringify(tomb)); } catch(e) {}
+      }
+      return tomb;
+    })
+    .catch(function() { return loadFotoTombstones(); });
+}
+
+// Kompletter Foto-Sync: erst Loeschliste, dann Rezepte, dann zusammenfuehren.
+function syncFotoFromGH(headers) {
+  return fetchFotoTombstones(headers).then(function(tomb) {
+    return fetch(PROXY + '/gh/' + ghFile('foto-rezepte.json'), { headers: headers || {} })
+      .then(function(r) { return r.ok ? r.json() : null; })
+      .then(function(d) {
+        var fr = decodeGHContent(d);
+        if (!Array.isArray(fr)) return null;
+        var local = JSON.parse(localStorage.getItem(userKey('foto_rezepte')) || '[]');
+        var merged = mergeFotoRezepte(fr, local, tomb);
+        localStorage.setItem(userKey('foto_rezepte'), JSON.stringify(merged));
+        return merged;
+      });
+  });
+}
+
 function mergeFotoRezepte(remote, local, tomb) {
   tomb = tomb || loadFotoTombstones();
   var merged = migrateFotoIds((remote || []).slice());
