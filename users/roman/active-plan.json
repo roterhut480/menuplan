@@ -1,51 +1,47 @@
 {
-  "planId": "0e97fe47-43df-4f00-ac36-ce2b67faadc6",
+  "planId": "6d6e4f42-8316-4834-9d61-679db5a7c8b5",
   "sug": {
-    "id": 1,
+    "id": 3,
     "thema": "Mediterran",
     "kochabende": [
-      "Mo",
-      "Mi",
-      "Fr"
+      "Mi"
     ],
-    "gerichte": [
-      {
-        "tag": "Mo",
-        "abend": "Linsensuppe mit Gemüse und Speck (optional)",
-        "zeit_aktiv": "20m",
-        "zeit_total": "45m",
-        "mittag_nächster_tag": "Linsensuppe aufgewärmt"
-      },
-      {
-        "tag": "Mi",
-        "abend": "Pasta all'Amatriciana (mit Speck optional)",
-        "zeit_aktiv": "15m",
-        "zeit_total": "25m",
-        "mittag_nächster_tag": "Pasta-Reste aufgewärmt"
-      },
-      {
-        "tag": "Fr",
-        "abend": "Risotto mit Pilzen und Tomaten",
-        "zeit_aktiv": "25m",
-        "zeit_total": "40m",
-        "mittag_nächster_tag": "Risotto aufgewärmt"
-      }
+    "gerichte": [],
+    "einkaufsliste": [
+      "Lauch",
+      "Feta",
+      "Eier",
+      "Milch",
+      "Mehl",
+      "Butter",
+      "Salz",
+      "Pfeffer",
+      "Muskatnuss",
+      "Zwiebeln",
+      "Knoblauch",
+      "Olivenöl",
+      "Gemüsebrühe",
+      "Tomaten konserviert",
+      "Oregano",
+      "Hühnerbrust optional",
+      "Salatmix",
+      "Brot"
     ]
   },
-  "sel": 0,
-  "n": 3,
+  "sel": 2,
+  "n": 1,
   "personen": 2,
-  "reste": 1,
-  "freeze": 1,
+  "reste": 0,
+  "freeze": 0,
   "budget": 1,
   "modus": "optional",
-  "resteMode": "mikro",
+  "resteMode": "nein",
   "days": {
-    "Mo": "normal",
+    "Mo": null,
     "Di": null,
     "Mi": "normal",
     "Do": null,
-    "Fr": "normal",
+    "Fr": null,
     "Sa": null,
     "So": null
   },
@@ -57,118 +53,75 @@
   "sugsAll": [
     {
       "id": 1,
-      "thema": "Mediterran",
+      "thema": "Mediterranisch",
       "kochabende": [
-        "Mo",
-        "Mi",
-        "Fr"
+        "Mi"
       ],
       "gerichte": [
         {
-          "tag": "Mo",
-          "abend": "Linsensuppe mit Gemüse und Speck (optional)",
-          "zeit_aktiv": "20m",
-          "zeit_total": "45m",
-          "mittag_nächster_tag": "Linsensuppe aufgewärmt"
-        },
-        {
           "tag": "Mi",
-          "abend": "Pasta all'Amatriciana (mit Speck optional)",
-          "zeit_aktiv": "15m",
-          "zeit_total": "25m",
-          "mittag_nächster_tag": "Pasta-Reste aufgewärmt"
-        },
-        {
-          "tag": "Fr",
-          "abend": "Risotto mit Pilzen und Tomaten",
+          "abend": "Lauch-Tomaten-Gratin mit Hackfleisch",
           "zeit_aktiv": "25m",
-          "zeit_total": "40m",
-          "mittag_nächster_tag": "Risotto aufgewärmt"
+          "zeit_total": "45m"
         }
+      ],
+      "einkauf": [
+        "Lauch",
+        "Tomaten",
+        "Zwiebeln",
+        "Knoblauch",
+        "Rinderhackfleisch",
+        "Gruyère",
+        "Rahm",
+        "Brot",
+        "Salat",
+        "Olivenöl",
+        "Basilikum",
+        "Kartoffeln",
+        "Petersilie"
       ]
     },
     {
       "id": 2,
-      "thema": "Mittelmeer & Südeuropa",
+      "thema": "Mediterran",
       "kochabende": [
-        "Mo",
-        "Mi",
-        "Fr"
+        "Mi"
       ],
       "gerichte": [
         {
-          "tag": "Mo",
-          "abend": "Linsensuppe mit Gemüse und Wurst",
-          "zeit_aktiv": "20m",
-          "zeit_total": "45m",
-          "mittag_nächster_tag": "Linsensuppe aufgewärmt"
-        },
-        {
           "tag": "Mi",
-          "abend": "Pasta all'Amatriciana (mit Speck optional)",
-          "zeit_aktiv": "15m",
-          "zeit_total": "25m",
-          "mittag_nächster_tag": "Pasta-Reste aufgewärmt"
-        },
-        {
-          "tag": "Fr",
-          "abend": "Fischauflauf mit Kartoffeln und Spinat",
+          "abend": "Lauch-Kartoffel-Gratin mit Schinken",
           "zeit_aktiv": "25m",
-          "zeit_total": "50m",
-          "mittag_nächster_tag": "Fischauflauf aufgewärmt"
+          "zeit_total": "50m"
         }
-      ],
-      "einkaufsliste": [
-        "Rote Linsen",
-        "Möhren",
-        "Sellerie",
-        "Zwiebeln",
-        "Knoblauch",
-        "Gemüsebrühe",
-        "Wurst oder Speck",
-        "Tomaten passiert",
-        "Pasta Rigatoni",
-        "Dorsch oder Kabeljau",
-        "Kartoffeln",
-        "Spinat frisch",
-        "Milch",
-        "Käse gerieben",
-        "Olivenöl",
-        "Salz, Pfeffer",
-        "Oregano",
-        "Petersilie frisch"
       ]
     },
     {
       "id": 3,
-      "thema": "Orientalisch",
+      "thema": "Mediterran",
       "kochabende": [
-        "Mo",
-        "Mi",
-        "Fr"
+        "Mi"
       ],
-      "gerichte": [
-        {
-          "tag": "Mo",
-          "abend": "Linsensuppe mit Gemüse",
-          "zeit_aktiv": "15m",
-          "zeit_total": "40m",
-          "mittag_nächster_tag": "Linsensuppe aufgewärmt"
-        },
-        {
-          "tag": "Mi",
-          "abend": "Pasta all'Amatriciana (mit Speck optional)",
-          "zeit_aktiv": "15m",
-          "zeit_total": "25m",
-          "mittag_nächster_tag": "Pasta-Reste aufgewärmt"
-        },
-        {
-          "tag": "Fr",
-          "abend": "Lamm-Gemüse-Eintopf",
-          "zeit_aktiv": "25m",
-          "zeit_total": "50m",
-          "mittag_nächster_tag": "Eintopf aufgewärmt"
-        }
+      "gerichte": [],
+      "einkaufsliste": [
+        "Lauch",
+        "Feta",
+        "Eier",
+        "Milch",
+        "Mehl",
+        "Butter",
+        "Salz",
+        "Pfeffer",
+        "Muskatnuss",
+        "Zwiebeln",
+        "Knoblauch",
+        "Olivenöl",
+        "Gemüsebrühe",
+        "Tomaten konserviert",
+        "Oregano",
+        "Hühnerbrust optional",
+        "Salatmix",
+        "Brot"
       ]
     }
   ],
