@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=yes">
-<title>Menüplan v6.43</title>
+<title>Menüplan v6.44</title>
 <meta name="theme-color" content="#e8390e">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -182,7 +182,7 @@ input[type=password]{letter-spacing:2px}
 
 <!-- HOME -->
 <div class="scr on" id="sh">
-  <div class="hero"><h1>Menüplan</h1><p id="hsub">v6.43 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
+  <div class="hero"><h1>Menüplan</h1><p id="hsub">v6.44 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
 
   <!-- Active plan card -->
 
@@ -1971,7 +1971,8 @@ function readAnthropicStream(response, onProgress) {
   var buffer = '';
   var text = '';
   var apiError = null;
-  var sawStop = false;   // Anthropic beendet den Stream mit message_stop
+  var sawStop = false;    // Anthropic beendet den Stream mit message_stop
+  var truncated = false;  // stop_reason "max_tokens": Antwort ist unvollstaendig
 
   function handleData(raw) {
     if (!raw || raw === '[DONE]') return;
@@ -1982,6 +1983,15 @@ function readAnthropicStream(response, onProgress) {
       return;
     }
     if (evt.type === 'message_stop') { sawStop = true; return; }
+    // Anthropic meldet im message_delta, WARUM es aufgehoert hat. Bei
+    // "max_tokens" ist die Antwort abgeschnitten - der Stream endet trotzdem
+    // regulaer mit message_stop. Ohne diese Pruefung kaeme der Stummel als
+    // Erfolg zurueck und scheiterte erst beim JSON-Parsen mit einer
+    // irrefuehrenden Meldung.
+    if (evt.type === 'message_delta' && evt.delta && evt.delta.stop_reason === 'max_tokens') {
+      truncated = true;
+      return;
+    }
     if (evt.type === 'content_block_delta' && evt.delta) {
       if (typeof evt.delta.text === 'string') text += evt.delta.text;
     } else if (evt.type === 'content_block_start' && evt.content_block &&
@@ -2003,6 +2013,7 @@ function readAnthropicStream(response, onProgress) {
         // gekommen - das ergibt kaputtes JSON und eine irrefuehrende Meldung
         // weiter oben. Stattdessen ein wiederholbarer Fehler.
         if (!sawStop) throw new Error('Verbindung unterbrochen (Antwort unvollständig).');
+        if (truncated) throw new Error('Antwort wurde am Token-Limit abgeschnitten.');
         return text;
       }
       buffer += decoder.decode(res.value, { stream: true });
@@ -2193,7 +2204,12 @@ function goSuggest() {
 
   // Load all 3 suggestions in parallel
   function loadOne(id) {
-    return callWorker('overview', msg + ' Vorschlag ' + id + ' von 3. Wähle eine andere Küche als die anderen Vorschläge.', 400)
+    // 400 war zu knapp: ein einzelner Vorschlag mit drei Gerichten liegt genau
+    // an der Grenze, mal passt er, mal wird er abgeschnitten - daher kamen
+    // sporadisch nur 1 von 3 Vorschlaegen. Ausgabe-Tokens werden nur nach
+    // tatsaechlichem Verbrauch berechnet, ein hoeheres Limit kostet also
+    // nichts, solange die Antwort kurz bleibt.
+    return callWorker('overview', msg + ' Vorschlag ' + id + ' von 3. Wähle eine andere Küche als die anderen Vorschläge.', 2000)
       .then(function(raw) {
           var parsed = parseJSON(raw);
           var validErr = validateOverview(parsed, G.n, expectedCookingTags);
