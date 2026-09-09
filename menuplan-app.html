@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=yes">
-<title>Menüplan v6.32</title>
+<title>Menüplan v6.33</title>
 <meta name="theme-color" content="#e8390e">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -182,7 +182,7 @@ input[type=password]{letter-spacing:2px}
 
 <!-- HOME -->
 <div class="scr on" id="sh">
-  <div class="hero"><h1>Menüplan</h1><p id="hsub">v6.32 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
+  <div class="hero"><h1>Menüplan</h1><p id="hsub">v6.33 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
 
   <!-- Active plan card -->
 
@@ -1508,6 +1508,31 @@ function doImport() {
   withLists();
 }
 
+// Bring! liefert die Artikel je nach API-Stand unterschiedlich:
+//   alt:  {uuid, status, purchase:[...], recently:[...]}
+//   neu:  {uuid, status, items:{purchase:[...], recently:[...]}}
+// Frueher wurde nur die flache Form geprueft. Bei der verschachtelten fand der
+// Code 0 Artikel, uebersprang das Leeren stillschweigend und haengte die neuen
+// Artikel einfach an die alte Liste an.
+function extractBringPurchase(d) {
+  if (!d) return null;
+  if (Array.isArray(d.purchase)) return d.purchase;
+  if (Array.isArray(d.items)) return d.items;
+  if (d.items && Array.isArray(d.items.purchase)) return d.items.purchase;
+  return null;
+}
+
+// Ein Eintrag heisst je nach Form {name, specification} oder {itemId, spec}.
+function bringItemName(it) {
+  if (typeof it === 'string') return it;
+  if (!it) return '';
+  return it.name || it.itemId || it.item || '';
+}
+function bringItemSpec(it) {
+  if (!it || typeof it === 'string') return '';
+  return it.specification || it.spec || '';
+}
+
 function doImportItems() {
   // G.fotoImport ist der getrennte Import-Kontext fuer Foto-Rezepte. Frueher
   // wurde dafuer G.sugs/G.sel ueberschrieben - danach liefen Aktionen im
@@ -1565,19 +1590,18 @@ function doImportItems() {
         return r.json();
       })
       .then(function(d) {
-        // Bring! liefert {purchase:[{name,specification}], recently:[...]}.
-        var arr = Array.isArray(d && d.purchase) ? d.purchase
-                : Array.isArray(d && d.items) ? d.items : [];
-        blog('Gefunden: ' + arr.length + ' Artikel');
-        if (!arr.length) {
-          if (d && !Array.isArray(d.purchase)) {
-            blog('WARNUNG: kein purchase-Array. Felder: ' + Object.keys(d || {}).join(', '));
-          }
+        var arr = extractBringPurchase(d);
+        if (arr === null) {
+          blog('WARNUNG: Artikel nicht gefunden. Felder: ' + Object.keys(d || {}).join(', ') +
+               (d && d.items && !Array.isArray(d.items)
+                 ? ' | items: ' + Object.keys(d.items).join(', ') : ''));
           return;
         }
+        blog('Gefunden: ' + arr.length + ' Artikel');
+        if (arr.length) blog('Feldnamen: ' + Object.keys(arr[0] || {}).join(', '));
+        if (!arr.length) return;
         var removes = arr.map(function(it) {
-          var id = typeof it === 'string' ? it : (it.name || it.itemId || it.item || '');
-          return { itemId: id, spec: (it && (it.specification || it.spec)) || '', operation: 'REMOVE',
+          return { itemId: bringItemName(it), spec: bringItemSpec(it), operation: 'REMOVE',
                    accuracy: '0.0', altitude: '0.0', latitude: '0.0', longitude: '0.0' };
         }).filter(function(x) { return x.itemId; });
         if (!removes.length) { blog('WARNUNG: kein Artikel hatte einen Namen'); return; }
@@ -1600,7 +1624,8 @@ function doImportItems() {
           return fetch(BAPI + '/v2/bringlists/' + listUuid, { headers: withMpAuth(hJson) })
             .then(function(r) { return r.ok ? r.json() : null; })
             .then(function(d2) {
-              var rest = (d2 && Array.isArray(d2.purchase)) ? d2.purchase.length : -1;
+              var restArr = extractBringPurchase(d2);
+              var rest = restArr ? restArr.length : -1;
               blog('Kontrolle nach Leeren: ' + (rest < 0 ? 'nicht lesbar' : rest + ' Artikel uebrig'));
               if (rest > 0) blog('WARNUNG: Liste wurde NICHT vollstaendig geleert');
             });
