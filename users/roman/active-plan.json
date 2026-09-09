@@ -1,8 +1,8 @@
 {
-  "planId": "0a93eefc-010c-4da7-8759-f89a75cfe912",
+  "planId": "0895a500-9bf4-472d-b6a3-7e465b3863b8",
   "sug": {
     "id": 2,
-    "thema": "Mediterran",
+    "thema": "Mediterranisch",
     "kochabende": [
       "Mo",
       "Mi",
@@ -11,21 +11,21 @@
     "gerichte": [
       {
         "tag": "Mo",
-        "abend": "Linsen-Gemüse-Eintopf mit Feta",
+        "abend": "Linsensuppe mit Tomaten und Spinat",
         "zeit_aktiv": "20m",
         "zeit_total": "40m"
       },
       {
         "tag": "Mi",
-        "abend": "Kichererbsen-Gemüse-Pfanne mit Minze",
-        "zeit_aktiv": "22m",
-        "zeit_total": "35m"
+        "abend": "Auberginen-Tomaten-Gratin mit Feta",
+        "zeit_aktiv": "25m",
+        "zeit_total": "50m"
       },
       {
         "tag": "Fr",
-        "abend": "Tomaten-Zucchini-Frittata",
-        "zeit_aktiv": "18m",
-        "zeit_total": "30m"
+        "abend": "Kichererbsen-Salat mit Zitrone und Kräutern",
+        "zeit_aktiv": "15m",
+        "zeit_total": "15m"
       }
     ]
   },
@@ -63,55 +63,26 @@
       "gerichte": [
         {
           "tag": "Mo",
-          "abend": "Auberginen-Tomaten-Gratin",
-          "zeit_aktiv": "25m",
-          "zeit_total": "50m"
-        },
-        {
-          "tag": "Mi",
-          "abend": "Linsensuppe mit Lauch und Karotten",
+          "abend": "Linsensuppe mit Tomaten und Spinat",
           "zeit_aktiv": "20m",
           "zeit_total": "40m"
         },
         {
+          "tag": "Mi",
+          "abend": "Auberginen-Tomaten-Auflauf mit Käse",
+          "zeit_aktiv": "25m",
+          "zeit_total": "50m"
+        },
+        {
           "tag": "Fr",
-          "abend": "Spinat-Kichererbsen-Curry mit Reis",
-          "zeit_aktiv": "22m",
-          "zeit_total": "38m"
+          "abend": "Kichererbsen-Salat mit Zitrone und Kräutern",
+          "zeit_aktiv": "15m",
+          "zeit_total": "15m"
         }
       ]
     },
     {
       "id": 2,
-      "thema": "Mediterran",
-      "kochabende": [
-        "Mo",
-        "Mi",
-        "Fr"
-      ],
-      "gerichte": [
-        {
-          "tag": "Mo",
-          "abend": "Linsen-Gemüse-Eintopf mit Feta",
-          "zeit_aktiv": "20m",
-          "zeit_total": "40m"
-        },
-        {
-          "tag": "Mi",
-          "abend": "Kichererbsen-Gemüse-Pfanne mit Minze",
-          "zeit_aktiv": "22m",
-          "zeit_total": "35m"
-        },
-        {
-          "tag": "Fr",
-          "abend": "Tomaten-Zucchini-Frittata",
-          "zeit_aktiv": "18m",
-          "zeit_total": "30m"
-        }
-      ]
-    },
-    {
-      "id": 3,
       "thema": "Mediterranisch",
       "kochabende": [
         "Mo",
@@ -121,21 +92,50 @@
       "gerichte": [
         {
           "tag": "Mo",
-          "abend": "Auberginen-Tomaten-Gratin",
+          "abend": "Linsensuppe mit Tomaten und Spinat",
+          "zeit_aktiv": "20m",
+          "zeit_total": "40m"
+        },
+        {
+          "tag": "Mi",
+          "abend": "Auberginen-Tomaten-Gratin mit Feta",
           "zeit_aktiv": "25m",
           "zeit_total": "50m"
         },
         {
-          "tag": "Mi",
-          "abend": "Kichererbsen-Spinat-Curry",
+          "tag": "Fr",
+          "abend": "Kichererbsen-Salat mit Zitrone und Kräutern",
+          "zeit_aktiv": "15m",
+          "zeit_total": "15m"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "thema": "Mediterran (Variante 3)",
+      "kochabende": [
+        "Mo",
+        "Mi",
+        "Fr"
+      ],
+      "gerichte": [
+        {
+          "tag": "Mo",
+          "abend": "Linsensuppe mit Tomaten und Spinat",
           "zeit_aktiv": "20m",
-          "zeit_total": "35m"
+          "zeit_total": "40m"
+        },
+        {
+          "tag": "Mi",
+          "abend": "Griechischer Kartoffel-Feta-Auflauf",
+          "zeit_aktiv": "20m",
+          "zeit_total": "50m"
         },
         {
           "tag": "Fr",
-          "abend": "Polenta mit Pilz-Ragout",
-          "zeit_aktiv": "22m",
-          "zeit_total": "40m"
+          "abend": "Kichererbsen-Salat mit Zitrone und Kräutern",
+          "zeit_aktiv": "15m",
+          "zeit_total": "15m"
         }
       ]
     }
