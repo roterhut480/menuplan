@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=yes">
-<title>Menüplan v6.44</title>
+<title>Menüplan v6.45</title>
 <meta name="theme-color" content="#e8390e">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -182,7 +182,7 @@ input[type=password]{letter-spacing:2px}
 
 <!-- HOME -->
 <div class="scr on" id="sh">
-  <div class="hero"><h1>Menüplan</h1><p id="hsub">v6.44 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
+  <div class="hero"><h1>Menüplan</h1><p id="hsub">v6.45 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
 
   <!-- Active plan card -->
 
@@ -1962,6 +1962,20 @@ var STREAM_IDLE_MS = 25000;      // danach: Pause zwischen zwei Datenpaketen
 // zu unterscheiden, ohne die Entwicklerkonsole oeffnen zu muessen.
 var G_lastCall = null;
 
+// Kompakte Zusammenfassung fuer die Fehlermeldung. Auf dem Handy gibt es keine
+// Entwicklerkonsole - ohne diese Angaben laesst sich nicht unterscheiden, ob
+// der Worker gar nicht streamt oder der Stream unterwegs abreisst.
+function callDiagnose() {
+  var c = G_lastCall;
+  if (!c) return ' [keine Antwort erhalten]';
+  return ' [' + (c.gestreamt ? 'Stream' : 'kein Stream') +
+    ', HTTP ' + c.status +
+    ', Kopfzeilen nach ' + c.kopfzeilenNachMs + 'ms' +
+    (c.erstesPaketNachMs !== undefined ? ', erstes Paket nach ' + c.erstesPaketNachMs + 'ms' : '') +
+    (c.zeichen !== undefined ? ', ' + c.zeichen + ' Zeichen empfangen' : ', 0 Zeichen') +
+    ']';
+}
+
 // Liest eine Server-Sent-Events-Antwort von Anthropic und setzt den Text
 // zusammen. onProgress wird bei jedem Datenpaket aufgerufen - so laesst sich
 // anzeigen, dass etwas passiert.
@@ -2081,7 +2095,10 @@ function callWorker(kind, message, maxTokens, opts, model, onProgress) {
       arm(STREAM_IDLE_MS);
       return readAnthropicStream(r, function(len) {
         arm(STREAM_IDLE_MS);               // Daten geflossen: Frist neu starten
-        if (G_lastCall) G_lastCall.zeichen = len;
+        if (G_lastCall) {
+          if (G_lastCall.zeichen === undefined) G_lastCall.erstesPaketNachMs = Date.now() - t0;
+          G_lastCall.zeichen = len;
+        }
         if (onProgress) onProgress(len);
       }).then(function(t) { disarm(); return t; },
               function(e) { disarm(); throw e; });
@@ -2091,10 +2108,14 @@ function callWorker(kind, message, maxTokens, opts, model, onProgress) {
       if (e && e.name === 'AbortError') {
         if (phase === 'kopfzeilen') {
           throw new Error('Keine Antwort vom Server nach ' +
-                          Math.round(HEADER_TIMEOUT_MS / 1000) + 's.');
+                          Math.round(HEADER_TIMEOUT_MS / 1000) + 's.' + callDiagnose());
         }
         throw new Error('Verbindung unterbrochen (keine Daten für ' +
-                        Math.round(STREAM_IDLE_MS / 1000) + 's).');
+                        Math.round(STREAM_IDLE_MS / 1000) + 's).' + callDiagnose());
+      }
+      // Auch Netzwerkfehler ohne Abbruch bekommen die Diagnose mit.
+      if (/Failed to fetch|NetworkError|network/i.test((e && e.message) || '')) {
+        throw new Error(e.message + callDiagnose());
       }
       throw e;
     });
