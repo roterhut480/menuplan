@@ -1,5 +1,175 @@
 [
   {
+    "planId": "0a93eefc-010c-4da7-8759-f89a75cfe912",
+    "date": "2026-09-09",
+    "saved": "9.9.2026",
+    "thema": "Mediterran",
+    "personen": 2,
+    "kochabende": 3,
+    "reste": 0,
+    "freeze": 0,
+    "budget": 1,
+    "gerichte": [
+      {
+        "tag": "Mo",
+        "abend": "Linsen-Gemüse-Eintopf mit Feta"
+      },
+      {
+        "tag": "Mi",
+        "abend": "Kichererbsen-Gemüse-Pfanne mit Minze"
+      },
+      {
+        "tag": "Fr",
+        "abend": "Tomaten-Zucchini-Frittata"
+      }
+    ],
+    "status": "geplant",
+    "plan": {
+      "planId": "0a93eefc-010c-4da7-8759-f89a75cfe912",
+      "sug": {
+        "id": 2,
+        "thema": "Mediterran",
+        "kochabende": [
+          "Mo",
+          "Mi",
+          "Fr"
+        ],
+        "gerichte": [
+          {
+            "tag": "Mo",
+            "abend": "Linsen-Gemüse-Eintopf mit Feta",
+            "zeit_aktiv": "20m",
+            "zeit_total": "40m"
+          },
+          {
+            "tag": "Mi",
+            "abend": "Kichererbsen-Gemüse-Pfanne mit Minze",
+            "zeit_aktiv": "22m",
+            "zeit_total": "35m"
+          },
+          {
+            "tag": "Fr",
+            "abend": "Tomaten-Zucchini-Frittata",
+            "zeit_aktiv": "18m",
+            "zeit_total": "30m"
+          }
+        ]
+      },
+      "sel": 1,
+      "n": 3,
+      "personen": 2,
+      "reste": 0,
+      "freeze": 0,
+      "budget": 1,
+      "modus": "vegi",
+      "resteMode": "nein",
+      "days": {
+        "Mo": "normal",
+        "Di": null,
+        "Mi": "normal",
+        "Do": null,
+        "Fr": "normal",
+        "Sa": null,
+        "So": null
+      },
+      "weekStart": "2026-09-07",
+      "einkaufstag": "Mi",
+      "saved": "9.9.2026",
+      "bringImportedAt": null,
+      "bringItemCount": 0,
+      "sugsAll": [
+        {
+          "id": 1,
+          "thema": "Mediterran",
+          "kochabende": [
+            "Mo",
+            "Mi",
+            "Fr"
+          ],
+          "gerichte": [
+            {
+              "tag": "Mo",
+              "abend": "Auberginen-Tomaten-Gratin",
+              "zeit_aktiv": "25m",
+              "zeit_total": "50m"
+            },
+            {
+              "tag": "Mi",
+              "abend": "Linsensuppe mit Lauch und Karotten",
+              "zeit_aktiv": "20m",
+              "zeit_total": "40m"
+            },
+            {
+              "tag": "Fr",
+              "abend": "Spinat-Kichererbsen-Curry mit Reis",
+              "zeit_aktiv": "22m",
+              "zeit_total": "38m"
+            }
+          ]
+        },
+        {
+          "id": 2,
+          "thema": "Mediterran",
+          "kochabende": [
+            "Mo",
+            "Mi",
+            "Fr"
+          ],
+          "gerichte": [
+            {
+              "tag": "Mo",
+              "abend": "Linsen-Gemüse-Eintopf mit Feta",
+              "zeit_aktiv": "20m",
+              "zeit_total": "40m"
+            },
+            {
+              "tag": "Mi",
+              "abend": "Kichererbsen-Gemüse-Pfanne mit Minze",
+              "zeit_aktiv": "22m",
+              "zeit_total": "35m"
+            },
+            {
+              "tag": "Fr",
+              "abend": "Tomaten-Zucchini-Frittata",
+              "zeit_aktiv": "18m",
+              "zeit_total": "30m"
+            }
+          ]
+        },
+        {
+          "id": 3,
+          "thema": "Mediterranisch",
+          "kochabende": [
+            "Mo",
+            "Mi",
+            "Fr"
+          ],
+          "gerichte": [
+            {
+              "tag": "Mo",
+              "abend": "Auberginen-Tomaten-Gratin",
+              "zeit_aktiv": "25m",
+              "zeit_total": "50m"
+            },
+            {
+              "tag": "Mi",
+              "abend": "Kichererbsen-Spinat-Curry",
+              "zeit_aktiv": "20m",
+              "zeit_total": "35m"
+            },
+            {
+              "tag": "Fr",
+              "abend": "Polenta mit Pilz-Ragout",
+              "zeit_aktiv": "22m",
+              "zeit_total": "40m"
+            }
+          ]
+        }
+      ],
+      "sugsPartial": true
+    }
+  },
+  {
     "planId": "df06e602-959f-4ebd-94b5-27d9becc782e",
     "date": "2026-09-09",
     "saved": "9.9.2026",
