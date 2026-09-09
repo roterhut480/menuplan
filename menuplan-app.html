@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=yes">
-<title>Menüplan v6.38</title>
+<title>Menüplan v6.40</title>
 <meta name="theme-color" content="#e8390e">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -182,7 +182,7 @@ input[type=password]{letter-spacing:2px}
 
 <!-- HOME -->
 <div class="scr on" id="sh">
-  <div class="hero"><h1>Menüplan</h1><p id="hsub">v6.38 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
+  <div class="hero"><h1>Menüplan</h1><p id="hsub">v6.40 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
 
   <!-- Active plan card -->
 
@@ -934,7 +934,7 @@ window.addEventListener('DOMContentLoaded', function() {
 
 // ─── GITHUB ────────────────────────────────────────────────
 // ─── AUTH / LOGIN ──────────────────────────────────────────
-// Auth laeuft vollstaendig ueber den Cloudflare Worker (MP_USERS).
+// Auth laeuft vollstaendig ueber den Cloudflare Worker (KV-Konten, MP_USERS als Rueckfallebene).
 // Im Browser liegt nur die Session: gh_session = {username, pw}.
 // Der GitHub-Token verlaesst den Worker nie.
 // Current session: gh_session = {username, password}
@@ -1046,7 +1046,7 @@ function showInviteLink() {
   if (!session) { alert('Bitte zuerst anmelden'); return; }
   try {
     // Invite URL contains NO token - just a flag so new user knows to register
-    // New user will need to set their own password; worker verifies against MP_USERS
+    // Konto legt ein Admin unter "Benutzer verwalten" an; der Worker prueft gegen KV
     var url = window.location.origin + window.location.pathname + '?invite=1&ref=' + encodeURIComponent(session.username);
     window._inviteUrl = url;
     // Show modal with link
@@ -1055,7 +1055,7 @@ function showInviteLink() {
     modal.id = 'invite-modal';
     modal.innerHTML = '<div style="background:#fff;border-radius:14px;padding:20px;width:100%;max-width:400px">' +
       '<div style="font-size:16px;font-weight:700;margin-bottom:8px">Einladungslink</div>' +
-      '<div style="font-size:12px;color:var(--gr3);margin-bottom:12px">Link teilen. Wichtig: Der Empfänger kann sich erst anmelden, nachdem du seinen Benutzernamen und ein Passwort selbst in Cloudflare unter MP_USERS eingetragen hast.</div>' +
+      '<div style="font-size:12px;color:var(--gr3);margin-bottom:12px">Link teilen. Der Empfänger kann sich anmelden, sobald du unter „Benutzer verwalten" ein Konto für ihn angelegt und ihm Benutzername und Passwort mitgeteilt hast.</div>' +
       '<div style="background:#f5f5f5;border-radius:8px;padding:10px;font-size:11px;word-break:break-all;margin-bottom:12px;font-family:monospace;color:var(--txt2)">' + url + '</div>' +
       '<div style="display:flex;gap:8px">' +
         '<button id="copy-invite-btn" onclick="copyInviteLink()" class="btn btn-red" style="flex:1;padding:10px;font-size:13px">Link kopieren</button>'+
@@ -1285,20 +1285,33 @@ function syncAllFromGH() {
         renderActivePlan();
       }
     }).catch(function(){});
-  fetch(PROXY + '/gh/' + ghFile('foto-rezepte.json'), { headers: h })
+  // Erst die Loeschliste holen, dann die Rezepte: ohne die Tombstones des
+  // anderen Geraets wuerde ein dort geloeschtes Rezept hier wieder auftauchen.
+  fetch(PROXY + '/gh/' + ghFile('foto-geloescht.json'), { headers: h })
     .then(function(r) { return r.ok ? r.json() : null; })
     .then(function(d) {
-      var fr = decodeGHContent(d);
-      if (!Array.isArray(fr)) return;
-      var local = JSON.parse(localStorage.getItem(userKey('foto_rezepte')) || '[]');
-      var merged = fr.slice();
-      // Dieselbe _id-Logik wie in syncFotoRezepte(). Zwei unterschiedliche
-      // Zusammenfuehrungen fuer dieselben Daten waren die Ursache dafuer, dass
-      // geloeschte Rezepte je nach Sync-Weg wieder auftauchten.
-      local.forEach(function(l) {
-        if (!findFotoDup(merged, l)) merged.push(l);
-      });
-      localStorage.setItem(userKey('foto_rezepte'), JSON.stringify(merged));
+      var remoteTomb = decodeGHContent(d);
+      var tomb = loadFotoTombstones();
+      if (remoteTomb && typeof remoteTomb === 'object' && !Array.isArray(remoteTomb)) {
+        // Vereinigen: eine Loeschung auf IRGENDEINEM Geraet gilt ueberall.
+        Object.keys(remoteTomb).forEach(function(k) {
+          if (!tomb[k] || remoteTomb[k] < tomb[k]) tomb[k] = remoteTomb[k];
+        });
+        try { localStorage.setItem(userKey('foto_deleted'), JSON.stringify(tomb)); } catch(e) {}
+      }
+      return tomb;
+    })
+    .catch(function() { return loadFotoTombstones(); })
+    .then(function(tomb) {
+      return fetch(PROXY + '/gh/' + ghFile('foto-rezepte.json'), { headers: h })
+        .then(function(r) { return r.ok ? r.json() : null; })
+        .then(function(d) {
+          var fr = decodeGHContent(d);
+          if (!Array.isArray(fr)) return;
+          var local = JSON.parse(localStorage.getItem(userKey('foto_rezepte')) || '[]');
+          var merged = mergeFotoRezepte(fr, local, tomb);
+          localStorage.setItem(userKey('foto_rezepte'), JSON.stringify(merged));
+        });
     }).catch(function(){});
   fetch(PROXY + '/gh/' + ghFile('history.json'), { headers: h })
     .then(function(r) { return r.ok ? r.json() : null; })
@@ -3548,7 +3561,10 @@ function buildTimelineDays() {
         // Fallback fuer Alt-Eintraege: dort wurde beim "Gekocht"-Knopf nur der
         // Status des Verlaufseintrags gesetzt, nie _gekocht am Gericht.
         entryStatus: entryStatus || null,
-        hasFullRecipe: !fehlendeSchritte(g, G.modus)
+        // Modus des JEWEILIGEN Plans, nicht der aktuell eingestellte - sonst
+        // gilt ein alter Vegi-Plan als unvollstaendig, wenn gerade "optional"
+        // gewaehlt ist.
+        hasFullRecipe: !fehlendeSchritte(g, planData.modus || G.modus)
       };
     }
   }
@@ -5093,6 +5109,8 @@ function resetFotoRezeptStatus(i) {
 function deleteHistoryRecipe(i) {
   if(!confirm('Rezept löschen?'))return;
   var saved=JSON.parse(localStorage.getItem(userKey('foto_rezepte'))||'[]');
+  migrateFotoIds(saved);
+  if (saved[i]) addFotoTombstone(saved[i]);   // Loeschung geraeteuebergreifend merken
   saved.splice(i,1);
   localStorage.setItem(userKey('foto_rezepte'),JSON.stringify(saved));
   saveFotoRezepteToGH(saved);
@@ -5118,7 +5136,7 @@ function syncFotoRezepte(btn){
   fetch(PROXY+'/gh/'+ghFile('foto-rezepte.json'),{headers:h||{}})
     .then(function(r){return r.ok?r.json():null;})
     .then(function(d){
-      if(d&&d.content){var fr=JSON.parse(decodeURIComponent(escape(atob(d.content.split('\n').join('')))));if(Array.isArray(fr)){var local=JSON.parse(localStorage.getItem(userKey('foto_rezepte'))||'[]');var merged=fr.slice();local.forEach(function(l){if(!findFotoDup(merged,l))merged.push(l);});localStorage.setItem(userKey('foto_rezepte'),JSON.stringify(merged));loadSavedFotoRezepte();}}
+      if(d&&d.content){var fr=JSON.parse(decodeURIComponent(escape(atob(d.content.split('\n').join('')))));if(Array.isArray(fr)){var local=JSON.parse(localStorage.getItem(userKey('foto_rezepte'))||'[]');var merged=mergeFotoRezepte(fr,local);localStorage.setItem(userKey('foto_rezepte'),JSON.stringify(merged));loadSavedFotoRezepte();}}
       if(btn){btn.textContent='OK';setTimeout(function(){btn.textContent=origText;btn.disabled=false;},1500);}
     }).catch(function(){if(btn){btn.textContent='Err';setTimeout(function(){btn.textContent=origText;btn.disabled=false;},1500);}});
 }
@@ -5183,15 +5201,69 @@ function importFotoFromResult(){
   backBtn.innerHTML='<button class="btn btn-out" onclick="openFotoScreen()" style="font-size:13px;padding:10px">← Zurück zum Foto-Rezept</button>';
   var te=$('te');if(te&&te.firstChild)te.insertBefore(backBtn,te.firstChild);
 }
-// EINE Zuordnungsregel fuer beide Sync-Wege: primaer die stabile _id,
-// Namensvergleich nur noch fuer Alt-Eintraege, die beide keine _id haben.
+// ─── FOTO-REZEPTE: IDs, TOMBSTONES, ZUSAMMENFUEHRUNG ──────
+// Eine stabile _id allein genuegt nicht: Remote- und lokale Liste werden beim
+// Sync vereinigt, ein auf Geraet A geloeschtes Rezept kaeme also von Geraet B
+// zurueck. Deshalb werden Loeschungen als Tombstones (_id -> Zeitpunkt)
+// mitgefuehrt und VOR dem Zusammenfuehren angewendet.
+
+// Alt-Rezepte ohne _id bekommen eine ABGELEITETE, auf allen Geraeten gleiche
+// ID. Eine Zufalls-ID wuerde dazu fuehren, dass dieselbe Kopie auf zwei
+// Geraeten unterschiedliche IDs erhaelt und danach doppelt erscheint.
+function legacyFotoId(r) {
+  var base = ((r && r.name) || 'rezept') + '|' + ((r && r.date) || r && r.saved || '');
+  return 'legacy_' + base.toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 60);
+}
+
+function migrateFotoIds(list) {
+  (list || []).forEach(function(r) { if (r && !r._id) r._id = legacyFotoId(r); });
+  return list || [];
+}
+
+function loadFotoTombstones() {
+  try { return JSON.parse(localStorage.getItem(userKey('foto_deleted')) || '{}'); }
+  catch(e) { return {}; }
+}
+
+function saveFotoTombstones(tomb) {
+  // Nach oben begrenzen, damit die Liste nicht unbegrenzt waechst.
+  var keys = Object.keys(tomb);
+  if (keys.length > 500) {
+    keys.sort(function(a, b) { return (tomb[a] || '') < (tomb[b] || '') ? -1 : 1; });
+    keys.slice(0, keys.length - 500).forEach(function(k) { delete tomb[k]; });
+  }
+  try { localStorage.setItem(userKey('foto_deleted'), JSON.stringify(tomb)); } catch(e) {}
+  ghPut('foto-geloescht.json', tomb, 'Geloeschte Foto-Rezepte')
+    .then(function(){ setSyncState('ok'); })
+    .catch(function(e){ setSyncState('fail', e && e.status ? 'Status ' + e.status : 'Löschliste'); });
+  return tomb;
+}
+
+function addFotoTombstone(r) {
+  var tomb = loadFotoTombstones();
+  tomb[fotoRezeptId(r)] = new Date().toISOString();
+  return saveFotoTombstones(tomb);
+}
+
+// EINE Zuordnungsregel fuer alle Sync-Wege. Nach migrateFotoIds() hat jeder
+// Eintrag eine _id, der Namensvergleich bleibt nur als letzte Rueckfallebene.
 function findFotoDup(list, item) {
   var id = item && item._id;
   return (list || []).find(function(g) {
     if (id && g._id) return g._id === id;
-    if (!id && !g._id) return g.name === item.name;
-    return false;
+    return g.name === item.name;
   }) || null;
+}
+
+// Remote- und lokale Liste zusammenfuehren: erst IDs vereinheitlichen, dann
+// Geloeschtes entfernen, dann ergaenzen.
+function mergeFotoRezepte(remote, local, tomb) {
+  tomb = tomb || loadFotoTombstones();
+  var merged = migrateFotoIds((remote || []).slice());
+  migrateFotoIds(local || []);
+  (local || []).forEach(function(l) { if (!findFotoDup(merged, l)) merged.push(l); });
+  return merged.filter(function(r) { return !tomb[r._id]; });
 }
 
 function fotoRezeptId(r){
