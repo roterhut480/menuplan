@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=yes">
-<title>Menüplan v6.33</title>
+<title>Menüplan v6.37</title>
 <meta name="theme-color" content="#e8390e">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -182,7 +182,7 @@ input[type=password]{letter-spacing:2px}
 
 <!-- HOME -->
 <div class="scr on" id="sh">
-  <div class="hero"><h1>Menüplan</h1><p id="hsub">v6.33 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
+  <div class="hero"><h1>Menüplan</h1><p id="hsub">v6.37 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
 
   <!-- Active plan card -->
 
@@ -353,6 +353,15 @@ input[type=password]{letter-spacing:2px}
             <div style="font-size:11px;color:var(--gr3);margin-top:2px">Nur die benötigte Menge kochen, nichts einfrieren.</div>
           </button>
         </div>
+      </div>
+
+      <div class="fld" style="margin-top:10px">
+        <label>💰 Budget</label>
+        <button class="chip-card" id="bc-toggle" onclick="setB(!G.budget)" style="width:100%;display:flex;align-items:flex-start;gap:10px;text-align:left;padding:10px 14px;border-radius:10px;background:#fff;border:1.5px solid var(--bdr);cursor:pointer;font-family:inherit">
+          <div id="bc-box" style="width:18px;height:18px;border-radius:4px;border:1.5px solid var(--bdr);flex-shrink:0;margin-top:1px;display:flex;align-items:center;justify-content:center;font-size:12px;color:#fff"></div>
+          <div><div style="font-size:13px;font-weight:700;color:var(--txt)" id="bc-lbl">Budgetfreundlich planen</div>
+            <div style="font-size:11px;color:var(--gr3);margin-top:2px">Bevorzugt günstige Grundzutaten und vermeidet teure Spezialzutaten.</div></div>
+        </button>
       </div>
 
       <!-- Thema & Vorhandenes -->
@@ -583,7 +592,7 @@ input[type=password]{letter-spacing:2px}
   </div></div>
   <div class="card"><div class="cp">
     <div class="clbl">Lernprofil aus Bewertungen</div>
-    <div style="font-size:11px;color:var(--gr3);margin-bottom:10px">Wird automatisch aus deinen Bewertungen aufgebaut und bei der Menugenerierung beruecksichtigt.</div>
+    <div style="font-size:11px;color:var(--gr3);margin-bottom:10px">Wird automatisch aus deinen Bewertungen aufgebaut und bei der Menugenerierung berücksichtigt.</div>
     <div id="prefs-profile"><div style="font-size:12px;color:var(--gr3);font-style:italic">Wird geladen...</div></div>
     <button class="btn btn-out" onclick="resetLearningProfile()" style="margin-top:10px;padding:9px;font-size:12px">Lernprofil zurücksetzen</button>
   </div></div>
@@ -687,7 +696,7 @@ function withMpAuth(headers) {
 
 // ─── STATE ─────────────────────────────────────────────────
 var G = {
-  n: 3, personen: 2, modus: 'optional', reste: 1, freeze: 1, resteMode: 'mikro', sugsPartial: false, fixedDishes: {},
+  n: 3, personen: 2, modus: 'optional', reste: 1, freeze: 1, budget: 0, resteMode: 'mikro', sugsPartial: false, fixedDishes: {},
   days: { Mo: 'normal', Di: null, Mi: 'normal', Do: null, Fr: 'normal', Sa: null, So: null },
   // null=kein Kochen, 'schnell'=<20min, 'normal'=normal, 'aufwendig'=darf länger dauern
 
@@ -861,6 +870,25 @@ function setR(v, mode) {
   chips.forEach && chips.forEach(function(c) { c.classList.toggle('on', !!v); });
 }
 
+// Budget-Modus. Steuert AUSSCHLIESSLICH das Preisniveau der Zutaten und
+// vermeidet Kleinstmengen-Einzelkaeufe. Die Zutatenueberschneidung ueber die
+// Woche ist Grundverhalten und bleibt in beiden Zustaenden aktiv - ein
+// ausgeschalteter Budget-Modus darf die Woche nicht verschlechtern.
+function setB(v) {
+  G.budget = v ? 1 : 0;
+  var btn = $('bc-toggle'), box = $('bc-box'), lbl = $('bc-lbl');
+  if (btn) { btn.style.borderColor = v ? 'var(--red)' : 'var(--bdr)'; btn.style.borderWidth = v ? '2px' : '1.5px'; }
+  if (box) { box.style.background = v ? 'var(--red)' : '#fff'; box.style.borderColor = v ? 'var(--red)' : 'var(--bdr)'; box.textContent = v ? '✓' : ''; }
+  if (lbl) lbl.style.color = v ? 'var(--red)' : 'var(--txt)';
+  // Wahl merken, damit sie beim naechsten Planen wieder steht. savePrefs()
+  // liest die bestehenden Praeferenzen ein, der Wert ueberlebt dort also.
+  try {
+    var pr = JSON.parse(localStorage.getItem(getPrefKey()) || '{}');
+    pr.budget = G.budget;
+    localStorage.setItem(getPrefKey(), JSON.stringify(pr));
+  } catch(e) {}
+}
+
 function setF(v) {
   G.freeze = v;
   var cards = ['fc-ja', 'fc-nein'];
@@ -935,16 +963,23 @@ function doLogin() {
       err.textContent = 'Falscher Benutzername oder Passwort.';
       err.style.display = 'block';
       $('login-pw').value = '';
-    } else if (r.ok) {
-      // "verified" merkt sich fuer wen zuletzt eine ECHTE Server-Pruefung
-      // erfolgreich war - nur dieser exakte Nutzer darf spaeter offline rein.
-      localStorage.setItem('gh_session', JSON.stringify({ username: username, pw: pw, verified: true }));
-      showLoggedIn();
-      syncAllFromGH();
-    } else {
+      return;
+    }
+    if (!r.ok) {
       err.textContent = 'Login fehlgeschlagen (Status ' + r.status + ').';
       err.style.display = 'block';
+      return;
     }
+    // Antwortkoerper auswerten - dort steht, ob dieses Konto Admin ist.
+    return r.json().catch(function() { return {}; }).then(function(d) {
+      // "verified" merkt sich fuer wen zuletzt eine ECHTE Server-Pruefung
+      // erfolgreich war - nur dieser exakte Nutzer darf spaeter offline rein.
+      localStorage.setItem('gh_session', JSON.stringify({
+        username: username, pw: pw, verified: true, admin: !!(d && d.admin)
+      }));
+      showLoggedIn();
+      syncAllFromGH();
+    });
   }).catch(function() {
     if (loginBtn) { loginBtn.disabled = false; loginBtn.textContent = 'Anmelden'; }
     // Worker nicht erreichbar: NUR erlauben wenn genau dieser Benutzername+Passwort
@@ -1205,7 +1240,7 @@ function showRemoteClearedBanner(stamp) {
   bRemove.onclick = function() {
     try { localStorage.removeItem(userKey('active_plan')); } catch(e) {}
     try { localStorage.setItem(remoteClearedSeenKey(), stamp); } catch(e) {}
-    G.activePlan = null; G.viewOnly = false;
+    G.activePlan = null;
     el.remove();
     renderActivePlan();
     updateDashboard();
@@ -1549,6 +1584,23 @@ function doImportItems() {
 
   var items = getItems(sug);
   var clearFirst = $('bclr').checked;
+  if (clearFirst) {
+    // Das Leeren trifft die GANZE Bring!-Liste, auch von Hand ergaenzte
+    // Haushaltsartikel wie Spuelmittel oder WC-Papier. Ein destruktiver
+    // Eingriff in fremde Daten braucht eine ausdrueckliche Bestaetigung -
+    // die Checkbox allein ist zu leicht uebersehen, zumal sie vorbelegt ist.
+    var listName = '';
+    var selEl = $('blist');
+    if (selEl && selEl.selectedIndex >= 0 && selEl.options[selEl.selectedIndex]) {
+      listName = selEl.options[selEl.selectedIndex].text;
+    }
+    if (!confirm('Die Bring!-Liste' + (listName ? ' "' + listName + '"' : '') +
+                 ' wird zuerst vollständig geleert.\n\n' +
+                 'Auch selbst hinzugefügte Artikel (Spülmittel, WC-Papier, ...) gehen dabei verloren.\n\n' +
+                 'Danach werden ' + items.length + ' Artikel aus dem Menüplan eingetragen. Fortfahren?')) {
+      return;
+    }
+  }
   var btn = $('ibtn');
   btn.innerHTML = '<span class="spin w"></span> Importiere...';
   btn.disabled = true;
@@ -1710,11 +1762,11 @@ function validateIngredients(gerichte) {
   // Cross-check: remove zutaten that don't appear in any step text
   for (var i = 0; i < gerichte.length; i++) {
     var g = gerichte[i];
-    if (!g.zutaten || !g.schritte_vegi) continue;
+    if (!g.zutaten || !hatSchritte(g)) continue;
 
     // Build full text of all steps
     var allSteps = '';
-    var sv = g.schritte_vegi || [];
+    var sv = rezeptSchritte(g);
     var sf = g.schritte_fleisch || [];
     for (var j = 0; j < sv.length; j++) allSteps += ' ' + (sv[j].text||'').toLowerCase();
     for (var j = 0; j < sf.length; j++) allSteps += ' ' + (sf[j].text||'').toLowerCase();
@@ -1790,14 +1842,44 @@ function validateFotoRecipe(data) {
   return null;
 }
 
-function validateFullRecipe(data, expectedTags) {
+// Im Fleisch-Modus liefert der Worker NUR schritte_fleisch, im Vegi-Modus NUR
+// schritte_vegi, im optionalen Modus beides. Frueher wurde ueberall hart
+// schritte_vegi vorausgesetzt - im Fleisch-Modus scheiterte deshalb jedes
+// vollstaendige Rezept mit "Kochschritte fehlen".
+function rezeptSchritte(g) {
+  if (!g) return [];
+  if (Array.isArray(g.schritte_vegi) && g.schritte_vegi.length) return g.schritte_vegi;
+  if (Array.isArray(g.schritte_fleisch) && g.schritte_fleisch.length) return g.schritte_fleisch;
+  return [];
+}
+
+function hatSchritte(g) {
+  return rezeptSchritte(g).length > 0;
+}
+
+// Modusabhaengige Pflichtpruefung: welche Varianten MUESSEN vorhanden sein.
+function fehlendeSchritte(g, modus) {
+  var m = modus || G.modus || 'optional';
+  var hasV = Array.isArray(g.schritte_vegi) && g.schritte_vegi.length;
+  var hasF = Array.isArray(g.schritte_fleisch) && g.schritte_fleisch.length;
+  if (m === 'vegi')    return hasV ? null : 'vegetarische Kochschritte fehlen';
+  if (m === 'fleisch') return hasF ? null : 'Kochschritte mit Fleisch fehlen';
+  // optional: beide Varianten werden verlangt
+  if (!hasV && !hasF) return 'Kochschritte fehlen';
+  if (!hasV) return 'vegetarische Kochschritte fehlen';
+  if (!hasF) return 'Fleisch-Variante fehlt';
+  return null;
+}
+
+function validateFullRecipe(data, expectedTags, modus) {
   if (!data || !Array.isArray(data.gerichte)) return 'Feld "gerichte" fehlt';
   if (!data.gerichte.length) return 'Keine Gerichte enthalten';
   for (var i = 0; i < data.gerichte.length; i++) {
     var g = data.gerichte[i];
     if (!g.abend) return 'Gericht ' + (i+1) + ': Name fehlt';
     if (!Array.isArray(g.zutaten) || !g.zutaten.length) return 'Gericht ' + (i+1) + ': Zutaten fehlen';
-    if (!Array.isArray(g.schritte_vegi) || !g.schritte_vegi.length) return 'Gericht ' + (i+1) + ': Kochschritte fehlen';
+    var missing = fehlendeSchritte(g, modus);
+    if (missing) return 'Gericht ' + (i+1) + ': ' + missing;
   }
   if (expectedTags && expectedTags.length) {
     if (data.gerichte.length !== expectedTags.length) {
@@ -1869,6 +1951,7 @@ function currentOpts(extra) {
     reste: !!G.reste,
     resteMode: G.resteMode || 'mikro',
     freeze: !!G.freeze,
+    budget: !!G.budget,
     einkaufstag: EINKAUFSTAG_LANGNAME[G.einkaufstag || 'Mo']
   };
   if (extra) for (var k in extra) o[k] = extra[k];
@@ -2166,7 +2249,7 @@ function goWeek() {
   // erste) - sonst wuerde z.B. ein spaeter ausgetauschtes Gericht mit noch
   // fehlenden Kochschritten uebersehen, waehrend Gericht 1 bereits vollstaendig ist.
   var alleSchritteVorhanden = sug.gerichte.every(function(g) {
-    return g.schritte_vegi && g.schritte_vegi.length > 0;
+    return hatSchritte(g);
   });
   if (alleSchritteVorhanden) {
     goWeekRender(sug); return;
@@ -2196,7 +2279,7 @@ function goWeek() {
     // Anzahl UND Zuordnung ueber "tag" statt Array-Index - eine unvollstaendige
     // oder in falscher Reihenfolge zurueckgegebene Antwort darf nicht
     // stillschweigend als vollstaendiger Plan uebernommen werden.
-    var validationError = validateFullRecipe(parsed, expectedTags);
+    var validationError = validateFullRecipe(parsed, expectedTags, G.modus);
     if (validationError) throw new Error('Unvollständige Antwort: ' + validationError);
     var fg = parsed.gerichte || [];
     // Zuordnung ueber den eindeutigen "tag"-Schluessel, NICHT ueber den
@@ -2540,8 +2623,8 @@ function timelineCardDetail(entry) {
     '</div>';
 }
 
-function timelineStatusBadge(g) {
-  if (g._gekocht) return '<span style="font-size:11px;color:var(--grn);font-weight:700">&#10003; gekocht</span>';
+function timelineStatusBadge(g, entryStatus) {
+  if (g._gekocht || entryStatus === 'gekocht') return '<span style="font-size:11px;color:var(--grn);font-weight:700">&#10003; gekocht</span>';
   if (g._cancelled) return '<span style="font-size:11px;color:#999">' + (g.abend.indexOf('Auswärts') >= 0 ? '🍽 auswärts' : '❌ ausgefallen') + '</span>';
   return '<span style="font-size:11px;color:var(--gr3)">geplant</span>';
 }
@@ -2564,7 +2647,7 @@ function renderTimelineDayCard(entry, isToday, key) {
       '<div style="flex:1;min-width:0">' +
         (isToday ? '<div style="font-size:10px;font-weight:800;color:var(--red);letter-spacing:.5px;margin-bottom:2px">HEUTE</div>' : '') +
         '<div style="font-size:14px;font-weight:700;color:var(--txt);white-space:nowrap;overflow:hidden;text-overflow:ellipsis' + (g._cancelled?';text-decoration:line-through;opacity:.6':'') + '">' + esc(g.abend) + '</div>' +
-        '<div style="display:flex;gap:8px;align-items:center;margin-top:2px">' + timelineStatusBadge(g) +
+        '<div style="display:flex;gap:8px;align-items:center;margin-top:2px">' + timelineStatusBadge(g, entry && entry.entryStatus) +
           (entry.hasFullRecipe && g.zeit_total ? '<span style="font-size:11px;color:var(--gr3)">&#9200; ' + esc(g.zeit_total) + '</span>' : '') +
         '</div>' +
       '</div>' +
@@ -2751,16 +2834,20 @@ function normZs(zs) {
 
 function buildSteps(g) {
   var st = [];
-  var vegi = g.schritte_vegi || [];
-  var fleisch = g.schritte_fleisch || [];
+  // Hier ausdruecklich die echten Arrays verwenden, NICHT rezeptSchritte():
+  // dessen Fallback wuerde bei reinen Fleisch-Rezepten dieselben Schritte
+  // zusaetzlich als vegetarische Variante einreihen und alles verdoppeln.
+  var vegi = Array.isArray(g.schritte_vegi) ? g.schritte_vegi : [];
+  var fleisch = Array.isArray(g.schritte_fleisch) ? g.schritte_fleisch : [];
+  var beide = vegi.length > 0 && fleisch.length > 0;
   for (var i = 0; i < vegi.length; i++) st.push({
-    type: 'v', titel: vegi[i].titel || '', text: vegi[i].text,
+    type: beide ? 'v' : 'vo', titel: vegi[i].titel || '', text: vegi[i].text,
     timer_min: vegi[i].timer_min || 0, zs: normZs(vegi[i].zutaten_schritt),
     zubehoer: vegi[i].zubehoer || [], kontrolle: vegi[i].kontrolle || '',
     parallel: vegi[i].parallel_hinweis || ''
   });
   for (var i = 0; i < fleisch.length; i++) st.push({
-    type: 'f', titel: fleisch[i].titel || '', text: fleisch[i].text,
+    type: beide ? 'f' : 'fo', titel: fleisch[i].titel || '', text: fleisch[i].text,
     timer_min: fleisch[i].timer_min || 0, zs: normZs(fleisch[i].zutaten_schritt),
     zubehoer: fleisch[i].zubehoer || [], kontrolle: fleisch[i].kontrolle || '',
     parallel: fleisch[i].parallel_hinweis || ''
@@ -2937,7 +3024,10 @@ function beginCook() {
   renderCookStep();
 }
 
-var BADGES = { v: '<div class="badge bv">Basis - beide</div>', f: '<div class="badge bf">Fleisch-Beilage</div>', p: '<div class="badge bp">Für morgen</div>', fr: '<div class="badge bfr">Einfrieren</div>', t: '<div class="badge bt">Tipp</div>' };
+// "Basis - beide" und "Fleisch-Beilage" ergeben nur Sinn, wenn BEIDE Varianten
+// vorliegen. Liefert der Worker modusbedingt nur eine, sind das die Schritte des
+// ganzen Gerichts - dann gibt es eigene Badges (vo/fo) statt irrefuehrender.
+var BADGES = { v: '<div class="badge bv">Basis - beide</div>', f: '<div class="badge bf">Fleisch-Beilage</div>', vo: '<div class="badge bv">Vegetarisch</div>', fo: '<div class="badge bf">Mit Fleisch</div>', p: '<div class="badge bp">Für morgen</div>', fr: '<div class="badge bfr">Einfrieren</div>', t: '<div class="badge bt">Tipp</div>' };
 
 function updHeader() {
   var done = Object.keys(G.done).length;
@@ -3254,7 +3344,7 @@ function showPrint(ri) {
 
   var vSteps = '', fSteps = '', prepSteps = '', frzSteps = '', zRows = '';
 
-  var sv = g.schritte_vegi || [];
+  var sv = rezeptSchritte(g);
   for (var i = 0; i < sv.length; i++) {
     var timer = sv[i].timer_min > 0 ? '<span style="display:inline-block;background:#fff3e0;color:#e65100;font-size:11px;padding:2px 7px;border-radius:100px;margin-left:6px;font-weight:600">&#9201; ' + sv[i].timer_min + ' Min.</span>' : '';
     vSteps += '<div style="display:flex;gap:12px;margin-bottom:12px;align-items:flex-start">' +
@@ -3332,13 +3422,14 @@ function saveToHistory(planData) {
   if (!planData.planId) planData.planId = generatePlanId();
   var entry = {
     planId: planData.planId,
-    date: new Date().toISOString().slice(0,10),
+    date: isoDateLocal(new Date()),
     saved: new Date().toLocaleDateString('de-CH'),
     thema: sug ? sug.thema : 'Menüplan',
     personen: planData.personen || 2,
     kochabende: planData.n || 3,
     reste: planData.reste,
     freeze: planData.freeze,
+    budget: planData.budget,
     gerichte: sug ? sug.gerichte.map(function(g){ return {tag:g.tag, abend:g.abend}; }) : [],
     status: 'geplant',
     plan: planData
@@ -3409,7 +3500,7 @@ function buildTimelineDays() {
   var days = {}; // key: ISO-Datum -> Tag-Eintrag
   var activePlanId = G.activePlan ? G.activePlan.planId : null;
 
-  function addPlanDays(planData, isActivePlan, fallbackDateIso) {
+  function addPlanDays(planData, isActivePlan, fallbackDateIso, entryStatus) {
     if (!planData) return;
     var sug = planData.sug || (planData.sugs && planData.sugs[planData.sel != null ? planData.sel : 0]);
     if (!sug || !Array.isArray(sug.gerichte)) return;
@@ -3444,7 +3535,10 @@ function buildTimelineDays() {
         sugRef: sug,
         planId: planData.planId,
         isActivePlan: !!isActivePlan,
-        hasFullRecipe: !!(g.schritte_vegi && g.schritte_vegi.length)
+        // Fallback fuer Alt-Eintraege: dort wurde beim "Gekocht"-Knopf nur der
+        // Status des Verlaufseintrags gesetzt, nie _gekocht am Gericht.
+        entryStatus: entryStatus || null,
+        hasFullRecipe: hatSchritte(g)
       };
     }
   }
@@ -3462,11 +3556,11 @@ function buildTimelineDays() {
     // Aktiven Plan NICHT doppelt aus dem Verlauf einlesen - er wird unten
     // explizit und mit hoeherer Prioritaet ergaenzt.
     if (activePlanId && entry.planId === activePlanId) continue;
-    addPlanDays(entry.plan, false, entry.date);
+    addPlanDays(entry.plan, false, entry.date, entry.status);
   }
 
   // 2) Aktiver Plan zuletzt (hat Vorrang bei Datumsueberschneidungen)
-  if (G.activePlan) addPlanDays(G.activePlan, true, G.activePlan.date);
+  if (G.activePlan) addPlanDays(G.activePlan, true, G.activePlan.date, null);
 
   return days;
 }
@@ -3508,9 +3602,6 @@ function markEinkaufDone(itemCount) {
 // Plan - der Verlauf zeigte danach weiter den alten Stand.
 function persistActivePlan() {
   if (!G.activePlan) return;
-  // In der Nur-Ansicht eines Verlaufsplans darf nichts geschrieben werden -
-  // sonst wuerde G.sugs[G.sel] (der angesehene Plan) den aktiven ueberschreiben.
-  if (G.viewOnly) return;
   if (G.sel !== null && G.sugs && G.sugs[G.sel]) {
     G.activePlan.sug = G.sugs[G.sel];
     G.activePlan.sel = G.sel;
@@ -3592,7 +3683,6 @@ function currentWeekStart() {
 
 function setActivePlanAndGo() {
   if (G.sel === null) return;
-  G.viewOnly = false;
   var sug = G.sugs[G.sel];
   // Dedupe-Zusatz "(Variante N)" entfernen: der war nur zur Unterscheidung
   // mehrerer Vorschlaege gedacht - sobald einer ausgewaehlt und aktiviert
@@ -3602,7 +3692,7 @@ function setActivePlanAndGo() {
   var planData = {
     planId: generatePlanId(),
     sug: sug, sel: G.sel, n: G.n, personen: G.personen,
-    reste: G.reste, freeze: G.freeze, modus: G.modus, days: G.days,
+    reste: G.reste, freeze: G.freeze, budget: G.budget, modus: G.modus, days: G.days,
     weekStart: currentWeekStart(),        // immer Kalendermontag
     einkaufstag: G.einkaufstag || 'Mo',   // separat: nur Frische-/Promptlogik
     saved: new Date().toLocaleDateString('de-CH'),
@@ -3623,7 +3713,6 @@ function setActivePlanAndGo() {
 
 function openActivePlan(tab) {
   if (!G.activePlan || !G.activePlan.sug) return;
-  G.viewOnly = false;   // wir verlassen eine eventuelle Nur-Ansicht
   // sug ist massgeblich; sugsAll nur zur Anzeige der Alternativen
   var all = G.activePlan.sugsAll || [];
   var sel = G.activePlan.sel || 0;
@@ -4048,7 +4137,16 @@ function generateReplace() {
     ' Verfuegbare Zutaten der Woche mitnutzen: ' + otherZutaten + '.' +
     ' Fuer ' + (G.personen||2) + ' Personen.' +
     (G.reste ? ' Mit Resteverwertung am naechsten Tag.' : '') +
-    ' NUR valides JSON. Format: {"gerichte":[{"tag":"' + g.tag + '","abend":"Gerichtsname","mittag_nächster_tag":"Restname","zeit_aktiv":"20m","zeit_total":"40m","zutaten":[{"name":"X","menge":"Y"}],"schritte_vegi":[{"titel":"Schritt","text":"Detail","timer_min":0,"zutaten_schritt":[{"name":"X","menge":"Y"}],"zubehoer":[],"kontrolle":"","parallel_hinweis":""}],"tipp":"Tipp"}]}';
+    // Schrittfeld passend zum Modus - sonst verlangt das Beispiel eine Variante,
+    // die der Worker im gewaehlten Modus gar nicht liefern soll.
+    ' NUR valides JSON. Format: {"gerichte":[{"tag":"' + g.tag + '","abend":"Gerichtsname","mittag_nächster_tag":"Restname","zeit_aktiv":"20m","zeit_total":"40m","zutaten":[{"name":"X","menge":"Y"}],' +
+    (G.modus === 'fleisch'
+      ? '"schritte_fleisch":[SCHRITT]'
+      : G.modus === 'vegi'
+        ? '"schritte_vegi":[SCHRITT]'
+        : '"schritte_vegi":[SCHRITT],"schritte_fleisch":[SCHRITT]')
+      .split('SCHRITT').join('{"titel":"Schritt","text":"Detail","timer_min":0,"zutaten_schritt":[{"name":"X","menge":"Y"}],"zubehoer":[],"kontrolle":"","parallel_hinweis":""}') +
+    ',"tipp":"Tipp"}]}';
 
   callWorker('replace', msg, 5000, { dishes: existing, tag: g.tag })
     .then(function(raw) {
@@ -4056,7 +4154,7 @@ function generateReplace() {
       $('rep-gen-btn').disabled = false;
       try {
         var parsed = parseJSON(raw);
-        var repValidationError = validateFullRecipe(parsed);
+        var repValidationError = validateFullRecipe(parsed, null, G.modus);
         if (repValidationError) throw new Error(repValidationError);
         var gerichte = parsed.gerichte || [];
         // Exakt EIN Ersatzgericht erwartet - mehrere wuerden stillschweigend
@@ -4166,6 +4264,11 @@ function showLoggedIn() {
   if ($('login-err')) $('login-err').style.display = 'none';
   if ($('login-pw')) $('login-pw').value = '';
   if ($('user-menu-btn')) $('user-menu-btn').style.display = 'flex';
+  // Admin-Eintrag nur fuer Admins zeigen. Das ist reine Anzeige - der Worker
+  // prueft die Berechtigung bei jedem Aufruf selbst.
+  var showAdmin = !!(session && session.admin);
+  if ($('menu-admin')) $('menu-admin').style.display = showAdmin ? 'flex' : 'none';
+  if ($('menu-admin-sep')) $('menu-admin-sep').style.display = showAdmin ? 'block' : 'none';
   migrateOldLocalStorageKeys();
   loadPrefs();
   try {
@@ -4207,28 +4310,172 @@ function showChangePassword() {
 }
 
 function doChangePassword() {
-  // WICHTIG: Dies aendert nur die lokale Kopie. Der Worker prueft weiterhin
-  // gegen MP_USERS in Cloudflare - bis ein Admin das dort manuell nachzieht,
-  // wuerde jeder ECHTE Login mit dem neuen Passwort mit 401 fehlschlagen.
-  // Deshalb: session.verified NICHT setzen (kein falscher Offline-Zugriff
-  // vortaeuschen) und den Nutzer deutlich warnen statt eine falsche
-  // Erfolgsmeldung zu zeigen.
+  // Aendert das Passwort JETZT wirklich - der Worker schreibt den neuen
+  // PBKDF2-Hash nach KV. Frueher wurde nur die lokale Kopie ersetzt und der
+  // Nutzer auf einen manuellen Eingriff in Cloudflare verwiesen; danach
+  // scheiterte jeder echte Login mit 401.
   var oldPw = $('pw-old').value;
   var newPw = $('pw-new').value;
   var newPw2 = $('pw-new2').value;
   var err = $('pw-err');
-  if (!oldPw) { err.textContent = 'Bitte aktuelles Passwort eingeben'; err.style.display='block'; return; }
-  if (!newPw || newPw.length < 4) { err.textContent = 'Passwort muss mindestens 4 Zeichen haben'; err.style.display='block'; return; }
-  if (newPw !== newPw2) { err.textContent = 'Passwörter stimmen nicht überein'; err.style.display='block'; return; }
+  function fail(m) { err.textContent = m; err.style.display = 'block'; }
+  err.style.display = 'none';
+  if (!oldPw) return fail('Bitte aktuelles Passwort eingeben');
+  if (!newPw || newPw.length < 8) return fail('Neues Passwort braucht mindestens 8 Zeichen');
+  if (newPw !== newPw2) return fail('Passwörter stimmen nicht überein');
   var session = getSession();
-  if (!session || session.pw !== oldPw) { err.textContent = 'Falsches aktuelles Passwort'; err.style.display='block'; return; }
-  if (!confirm('Achtung: Das neue Passwort gilt erst, nachdem ein Admin es zusätzlich in Cloudflare (MP_USERS) angepasst hat. Bis dahin funktioniert die Anmeldung mit dem NEUEN Passwort nicht. Trotzdem fortfahren?')) return;
-  localStorage.setItem('gh_session', JSON.stringify({ username: session.username, pw: newPw, verified: false }));
-  $('pw-modal').style.display = 'none';
-  var ind = document.createElement('div');
-  ind.textContent = '⚠ Lokal gespeichert – bitte Admin bitten, MP_USERS in Cloudflare zu aktualisieren';
-  ind.style.cssText = 'position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#e65100;color:#fff;padding:12px 16px;border-radius:8px;font-size:13px;font-weight:600;z-index:999;max-width:90vw;text-align:center';
-  document.body.appendChild(ind); setTimeout(function(){ ind.remove(); }, 6000);
+  if (!session || session.pw !== oldPw) return fail('Falsches aktuelles Passwort');
+
+  var btn = $('pw-save');
+  if (btn) { btn.disabled = true; btn.textContent = 'Wird geändert...'; }
+  fetch(PROXY + '/users/password', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'X-MP-User': session.username, 'X-MP-Pass': oldPw },
+    body: JSON.stringify({ password: newPw })
+  }).then(function(r) {
+    return r.json().then(function(d) { return { ok: r.ok, d: d }; });
+  }).then(function(res) {
+    if (btn) { btn.disabled = false; btn.textContent = 'Passwort ändern'; }
+    if (!res.ok) return fail((res.d && res.d.error) || 'Änderung fehlgeschlagen');
+    // Session auf das neue Passwort umstellen, sonst schlagen alle weiteren
+    // Worker-Aufrufe in dieser Sitzung mit 401 fehl.
+    localStorage.setItem('gh_session', JSON.stringify({
+      username: session.username, pw: newPw, verified: true, admin: !!session.admin
+    }));
+    $('pw-modal').style.display = 'none';
+    $('pw-old').value = ''; $('pw-new').value = ''; $('pw-new2').value = '';
+    showSwapToast('Passwort geändert – gilt auf allen Geräten.', '#2e7d32');
+  }).catch(function(e) {
+    if (btn) { btn.disabled = false; btn.textContent = 'Passwort ändern'; }
+    fail('Netzwerkfehler: ' + e.message);
+  });
+}
+
+// ─── ADMIN: BENUTZERVERWALTUNG ────────────────────────────
+function isAdmin() {
+  var s = getSession();
+  return !!(s && s.admin);
+}
+
+function adminHeaders() {
+  var s = getSession();
+  return { 'Content-Type': 'application/json', 'X-MP-User': s.username, 'X-MP-Pass': s.pw };
+}
+
+function openAdmin() {
+  if (!isAdmin()) return;
+  go('sadmin');
+  loadAdminUsers();
+}
+
+function adminMsg(text, kind) {
+  var el = $('admin-msg');
+  if (!el) return;
+  el.className = 'st ' + (kind || 'ok');
+  el.textContent = text;
+  el.style.display = text ? 'block' : 'none';
+}
+
+function loadAdminUsers() {
+  var list = $('admin-list');
+  if (list) list.innerHTML = '<div style="padding:14px;color:var(--gr3);font-size:13px">Lädt...</div>';
+  fetch(PROXY + '/users', { headers: adminHeaders() })
+    .then(function(r) { return r.json().then(function(d) { return { ok: r.ok, d: d }; }); })
+    .then(function(res) {
+      if (!res.ok) { if (list) list.innerHTML = ''; return adminMsg((res.d && res.d.error) || 'Laden fehlgeschlagen', 'er'); }
+      renderAdminUsers(res.d.users || []);
+    })
+    .catch(function(e) { if (list) list.innerHTML = ''; adminMsg('Netzwerkfehler: ' + e.message, 'er'); });
+}
+
+function renderAdminUsers(users) {
+  var me = getSession().username;
+  var html = users.map(function(u) {
+    var badge = u.admin
+      ? '<span style="font-size:10px;font-weight:700;color:#fff;background:var(--red);padding:2px 6px;border-radius:4px">ADMIN</span>'
+      : '';
+    var src = u.source === 'env'
+      ? '<span style="font-size:10px;color:var(--gr3);border:.5px solid var(--bdr);padding:2px 6px;border-radius:4px">MP_USERS</span>'
+      : '';
+    var actions = '<button class="btn btn-out" style="padding:6px 10px;font-size:11px" onclick="adminResetPw(\'' + esc(u.username) + '\')">Passwort</button>';
+    if (u.username !== me) {
+      actions += '<button class="btn btn-out" style="padding:6px 10px;font-size:11px;color:var(--red)" onclick="adminDelete(\'' + esc(u.username) + '\')">Löschen</button>';
+    }
+    return '<div style="display:flex;align-items:center;gap:8px;padding:11px 14px;border-bottom:.5px solid var(--bdr)">' +
+      '<div style="flex:1;min-width:0">' +
+        '<div style="font-size:14px;font-weight:600;color:var(--txt);display:flex;align-items:center;gap:6px;flex-wrap:wrap">' +
+          esc(u.username) + badge + src + '</div>' +
+        (u.created ? '<div style="font-size:11px;color:var(--gr3)">seit ' +
+           esc(new Date(u.created).toLocaleDateString('de-CH')) + '</div>' : '') +
+      '</div><div style="display:flex;gap:6px">' + actions + '</div></div>';
+  }).join('');
+  var el = $('admin-list');
+  if (el) el.innerHTML = html || '<div style="padding:14px;color:var(--gr3);font-size:13px">Keine Benutzer</div>';
+  var cnt = $('admin-count');
+  if (cnt) cnt.textContent = users.length + (users.length === 1 ? ' Konto' : ' Konten');
+}
+
+function adminAddUser() {
+  var name = ($('admin-new-name').value || '').trim().toLowerCase();
+  var pw = $('admin-new-pw').value || '';
+  var mkAdmin = $('admin-new-admin') ? $('admin-new-admin').checked : false;
+  if (!/^[a-z0-9_-]{2,32}$/.test(name)) {
+    return adminMsg('Benutzername: 2–32 Zeichen, nur a–z, 0–9, _ und -', 'er');
+  }
+  if (pw.length < 8) return adminMsg('Passwort braucht mindestens 8 Zeichen', 'er');
+  var btn = $('admin-add-btn');
+  if (btn) { btn.disabled = true; btn.textContent = 'Wird angelegt...'; }
+  fetch(PROXY + '/users', {
+    method: 'POST', headers: adminHeaders(),
+    body: JSON.stringify({ username: name, password: pw, admin: mkAdmin })
+  }).then(function(r) { return r.json().then(function(d) { return { ok: r.ok, d: d }; }); })
+    .then(function(res) {
+      if (btn) { btn.disabled = false; btn.textContent = 'Benutzer anlegen'; }
+      if (!res.ok) return adminMsg((res.d && res.d.error) || 'Anlegen fehlgeschlagen', 'er');
+      $('admin-new-name').value = ''; $('admin-new-pw').value = '';
+      if ($('admin-new-admin')) $('admin-new-admin').checked = false;
+      adminMsg('"' + name + '" angelegt. Zugangsdaten jetzt weitergeben – ' +
+               'das Passwort ist danach nicht mehr einsehbar.', 'ok');
+      loadAdminUsers();
+    }).catch(function(e) {
+      if (btn) { btn.disabled = false; btn.textContent = 'Benutzer anlegen'; }
+      adminMsg('Netzwerkfehler: ' + e.message, 'er');
+    });
+}
+
+function adminResetPw(name) {
+  var pw = prompt('Neues Passwort für "' + name + '" (mind. 8 Zeichen):');
+  if (pw === null) return;
+  if (pw.length < 8) return adminMsg('Passwort braucht mindestens 8 Zeichen', 'er');
+  var wasSelf = name === getSession().username;
+  fetch(PROXY + '/users/password', {
+    method: 'POST', headers: adminHeaders(),
+    body: JSON.stringify({ username: name, password: pw })
+  }).then(function(r) { return r.json().then(function(d) { return { ok: r.ok, d: d }; }); })
+    .then(function(res) {
+      if (!res.ok) return adminMsg((res.d && res.d.error) || 'Fehlgeschlagen', 'er');
+      if (wasSelf) {
+        // Eigenes Passwort geaendert: Session mitziehen, sonst 401 bei allem Weiteren.
+        var s = getSession();
+        localStorage.setItem('gh_session', JSON.stringify({
+          username: s.username, pw: pw, verified: true, admin: !!s.admin
+        }));
+      }
+      adminMsg('Passwort für "' + name + '" gesetzt.', 'ok');
+    }).catch(function(e) { adminMsg('Netzwerkfehler: ' + e.message, 'er'); });
+}
+
+function adminDelete(name) {
+  if (!confirm('Konto "' + name + '" wirklich löschen?\n\n' +
+               'Die gespeicherten Pläne dieser Person bleiben im Repo erhalten, ' +
+               'sie kann sich aber nicht mehr anmelden.')) return;
+  fetch(PROXY + '/users/' + encodeURIComponent(name), { method: 'DELETE', headers: adminHeaders() })
+    .then(function(r) { return r.json().then(function(d) { return { ok: r.ok, d: d }; }); })
+    .then(function(res) {
+      if (!res.ok) return adminMsg((res.d && res.d.error) || 'Löschen fehlgeschlagen', 'er');
+      adminMsg('"' + name + '" gelöscht.', 'ok');
+      loadAdminUsers();
+    }).catch(function(e) { adminMsg('Netzwerkfehler: ' + e.message, 'er'); });
 }
 
 function resetLocalUsers() {
@@ -4497,14 +4744,13 @@ function submitRating() {
   }
   var g = G.sugs&&G.sel!==null ? G.sugs[G.sel].gerichte[G_rating.gerichtIdx] : null;
   if (g) {
-    var entry = { date:new Date().toISOString().slice(0,10), saved:new Date().toLocaleDateString('de-CH'), thema:G.sugs[G.sel].thema, gericht:g.abend, tag:g.tag, stars:G_rating.stars, label:STAR_LABELS[G_rating.stars], feedback:feedback, tags:G_rating.tags.slice(), personen:G.personen||2, zutaten:(g.zutaten||[]).map(function(z){return z.name;}).join(', ') };
+    var entry = { date:isoDateLocal(new Date()), saved:new Date().toLocaleDateString('de-CH'), thema:G.sugs[G.sel].thema, gericht:g.abend, tag:g.tag, stars:G_rating.stars, label:STAR_LABELS[G_rating.stars], feedback:feedback, tags:G_rating.tags.slice(), personen:G.personen||2, zutaten:(g.zutaten||[]).map(function(z){return z.name;}).join(', ') };
     saveRatingToGH(entry);
-    // Ueber planId zuordnen statt hist2[0] anzunehmen - der gerade gekochte
-    // Plan muss nicht der neueste Verlaufseintrag sein.
-    var hist2=JSON.parse(localStorage.getItem(userKey('local_history'))||'[]');
-    var hIdx = G.activePlan ? findHistoryEntryIndex(hist2, G.activePlan) : -1;
-    if (hIdx >= 0) { hist2[hIdx].stars=G_rating.stars; hist2[hIdx].ratingFeedback=feedback; hist2[hIdx].tags=G_rating.tags.slice(); }
-    localStorage.setItem(userKey('local_history'),JSON.stringify(hist2)); saveHistoryToGH(hist2);
+    // Die Bewertung EINES Gerichts wird NICHT mehr zusaetzlich als Bewertung
+    // des ganzen Menueplans gespeichert. Vorher zaehlte dieselbe Bewertung im
+    // Lernprofil doppelt (local_ratings + local_history), und ein einzelnes gut
+    // bewertetes Gericht liess den kompletten Plan als Liebling gelten.
+    // Eine Planbewertung vergibt man ausdruecklich ueber "★ Bewerten" im Verlauf.
   }
   $('rating-modal').style.display='none'; go(G_rating.returnScreen || 'sw');
   setTimeout(function(){var msg=G_rating.stars>=4?'Super! Bewertung gespeichert.':'Bewertung gespeichert.';showSt('ist',msg,'ok');setTimeout(function(){if($('ist'))$('ist').style.display='none';},3000);},300);
@@ -4577,7 +4823,9 @@ function renderHistoryList(history) {
       +'</div>'
       +'<div style="padding:8px 14px">'+dishes+'</div>'
       +'<div style="padding:0 14px 10px;display:flex;flex-direction:column;gap:6px">'
-        +(isLoved ? '<button class="btn btn-red" onclick="nochmalKochen('+i+')" style="padding:9px;font-size:13px;font-weight:700">🔁 Nochmal kochen</button>' : '')
+        // "Nochmal kochen" und "Erneut verwenden" riefen beide nochmalKochen()
+        // auf - dieselbe Aktion doppelt. Der verbleibende Knopf wird bei gut
+        // bewerteten Plaenen nur noch hervorgehoben statt zusaetzlich angeboten.
         +'<div style="display:flex;gap:6px"><button class="btn btn-out" onclick="viewHistoryEntry('+i+')" style="flex:1;padding:9px;font-size:12px">👁 Ansehen</button><button class="btn btn-out" onclick="nochmalKochen('+i+')" style="flex:1;padding:9px;font-size:12px">🔁 Erneut verwenden</button><button class="btn btn-out" onclick="showHistoryRating('+i+')" style="flex:1;padding:9px;font-size:12px">★ Bewerten</button></div>'
         +'<div style="display:flex;gap:6px">'+(status!=='gekocht'?'<button class="btn btn-out" onclick="markHistoryKekocht('+i+')" style="flex:1;padding:9px;font-size:12px">🍽 Gekocht</button>':'')+(status!=='geplant'?'<button class="btn btn-out" onclick="resetHistoryStatus('+i+')" style="padding:9px;font-size:12px">✕ Reset</button>':'')+'<button onclick="deleteHistoryPlan('+i+')" style="background:none;border:.5px solid var(--bdr);border-radius:8px;padding:9px 12px;color:var(--gr3);cursor:pointer;font-size:16px" title="Löschen">✕</button>'+'</div>'
       +'</div>'
@@ -4592,14 +4840,65 @@ function renderHistoryList(history) {
 // gibt es "Erneut verwenden" (nochmalKochen), das einen neuen Plan mit eigener
 // planId und aktuellem weekStart anlegt.
 function viewHistoryEntry(i) {
-  var e=window._history; if(!e||!e[i]||!e[i].plan)return;
-  var plan=JSON.parse(JSON.stringify(e[i].plan));
+  var e = window._history;
+  if (!e || !e[i] || !e[i].plan) return;
+  var plan = JSON.parse(JSON.stringify(e[i].plan));
   if (plan.sug) normalizeMittagFeld(plan.sug);
-  if(!plan.sug) return;
-  G.viewOnly = true;
-  G.sugs=[plan.sug];G.sel=0;G.sugsPartial=false;
-  goWeekRender(G.sugs[G.sel]);
-  showSwapToast('Nur-Ansicht – der aktive Plan bleibt unverändert.', '#1565c0');
+  if (!plan.sug) return;
+  // Vollstaendig getrennter Kontext: G.sugs/G.sel des AKTIVEN Plans bleiben
+  // unangetastet. Frueher wurden sie ueberschrieben - danach liefen "Jetzt
+  // kochen", Verschieben oder Loeschen auf dem historischen Plan, waehrend die
+  // Speichern, nicht die falsche Aktion.
+  G.histView = { plan: plan, index: i };
+  renderHistoryView();
+  go('shview');
+}
+
+function renderHistoryView() {
+  var hv = G.histView;
+  if (!hv) return;
+  var sug = hv.plan.sug;
+  var gerichte = sug.gerichte || [];
+  if ($('hv-title')) $('hv-title').textContent = sug.thema || 'Plan';
+  if ($('hv-sub')) {
+    $('hv-sub').textContent = (hv.plan.weekStart ? 'Woche ab ' +
+      new Date(hv.plan.weekStart + 'T00:00:00').toLocaleDateString('de-CH') : '') +
+      ' · ' + gerichte.length + (gerichte.length === 1 ? ' Gericht' : ' Gerichte');
+  }
+  var html = gerichte.map(function(g) {
+    var zut = (g.zutaten || []).map(function(z) {
+      return '<div style="display:flex;justify-content:space-between;gap:10px;padding:3px 0;font-size:12px">' +
+        '<span>' + esc(z.name) + '</span>' +
+        '<span style="color:var(--gr3)">' + mengeTxt(z.menge) + '</span></div>';
+    }).join('');
+    var d = hv.plan.weekStart ? dateFromTag(hv.plan.weekStart, (g.tag || '').slice(0, 2)) : null;
+    var datum = d ? d.toLocaleDateString('de-CH', { weekday: 'short', day: 'numeric', month: 'short' }) : esc(g.tag || '');
+    return '<div class="card" style="margin:10px">' +
+      '<div class="chead">' + esc(datum) + '</div>' +
+      '<div class="cbody">' +
+        '<div style="font-size:15px;font-weight:700;color:var(--txt)">' + esc(g.abend || '') + '</div>' +
+        (g.mittag_nächster_tag ? '<div style="font-size:12px;color:var(--gr3);margin-top:2px">&#8594; ' +
+           esc(g.mittag_tag || '') + ': ' + esc(g.mittag_nächster_tag) + '</div>' : '') +
+        (zut ? '<div style="margin-top:10px;border-top:.5px solid var(--bdr);padding-top:8px">' + zut + '</div>' : '') +
+      '</div></div>';
+  }).join('');
+  if ($('hv-list')) $('hv-list').innerHTML = html ||
+    '<div style="padding:16px;color:var(--gr3);font-size:13px">Keine Gerichte gespeichert.</div>';
+}
+
+function closeHistoryView() {
+  // Kontext restlos aufloesen, damit spaetere Aktionen garantiert wieder auf
+  // dem aktiven Plan arbeiten.
+  G.histView = null;
+  openHistory();
+}
+
+function reuseFromHistoryView() {
+  var hv = G.histView;
+  if (!hv) return;
+  var idx = hv.index;
+  G.histView = null;
+  nochmalKochen(idx);
 }
 
 // Alter Name bleibt als Alias erhalten, falls noch irgendwo referenziert.
@@ -4681,13 +4980,41 @@ function deleteHistoryPlan(i) {
   renderHistoryList(hist);
 }
 
+// Verlaufstatus und Gerichtsstatus muessen zusammenpassen: die Zeitachse liest
+// _gekocht am einzelnen Gericht, die Verlaufsliste den Status des Eintrags.
+// Frueher wurde nur Letzterer gesetzt - der Verlauf zeigte "Gekocht", die
+// Zeitachse weiterhin "geplant".
+function setHistoryDishesCooked(entry, cooked) {
+  var sug = entry && entry.plan && entry.plan.sug;
+  if (!sug || !Array.isArray(sug.gerichte)) return;
+  sug.gerichte.forEach(function(g) {
+    if (g._cancelled) return;           // Ausgefallenes bleibt ausgefallen
+    if (cooked) { if (!g._gekocht) g._gekocht = new Date().toISOString(); }
+    else delete g._gekocht;
+  });
+}
+
 function markHistoryKekocht(i) {
   var hist=window._history; if(!hist||!hist[i])return;
-  hist[i].status='gekocht'; localStorage.setItem(userKey('local_history'),JSON.stringify(hist)); saveHistoryToGH(hist); renderHistoryList(hist);
+  hist[i].status='gekocht';
+  setHistoryDishesCooked(hist[i], true);
+  localStorage.setItem(userKey('local_history'),JSON.stringify(hist)); saveHistoryToGH(hist); renderHistoryList(hist);
+  if (G.activePlan && G.activePlan.planId && G.activePlan.planId === hist[i].planId) {
+    G.activePlan.sug = hist[i].plan.sug;   // aktiven Plan mitziehen
+    try { localStorage.setItem(userKey('active_plan'), JSON.stringify(G.activePlan)); } catch(e) {}
+    updateDashboard();
+  }
 }
 function resetHistoryStatus(i) {
   var hist=window._history; if(!hist||!hist[i])return;
-  hist[i].status='geplant'; localStorage.setItem(userKey('local_history'),JSON.stringify(hist)); saveHistoryToGH(hist); renderHistoryList(hist);
+  hist[i].status='geplant';
+  setHistoryDishesCooked(hist[i], false);
+  localStorage.setItem(userKey('local_history'),JSON.stringify(hist)); saveHistoryToGH(hist); renderHistoryList(hist);
+  if (G.activePlan && G.activePlan.planId && G.activePlan.planId === hist[i].planId) {
+    G.activePlan.sug = hist[i].plan.sug;
+    try { localStorage.setItem(userKey('active_plan'), JSON.stringify(G.activePlan)); } catch(e) {}
+    updateDashboard();
+  }
 }
 function loadHistoryRecipes() {
   var saved=JSON.parse(localStorage.getItem(userKey('foto_rezepte'))||'[]'); var el=$('hrecipes-list'); if(!el)return;
@@ -4768,7 +5095,7 @@ function syncFotoRezepte(btn){
   fetch(PROXY+'/gh/'+ghFile('foto-rezepte.json'),{headers:h||{}})
     .then(function(r){return r.ok?r.json():null;})
     .then(function(d){
-      if(d&&d.content){var fr=JSON.parse(decodeURIComponent(escape(atob(d.content.split('\n').join('')))));if(Array.isArray(fr)){var local=JSON.parse(localStorage.getItem(userKey('foto_rezepte'))||'[]');var merged=fr.slice();local.forEach(function(l){if(!merged.find(function(g){return g.name===l.name;}))merged.push(l);});localStorage.setItem(userKey('foto_rezepte'),JSON.stringify(merged));loadSavedFotoRezepte();}}
+      if(d&&d.content){var fr=JSON.parse(decodeURIComponent(escape(atob(d.content.split('\n').join('')))));if(Array.isArray(fr)){var local=JSON.parse(localStorage.getItem(userKey('foto_rezepte'))||'[]');var merged=fr.slice();local.forEach(function(l){var lid=l._id;var dup=merged.find(function(g){return (lid&&g._id)?g._id===lid:(!g._id&&!lid&&g.name===l.name);});if(!dup)merged.push(l);});localStorage.setItem(userKey('foto_rezepte'),JSON.stringify(merged));loadSavedFotoRezepte();}}
       if(btn){btn.textContent='OK';setTimeout(function(){btn.textContent=origText;btn.disabled=false;},1500);}
     }).catch(function(){if(btn){btn.textContent='Err';setTimeout(function(){btn.textContent=origText;btn.disabled=false;},1500);}});
 }
@@ -4800,7 +5127,7 @@ function analyzeFoto(){
   var msg='Analysiere dieses Foto und leite ein vollständiges Rezept für '+p+' Personen ab. Gib alle Zutaten mit genauen Mengen an. Schritte detailliert.'+(hint?' Hinweis: '+hint+'.':'');
   var session=getSession(); var authH=session?{'X-MP-User':session.username,'X-MP-Pass':session.pw,'Content-Type':'application/json'}:{'Content-Type':'application/json'};
   fetch(PROXY+'/generate',{method:'POST',headers:authH,body:JSON.stringify({
-    kind:'photo', opts:currentOpts(), model:'claude-sonnet-4-5', max_tokens:3000,
+    kind:'photo', opts:currentOpts(), model:'claude-sonnet-4-5-20250929', max_tokens:3000,
     messages:[{role:'user',content:[{type:'image',source:{type:'base64',media_type:G_foto.mime,data:G_foto.base64}},{type:'text',text:msg}]}]})})
   .then(function(r){return r.json();})
   .then(function(d){
@@ -4847,7 +5174,7 @@ function fotoRezeptId(r){
 
 function saveFotoRezeptSilent(r,status){
   var _fid=fotoRezeptId(r);
-  var entry={_id:_fid,id:Date.now(),date:new Date().toISOString().slice(0,10),saved:new Date().toLocaleDateString('de-CH'),name:r.name||'Foto-Rezept',beschreibung:r.beschreibung||'',zeit_aktiv:r.zeit_aktiv||'',zeit_total:r.zeit_total||'',portionen:G_foto.portionen,zutaten:r.zutaten||[],schritte:r.schritte||[],tipp:r.tipp||'',status:status||r.status||'geplant',stars:r.stars,ratingFeedback:r.ratingFeedback};
+  var entry={_id:_fid,id:Date.now(),date:isoDateLocal(new Date()),saved:new Date().toLocaleDateString('de-CH'),name:r.name||'Foto-Rezept',beschreibung:r.beschreibung||'',zeit_aktiv:r.zeit_aktiv||'',zeit_total:r.zeit_total||'',portionen:G_foto.portionen,zutaten:r.zutaten||[],schritte:r.schritte||[],tipp:r.tipp||'',status:status||r.status||'geplant',stars:r.stars,ratingFeedback:r.ratingFeedback};
   var saved=JSON.parse(localStorage.getItem(userKey('foto_rezepte'))||'[]');
   // Primaer ueber die stabile _id zuordnen; Namensvergleich nur noch als
   // Fallback fuer Alt-Eintraege, die noch keine _id haben.
@@ -4902,9 +5229,13 @@ function loadPrefs(){
   try{var prefs=JSON.parse(localStorage.getItem(getPrefKey())||'{}');
   if(prefs.personen!==undefined){G.personen=prefs.personen;setP(prefs.personen);}
   if(prefs.modus!==undefined){G.modus=prefs.modus;setM(prefs.modus);}
+  // Einkaufstag ZUERST: setN() verteilt die Kochtage relativ dazu. Frueher lief
+  // setN() davor und rechnete noch mit dem vorherigen Einkaufstag.
+  G.einkaufstag = prefs.einkaufstag || 'Mo';
   if(prefs.n!==undefined){G.n=prefs.n;setN(prefs.n);}
   if(prefs.reste!==undefined){G.reste=prefs.reste;setR(prefs.reste);}
   if(prefs.freeze!==undefined){G.freeze=prefs.freeze;setF(prefs.freeze);}
+  G.budget=prefs.budget||0;setB(G.budget);
   G.einkaufstag = prefs.einkaufstag || 'Mo';
   if($('pref-einkaufstag')) $('pref-einkaufstag').value = G.einkaufstag;
   return prefs;}catch(e){return{};}
@@ -4938,6 +5269,7 @@ function savePrefs(){
   prefs.avoid=$('pref-avoid')?$('pref-avoid').value.trim():'';
   prefs.einkaufstag=$('pref-einkaufstag')?$('pref-einkaufstag').value:'Mo';
   localStorage.setItem(getPrefKey(),JSON.stringify(prefs));
+  G.einkaufstag = prefs.einkaufstag;   // vor setN(), siehe loadPrefs()
   if(prefs.personen){G.personen=prefs.personen;setP(prefs.personen);}if(prefs.modus){G.modus=prefs.modus;setM(prefs.modus);}if(prefs.n){G.n=prefs.n;setN(prefs.n);}if(prefs.reste!==undefined){G.reste=prefs.reste;setR(prefs.reste);}if(prefs.freeze!==undefined){G.freeze=prefs.freeze;setF(prefs.freeze);}
   G.einkaufstag = prefs.einkaufstag;
   if($('prefs-saved')){$('prefs-saved').style.display='block';setTimeout(function(){$('prefs-saved').style.display='none';go('sh');},1500);}
@@ -5045,7 +5377,9 @@ var STAR_LABELS = ['', 'Nicht so gut', 'Geht so', 'Gut', 'Sehr gut', 'Ausgezeich
     <div style="height:.5px;background:var(--bdr);margin:0 16px"></div>
     <button onclick="showInviteLink();toggleUserMenu()" style="width:100%;text-align:left;padding:11px 16px;background:none;border:none;font-size:14px;color:var(--txt);cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:10px"><span style="font-size:17px">&#128279;</span> Einladungslink</button>
     <div style="height:.5px;background:var(--bdr);margin:0 16px"></div>
-    <button onclick="showChangePassword();toggleUserMenu()" style="width:100%;text-align:left;padding:11px 16px;background:none;border:none;font-size:14px;color:var(--txt);cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:10px"><span style="font-size:17px">&#128274;</span> Passwort ändern (lokal)</button>
+    <button id="menu-admin" onclick="openAdmin();toggleUserMenu()" style="display:none;width:100%;text-align:left;padding:11px 16px;background:none;border:none;font-size:14px;color:var(--txt);cursor:pointer;font-family:inherit;align-items:center;gap:10px"><span style="font-size:17px">&#128101;</span> Benutzer verwalten</button>
+    <div id="menu-admin-sep" style="display:none;height:.5px;background:var(--bdr);margin:0 16px"></div>
+    <button onclick="showChangePassword();toggleUserMenu()" style="width:100%;text-align:left;padding:11px 16px;background:none;border:none;font-size:14px;color:var(--txt);cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:10px"><span style="font-size:17px">&#128274;</span> Passwort ändern</button>
     <div style="height:.5px;background:var(--bdr);margin:0 16px"></div>
     <button onclick="doLogout();toggleUserMenu()" style="width:100%;text-align:left;padding:11px 16px;background:none;border:none;font-size:14px;color:var(--red);cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:10px"><span style="font-size:17px">&#8594;</span> Abmelden</button>
   </div>
@@ -5129,18 +5463,72 @@ var STAR_LABELS = ['', 'Nicht so gut', 'Geht so', 'Gut', 'Sehr gut', 'Ausgezeich
   </div>
 </div>
 
+<!-- VERLAUF: NUR-ANSICHT (read-only, komplett getrennt vom aktiven Plan) -->
+<div class="scr" id="shview">
+  <div class="hero" style="display:flex;align-items:center;gap:12px">
+    <button onclick="closeHistoryView()" style="background:none;border:none;color:#fff;font-size:20px;cursor:pointer;padding:0">&#8592;</button>
+    <div style="min-width:0"><h1 style="font-size:18px;margin:0" id="hv-title"></h1>
+      <p style="margin:2px 0 0" id="hv-sub"></p></div>
+  </div>
+  <div class="st inf" style="margin:10px">
+    Nur-Ansicht eines vergangenen Plans. Bearbeiten, Einkaufen und Kochen sind hier nicht möglich –
+    dein aktiver Plan bleibt unberührt.
+  </div>
+  <div id="hv-list"></div>
+  <div style="padding:6px 10px 30px">
+    <button class="btn btn-red" onclick="reuseFromHistoryView()" style="width:100%;padding:13px">🔁 Als neuen aktiven Plan verwenden</button>
+  </div>
+</div>
+
+<!-- ADMIN: BENUTZERVERWALTUNG -->
+<div class="scr" id="sadmin">
+  <div class="hero" style="display:flex;align-items:center;gap:12px">
+    <button onclick="go('sh')" style="background:none;border:none;color:#fff;font-size:20px;cursor:pointer;padding:0">&#8592;</button>
+    <div><h1 style="font-size:18px;margin:0">Benutzer verwalten</h1>
+      <p style="margin:2px 0 0" id="admin-count"></p></div>
+  </div>
+
+  <div id="admin-msg" class="st ok" style="display:none"></div>
+
+  <div class="card" style="margin:10px">
+    <div class="chead">Neuen Benutzer anlegen</div>
+    <div class="cbody">
+      <div class="fld"><label>Benutzername</label>
+        <input type="text" id="admin-new-name" placeholder="z.B. familie-meier" autocapitalize="none" autocorrect="off" spellcheck="false"></div>
+      <div class="fld"><label>Passwort (mind. 8 Zeichen)</label>
+        <input type="text" id="admin-new-pw" placeholder="Passwort vergeben" autocomplete="off"></div>
+      <label style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--txt);margin:4px 0 12px;cursor:pointer">
+        <input type="checkbox" id="admin-new-admin" style="width:18px;height:18px"> Darf ebenfalls Benutzer verwalten</label>
+      <button class="btn btn-red" id="admin-add-btn" onclick="adminAddUser()" style="width:100%;padding:12px">Benutzer anlegen</button>
+      <div style="font-size:11px;color:var(--gr3);margin-top:10px;line-height:1.5">
+        Das Passwort wird nur als Hash gespeichert und ist danach nicht mehr einsehbar.
+        Notiere es dir, bevor du es weitergibst. Jeder Benutzer sieht ausschliesslich seine eigenen Pläne.</div>
+    </div>
+  </div>
+
+  <div class="card" style="margin:10px">
+    <div class="chead">Konten</div>
+    <div id="admin-list"></div>
+  </div>
+
+  <div style="font-size:11px;color:var(--gr3);padding:4px 20px 30px;line-height:1.5">
+    Mit <b>MP_USERS</b> markierte Konten stammen aus der Cloudflare-Variable. Sie lassen sich
+    hier nicht löschen, aber über „Passwort" auf ein gehashtes Konto umstellen.
+  </div>
+</div>
+
 <!-- PASSWORD MODAL -->
 <div id="pw-modal" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);z-index:100;align-items:flex-end;justify-content:center">
   <div style="background:#fff;border-radius:20px 20px 0 0;padding:24px 20px 36px;width:100%;max-width:480px">
     <div style="font-size:16px;font-weight:700;color:var(--txt);margin-bottom:6px">Passwort ändern</div>
-    <div style="font-size:11px;color:var(--gr3);margin-bottom:14px;line-height:1.5">Ändert das Passwort nur auf diesem Gerät. Damit es überall gilt, muss es zusätzlich in Cloudflare unter <b>MP_USERS</b> angepasst werden.</div>
+    <div style="font-size:11px;color:var(--gr3);margin-bottom:14px;line-height:1.5">Gilt sofort auf allen Geräten. Mindestens 8 Zeichen.</div>
     <div class="fld"><label>Aktuelles Passwort</label><input type="password" id="pw-old" autocomplete="current-password"></div>
     <div class="fld"><label>Neues Passwort</label><input type="password" id="pw-new" autocomplete="new-password"></div>
     <div class="fld"><label>Neues Passwort wiederholen</label><input type="password" id="pw-new2" autocomplete="new-password"></div>
     <div id="pw-err" style="font-size:12px;color:var(--red);margin-bottom:8px;display:none"></div>
     <div style="display:flex;gap:8px">
       <button class="btn btn-out" onclick="$('pw-modal').style.display='none'" style="flex:1;padding:11px;font-size:13px">Abbrechen</button>
-      <button class="btn btn-red" onclick="doChangePassword()" style="flex:1;padding:11px;font-size:13px">Ändern</button>
+      <button id="pw-save" class="btn btn-red" onclick="doChangePassword()" style="flex:1;padding:11px;font-size:13px">Ändern</button>
     </div>
   </div>
 </div>
