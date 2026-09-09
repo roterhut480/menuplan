@@ -1,1286 +1,135 @@
 [
   {
-    "planId": "2c7a6ffd-382e-451c-9082-a1bffdcfdcb9",
-    "date": "2026-09-08",
-    "saved": "8.9.2026",
-    "thema": "Mediterran",
+    "planId": "df06e602-959f-4ebd-94b5-27d9becc782e",
+    "date": "2026-09-09",
+    "saved": "9.9.2026",
+    "thema": "Indisch",
     "personen": 2,
-    "kochabende": 1,
-    "reste": 0,
-    "freeze": 0,
-    "gerichte": [
-      {
-        "tag": "Mi",
-        "abend": "Auberginen-Tomaten-Gratin mit Feta"
-      }
-    ],
-    "status": "einkauf",
-    "plan": {
-      "planId": "2c7a6ffd-382e-451c-9082-a1bffdcfdcb9",
-      "sug": {
-        "id": 3,
-        "thema": "Mediterran",
-        "kochabende": [
-          "Mi"
-        ],
-        "gerichte": [
-          {
-            "tag": "Mi",
-            "abend": "Auberginen-Tomaten-Gratin mit Feta",
-            "zeit_aktiv": "25 min",
-            "zeit_total": "60 min",
-            "schritte_vegi": [
-              {
-                "titel": "Auberginen vorbereiten",
-                "text": "Auberginen waschen und die Enden abschneiden.",
-                "timer_min": 0,
-                "zutaten_schritt": [
-                  {
-                    "name": "Auberginen",
-                    "menge": "600 g"
-                  }
-                ],
-                "zubehoer": [
-                  "Schneidebrett",
-                  "Messer"
-                ],
-                "kontrolle": "Auberginen sind gereinigt und gekürzt.",
-                "parallel_hinweis": ""
-              },
-              {
-                "titel": "Auberginen schneiden",
-                "text": "Auberginen in 5mm dicke Scheiben schneiden.",
-                "timer_min": 0,
-                "zutaten_schritt": [
-                  {
-                    "name": "Auberginen",
-                    "menge": "600 g"
-                  }
-                ],
-                "zubehoer": [
-                  "Schneidebrett",
-                  "Messer"
-                ],
-                "kontrolle": "Scheiben sind gleichmässig dünn.",
-                "parallel_hinweis": ""
-              },
-              {
-                "titel": "Auberginen salzen",
-                "text": "Auberginenscheiben mit 1g Salz bestreuen und 10 Minuten ruhen lassen.",
-                "timer_min": 10,
-                "zutaten_schritt": [
-                  {
-                    "name": "Salz",
-                    "menge": "1 g"
-                  }
-                ],
-                "zubehoer": [],
-                "kontrolle": "Auberginen haben leicht Flüssigkeit abgegeben.",
-                "parallel_hinweis": "Knoblauch schälen und Tomaten vorbereiten."
-              },
-              {
-                "titel": "Knoblauch schälen",
-                "text": "Knoblauchzehen schälen und fein hacken.",
-                "timer_min": 0,
-                "zutaten_schritt": [
-                  {
-                    "name": "Knoblauch",
-                    "menge": "2 Zehen"
-                  }
-                ],
-                "zubehoer": [
-                  "Schneidebrett",
-                  "Messer"
-                ],
-                "kontrolle": "Knoblauch ist fein gehackt.",
-                "parallel_hinweis": ""
-              },
-              {
-                "titel": "Tomaten vorbereiten",
-                "text": "Tomaten waschen und in 8mm dicke Scheiben schneiden.",
-                "timer_min": 0,
-                "zutaten_schritt": [
-                  {
-                    "name": "Tomaten",
-                    "menge": "400 g"
-                  }
-                ],
-                "zubehoer": [
-                  "Schneidebrett",
-                  "Messer"
-                ],
-                "kontrolle": "Tomatenscheiben sind gleichmässig.",
-                "parallel_hinweis": ""
-              },
-              {
-                "titel": "Feta zerbröckeln",
-                "text": "Feta mit den Händen in grosse Bröckel zerbröckeln.",
-                "timer_min": 0,
-                "zutaten_schritt": [
-                  {
-                    "name": "Feta",
-                    "menge": "150 g"
-                  }
-                ],
-                "zubehoer": [],
-                "kontrolle": "Feta ist in ungleichmässige Bröckel zerlegt.",
-                "parallel_hinweis": ""
-              },
-              {
-                "titel": "Auberginen trocken tupfen",
-                "text": "Auberginenscheiben mit Papiertüchern trocken tupfen.",
-                "timer_min": 0,
-                "zutaten_schritt": [
-                  {
-                    "name": "Auberginen",
-                    "menge": "600 g"
-                  }
-                ],
-                "zubehoer": [
-                  "Papiertücher"
-                ],
-                "kontrolle": "Auberginen sind trocken.",
-                "parallel_hinweis": ""
-              },
-              {
-                "titel": "Backblech vorbereiten",
-                "text": "Backblech mit 10ml Olivenöl dünn ausstreichen.",
-                "timer_min": 0,
-                "zutaten_schritt": [
-                  {
-                    "name": "Olivenöl",
-                    "menge": "10 ml"
-                  }
-                ],
-                "zubehoer": [
-                  "Backblech",
-                  "Backpinsel"
-                ],
-                "kontrolle": "Blech ist leicht geölt.",
-                "parallel_hinweis": ""
-              },
-              {
-                "titel": "Erste Auberginen-Schicht legen",
-                "text": "Ein Drittel der Auberginenscheiben auf das Backblech legen.",
-                "timer_min": 0,
-                "zutaten_schritt": [
-                  {
-                    "name": "Auberginen",
-                    "menge": "200 g"
-                  }
-                ],
-                "zubehoer": [
-                  "Backblech"
-                ],
-                "kontrolle": "Scheiben bedecken den Boden gleichmässig.",
-                "parallel_hinweis": ""
-              },
-              {
-                "titel": "Knoblauch und Oregano aufstreuen",
-                "text": "Die Hälfte des Knoblauchs und 0,5 TL Oregano auf die Auberginen streuen.",
-                "timer_min": 0,
-                "zutaten_schritt": [
-                  {
-                    "name": "Knoblauch",
-                    "menge": "1 Zehe"
-                  },
-                  {
-                    "name": "Oregano",
-                    "menge": "0.5 TL"
-                  }
-                ],
-                "zubehoer": [],
-                "kontrolle": "Gewürze sind verteilt.",
-                "parallel_hinweis": ""
-              },
-              {
-                "titel": "Erste Tomaten-Schicht legen",
-                "text": "Die Hälfte der Tomatenscheiben auf die Auberginen legen.",
-                "timer_min": 0,
-                "zutaten_schritt": [
-                  {
-                    "name": "Tomaten",
-                    "menge": "200 g"
-                  }
-                ],
-                "zubehoer": [
-                  "Backblech"
-                ],
-                "kontrolle": "Tomaten bedecken die Schicht gleichmässig.",
-                "parallel_hinweis": ""
-              },
-              {
-                "titel": "Mit 1g Salz und Pfeffer würzen",
-                "text": "Die erste Schicht mit 1g Salz und 0,5g Pfeffer würzen.",
-                "timer_min": 0,
-                "zutaten_schritt": [
-                  {
-                    "name": "Salz",
-                    "menge": "1 g"
-                  },
-                  {
-                    "name": "Pfeffer",
-                    "menge": "0.5 g"
-                  }
-                ],
-                "zubehoer": [],
-                "kontrolle": "Salz und Pfeffer sind verteilt.",
-                "parallel_hinweis": ""
-              },
-              {
-                "titel": "Zweite Auberginen-Schicht legen",
-                "text": "Zweites Drittel der Auberginenscheiben auf die Tomaten legen.",
-                "timer_min": 0,
-                "zutaten_schritt": [
-                  {
-                    "name": "Auberginen",
-                    "menge": "200 g"
-                  }
-                ],
-                "zubehoer": [
-                  "Backblech"
-                ],
-                "kontrolle": "Scheiben bedecken die vorherige Schicht gleichmässig.",
-                "parallel_hinweis": ""
-              },
-              {
-                "titel": "Restlichen Knoblauch aufstreuen",
-                "text": "Den restlichen Knoblauch und 0,5 TL Oregano aufstreuen.",
-                "timer_min": 0,
-                "zutaten_schritt": [
-                  {
-                    "name": "Knoblauch",
-                    "menge": "1 Zehe"
-                  },
-                  {
-                    "name": "Oregano",
-                    "menge": "0.5 TL"
-                  }
-                ],
-                "zubehoer": [],
-                "kontrolle": "Gewürze sind verteilt.",
-                "parallel_hinweis": ""
-              },
-              {
-                "titel": "Zweite Tomaten-Schicht legen",
-                "text": "Die restlichen Tomatenscheiben auf die Auberginen legen.",
-                "timer_min": 0,
-                "zutaten_schritt": [
-                  {
-                    "name": "Tomaten",
-                    "menge": "200 g"
-                  }
-                ],
-                "zubehoer": [
-                  "Backblech"
-                ],
-                "kontrolle": "Tomaten bedecken die Schicht.",
-                "parallel_hinweis": ""
-              },
-              {
-                "titel": "Mit Salz und Pfeffer würzen",
-                "text": "Die zweite Schicht mit 0,5g Pfeffer würzen.",
-                "timer_min": 0,
-                "zutaten_schritt": [
-                  {
-                    "name": "Pfeffer",
-                    "menge": "0.5 g"
-                  }
-                ],
-                "zubehoer": [],
-                "kontrolle": "Pfeffer ist verteilt.",
-                "parallel_hinweis": ""
-              },
-              {
-                "titel": "Restliche Auberginen-Schicht legen",
-                "text": "Das letzte Drittel der Auberginenscheiben auf die Tomaten legen.",
-                "timer_min": 0,
-                "zutaten_schritt": [
-                  {
-                    "name": "Auberginen",
-                    "menge": "200 g"
-                  }
-                ],
-                "zubehoer": [
-                  "Backblech"
-                ],
-                "kontrolle": "Scheiben bedecken die Schicht.",
-                "parallel_hinweis": ""
-              },
-              {
-                "titel": "Mit Olivenöl beträufeln",
-                "text": "Die oberste Schicht mit 30ml Olivenöl beträufeln.",
-                "timer_min": 0,
-                "zutaten_schritt": [
-                  {
-                    "name": "Olivenöl",
-                    "menge": "30 ml"
-                  }
-                ],
-                "zubehoer": [],
-                "kontrolle": "Öl ist gleichmässig verteilt.",
-                "parallel_hinweis": ""
-              },
-              {
-                "titel": "Feta verteilen",
-                "text": "Die Feta-Bröckel gleichmässig über das Gratin verteilen.",
-                "timer_min": 0,
-                "zutaten_schritt": [
-                  {
-                    "name": "Feta",
-                    "menge": "150 g"
-                  }
-                ],
-                "zubehoer": [],
-                "kontrolle": "Feta ist gleichmässig verteilt.",
-                "parallel_hinweis": ""
-              },
-              {
-                "titel": "Ofen vorheizen",
-                "text": "Ofen auf 200 Grad Celsius Ober- und Unterhitze vorheizen.",
-                "timer_min": 0,
-                "zutaten_schritt": [],
-                "zubehoer": [
-                  "Ofen"
-                ],
-                "kontrolle": "Ofen zeigt 200 Grad an.",
-                "parallel_hinweis": ""
-              },
-              {
-                "titel": "Gratin backen",
-                "text": "Backblech in den vorgeheizten Ofen stellen und 35 Minuten backen.",
-                "timer_min": 35,
-                "zutaten_schritt": [],
-                "zubehoer": [
-                  "Ofen",
-                  "Backblech"
-                ],
-                "kontrolle": "Auberginen sind weich und Feta leicht gebräunt.",
-                "parallel_hinweis": "Tisch decken und Getränke vorbereiten."
-              },
-              {
-                "titel": "Gratin ruhen lassen",
-                "text": "Gratin aus dem Ofen nehmen und 3 Minuten ruhen lassen.",
-                "timer_min": 3,
-                "zutaten_schritt": [],
-                "zubehoer": [
-                  "Topfhandschuhe"
-                ],
-                "kontrolle": "Gratin ist nur noch leicht dampfend.",
-                "parallel_hinweis": ""
-              },
-              {
-                "titel": "Gratin servieren",
-                "text": "Gratin direkt auf Teller portionieren und servieren.",
-                "timer_min": 0,
-                "zutaten_schritt": [],
-                "zubehoer": [
-                  "Servierspaten"
-                ],
-                "kontrolle": "Gratin ist noch warm und appetitlich angerichtet.",
-                "parallel_hinweis": ""
-              }
-            ],
-            "zutaten": [
-              {
-                "name": "Auberginen",
-                "menge": "600 g"
-              },
-              {
-                "name": "Tomaten",
-                "menge": "400 g"
-              },
-              {
-                "name": "Feta",
-                "menge": "150 g"
-              },
-              {
-                "name": "Olivenöl",
-                "menge": "40 ml"
-              },
-              {
-                "name": "Knoblauch",
-                "menge": "2 Zehen"
-              },
-              {
-                "name": "Oregano",
-                "menge": "1 TL"
-              },
-              {
-                "name": "Salz",
-                "menge": "2 g"
-              },
-              {
-                "name": "Pfeffer",
-                "menge": "1 g"
-              }
-            ],
-            "tipp": "Das Auberginen-Tomaten-Gratin schmeckt auch lauwarm sehr gut und kann einfach mit frischem Brot serviert werden. Für mehr Würze kann eine Prise Chili-Pulver hinzugefügt werden."
-          }
-        ]
-      },
-      "sel": 2,
-      "n": 1,
-      "personen": 2,
-      "reste": 0,
-      "freeze": 0,
-      "modus": "vegi",
-      "days": {
-        "Mo": null,
-        "Di": null,
-        "Mi": "normal",
-        "Do": null,
-        "Fr": null,
-        "Sa": null,
-        "So": null
-      },
-      "weekStart": "2026-09-07",
-      "einkaufstag": "Mi",
-      "saved": "8.9.2026",
-      "bringImportedAt": null,
-      "bringItemCount": 0,
-      "sugsAll": [
-        {
-          "id": 1,
-          "thema": "Mediterran (Variante 1)",
-          "kochabende": [
-            "Mi"
-          ],
-          "gerichte": [
-            {
-              "tag": "Mi",
-              "abend": "Vegetarische Moussaka mit Auberginen und Zucchini",
-              "zeit_aktiv": "25m",
-              "zeit_total": "50m"
-            }
-          ]
-        },
-        {
-          "id": 2,
-          "thema": "Italienisch",
-          "kochabende": [
-            "Mi"
-          ],
-          "gerichte": [
-            {
-              "tag": "Mi",
-              "abend": "Auberginen-Parmigiana",
-              "zeit_aktiv": "25m",
-              "zeit_total": "50m"
-            }
-          ]
-        },
-        {
-          "id": 3,
-          "thema": "Mediterran",
-          "kochabende": [
-            "Mi"
-          ],
-          "gerichte": [
-            {
-              "tag": "Mi",
-              "abend": "Auberginen-Tomaten-Gratin mit Feta",
-              "zeit_aktiv": "25 min",
-              "zeit_total": "60 min",
-              "schritte_vegi": [
-                {
-                  "titel": "Auberginen vorbereiten",
-                  "text": "Auberginen waschen und die Enden abschneiden.",
-                  "timer_min": 0,
-                  "zutaten_schritt": [
-                    {
-                      "name": "Auberginen",
-                      "menge": "600 g"
-                    }
-                  ],
-                  "zubehoer": [
-                    "Schneidebrett",
-                    "Messer"
-                  ],
-                  "kontrolle": "Auberginen sind gereinigt und gekürzt.",
-                  "parallel_hinweis": ""
-                },
-                {
-                  "titel": "Auberginen schneiden",
-                  "text": "Auberginen in 5mm dicke Scheiben schneiden.",
-                  "timer_min": 0,
-                  "zutaten_schritt": [
-                    {
-                      "name": "Auberginen",
-                      "menge": "600 g"
-                    }
-                  ],
-                  "zubehoer": [
-                    "Schneidebrett",
-                    "Messer"
-                  ],
-                  "kontrolle": "Scheiben sind gleichmässig dünn.",
-                  "parallel_hinweis": ""
-                },
-                {
-                  "titel": "Auberginen salzen",
-                  "text": "Auberginenscheiben mit 1g Salz bestreuen und 10 Minuten ruhen lassen.",
-                  "timer_min": 10,
-                  "zutaten_schritt": [
-                    {
-                      "name": "Salz",
-                      "menge": "1 g"
-                    }
-                  ],
-                  "zubehoer": [],
-                  "kontrolle": "Auberginen haben leicht Flüssigkeit abgegeben.",
-                  "parallel_hinweis": "Knoblauch schälen und Tomaten vorbereiten."
-                },
-                {
-                  "titel": "Knoblauch schälen",
-                  "text": "Knoblauchzehen schälen und fein hacken.",
-                  "timer_min": 0,
-                  "zutaten_schritt": [
-                    {
-                      "name": "Knoblauch",
-                      "menge": "2 Zehen"
-                    }
-                  ],
-                  "zubehoer": [
-                    "Schneidebrett",
-                    "Messer"
-                  ],
-                  "kontrolle": "Knoblauch ist fein gehackt.",
-                  "parallel_hinweis": ""
-                },
-                {
-                  "titel": "Tomaten vorbereiten",
-                  "text": "Tomaten waschen und in 8mm dicke Scheiben schneiden.",
-                  "timer_min": 0,
-                  "zutaten_schritt": [
-                    {
-                      "name": "Tomaten",
-                      "menge": "400 g"
-                    }
-                  ],
-                  "zubehoer": [
-                    "Schneidebrett",
-                    "Messer"
-                  ],
-                  "kontrolle": "Tomatenscheiben sind gleichmässig.",
-                  "parallel_hinweis": ""
-                },
-                {
-                  "titel": "Feta zerbröckeln",
-                  "text": "Feta mit den Händen in grosse Bröckel zerbröckeln.",
-                  "timer_min": 0,
-                  "zutaten_schritt": [
-                    {
-                      "name": "Feta",
-                      "menge": "150 g"
-                    }
-                  ],
-                  "zubehoer": [],
-                  "kontrolle": "Feta ist in ungleichmässige Bröckel zerlegt.",
-                  "parallel_hinweis": ""
-                },
-                {
-                  "titel": "Auberginen trocken tupfen",
-                  "text": "Auberginenscheiben mit Papiertüchern trocken tupfen.",
-                  "timer_min": 0,
-                  "zutaten_schritt": [
-                    {
-                      "name": "Auberginen",
-                      "menge": "600 g"
-                    }
-                  ],
-                  "zubehoer": [
-                    "Papiertücher"
-                  ],
-                  "kontrolle": "Auberginen sind trocken.",
-                  "parallel_hinweis": ""
-                },
-                {
-                  "titel": "Backblech vorbereiten",
-                  "text": "Backblech mit 10ml Olivenöl dünn ausstreichen.",
-                  "timer_min": 0,
-                  "zutaten_schritt": [
-                    {
-                      "name": "Olivenöl",
-                      "menge": "10 ml"
-                    }
-                  ],
-                  "zubehoer": [
-                    "Backblech",
-                    "Backpinsel"
-                  ],
-                  "kontrolle": "Blech ist leicht geölt.",
-                  "parallel_hinweis": ""
-                },
-                {
-                  "titel": "Erste Auberginen-Schicht legen",
-                  "text": "Ein Drittel der Auberginenscheiben auf das Backblech legen.",
-                  "timer_min": 0,
-                  "zutaten_schritt": [
-                    {
-                      "name": "Auberginen",
-                      "menge": "200 g"
-                    }
-                  ],
-                  "zubehoer": [
-                    "Backblech"
-                  ],
-                  "kontrolle": "Scheiben bedecken den Boden gleichmässig.",
-                  "parallel_hinweis": ""
-                },
-                {
-                  "titel": "Knoblauch und Oregano aufstreuen",
-                  "text": "Die Hälfte des Knoblauchs und 0,5 TL Oregano auf die Auberginen streuen.",
-                  "timer_min": 0,
-                  "zutaten_schritt": [
-                    {
-                      "name": "Knoblauch",
-                      "menge": "1 Zehe"
-                    },
-                    {
-                      "name": "Oregano",
-                      "menge": "0.5 TL"
-                    }
-                  ],
-                  "zubehoer": [],
-                  "kontrolle": "Gewürze sind verteilt.",
-                  "parallel_hinweis": ""
-                },
-                {
-                  "titel": "Erste Tomaten-Schicht legen",
-                  "text": "Die Hälfte der Tomatenscheiben auf die Auberginen legen.",
-                  "timer_min": 0,
-                  "zutaten_schritt": [
-                    {
-                      "name": "Tomaten",
-                      "menge": "200 g"
-                    }
-                  ],
-                  "zubehoer": [
-                    "Backblech"
-                  ],
-                  "kontrolle": "Tomaten bedecken die Schicht gleichmässig.",
-                  "parallel_hinweis": ""
-                },
-                {
-                  "titel": "Mit 1g Salz und Pfeffer würzen",
-                  "text": "Die erste Schicht mit 1g Salz und 0,5g Pfeffer würzen.",
-                  "timer_min": 0,
-                  "zutaten_schritt": [
-                    {
-                      "name": "Salz",
-                      "menge": "1 g"
-                    },
-                    {
-                      "name": "Pfeffer",
-                      "menge": "0.5 g"
-                    }
-                  ],
-                  "zubehoer": [],
-                  "kontrolle": "Salz und Pfeffer sind verteilt.",
-                  "parallel_hinweis": ""
-                },
-                {
-                  "titel": "Zweite Auberginen-Schicht legen",
-                  "text": "Zweites Drittel der Auberginenscheiben auf die Tomaten legen.",
-                  "timer_min": 0,
-                  "zutaten_schritt": [
-                    {
-                      "name": "Auberginen",
-                      "menge": "200 g"
-                    }
-                  ],
-                  "zubehoer": [
-                    "Backblech"
-                  ],
-                  "kontrolle": "Scheiben bedecken die vorherige Schicht gleichmässig.",
-                  "parallel_hinweis": ""
-                },
-                {
-                  "titel": "Restlichen Knoblauch aufstreuen",
-                  "text": "Den restlichen Knoblauch und 0,5 TL Oregano aufstreuen.",
-                  "timer_min": 0,
-                  "zutaten_schritt": [
-                    {
-                      "name": "Knoblauch",
-                      "menge": "1 Zehe"
-                    },
-                    {
-                      "name": "Oregano",
-                      "menge": "0.5 TL"
-                    }
-                  ],
-                  "zubehoer": [],
-                  "kontrolle": "Gewürze sind verteilt.",
-                  "parallel_hinweis": ""
-                },
-                {
-                  "titel": "Zweite Tomaten-Schicht legen",
-                  "text": "Die restlichen Tomatenscheiben auf die Auberginen legen.",
-                  "timer_min": 0,
-                  "zutaten_schritt": [
-                    {
-                      "name": "Tomaten",
-                      "menge": "200 g"
-                    }
-                  ],
-                  "zubehoer": [
-                    "Backblech"
-                  ],
-                  "kontrolle": "Tomaten bedecken die Schicht.",
-                  "parallel_hinweis": ""
-                },
-                {
-                  "titel": "Mit Salz und Pfeffer würzen",
-                  "text": "Die zweite Schicht mit 0,5g Pfeffer würzen.",
-                  "timer_min": 0,
-                  "zutaten_schritt": [
-                    {
-                      "name": "Pfeffer",
-                      "menge": "0.5 g"
-                    }
-                  ],
-                  "zubehoer": [],
-                  "kontrolle": "Pfeffer ist verteilt.",
-                  "parallel_hinweis": ""
-                },
-                {
-                  "titel": "Restliche Auberginen-Schicht legen",
-                  "text": "Das letzte Drittel der Auberginenscheiben auf die Tomaten legen.",
-                  "timer_min": 0,
-                  "zutaten_schritt": [
-                    {
-                      "name": "Auberginen",
-                      "menge": "200 g"
-                    }
-                  ],
-                  "zubehoer": [
-                    "Backblech"
-                  ],
-                  "kontrolle": "Scheiben bedecken die Schicht.",
-                  "parallel_hinweis": ""
-                },
-                {
-                  "titel": "Mit Olivenöl beträufeln",
-                  "text": "Die oberste Schicht mit 30ml Olivenöl beträufeln.",
-                  "timer_min": 0,
-                  "zutaten_schritt": [
-                    {
-                      "name": "Olivenöl",
-                      "menge": "30 ml"
-                    }
-                  ],
-                  "zubehoer": [],
-                  "kontrolle": "Öl ist gleichmässig verteilt.",
-                  "parallel_hinweis": ""
-                },
-                {
-                  "titel": "Feta verteilen",
-                  "text": "Die Feta-Bröckel gleichmässig über das Gratin verteilen.",
-                  "timer_min": 0,
-                  "zutaten_schritt": [
-                    {
-                      "name": "Feta",
-                      "menge": "150 g"
-                    }
-                  ],
-                  "zubehoer": [],
-                  "kontrolle": "Feta ist gleichmässig verteilt.",
-                  "parallel_hinweis": ""
-                },
-                {
-                  "titel": "Ofen vorheizen",
-                  "text": "Ofen auf 200 Grad Celsius Ober- und Unterhitze vorheizen.",
-                  "timer_min": 0,
-                  "zutaten_schritt": [],
-                  "zubehoer": [
-                    "Ofen"
-                  ],
-                  "kontrolle": "Ofen zeigt 200 Grad an.",
-                  "parallel_hinweis": ""
-                },
-                {
-                  "titel": "Gratin backen",
-                  "text": "Backblech in den vorgeheizten Ofen stellen und 35 Minuten backen.",
-                  "timer_min": 35,
-                  "zutaten_schritt": [],
-                  "zubehoer": [
-                    "Ofen",
-                    "Backblech"
-                  ],
-                  "kontrolle": "Auberginen sind weich und Feta leicht gebräunt.",
-                  "parallel_hinweis": "Tisch decken und Getränke vorbereiten."
-                },
-                {
-                  "titel": "Gratin ruhen lassen",
-                  "text": "Gratin aus dem Ofen nehmen und 3 Minuten ruhen lassen.",
-                  "timer_min": 3,
-                  "zutaten_schritt": [],
-                  "zubehoer": [
-                    "Topfhandschuhe"
-                  ],
-                  "kontrolle": "Gratin ist nur noch leicht dampfend.",
-                  "parallel_hinweis": ""
-                },
-                {
-                  "titel": "Gratin servieren",
-                  "text": "Gratin direkt auf Teller portionieren und servieren.",
-                  "timer_min": 0,
-                  "zutaten_schritt": [],
-                  "zubehoer": [
-                    "Servierspaten"
-                  ],
-                  "kontrolle": "Gratin ist noch warm und appetitlich angerichtet.",
-                  "parallel_hinweis": ""
-                }
-              ],
-              "zutaten": [
-                {
-                  "name": "Auberginen",
-                  "menge": "600 g"
-                },
-                {
-                  "name": "Tomaten",
-                  "menge": "400 g"
-                },
-                {
-                  "name": "Feta",
-                  "menge": "150 g"
-                },
-                {
-                  "name": "Olivenöl",
-                  "menge": "40 ml"
-                },
-                {
-                  "name": "Knoblauch",
-                  "menge": "2 Zehen"
-                },
-                {
-                  "name": "Oregano",
-                  "menge": "1 TL"
-                },
-                {
-                  "name": "Salz",
-                  "menge": "2 g"
-                },
-                {
-                  "name": "Pfeffer",
-                  "menge": "1 g"
-                }
-              ],
-              "tipp": "Das Auberginen-Tomaten-Gratin schmeckt auch lauwarm sehr gut und kann einfach mit frischem Brot serviert werden. Für mehr Würze kann eine Prise Chili-Pulver hinzugefügt werden."
-            }
-          ]
-        }
-      ],
-      "sugsPartial": false
-    }
-  },
-  {
-    "planId": "fd8b7e00-e201-404f-a858-39511ee76e4d",
-    "date": "2026-09-07",
-    "saved": "7.9.2026",
-    "thema": "Marokkanisch",
-    "personen": 2,
-    "kochabende": 2,
+    "kochabende": 3,
     "reste": 0,
     "freeze": 0,
     "gerichte": [
       {
         "tag": "Mo",
-        "abend": "Marokkanische Linsensuppe mit Harissa"
+        "abend": "Paneer Tikka Masala mit Basmatireis"
+      },
+      {
+        "tag": "Mi",
+        "abend": "Kichererbsen-Spinat-Curry"
       },
       {
         "tag": "Fr",
-        "abend": "Vegetarisches Tajine mit Kichererbsen und Trockenfrüchten"
+        "abend": "Aloo Gobi mit Naan"
       }
     ],
     "status": "geplant",
     "plan": {
-      "planId": "fd8b7e00-e201-404f-a858-39511ee76e4d",
+      "planId": "df06e602-959f-4ebd-94b5-27d9becc782e",
       "sug": {
         "id": 3,
-        "thema": "Marokkanisch",
+        "thema": "Indisch",
         "kochabende": [
           "Mo",
+          "Mi",
           "Fr"
         ],
         "gerichte": [
           {
             "tag": "Mo",
-            "abend": "Marokkanische Linsensuppe mit Harissa",
-            "zeit_aktiv": "15m",
-            "zeit_total": "25m"
+            "abend": "Paneer Tikka Masala mit Basmatireis",
+            "zeit_aktiv": "25m",
+            "zeit_total": "40m"
+          },
+          {
+            "tag": "Mi",
+            "abend": "Kichererbsen-Spinat-Curry",
+            "zeit_aktiv": "18m",
+            "zeit_total": "20m"
           },
           {
             "tag": "Fr",
-            "abend": "Vegetarisches Tajine mit Kichererbsen und Trockenfrüchten",
-            "zeit_aktiv": "25m",
-            "zeit_total": "40m"
+            "abend": "Aloo Gobi mit Naan",
+            "zeit_aktiv": "22m",
+            "zeit_total": "35m"
           }
         ]
       },
       "sel": 2,
-      "n": 2,
+      "n": 3,
       "personen": 2,
       "reste": 0,
       "freeze": 0,
-      "modus": "vegi",
-      "days": {
-        "Mo": "schnell",
-        "Di": null,
-        "Mi": null,
-        "Do": null,
-        "Fr": "aufwendig",
-        "Sa": null,
-        "So": null
-      },
-      "weekStart": "2026-09-06",
-      "saved": "7.9.2026",
-      "bringImportedAt": null,
-      "bringItemCount": 0,
-      "sugsAll": [
-        {
-          "id": 1,
-          "thema": "Mediterran (Variante 1)",
-          "kochabende": [
-            "Mo",
-            "Fr"
-          ],
-          "gerichte": [
-            {
-              "tag": "Mo",
-              "abend": "Shakshuka mit Spinat und Feta",
-              "zeit_aktiv": "18m",
-              "zeit_total": "25m"
-            },
-            {
-              "tag": "Fr",
-              "abend": "Auberginen-Tomaten-Auflauf mit Ricotta",
-              "zeit_aktiv": "35m",
-              "zeit_total": "55m"
-            }
-          ]
-        },
-        {
-          "id": 2,
-          "thema": "Mediterran",
-          "kochabende": [
-            "Mo",
-            "Fr"
-          ],
-          "gerichte": [
-            {
-              "tag": "Mo",
-              "abend": "Shakshuka mit Feta und Gemüse",
-              "zeit_aktiv": "18m",
-              "zeit_total": "25m"
-            },
-            {
-              "tag": "Fr",
-              "abend": "Gefüllte Auberginen mit Tomaten und Pinienkernen",
-              "zeit_aktiv": "35m",
-              "zeit_total": "50m"
-            }
-          ]
-        },
-        {
-          "id": 3,
-          "thema": "Marokkanisch",
-          "kochabende": [
-            "Mo",
-            "Fr"
-          ],
-          "gerichte": [
-            {
-              "tag": "Mo",
-              "abend": "Marokkanische Linsensuppe mit Harissa",
-              "zeit_aktiv": "15m",
-              "zeit_total": "25m"
-            },
-            {
-              "tag": "Fr",
-              "abend": "Vegetarisches Tajine mit Kichererbsen und Trockenfrüchten",
-              "zeit_aktiv": "25m",
-              "zeit_total": "40m"
-            }
-          ]
-        }
-      ],
-      "sugsPartial": true
-    }
-  },
-  {
-    "planId": "941a5562-b211-4b07-9f02-0125a6b15090",
-    "date": "2026-09-07",
-    "saved": "7.9.2026",
-    "thema": "Mediterran (Variante 1)",
-    "personen": 1,
-    "kochabende": 2,
-    "reste": 0,
-    "freeze": 0,
-    "gerichte": [
-      {
-        "tag": "Mi",
-        "abend": "Spanischer Tortilla mit Salat"
-      },
-      {
-        "tag": "So",
-        "abend": "Griechischer Horiatiki-Salat mit Feta und Oliven"
-      }
-    ],
-    "status": "einkauf",
-    "plan": {
-      "planId": "941a5562-b211-4b07-9f02-0125a6b15090",
-      "sug": {
-        "id": 1,
-        "thema": "Mediterran (Variante 1)",
-        "kochabende": [
-          "Mi",
-          "So"
-        ],
-        "gerichte": [
-          {
-            "tag": "Mi",
-            "abend": "Spanischer Tortilla mit Salat",
-            "zeit_aktiv": "18m",
-            "zeit_total": "25m"
-          },
-          {
-            "tag": "So",
-            "abend": "Griechischer Horiatiki-Salat mit Feta und Oliven",
-            "zeit_aktiv": "12m",
-            "zeit_total": "12m"
-          }
-        ]
-      },
-      "sel": 0,
-      "n": 2,
-      "personen": 1,
-      "reste": 0,
-      "freeze": 0,
-      "modus": "vegi",
-      "days": {
-        "Mo": null,
-        "Di": null,
-        "Mi": "schnell",
-        "Do": null,
-        "Fr": null,
-        "Sa": null,
-        "So": "schnell"
-      },
-      "weekStart": "2026-09-06",
-      "saved": "7.9.2026",
-      "bringImportedAt": null,
-      "bringItemCount": 0,
-      "sugsAll": [
-        {
-          "id": 1,
-          "thema": "Mediterran (Variante 1)",
-          "kochabende": [
-            "Mi",
-            "So"
-          ],
-          "gerichte": [
-            {
-              "tag": "Mi",
-              "abend": "Spanischer Tortilla mit Salat",
-              "zeit_aktiv": "18m",
-              "zeit_total": "25m"
-            },
-            {
-              "tag": "So",
-              "abend": "Griechischer Horiatiki-Salat mit Feta und Oliven",
-              "zeit_aktiv": "12m",
-              "zeit_total": "12m"
-            }
-          ]
-        },
-        {
-          "id": 2,
-          "thema": "Mediterran",
-          "kochabende": [
-            "Mi",
-            "So"
-          ],
-          "gerichte": [
-            {
-              "tag": "Mi",
-              "abend": "Auberginen-Tomaten-Gratin",
-              "zeit_aktiv": "18m",
-              "zeit_total": "40m"
-            },
-            {
-              "tag": "So",
-              "abend": "Griechischer Horta-Salat mit Feta",
-              "zeit_aktiv": "12m",
-              "zeit_total": "12m"
-            }
-          ]
-        },
-        {
-          "id": 3,
-          "thema": "Marokkanisch",
-          "kochabende": [
-            "Mi",
-            "So"
-          ],
-          "gerichte": [
-            {
-              "tag": "Mi",
-              "abend": "Kichererbsen-Tagine mit Kuerbis",
-              "zeit_aktiv": "18m",
-              "zeit_total": "32m"
-            },
-            {
-              "tag": "So",
-              "abend": "Couscous-Salat mit gruenen Oliven und Minze",
-              "zeit_aktiv": "15m",
-              "zeit_total": "15m"
-            }
-          ]
-        }
-      ],
-      "sugsPartial": true
-    }
-  },
-  {
-    "date": "2026-09-05",
-    "saved": "5.9.2026",
-    "thema": "Mediterran",
-    "personen": 1,
-    "kochabende": 3,
-    "reste": 1,
-    "freeze": 1,
-    "gerichte": [
-      {
-        "tag": "Mo",
-        "abend": "Linsenbolognese mit Pappardelle"
-      },
-      {
-        "tag": "Mi",
-        "abend": "Minestrone-Suppe"
-      },
-      {
-        "tag": "So",
-        "abend": "Auberginen-Tomaten-Auflauf"
-      }
-    ],
-    "status": "geplant",
-    "plan": {
-      "sug": {
-        "id": 1,
-        "thema": "Mediterran",
-        "kochabende": [
-          "Mo",
-          "Mi",
-          "So"
-        ],
-        "gerichte": [
-          {
-            "tag": "Mo",
-            "abend": "Linsenbolognese mit Pappardelle",
-            "zeit_aktiv": "25m",
-            "zeit_total": "40m",
-            "mittag_nächster_tag": "Pasta-Reste aufgewärmt"
-          },
-          {
-            "tag": "Mi",
-            "abend": "Minestrone-Suppe",
-            "zeit_aktiv": "18m",
-            "zeit_total": "25m",
-            "mittag_nächster_tag": "Minestrone aufgewärmt"
-          },
-          {
-            "tag": "So",
-            "abend": "Auberginen-Tomaten-Auflauf",
-            "zeit_aktiv": "35m",
-            "zeit_total": "60m",
-            "mittag_nächster_tag": "Auflauf-Portion zum Einfrieren"
-          }
-        ]
-      },
-      "sel": 0,
-      "n": 3,
-      "personen": 1,
-      "reste": 1,
-      "freeze": 1,
       "modus": "vegi",
       "days": {
         "Mo": "normal",
         "Di": null,
         "Mi": "schnell",
         "Do": null,
-        "Fr": null,
+        "Fr": "normal",
         "Sa": null,
-        "So": "aufwendig"
+        "So": null
       },
-      "weekStart": "2026-08-30",
-      "saved": "5.9.2026",
+      "weekStart": "2026-09-07",
+      "einkaufstag": "Mi",
+      "saved": "9.9.2026",
       "bringImportedAt": null,
       "bringItemCount": 0,
       "sugsAll": [
         {
           "id": 1,
-          "thema": "Mediterran",
+          "thema": "Mediterran (Variante 1)",
           "kochabende": [
             "Mo",
             "Mi",
-            "So"
+            "Fr"
           ],
           "gerichte": [
             {
               "tag": "Mo",
-              "abend": "Linsenbolognese mit Pappardelle",
+              "abend": "Ofengebackene Feta-Gemüseplatte mit Kichererbsen",
               "zeit_aktiv": "25m",
-              "zeit_total": "40m",
-              "mittag_nächster_tag": "Pasta-Reste aufgewärmt"
+              "zeit_total": "40m"
             },
             {
               "tag": "Mi",
-              "abend": "Minestrone-Suppe",
-              "zeit_aktiv": "18m",
-              "zeit_total": "25m",
-              "mittag_nächster_tag": "Minestrone aufgewärmt"
+              "abend": "Tomatencreme-Pasta mit Rucola",
+              "zeit_aktiv": "15m",
+              "zeit_total": "18m"
             },
             {
-              "tag": "So",
-              "abend": "Auberginen-Tomaten-Auflauf",
-              "zeit_aktiv": "35m",
-              "zeit_total": "60m",
-              "mittag_nächster_tag": "Auflauf-Portion zum Einfrieren"
+              "tag": "Fr",
+              "abend": "Griechischer Linsensalat mit Fetakäse und Oliven",
+              "zeit_aktiv": "20m",
+              "zeit_total": "30m"
             }
           ]
         },
         {
           "id": 2,
-          "thema": "Mediterran (Variante 2)",
+          "thema": "Mediterran",
           "kochabende": [
             "Mo",
             "Mi",
-            "So"
+            "Fr"
           ],
           "gerichte": [
             {
               "tag": "Mo",
-              "abend": "Linsenbolognese mit Pappardelle",
+              "abend": "Gefüllte Auberginen mit Tomaten und Feta",
               "zeit_aktiv": "25m",
-              "zeit_total": "40m",
-              "mittag_nächster_tag": "Pasta-Reste aufgewärmt"
+              "zeit_total": "45m"
             },
             {
               "tag": "Mi",
-              "abend": "Tomaten-Kichererbsen-Eintopf",
-              "zeit_aktiv": "15m",
-              "zeit_total": "20m",
-              "mittag_nächster_tag": "Eintopf-Reste"
+              "abend": "Caprese-Salat mit Kichererbsen",
+              "zeit_aktiv": "12m",
+              "zeit_total": "12m"
             },
             {
-              "tag": "So",
-              "abend": "Auberginen-Tomaten-Auflauf",
-              "zeit_aktiv": "35m",
-              "zeit_total": "60m",
-              "mittag_nächster_tag": "Auflauf-Portion zum Einfrieren"
+              "tag": "Fr",
+              "abend": "Spinat-Ricotta-Ravioli mit Salbei-Butter",
+              "zeit_aktiv": "22m",
+              "zeit_total": "38m"
             }
           ]
         },
@@ -1290,29 +139,134 @@
           "kochabende": [
             "Mo",
             "Mi",
-            "So"
+            "Fr"
           ],
           "gerichte": [
             {
               "tag": "Mo",
-              "abend": "Linsenbolognese mit Pappardelle",
+              "abend": "Paneer Tikka Masala mit Basmatireis",
               "zeit_aktiv": "25m",
-              "zeit_total": "40m",
-              "mittag_nächster_tag": "Pasta-Reste aufgewärmt"
+              "zeit_total": "40m"
             },
             {
               "tag": "Mi",
               "abend": "Kichererbsen-Spinat-Curry",
               "zeit_aktiv": "18m",
-              "zeit_total": "20m",
-              "mittag_nächster_tag": "Curry-Reste"
+              "zeit_total": "20m"
             },
             {
-              "tag": "So",
-              "abend": "Auberginen-Tomaten-Auflauf",
-              "zeit_aktiv": "35m",
-              "zeit_total": "60m",
-              "mittag_nächster_tag": "Auflauf-Portion zum Einfrieren"
+              "tag": "Fr",
+              "abend": "Aloo Gobi mit Naan",
+              "zeit_aktiv": "22m",
+              "zeit_total": "35m"
+            }
+          ]
+        }
+      ],
+      "sugsPartial": true
+    }
+  },
+  {
+    "planId": "f9e9685b-3fe6-4680-858b-348c44a81dc8",
+    "date": "2026-09-08",
+    "saved": "8.9.2026",
+    "thema": "Mediterran",
+    "personen": 2,
+    "kochabende": 3,
+    "reste": 0,
+    "freeze": 1,
+    "gerichte": [
+      {
+        "tag": "Mo",
+        "abend": "Pasta mit Tomaten-Zucchini-Sauce und optional Hackfleisch"
+      },
+      {
+        "tag": "Mi",
+        "abend": "Griechischer Salat mit Feta, Oliven und Kichererbsen"
+      },
+      {
+        "tag": "Fr",
+        "abend": "Risotto mit Spinat und Feta"
+      }
+    ],
+    "status": "geplant",
+    "plan": {
+      "planId": "f9e9685b-3fe6-4680-858b-348c44a81dc8",
+      "sug": {
+        "id": 1,
+        "thema": "Mediterran",
+        "kochabende": [
+          "Mo",
+          "Mi",
+          "Fr"
+        ],
+        "gerichte": [
+          {
+            "tag": "Mo",
+            "abend": "Pasta mit Tomaten-Zucchini-Sauce und optional Hackfleisch",
+            "zeit_aktiv": "25m",
+            "zeit_total": "40m"
+          },
+          {
+            "tag": "Mi",
+            "abend": "Griechischer Salat mit Feta, Oliven und Kichererbsen",
+            "zeit_aktiv": "15m",
+            "zeit_total": "15m"
+          },
+          {
+            "tag": "Fr",
+            "abend": "Risotto mit Spinat und Feta",
+            "zeit_aktiv": "30m",
+            "zeit_total": "45m"
+          }
+        ]
+      },
+      "sel": 0,
+      "n": 3,
+      "personen": 2,
+      "reste": 0,
+      "freeze": 1,
+      "modus": "optional",
+      "days": {
+        "Mo": "normal",
+        "Di": null,
+        "Mi": "normal",
+        "Do": null,
+        "Fr": "normal",
+        "Sa": null,
+        "So": null
+      },
+      "weekStart": "2026-09-06",
+      "saved": "8.9.2026",
+      "bringImportedAt": null,
+      "bringItemCount": 0,
+      "sugsAll": [
+        {
+          "id": 1,
+          "thema": "Mediterran",
+          "kochabende": [
+            "Mo",
+            "Mi",
+            "Fr"
+          ],
+          "gerichte": [
+            {
+              "tag": "Mo",
+              "abend": "Pasta mit Tomaten-Zucchini-Sauce und optional Hackfleisch",
+              "zeit_aktiv": "25m",
+              "zeit_total": "40m"
+            },
+            {
+              "tag": "Mi",
+              "abend": "Griechischer Salat mit Feta, Oliven und Kichererbsen",
+              "zeit_aktiv": "15m",
+              "zeit_total": "15m"
+            },
+            {
+              "tag": "Fr",
+              "abend": "Risotto mit Spinat und Feta",
+              "zeit_aktiv": "30m",
+              "zeit_total": "45m"
             }
           ]
         }
