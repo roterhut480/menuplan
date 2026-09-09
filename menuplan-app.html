@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=yes">
-<title>Menüplan v6.30</title>
+<title>Menüplan v6.32</title>
 <meta name="theme-color" content="#e8390e">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -182,7 +182,7 @@ input[type=password]{letter-spacing:2px}
 
 <!-- HOME -->
 <div class="scr on" id="sh">
-  <div class="hero"><h1>Menüplan</h1><p id="hsub">v6.30 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
+  <div class="hero"><h1>Menüplan</h1><p id="hsub">v6.32 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
 
   <!-- Active plan card -->
 
@@ -312,7 +312,7 @@ input[type=password]{letter-spacing:2px}
       <!-- Tagesplanung -->
       <div class="fld" style="margin-top:4px">
         <label>🍳 Welche Tage kochen?</label>
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px"><span style="font-size:11px;color:var(--gr3)">Zeitrahmen pro Tag</span><span style="font-size:11px;color:var(--gr3)"><b id="n-display" style="color:var(--red);font-size:14px">3</b> Kochabende</span></div><div id="day-picker" style="display:flex;flex-direction:column;gap:6px;margin-top:2px"></div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px"><span style="font-size:11px;color:var(--gr3)">Zeitrahmen pro Tag</span><span style="font-size:11px;color:var(--gr3)"><b id="n-display" style="color:var(--red);font-size:14px">3</b> <span id="n-label">Kochabende</span></span></div><div id="day-picker" style="display:flex;flex-direction:column;gap:6px;margin-top:2px"></div>
       </div>
 
       <!-- Fleisch Modus -->
@@ -729,10 +729,19 @@ var DAY_MODES = [
 ];
 var DAYS_ORDER = ['Mo','Di','Mi','Do','Fr','Sa','So'];
 
+// REINE ANZEIGE-Reihenfolge: beginnt beim gewaehlten Einkaufstag, damit die
+// Liste der Realitaet folgt (wer am Mittwoch einkauft, plant ab Mittwoch).
+// DAYS_ORDER selbst bleibt unangetastet - jede Datumsrechnung haengt daran und
+// setzt Montag als Index 0 voraus.
+function dayPickerOrder() {
+  var i = einkaufstagIndex();
+  return DAYS_ORDER.slice(i).concat(DAYS_ORDER.slice(0, i));
+}
+
 function initDayPicker() {
   var dp = $('day-picker');
   if (!dp) return;
-  dp.innerHTML = DAYS_ORDER.map(function(d) {
+  dp.innerHTML = dayPickerOrder().map(function(d) {
     var isOn = G.days[d] !== null && G.days[d] !== undefined && G.days[d] !== 'auswaerts';
     return '<div class="day-row" id="dr-' + d + '" style="display:flex;align-items:center;gap:8px;padding:4px 0">' +
       '<label style="display:flex;align-items:center;gap:8px;flex:1;cursor:pointer">' +
@@ -776,7 +785,13 @@ function updateNFromDays() {
   // und Claude generierte trotzdem ein Gericht. Die Null wird jetzt sichtbar und
   // goSuggest() blockiert mit einer verstaendlichen Meldung.
   G.n = cookingDays().length;
+  renderNCount();
+}
+
+// "1 Kochabende" war schlicht falsch - der Zaehler stand fest im Plural.
+function renderNCount() {
   if ($('n-display')) $('n-display').textContent = G.n;
+  if ($('n-label')) $('n-label').textContent = (G.n === 1 ? 'Kochabend' : 'Kochabende');
 }
 
 function getDayPlanText() {
@@ -801,9 +816,18 @@ function setN(n) {
   // Anzahl sofort wieder auf die Zahl der Standardtage zurueck und die
   // Einstellung "Standard Kochabende" blieb wirkungslos.
   DAYS_ORDER.forEach(function(d) { if (G.days[d] !== 'auswaerts') G.days[d] = null; });
-  N_DAY_PREFERENCE.slice(0, n).forEach(function(d) { G.days[d] = 'normal'; });
+  // Verteilung relativ zum Einkaufstag: bei Einkauf am Mi ergibt das Mi/Fr/So
+  // statt Mo/Mi/Fr - sonst laege der erste Kochabend vor dem Einkauf.
+  var order = dayPickerOrder();
+  // N_DAY_PREFERENCE nennt Abstaende ab Montag (Mo=0, Mi=2, Fr=4, So=6).
+  // order[0] IST bereits der Einkaufstag, der Index darf also nicht nochmals
+  // um dessen Position verschoben werden.
+  var picks = N_DAY_PREFERENCE.map(function(d) {
+    return order[DAYS_ORDER.indexOf(d)];
+  });
+  picks.slice(0, n).forEach(function(d) { G.days[d] = 'normal'; });
   G.n = cookingDays().length;
-  if ($('n-display')) $('n-display').textContent = G.n;
+  renderNCount();
   if ($('dc-Mo')) initDayPicker();
 }
 
@@ -1518,26 +1542,68 @@ function doImportItems() {
 
   var promise = Promise.resolve();
 
-  // Clear if needed
+  // Jeder Schritt des Leerens wird protokolliert und im Debug-Feld angezeigt.
+  // Frueher wurde ALLES still verschluckt: ein nicht-ok GET ergab null und
+  // wurde uebersprungen, die Antwort des REMOVE-PUT wurde nur auf 401 geprueft,
+  // und der catch schluckte jeden anderen Fehler. Ein fehlgeschlagenes Leeren
+  // war dadurch von einem erfolgreichen nicht zu unterscheiden - der Import
+  // meldete anschliessend trotzdem Erfolg.
+  G.bringLog = [];
+  function blog(line) {
+    G.bringLog.push(line);
+    var dbg = $('idbg');
+    if (dbg) { dbg.textContent = G.bringLog.join('\n'); dbg.style.display = 'block'; }
+    console.log('[Bring] ' + line);
+  }
+
   if (clearFirst) {
     promise = fetch(BAPI + '/v2/bringlists/' + listUuid, { headers: withMpAuth(hJson) })
-      .then(function(r) { return r.ok ? r.json() : null; })
+      .then(function(r) {
+        blog('Liste lesen: HTTP ' + r.status);
+        if (r.status === 401) throw new Error('SESSION_EXPIRED');
+        if (!r.ok) throw new Error('Liste konnte nicht gelesen werden (HTTP ' + r.status + ')');
+        return r.json();
+      })
       .then(function(d) {
-        if (!d) return;
-        var arr = Array.isArray(d.purchase) ? d.purchase : Array.isArray(d.items) ? d.items : [];
-        if (arr.length === 0) return;
+        // Bring! liefert {purchase:[{name,specification}], recently:[...]}.
+        var arr = Array.isArray(d && d.purchase) ? d.purchase
+                : Array.isArray(d && d.items) ? d.items : [];
+        blog('Gefunden: ' + arr.length + ' Artikel');
+        if (!arr.length) {
+          if (d && !Array.isArray(d.purchase)) {
+            blog('WARNUNG: kein purchase-Array. Felder: ' + Object.keys(d || {}).join(', '));
+          }
+          return;
+        }
         var removes = arr.map(function(it) {
-          var id = typeof it === 'string' ? it : (it.itemId || it.name || it.item || '');
-          return { itemId: id, spec: it.specification || it.spec || '', operation: 'REMOVE', accuracy: '0.0', altitude: '0.0', latitude: '0.0', longitude: '0.0' };
+          var id = typeof it === 'string' ? it : (it.name || it.itemId || it.item || '');
+          return { itemId: id, spec: (it && (it.specification || it.spec)) || '', operation: 'REMOVE',
+                   accuracy: '0.0', altitude: '0.0', latitude: '0.0', longitude: '0.0' };
         }).filter(function(x) { return x.itemId; });
-        console.log('Clearing', removes.length, 'items from list');
-        if (removes.length === 0) return;
+        if (!removes.length) { blog('WARNUNG: kein Artikel hatte einen Namen'); return; }
+        blog('Entferne: ' + removes.slice(0, 4).map(function(r){return r.itemId;}).join(', ') +
+             (removes.length > 4 ? ' +' + (removes.length - 4) : ''));
         return fetch(BAPI + '/v2/bringlists/' + listUuid + '/items', {
           method: 'PUT', headers: withMpAuth(hJson),
           body: JSON.stringify({ changes: removes, sender: '' })
         }).then(function(r) {
-          if (r && r.status === 401) throw new Error('SESSION_EXPIRED');
-          return sl(300);
+          blog('Entfernen: HTTP ' + r.status);
+          if (r.status === 401) throw new Error('SESSION_EXPIRED');
+          if (!r.ok) {
+            return r.text().then(function(t) {
+              throw new Error('Leeren fehlgeschlagen (HTTP ' + r.status + ') ' + String(t).slice(0, 120));
+            });
+          }
+          return sl(400);
+        }).then(function() {
+          // Kontrolle: hat das Leeren wirklich gewirkt?
+          return fetch(BAPI + '/v2/bringlists/' + listUuid, { headers: withMpAuth(hJson) })
+            .then(function(r) { return r.ok ? r.json() : null; })
+            .then(function(d2) {
+              var rest = (d2 && Array.isArray(d2.purchase)) ? d2.purchase.length : -1;
+              blog('Kontrolle nach Leeren: ' + (rest < 0 ? 'nicht lesbar' : rest + ' Artikel uebrig'));
+              if (rest > 0) blog('WARNUNG: Liste wurde NICHT vollstaendig geleert');
+            });
         });
       })
       .catch(function(e) {
@@ -1550,7 +1616,13 @@ function doImportItems() {
           showSt('ist', 'Bring! Session abgelaufen - bitte erneut anmelden.', 'er');
           throw e;
         }
+        // Nicht mehr still schlucken: der Import laeuft weiter, aber der
+        // Fehlschlag ist sichtbar und wird am Ende gemeldet.
+        blog('FEHLER beim Leeren: ' + e.message);
+        G.bringClearFailed = e.message;
       });
+  } else {
+    G.bringClearFailed = null;
   }
 
   // Add items
@@ -1566,12 +1638,19 @@ function doImportItems() {
   })
   .then(function(r) {
     $('iprogb').style.width = '100%';
-    var dbg = $('idbg');
-    dbg.textContent = 'Status: ' + (r ? r.status : 'unbekannt');
-    dbg.style.display = 'block';
+    blog('Hinzufuegen: HTTP ' + (r ? r.status : 'unbekannt'));
     if (r && r.ok) {
-      showSt('ist', items.length + ' Artikel in Bring! importiert!', 'ok');
-      btn.innerHTML = 'Importiert';
+      if (G.bringClearFailed) {
+        // Import geklappt, Leeren nicht. Das muss der Nutzer erfahren, sonst
+        // steht er mit einer gemischten Liste im Laden - genau der Fall, der
+        // vorher stillschweigend als Erfolg gemeldet wurde.
+        showSt('ist', items.length + ' Artikel importiert, aber die Liste wurde NICHT geleert: ' +
+               G.bringClearFailed, 'er');
+        btn.innerHTML = 'Importiert – Liste nicht geleert';
+      } else {
+        showSt('ist', items.length + ' Artikel in Bring! importiert!', 'ok');
+        btn.innerHTML = 'Importiert';
+      }
       if (G.fotoImport) {
         // Erst JETZT den Foto-Status setzen. Frueher geschah das schon beim
         // Oeffnen des Imports - ein abgebrochener oder fehlgeschlagener Import
@@ -1865,7 +1944,7 @@ function goSuggest() {
   var prefAvoid = userPrefs.avoid || '';
   var learningProfile = buildLearningProfile();
 
-  var msg = G.n + ' Kochabende, ' + p + ' Personen, ' + modusText +
+  var msg = G.n + (G.n === 1 ? ' Kochabend, ' : ' Kochabende, ') + p + ' Personen, ' + modusText +
     (G.reste ? ', mit Resten' : '') +
     (G.freeze ? ', mit Einfrieren' : '') +
     (theme ? '. Thema: ' + theme : '') +
