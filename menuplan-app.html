@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=yes">
-<title>Menüplan v6.41</title>
+<title>Menüplan v6.42</title>
 <meta name="theme-color" content="#e8390e">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -182,7 +182,7 @@ input[type=password]{letter-spacing:2px}
 
 <!-- HOME -->
 <div class="scr on" id="sh">
-  <div class="hero"><h1>Menüplan</h1><p id="hsub">v6.41 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
+  <div class="hero"><h1>Menüplan</h1><p id="hsub">v6.42 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
 
   <!-- Active plan card -->
 
@@ -1950,28 +1950,133 @@ function currentOpts(extra) {
 // callClaude() und callClaudeHaiku() wurden entfernt: sie riefen den alten
 // /anthropic-Endpunkt auf, der ab Worker v4.4 nicht mehr existiert, und waren
 // im gesamten Frontend nirgends mehr referenziert.
-function callWorker(kind, message, maxTokens, opts, model) {
+// Wartezeit ohne einen einzigen empfangenen Byte, nach der abgebrochen wird.
+// Muss deutlich unter dem NAT-Timeout der Mobilfunkanbieter liegen (30-60s),
+// aber ueber der Zeit bis zum ersten Token.
+var STREAM_IDLE_MS = 25000;
+
+// Liest eine Server-Sent-Events-Antwort von Anthropic und setzt den Text
+// zusammen. onProgress wird bei jedem Datenpaket aufgerufen - so laesst sich
+// anzeigen, dass etwas passiert.
+function readAnthropicStream(response, onProgress) {
+  var reader = response.body.getReader();
+  var decoder = new TextDecoder();
+  var buffer = '';
+  var text = '';
+  var apiError = null;
+  var sawStop = false;   // Anthropic beendet den Stream mit message_stop
+
+  function handleData(raw) {
+    if (!raw || raw === '[DONE]') return;
+    var evt;
+    try { evt = JSON.parse(raw); } catch(e) { return; }   // unvollstaendig: ignorieren
+    if (evt.type === 'error') {
+      apiError = (evt.error && (evt.error.message || evt.error.type)) || 'API Fehler';
+      return;
+    }
+    if (evt.type === 'message_stop') { sawStop = true; return; }
+    if (evt.type === 'content_block_delta' && evt.delta) {
+      if (typeof evt.delta.text === 'string') text += evt.delta.text;
+    } else if (evt.type === 'content_block_start' && evt.content_block &&
+               typeof evt.content_block.text === 'string') {
+      text += evt.content_block.text;
+    }
+  }
+
+  function pump() {
+    return reader.read().then(function(res) {
+      if (res.done) {
+        // Rest des Puffers noch auswerten
+        buffer.split('\n').forEach(function(line) {
+          if (line.indexOf('data:') === 0) handleData(line.slice(5).trim());
+        });
+        if (apiError) throw new Error(apiError);
+        // Ohne message_stop ist die Verbindung mitten im Stream abgerissen.
+        // Frueher waere hier der abgeschnittene Text als Erfolg zurueck-
+        // gekommen - das ergibt kaputtes JSON und eine irrefuehrende Meldung
+        // weiter oben. Stattdessen ein wiederholbarer Fehler.
+        if (!sawStop) throw new Error('Verbindung unterbrochen (Antwort unvollständig).');
+        return text;
+      }
+      buffer += decoder.decode(res.value, { stream: true });
+      var lines = buffer.split('\n');
+      buffer = lines.pop();                 // letzte, evtl. unvollstaendige Zeile behalten
+      lines.forEach(function(line) {
+        if (line.indexOf('data:') === 0) handleData(line.slice(5).trim());
+      });
+      if (onProgress) onProgress(text.length);
+      if (apiError) { try { reader.cancel(); } catch(e) {} throw new Error(apiError); }
+      return pump();
+    });
+  }
+  return pump();
+}
+
+function callWorker(kind, message, maxTokens, opts, model, onProgress) {
   var s = getSession();
   var h = { 'Content-Type': 'application/json' };
   if (s) { h['X-MP-User'] = s.username; h['X-MP-Pass'] = s.pw; }
-  return fetch(PROXY + '/generate', {
-    method: 'POST',
-    headers: h,
-    body: JSON.stringify({
-      kind: kind,
-      opts: currentOpts(opts),
-      message: message,
-      max_tokens: maxTokens || 1000,
-      model: model || 'claude-haiku-4-5-20251001'
+  var payload = JSON.stringify({
+    kind: kind,
+    opts: currentOpts(opts),
+    message: message,
+    max_tokens: maxTokens || 1000,
+    model: model || 'claude-haiku-4-5-20251001',
+    stream: true
+  });
+
+  function attempt() {
+    var ctrl = (typeof AbortController === 'function') ? new AbortController() : null;
+    var idleTimer = null;
+    function resetIdle() {
+      if (!ctrl) return;
+      if (idleTimer) clearTimeout(idleTimer);
+      idleTimer = setTimeout(function() {
+        try { ctrl.abort(); } catch(e) {}
+      }, STREAM_IDLE_MS);
+    }
+    function stopIdle() { if (idleTimer) { clearTimeout(idleTimer); idleTimer = null; } }
+
+    resetIdle();
+    return fetch(PROXY + '/generate', {
+      method: 'POST', headers: h, body: payload,
+      signal: ctrl ? ctrl.signal : undefined
     })
-  })
-  .then(function(r) {
-    if (r.status === 401) throw new Error('Nicht angemeldet oder Zugangsdaten ungültig.');
-    return r.json();
-  })
-  .then(function(d) {
-    if (d.error) throw new Error(d.error.message || d.error || 'API Fehler');
-    return (d.content && d.content[0] && d.content[0].text) ? d.content[0].text : '';
+    .then(function(r) {
+      if (r.status === 401) { stopIdle(); throw new Error('Nicht angemeldet oder Zugangsdaten ungültig.'); }
+      var ct = r.headers.get('Content-Type') || '';
+      // Kein Stream (aelterer Worker oder Fehlerantwort): wie bisher als JSON lesen.
+      if (ct.indexOf('text/event-stream') < 0 || !r.body || !r.body.getReader) {
+        stopIdle();
+        return r.json().then(function(d) {
+          if (d.error) throw new Error(d.error.message || d.error || 'API Fehler');
+          return (d.content && d.content[0] && d.content[0].text) ? d.content[0].text : '';
+        });
+      }
+      return readAnthropicStream(r, function(len) {
+        resetIdle();                       // Daten geflossen: Frist neu starten
+        if (onProgress) onProgress(len);
+      }).then(function(t) { stopIdle(); return t; },
+              function(e) { stopIdle(); throw e; });
+    })
+    .catch(function(e) {
+      stopIdle();
+      if (e && e.name === 'AbortError') {
+        throw new Error('Verbindung unterbrochen (keine Daten für ' +
+                        Math.round(STREAM_IDLE_MS / 1000) + 's).');
+      }
+      throw e;
+    });
+  }
+
+  // Ein Wiederholungsversuch bei Verbindungsproblemen. Inhaltliche Fehler
+  // (401, API-Fehler) werden NICHT wiederholt - die scheitern erneut.
+  return attempt().catch(function(e) {
+    var msg = (e && e.message) || '';
+    var wiederholbar = /Failed to fetch|NetworkError|Verbindung unterbrochen|network/i.test(msg);
+    if (!wiederholbar) throw e;
+    console.warn('Aufruf wird wiederholt:', msg);
+    return attempt();
   });
 }
 
