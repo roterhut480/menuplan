@@ -1,5 +1,336 @@
 [
   {
+    "planId": "6d6e4f42-8316-4834-9d61-679db5a7c8b5",
+    "date": "2026-09-09",
+    "saved": "9.9.2026",
+    "thema": "Mediterran",
+    "personen": 2,
+    "kochabende": 1,
+    "reste": 0,
+    "freeze": 0,
+    "budget": 1,
+    "gerichte": [
+      {
+        "tag": "Mi",
+        "abend": "Lauch-Feta-Auflauf mit Salatbeilage"
+      }
+    ],
+    "status": "geplant",
+    "plan": {
+      "planId": "6d6e4f42-8316-4834-9d61-679db5a7c8b5",
+      "sug": {
+        "id": 3,
+        "thema": "Mediterran",
+        "kochabende": [
+          "Mi"
+        ],
+        "gerichte": [
+          {
+            "tag": "Mi",
+            "abend": "Lauch-Feta-Auflauf mit Salatbeilage",
+            "zeit_aktiv": "25m",
+            "zeit_total": "45m"
+          }
+        ],
+        "einkaufsliste": [
+          "Lauch",
+          "Feta",
+          "Eier",
+          "Milch",
+          "Mehl",
+          "Butter",
+          "Salz",
+          "Pfeffer",
+          "Muskatnuss",
+          "Zwiebeln",
+          "Knoblauch",
+          "Olivenöl",
+          "Gemüsebrühe",
+          "Tomaten konserviert",
+          "Oregano",
+          "Hühnerbrust optional",
+          "Salatmix",
+          "Brot"
+        ]
+      },
+      "sel": 2,
+      "n": 1,
+      "personen": 2,
+      "reste": 0,
+      "freeze": 0,
+      "budget": 1,
+      "modus": "optional",
+      "resteMode": "nein",
+      "days": {
+        "Mo": null,
+        "Di": null,
+        "Mi": "normal",
+        "Do": null,
+        "Fr": null,
+        "Sa": null,
+        "So": null
+      },
+      "weekStart": "2026-09-07",
+      "einkaufstag": "Mi",
+      "saved": "9.9.2026",
+      "bringImportedAt": null,
+      "bringItemCount": 0,
+      "sugsAll": [
+        {
+          "id": 1,
+          "thema": "Mediterranisch",
+          "kochabende": [
+            "Mi"
+          ],
+          "gerichte": [
+            {
+              "tag": "Mi",
+              "abend": "Lauch-Tomaten-Gratin mit Hackfleisch",
+              "zeit_aktiv": "25m",
+              "zeit_total": "45m"
+            }
+          ],
+          "einkauf": [
+            "Lauch",
+            "Tomaten",
+            "Zwiebeln",
+            "Knoblauch",
+            "Rinderhackfleisch",
+            "Gruyère",
+            "Rahm",
+            "Brot",
+            "Salat",
+            "Olivenöl",
+            "Basilikum",
+            "Kartoffeln",
+            "Petersilie"
+          ]
+        },
+        {
+          "id": 2,
+          "thema": "Mediterran",
+          "kochabende": [
+            "Mi"
+          ],
+          "gerichte": [
+            {
+              "tag": "Mi",
+              "abend": "Lauch-Kartoffel-Gratin mit Schinken",
+              "zeit_aktiv": "25m",
+              "zeit_total": "50m"
+            }
+          ]
+        },
+        {
+          "id": 3,
+          "thema": "Mediterran",
+          "kochabende": [
+            "Mi"
+          ],
+          "gerichte": [
+            {
+              "tag": "Mi",
+              "abend": "Lauch-Feta-Auflauf mit Salatbeilage",
+              "zeit_aktiv": "25m",
+              "zeit_total": "45m"
+            }
+          ],
+          "einkaufsliste": [
+            "Lauch",
+            "Feta",
+            "Eier",
+            "Milch",
+            "Mehl",
+            "Butter",
+            "Salz",
+            "Pfeffer",
+            "Muskatnuss",
+            "Zwiebeln",
+            "Knoblauch",
+            "Olivenöl",
+            "Gemüsebrühe",
+            "Tomaten konserviert",
+            "Oregano",
+            "Hühnerbrust optional",
+            "Salatmix",
+            "Brot"
+          ]
+        }
+      ],
+      "sugsPartial": true
+    }
+  },
+  {
+    "planId": "0895a500-9bf4-472d-b6a3-7e465b3863b8",
+    "date": "2026-09-09",
+    "saved": "9.9.2026",
+    "thema": "Mediterranisch",
+    "personen": 2,
+    "kochabende": 3,
+    "reste": 0,
+    "freeze": 0,
+    "budget": 1,
+    "gerichte": [
+      {
+        "tag": "Mo",
+        "abend": "Linsensuppe mit Tomaten und Spinat"
+      },
+      {
+        "tag": "Mi",
+        "abend": "Auberginen-Tomaten-Gratin mit Feta"
+      },
+      {
+        "tag": "Fr",
+        "abend": "Kichererbsen-Salat mit Zitrone und Kräutern"
+      }
+    ],
+    "status": "geplant",
+    "plan": {
+      "planId": "0895a500-9bf4-472d-b6a3-7e465b3863b8",
+      "sug": {
+        "id": 2,
+        "thema": "Mediterranisch",
+        "kochabende": [
+          "Mo",
+          "Mi",
+          "Fr"
+        ],
+        "gerichte": [
+          {
+            "tag": "Mo",
+            "abend": "Linsensuppe mit Tomaten und Spinat",
+            "zeit_aktiv": "20m",
+            "zeit_total": "40m"
+          },
+          {
+            "tag": "Mi",
+            "abend": "Auberginen-Tomaten-Gratin mit Feta",
+            "zeit_aktiv": "25m",
+            "zeit_total": "50m"
+          },
+          {
+            "tag": "Fr",
+            "abend": "Kichererbsen-Salat mit Zitrone und Kräutern",
+            "zeit_aktiv": "15m",
+            "zeit_total": "15m"
+          }
+        ]
+      },
+      "sel": 1,
+      "n": 3,
+      "personen": 2,
+      "reste": 0,
+      "freeze": 0,
+      "budget": 1,
+      "modus": "vegi",
+      "resteMode": "nein",
+      "days": {
+        "Mo": "normal",
+        "Di": null,
+        "Mi": "normal",
+        "Do": null,
+        "Fr": "normal",
+        "Sa": null,
+        "So": null
+      },
+      "weekStart": "2026-09-07",
+      "einkaufstag": "Mi",
+      "saved": "9.9.2026",
+      "bringImportedAt": null,
+      "bringItemCount": 0,
+      "sugsAll": [
+        {
+          "id": 1,
+          "thema": "Mediterran",
+          "kochabende": [
+            "Mo",
+            "Mi",
+            "Fr"
+          ],
+          "gerichte": [
+            {
+              "tag": "Mo",
+              "abend": "Linsensuppe mit Tomaten und Spinat",
+              "zeit_aktiv": "20m",
+              "zeit_total": "40m"
+            },
+            {
+              "tag": "Mi",
+              "abend": "Auberginen-Tomaten-Auflauf mit Käse",
+              "zeit_aktiv": "25m",
+              "zeit_total": "50m"
+            },
+            {
+              "tag": "Fr",
+              "abend": "Kichererbsen-Salat mit Zitrone und Kräutern",
+              "zeit_aktiv": "15m",
+              "zeit_total": "15m"
+            }
+          ]
+        },
+        {
+          "id": 2,
+          "thema": "Mediterranisch",
+          "kochabende": [
+            "Mo",
+            "Mi",
+            "Fr"
+          ],
+          "gerichte": [
+            {
+              "tag": "Mo",
+              "abend": "Linsensuppe mit Tomaten und Spinat",
+              "zeit_aktiv": "20m",
+              "zeit_total": "40m"
+            },
+            {
+              "tag": "Mi",
+              "abend": "Auberginen-Tomaten-Gratin mit Feta",
+              "zeit_aktiv": "25m",
+              "zeit_total": "50m"
+            },
+            {
+              "tag": "Fr",
+              "abend": "Kichererbsen-Salat mit Zitrone und Kräutern",
+              "zeit_aktiv": "15m",
+              "zeit_total": "15m"
+            }
+          ]
+        },
+        {
+          "id": 3,
+          "thema": "Mediterran (Variante 3)",
+          "kochabende": [
+            "Mo",
+            "Mi",
+            "Fr"
+          ],
+          "gerichte": [
+            {
+              "tag": "Mo",
+              "abend": "Linsensuppe mit Tomaten und Spinat",
+              "zeit_aktiv": "20m",
+              "zeit_total": "40m"
+            },
+            {
+              "tag": "Mi",
+              "abend": "Griechischer Kartoffel-Feta-Auflauf",
+              "zeit_aktiv": "20m",
+              "zeit_total": "50m"
+            },
+            {
+              "tag": "Fr",
+              "abend": "Kichererbsen-Salat mit Zitrone und Kräutern",
+              "zeit_aktiv": "15m",
+              "zeit_total": "15m"
+            }
+          ]
+        }
+      ],
+      "sugsPartial": true
+    }
+  },
+  {
     "planId": "0a93eefc-010c-4da7-8759-f89a75cfe912",
     "date": "2026-09-09",
     "saved": "9.9.2026",
