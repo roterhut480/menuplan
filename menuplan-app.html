@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=yes">
-<title>Menüplan v6.47</title>
+<title>Menüplan v6.48</title>
 <meta name="theme-color" content="#e8390e">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -182,7 +182,7 @@ input[type=password]{letter-spacing:2px}
 
 <!-- HOME -->
 <div class="scr on" id="sh">
-  <div class="hero"><h1>Menüplan</h1><p id="hsub">v6.47 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
+  <div class="hero"><h1>Menüplan</h1><p id="hsub">v6.48 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
 
   <!-- Active plan card -->
 
@@ -422,7 +422,7 @@ input[type=password]{letter-spacing:2px}
         <div class="fld"><label>Passwort</label><input type="password" id="bpw" autocomplete="current-password"></div>
       </div>
       <div id="blistwrap" style="display:none">
-        <div class="fld"><label>Welche Liste?</label><select id="blist"></select></div>
+        <div class="fld"><label>Welche Liste?</label><select id="blist" onchange="onBringListChange()"></select></div>
         <label style="display:flex;align-items:center;gap:8px;margin-bottom:12px;cursor:pointer;font-size:13px;color:var(--txt2)">
           <input type="checkbox" id="bclr" checked style="width:18px;height:18px;accent-color:var(--red)">
           Liste vor Import leeren
@@ -1430,6 +1430,38 @@ function syncBringUiState() {
   }
 }
 
+// Bevorzugte Bring!-Liste. Ohne das stand nach jedem Laden wieder die erste
+// Liste da und man musste vor jedem Import umstellen.
+function getBringListPref() {
+  try { return (JSON.parse(localStorage.getItem(getPrefKey()) || '{}') || {}).bringList || ''; }
+  catch(e) { return ''; }
+}
+
+function setBringListPref(uuid) {
+  try {
+    var pr = JSON.parse(localStorage.getItem(getPrefKey()) || '{}');
+    pr.bringList = uuid || '';
+    localStorage.setItem(getPrefKey(), JSON.stringify(pr));
+  } catch(e) {}
+}
+
+// Wird beim Wechseln der Auswahl aufgerufen.
+function onBringListChange() {
+  var sel = $('blist');
+  if (sel && sel.value) setBringListPref(sel.value);
+}
+
+// Gemerkte Liste vorwaehlen - aber nur, wenn es sie noch gibt. Wurde sie in
+// Bring! geloescht, faellt die Auswahl auf die erste Liste zurueck.
+function applyBringListPref() {
+  var sel = $('blist');
+  if (!sel || !G.bLists || !G.bLists.length) return;
+  var gewuenscht = getBringListPref();
+  var vorhanden = gewuenscht && G.bLists.some(function(l) { return l.listUuid === gewuenscht; });
+  sel.value = vorhanden ? gewuenscht : G.bLists[0].listUuid;
+  if (!vorhanden && gewuenscht) setBringListPref(sel.value);   // veraltete Merkung ersetzen
+}
+
 function loadBringLists(callback) {
   if (!G.bToken) { showBringLogin(); if (callback) callback(false); return; }
   var headers = {};
@@ -1449,6 +1481,7 @@ function loadBringLists(callback) {
       if ($('blist')) $('blist').innerHTML = lists.map(function(l) {
         return '<option value="' + esc(l.listUuid) + '">' + esc(l.name) + '</option>';
       }).join('');
+      applyBringListPref();
       if ($('blistwrap')) $('blistwrap').style.display = 'block';
       if ($('bfields')) $('bfields').style.display = 'none';
       if (callback) callback(true);
@@ -1497,8 +1530,7 @@ function doImport() {
   function proceed() {
     clearWatch();
     if (!G.bLists || !G.bLists.length) { fail('Keine Bring!-Listen gefunden.'); return; }
-    var sel = $('blist');
-    if (sel && !sel.value && G.bLists.length) sel.value = G.bLists[0].listUuid;  // erste Liste vorwaehlen
+    applyBringListPref();   // gemerkte Liste, sonst die erste
     idle();
     doImportItems();
   }
