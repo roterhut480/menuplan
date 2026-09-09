@@ -1,33 +1,33 @@
 [
   {
-    "planId": "0e97fe47-43df-4f00-ac36-ce2b67faadc6",
+    "planId": "1a3aa6e7-ced1-4b8d-a9fd-2e8ac8bce445",
     "date": "2026-09-09",
     "saved": "9.9.2026",
     "thema": "Mediterran",
     "personen": 2,
     "kochabende": 3,
-    "reste": 1,
-    "freeze": 1,
+    "reste": 0,
+    "freeze": 0,
     "budget": 1,
     "gerichte": [
       {
         "tag": "Mo",
-        "abend": "Linsensuppe mit Gemüse und Speck (optional)"
+        "abend": "Gebratener Reis mit Ei und Gemüse"
       },
       {
         "tag": "Mi",
-        "abend": "Pasta all'Amatriciana (mit Speck optional)"
+        "abend": "Griechischer Bauernsalat mit Feta und Kichererbsen"
       },
       {
         "tag": "Fr",
-        "abend": "Risotto mit Pilzen und Tomaten"
+        "abend": "Auberginen-Tomaten-Auflauf mit Mozzarella"
       }
     ],
-    "status": "einkauf",
+    "status": "geplant",
     "plan": {
-      "planId": "0e97fe47-43df-4f00-ac36-ce2b67faadc6",
+      "planId": "1a3aa6e7-ced1-4b8d-a9fd-2e8ac8bce445",
       "sug": {
-        "id": 1,
+        "id": 2,
         "thema": "Mediterran",
         "kochabende": [
           "Mo",
@@ -37,1661 +37,362 @@
         "gerichte": [
           {
             "tag": "Mo",
-            "abend": "Linsensuppe mit Gemüse und Speck (optional)",
-            "zeit_aktiv": "25 Min.",
-            "zeit_total": "55 Min.",
-            "mittag_nächster_tag": "Linsensuppe",
-            "schritte_vegi": [
-              {
-                "titel": "Zwiebeln schneiden",
-                "text": "Zwiebeln schälen und in 1 cm grosse Würfel schneiden.",
-                "timer_min": 0,
-                "zutaten_schritt": [
-                  {
-                    "name": "Zwiebeln",
-                    "menge": "400 g"
-                  }
-                ],
-                "zubehoer": [
-                  "Schneidebrett",
-                  "Messer"
-                ],
-                "kontrolle": "Zwiebeln sind gleichmässig gewürfelt.",
-                "parallel_hinweis": ""
-              },
-              {
-                "titel": "Gemüse schneiden",
-                "text": "Rüebli und Sellerie waschen und in 1 cm grosse Würfel schneiden.",
-                "timer_min": 0,
-                "zutaten_schritt": [
-                  {
-                    "name": "Rüebli",
-                    "menge": "300 g"
-                  },
-                  {
-                    "name": "Sellerie",
-                    "menge": "200 g"
-                  }
-                ],
-                "zubehoer": [
-                  "Schneidebrett",
-                  "Messer"
-                ],
-                "kontrolle": "Gemüsewürfel sind gleichmässig gross.",
-                "parallel_hinweis": ""
-              },
-              {
-                "titel": "Kartoffeln schneiden",
-                "text": "Kartoffeln waschen und in 1 cm grosse Würfel schneiden.",
-                "timer_min": 0,
-                "zutaten_schritt": [
-                  {
-                    "name": "Kartoffeln",
-                    "menge": "300 g"
-                  }
-                ],
-                "zubehoer": [
-                  "Schneidebrett",
-                  "Messer"
-                ],
-                "kontrolle": "Kartoffelwürfel sind gleichmässig.",
-                "parallel_hinweis": ""
-              },
-              {
-                "titel": "Öl erhitzen",
-                "text": "Olivenöl in einem grossen Topf bei mittlerer Hitze erhitzen.",
-                "timer_min": 1,
-                "zutaten_schritt": [
-                  {
-                    "name": "Olivenöl",
-                    "menge": "60 ml"
-                  }
-                ],
-                "zubehoer": [
-                  "Grosser Topf"
-                ],
-                "kontrolle": "Öl ist heiss und schimmert leicht.",
-                "parallel_hinweis": ""
-              },
-              {
-                "titel": "Zwiebeln anschwitzen",
-                "text": "Zwiebeln in das heisse Öl geben und 3 Minuten unter gelegentlichem Rühren anschwitzen.",
-                "timer_min": 3,
-                "zutaten_schritt": [
-                  {
-                    "name": "Zwiebeln",
-                    "menge": "400 g"
-                  }
-                ],
-                "zubehoer": [
-                  "Holzlöffel"
-                ],
-                "kontrolle": "Zwiebeln sind durchscheinend und leicht gebräunt.",
-                "parallel_hinweis": ""
-              },
-              {
-                "titel": "Tomatenmark hinzufügen",
-                "text": "Tomatenmark einrühren und 2 Minuten mitbraten.",
-                "timer_min": 2,
-                "zutaten_schritt": [
-                  {
-                    "name": "Tomatenmark",
-                    "menge": "60 g"
-                  }
-                ],
-                "zubehoer": [
-                  "Holzlöffel"
-                ],
-                "kontrolle": "Tomatenmark ist gut mit den Zwiebeln vermischt.",
-                "parallel_hinweis": ""
-              },
-              {
-                "titel": "Gemüse hinzufügen",
-                "text": "Rüebli, Sellerie und Kartoffeln in den Topf geben und 2 Minuten mitbraten.",
-                "timer_min": 2,
-                "zutaten_schritt": [
-                  {
-                    "name": "Rüebli",
-                    "menge": "300 g"
-                  },
-                  {
-                    "name": "Sellerie",
-                    "menge": "200 g"
-                  },
-                  {
-                    "name": "Kartoffeln",
-                    "menge": "300 g"
-                  }
-                ],
-                "zubehoer": [
-                  "Holzlöffel"
-                ],
-                "kontrolle": "Gemüse ist mit dem Tomatenmark vermischt.",
-                "parallel_hinweis": ""
-              },
-              {
-                "titel": "Brühe aufgiessen",
-                "text": "Gemüsebrühe hinzugiessen und alles aufkochen lassen.",
-                "timer_min": 3,
-                "zutaten_schritt": [
-                  {
-                    "name": "Gemüsebrühe",
-                    "menge": "2400 ml"
-                  }
-                ],
-                "zubehoer": [
-                  "Holzlöffel"
-                ],
-                "kontrolle": "Flüssigkeit kocht auf und sprudelt.",
-                "parallel_hinweis": ""
-              },
-              {
-                "titel": "Linsen hinzufügen",
-                "text": "Linsen hineingeben, umrühren und zum Kochen bringen.",
-                "timer_min": 2,
-                "zutaten_schritt": [
-                  {
-                    "name": "Rote Linsen",
-                    "menge": "480 g"
-                  }
-                ],
-                "zubehoer": [
-                  "Holzlöffel"
-                ],
-                "kontrolle": "Linsen sind verteilt.",
-                "parallel_hinweis": ""
-              },
-              {
-                "titel": "Hitze reduzieren und köcheln",
-                "text": "Hitze auf niedrig stellen und die Suppe zugedeckt 25 Minuten köcheln lassen.",
-                "timer_min": 25,
-                "zutaten_schritt": [],
-                "zubehoer": [
-                  "Deckel"
-                ],
-                "kontrolle": "Linsen und Gemüse sind weich, Suppe ist dickflüssig.",
-                "parallel_hinweis": "Währenddessen Tische decken oder Besteck vorbereiten."
-              },
-              {
-                "titel": "Würzen",
-                "text": "Mit Salz und Pfeffer abschmecken.",
-                "timer_min": 0,
-                "zutaten_schritt": [
-                  {
-                    "name": "Salz",
-                    "menge": "12 g"
-                  },
-                  {
-                    "name": "Pfeffer",
-                    "menge": "3 g"
-                  }
-                ],
-                "zubehoer": [],
-                "kontrolle": "Geschmack ist ausgewogen, nicht fad und nicht übersalzen.",
-                "parallel_hinweis": ""
-              }
-            ],
-            "schritte_fleisch": [
-              {
-                "titel": "Speck schneiden",
-                "text": "Speck in 0,5 cm breite Streifen schneiden.",
-                "timer_min": 0,
-                "zutaten_schritt": [
-                  {
-                    "name": "Speck",
-                    "menge": "240 g"
-                  }
-                ],
-                "zubehoer": [
-                  "Schneidebrett",
-                  "Messer"
-                ],
-                "kontrolle": "Speckstreifen sind gleichmässig.",
-                "parallel_hinweis": ""
-              },
-              {
-                "titel": "Zwiebeln schneiden",
-                "text": "Zwiebeln schälen und in 1 cm grosse Würfel schneiden.",
-                "timer_min": 0,
-                "zutaten_schritt": [
-                  {
-                    "name": "Zwiebeln",
-                    "menge": "400 g"
-                  }
-                ],
-                "zubehoer": [
-                  "Schneidebrett",
-                  "Messer"
-                ],
-                "kontrolle": "Zwiebeln sind gleichmässig gewürfelt.",
-                "parallel_hinweis": ""
-              },
-              {
-                "titel": "Gemüse schneiden",
-                "text": "Rüebli und Sellerie waschen und in 1 cm grosse Würfel schneiden.",
-                "timer_min": 0,
-                "zutaten_schritt": [
-                  {
-                    "name": "Rüebli",
-                    "menge": "300 g"
-                  },
-                  {
-                    "name": "Sellerie",
-                    "menge": "200 g"
-                  }
-                ],
-                "zubehoer": [
-                  "Schneidebrett",
-                  "Messer"
-                ],
-                "kontrolle": "Gemüsewürfel sind gleichmässig gross.",
-                "parallel_hinweis": ""
-              },
-              {
-                "titel": "Kartoffeln schneiden",
-                "text": "Kartoffeln waschen und in 1 cm grosse Würfel schneiden.",
-                "timer_min": 0,
-                "zutaten_schritt": [
-                  {
-                    "name": "Kartoffeln",
-                    "menge": "300 g"
-                  }
-                ],
-                "zubehoer": [
-                  "Schneidebrett",
-                  "Messer"
-                ],
-                "kontrolle": "Kartoffelwürfel sind gleichmässig.",
-                "parallel_hinweis": ""
-              },
-              {
-                "titel": "Speck braten",
-                "text": "Speck in einem grossen Topf bei mittlerer Hitze auslassen, bis er knusprig ist.",
-                "timer_min": 8,
-                "zutaten_schritt": [
-                  {
-                    "name": "Speck",
-                    "menge": "240 g"
-                  }
-                ],
-                "zubehoer": [
-                  "Grosser Topf",
-                  "Holzlöffel"
-                ],
-                "kontrolle": "Speck ist knusprig, Fett ist ausgelassen.",
-                "parallel_hinweis": ""
-              },
-              {
-                "titel": "Zwiebeln anschwitzen",
-                "text": "Zwiebeln in das heisse Speckfett geben und 3 Minuten unter gelegentlichem Rühren anschwitzen.",
-                "timer_min": 3,
-                "zutaten_schritt": [
-                  {
-                    "name": "Zwiebeln",
-                    "menge": "400 g"
-                  }
-                ],
-                "zubehoer": [
-                  "Holzlöffel"
-                ],
-                "kontrolle": "Zwiebeln sind durchscheinend und leicht gebräunt.",
-                "parallel_hinweis": ""
-              },
-              {
-                "titel": "Tomatenmark hinzufügen",
-                "text": "Tomatenmark einrühren und 2 Minuten mitbraten.",
-                "timer_min": 2,
-                "zutaten_schritt": [
-                  {
-                    "name": "Tomatenmark",
-                    "menge": "60 g"
-                  }
-                ],
-                "zubehoer": [
-                  "Holzlöffel"
-                ],
-                "kontrolle": "Tomatenmark ist gut mit den Zwiebeln vermischt.",
-                "parallel_hinweis": ""
-              },
-              {
-                "titel": "Gemüse hinzufügen",
-                "text": "Rüebli, Sellerie und Kartoffeln in den Topf geben und 2 Minuten mitbraten.",
-                "timer_min": 2,
-                "zutaten_schritt": [
-                  {
-                    "name": "Rüebli",
-                    "menge": "300 g"
-                  },
-                  {
-                    "name": "Sellerie",
-                    "menge": "200 g"
-                  },
-                  {
-                    "name": "Kartoffeln",
-                    "menge": "300 g"
-                  }
-                ],
-                "zubehoer": [
-                  "Holzlöffel"
-                ],
-                "kontrolle": "Gemüse ist mit dem Tomatenmark vermischt.",
-                "parallel_hinweis": ""
-              },
-              {
-                "titel": "Brühe aufgiessen",
-                "text": "Gemüsebrühe hinzugiessen und alles aufkochen lassen.",
-                "timer_min": 3,
-                "zutaten_schritt": [
-                  {
-                    "name": "Gemüsebrühe",
-                    "menge": "2400 ml"
-                  }
-                ],
-                "zubehoer": [
-                  "Holzlöffel"
-                ],
-                "kontrolle": "Flüssigkeit kocht auf und sprudelt.",
-                "parallel_hinweis": ""
-              },
-              {
-                "titel": "Linsen hinzufügen",
-                "text": "Linsen hineingeben, umrühren und zum Kochen bringen.",
-                "timer_min": 2,
-                "zutaten_schritt": [
-                  {
-                    "name": "Rote Linsen",
-                    "menge": "480 g"
-                  }
-                ],
-                "zubehoer": [
-                  "Holzlöffel"
-                ],
-                "kontrolle": "Linsen sind verteilt.",
-                "parallel_hinweis": ""
-              },
-              {
-                "titel": "Hitze reduzieren und köcheln",
-                "text": "Hitze auf niedrig stellen und die Suppe zugedeckt 25 Minuten köcheln lassen.",
-                "timer_min": 25,
-                "zutaten_schritt": [],
-                "zubehoer": [
-                  "Deckel"
-                ],
-                "kontrolle": "Linsen und Gemüse sind weich, Suppe ist dickflüssig.",
-                "parallel_hinweis": "Währenddessen Tische decken oder Besteck vorbereiten."
-              },
-              {
-                "titel": "Würzen",
-                "text": "Mit Salz und Pfeffer abschmecken.",
-                "timer_min": 0,
-                "zutaten_schritt": [
-                  {
-                    "name": "Salz",
-                    "menge": "12 g"
-                  },
-                  {
-                    "name": "Pfeffer",
-                    "menge": "3 g"
-                  }
-                ],
-                "zubehoer": [],
-                "kontrolle": "Geschmack ist ausgewogen, nicht fad und nicht übersalzen.",
-                "parallel_hinweis": ""
-              }
-            ],
-            "prep_next": [
-              "2 Portionen (ca. 600 ml) abkühlen lassen",
-              "In verschliessbarem Behälter im Kühlschrank lagern"
-            ],
-            "einfrieren": [
-              "2 Portionen (ca. 600 ml) in Gefrierbehälter füllen",
-              "Mit Datum beschriften und einfrieren"
-            ],
-            "mittag_tag": "Di",
-            "zutaten": [
-              {
-                "name": "Rote Linsen",
-                "menge": "480 g"
-              },
-              {
-                "name": "Zwiebeln",
-                "menge": "400 g"
-              },
-              {
-                "name": "Rüebli",
-                "menge": "300 g"
-              },
-              {
-                "name": "Sellerie",
-                "menge": "200 g"
-              },
-              {
-                "name": "Kartoffeln",
-                "menge": "300 g"
-              },
-              {
-                "name": "Tomatenmark",
-                "menge": "60 g"
-              },
-              {
-                "name": "Gemüsebrühe",
-                "menge": "2400 ml"
-              },
-              {
-                "name": "Olivenöl",
-                "menge": "60 ml"
-              },
-              {
-                "name": "Salz",
-                "menge": "12 g"
-              },
-              {
-                "name": "Pfeffer",
-                "menge": "3 g"
-              },
-              {
-                "name": "Speck",
-                "menge": "240 g"
-              }
-            ],
-            "tipp": "Rote Linsen zerfallen natürlicherweise und geben der Suppe eine cremige Konsistenz. Wer sie fester mag, kann braunere oder grüne Linsen verwenden - Kochzeit dann auf 35 Min. verlängern."
+            "abend": "Gebratener Reis mit Ei und Gemüse",
+            "zeit_aktiv": "20m",
+            "zeit_total": "25m"
           },
           {
             "tag": "Mi",
-            "abend": "Pasta all'Amatriciana (mit Speck optional)",
-            "zeit_aktiv": "20 Min.",
-            "zeit_total": "50 Min.",
-            "mittag_nächster_tag": "Pasta all'Amatriciana",
-            "schritte_vegi": [
-              {
-                "titel": "Zwiebeln schneiden",
-                "text": "Zwiebeln schälen und in feine Würfel von ca. 0,5 cm schneiden.",
-                "timer_min": 0,
-                "zutaten_schritt": [
-                  {
-                    "name": "Zwiebeln",
-                    "menge": "200 g"
-                  }
-                ],
-                "zubehoer": [
-                  "Schneidebrett",
-                  "Messer"
-                ],
-                "kontrolle": "Zwiebeln sind fein und gleichmässig gewürfelt.",
-                "parallel_hinweis": ""
-              },
-              {
-                "titel": "Knoblauch vorbereiten",
-                "text": "Knoblauch schälen und fein hacken.",
-                "timer_min": 0,
-                "zutaten_schritt": [
-                  {
-                    "name": "Knoblauch",
-                    "menge": "12 g"
-                  }
-                ],
-                "zubehoer": [
-                  "Schneidebrett",
-                  "Messer"
-                ],
-                "kontrolle": "Knoblauch ist fein gehackt.",
-                "parallel_hinweis": ""
-              },
-              {
-                "titel": "Wasser für Pasta aufsetzen",
-                "text": "In einem grossen Topf ca. 4 Liter Wasser mit Salz aufkochen.",
-                "timer_min": 10,
-                "zutaten_schritt": [
-                  {
-                    "name": "Salz",
-                    "menge": "6 g"
-                  }
-                ],
-                "zubehoer": [
-                  "Grosser Topf"
-                ],
-                "kontrolle": "Wasser kocht sprudelnd.",
-                "parallel_hinweis": "Währenddessen die Sauce zubereiten."
-              },
-              {
-                "titel": "Öl erhitzen",
-                "text": "Olivenöl in einer grossen Pfanne bei mittlerer Hitze erhitzen.",
-                "timer_min": 1,
-                "zutaten_schritt": [
-                  {
-                    "name": "Olivenöl",
-                    "menge": "60 ml"
-                  }
-                ],
-                "zubehoer": [
-                  "Grosse Pfanne"
-                ],
-                "kontrolle": "Öl ist heiss und schimmert.",
-                "parallel_hinweis": ""
-              },
-              {
-                "titel": "Zwiebeln anschwitzen",
-                "text": "Zwiebeln in das heisse Öl geben und 3 Minuten unter gelegentlichem Rühren anschwitzen.",
-                "timer_min": 3,
-                "zutaten_schritt": [
-                  {
-                    "name": "Zwiebeln",
-                    "menge": "200 g"
-                  }
-                ],
-                "zubehoer": [
-                  "Holzlöffel"
-                ],
-                "kontrolle": "Zwiebeln sind durchscheinend.",
-                "parallel_hinweis": ""
-              },
-              {
-                "titel": "Knoblauch hinzufügen",
-                "text": "Knoblauch hinzufügen und 1 Minute mitbraten.",
-                "timer_min": 1,
-                "zutaten_schritt": [
-                  {
-                    "name": "Knoblauch",
-                    "menge": "12 g"
-                  }
-                ],
-                "zubehoer": [
-                  "Holzlöffel"
-                ],
-                "kontrolle": "Knoblauch riecht aromatisch.",
-                "parallel_hinweis": ""
-              },
-              {
-                "titel": "Tomaten hinzufügen",
-                "text": "Dosentomaten (mit Saft) in die Pfanne geben und gut vermischen.",
-                "timer_min": 2,
-                "zutaten_schritt": [
-                  {
-                    "name": "Dosentomaten",
-                    "menge": "1200 g"
-                  }
-                ],
-                "zubehoer": [
-                  "Holzlöffel"
-                ],
-                "kontrolle": "Tomaten sind gleichmässig verteilt.",
-                "parallel_hinweis": ""
-              },
-              {
-                "titel": "Sauce aufkochen",
-                "text": "Zum Kochen bringen und dann auf mittlere Hitze reduzieren.",
-                "timer_min": 3,
-                "zutaten_schritt": [],
-                "zubehoer": [
-                  "Holzlöffel"
-                ],
-                "kontrolle": "Sauce sprudelt.",
-                "parallel_hinweis": ""
-              },
-              {
-                "titel": "Gewürze hinzufügen",
-                "text": "Oregano, Salz und Pfeffer einrühren.",
-                "timer_min": 0,
-                "zutaten_schritt": [
-                  {
-                    "name": "Oregano",
-                    "menge": "4 g"
-                  },
-                  {
-                    "name": "Salz",
-                    "menge": "6 g"
-                  },
-                  {
-                    "name": "Pfeffer",
-                    "menge": "3 g"
-                  }
-                ],
-                "zubehoer": [
-                  "Holzlöffel"
-                ],
-                "kontrolle": "Gewürze sind gleichmässig verteilt.",
-                "parallel_hinweis": ""
-              },
-              {
-                "titel": "Sauce köcheln",
-                "text": "Sauce 20 Minuten bei niedriger Hitze köcheln lassen.",
-                "timer_min": 20,
-                "zutaten_schritt": [],
-                "zubehoer": [],
-                "kontrolle": "Sauce ist eingedickt und tiefer gefärbt.",
-                "parallel_hinweis": "Währenddessen Pasta kochen, sobald das Wasser kocht."
-              },
-              {
-                "titel": "Pasta kochen",
-                "text": "Pasta in das kochende Salzwasser geben und nach Packungsanleitung (ca. 9-12 Min.) bissfest kochen.",
-                "timer_min": 11,
-                "zutaten_schritt": [
-                  {
-                    "name": "Pasta (Spaghetti oder Penne)",
-                    "menge": "480 g"
-                  }
-                ],
-                "zubehoer": [
-                  "Holzlöffel"
-                ],
-                "kontrolle": "Pasta ist bissfest.",
-                "parallel_hinweis": ""
-              },
-              {
-                "titel": "Pasta abgies sen",
-                "text": "Pasta abseihen und auffangen (ca. 240 ml Pastawasser für später).",
-                "timer_min": 0,
-                "zutaten_schritt": [],
-                "zubehoer": [
-                  "Sieb"
-                ],
-                "kontrolle": "Pasta ist abgetropft.",
-                "parallel_hinweis": ""
-              },
-              {
-                "titel": "Pasta und Sauce vermischen",
-                "text": "Paste in die Sauce geben und vorsichtig vermischen. Falls nötig, etwas Pastawasser hinzufügen, damit die Pasta nicht zu trocken wird.",
-                "timer_min": 0,
-                "zutaten_schritt": [
-                  {
-                    "name": "Pasta (Spaghetti oder Penne)",
-                    "menge": "480 g"
-                  }
-                ],
-                "zubehoer": [
-                  "Holzlöffel"
-                ],
-                "kontrolle": "Pasta ist gleichmässig mit Sauce überzogen.",
-                "parallel_hinweis": ""
-              },
-              {
-                "titel": "Final abschmecken",
-                "text": "Nochmals Geschmack kontrollieren und bei Bedarf mit Salz und Pfeffer nachwürzen.",
-                "timer_min": 0,
-                "zutaten_schritt": [
-                  {
-                    "name": "Salz",
-                    "menge": "2 g"
-                  },
-                  {
-                    "name": "Pfeffer",
-                    "menge": "1 g"
-                  }
-                ],
-                "zubehoer": [],
-                "kontrolle": "Geschmack ist ausgewogen.",
-                "parallel_hinweis": ""
-              }
-            ],
-            "schritte_fleisch": [
-              {
-                "titel": "Speck schneiden",
-                "text": "Speck in 0,5 cm breite Streifen schneiden.",
-                "timer_min": 0,
-                "zutaten_schritt": [
-                  {
-                    "name": "Speck",
-                    "menge": "240 g"
-                  }
-                ],
-                "zubehoer": [
-                  "Schneidebrett",
-                  "Messer"
-                ],
-                "kontrolle": "Speckstreifen sind gleichmässig.",
-                "parallel_hinweis": ""
-              },
-              {
-                "titel": "Zwiebeln schneiden",
-                "text": "Zwiebeln schälen und in feine Würfel von ca. 0,5 cm schneiden.",
-                "timer_min": 0,
-                "zutaten_schritt": [
-                  {
-                    "name": "Zwiebeln",
-                    "menge": "200 g"
-                  }
-                ],
-                "zubehoer": [
-                  "Schneidebrett",
-                  "Messer"
-                ],
-                "kontrolle": "Zwiebeln sind fein und gleichmässig gewürfelt.",
-                "parallel_hinweis": ""
-              },
-              {
-                "titel": "Knoblauch vorbereiten",
-                "text": "Knoblauch schälen und fein hacken.",
-                "timer_min": 0,
-                "zutaten_schritt": [
-                  {
-                    "name": "Knoblauch",
-                    "menge": "12 g"
-                  }
-                ],
-                "zubehoer": [
-                  "Schneidebrett",
-                  "Messer"
-                ],
-                "kontrolle": "Knoblauch ist fein gehackt.",
-                "parallel_hinweis": ""
-              },
-              {
-                "titel": "Wasser für Pasta aufsetzen",
-                "text": "In einem grossen Topf ca. 4 Liter Wasser mit Salz aufkochen.",
-                "timer_min": 10,
-                "zutaten_schritt": [
-                  {
-                    "name": "Salz",
-                    "menge": "6 g"
-                  }
-                ],
-                "zubehoer": [
-                  "Grosser Topf"
-                ],
-                "kontrolle": "Wasser kocht sprudelnd.",
-                "parallel_hinweis": "Währenddessen die Sauce mit Speck zubereiten."
-              },
-              {
-                "titel": "Speck braten",
-                "text": "Speck in einer grossen Pfanne bei mittlerer Hitze auslassen, bis er knusprig ist.",
-                "timer_min": 8,
-                "zutaten_schritt": [
-                  {
-                    "name": "Speck",
-                    "menge": "240 g"
-                  }
-                ],
-                "zubehoer": [
-                  "Grosse Pfanne",
-                  "Holzlöffel"
-                ],
-                "kontrolle": "Speck ist knusprig, Fett ist ausgelassen.",
-                "parallel_hinweis": ""
-              },
-              {
-                "titel": "Zwiebeln anschwitzen",
-                "text": "Zwiebeln in das heisse Speckfett geben und 3 Minuten unter gelegentlichem Rühren anschwitzen.",
-                "timer_min": 3,
-                "zutaten_schritt": [
-                  {
-                    "name": "Zwiebeln",
-                    "menge": "200 g"
-                  }
-                ],
-                "zubehoer": [
-                  "Holzlöffel"
-                ],
-                "kontrolle": "Zwiebeln sind durchscheinend.",
-                "parallel_hinweis": ""
-              },
-              {
-                "titel": "Knoblauch hinzufügen",
-                "text": "Knoblauch hinzufügen und 1 Minute mitbraten.",
-                "timer_min": 1,
-                "zutaten_schritt": [
-                  {
-                    "name": "Knoblauch",
-                    "menge": "12 g"
-                  }
-                ],
-                "zubehoer": [
-                  "Holzlöffel"
-                ],
-                "kontrolle": "Knoblauch riecht aromatisch.",
-                "parallel_hinweis": ""
-              },
-              {
-                "titel": "Tomaten hinzufügen",
-                "text": "Dosentomaten (mit Saft) in die Pfanne geben und gut vermischen.",
-                "timer_min": 2,
-                "zutaten_schritt": [
-                  {
-                    "name": "Dosentomaten",
-                    "menge": "1200 g"
-                  }
-                ],
-                "zubehoer": [
-                  "Holzlöffel"
-                ],
-                "kontrolle": "Tomaten sind gleichmässig verteilt.",
-                "parallel_hinweis": ""
-              },
-              {
-                "titel": "Sauce aufkochen",
-                "text": "Zum Kochen bringen und dann auf mittlere Hitze reduzieren.",
-                "timer_min": 3,
-                "zutaten_schritt": [],
-                "zubehoer": [
-                  "Holzlöffel"
-                ],
-                "kontrolle": "Sauce sprudelt.",
-                "parallel_hinweis": ""
-              },
-              {
-                "titel": "Gewürze hinzufügen",
-                "text": "Oregano, Salz und Pfeffer einrühren.",
-                "timer_min": 0,
-                "zutaten_schritt": [
-                  {
-                    "name": "Oregano",
-                    "menge": "4 g"
-                  },
-                  {
-                    "name": "Salz",
-                    "menge": "6 g"
-                  },
-                  {
-                    "name": "Pfeffer",
-                    "menge": "3 g"
-                  }
-                ],
-                "zubehoer": [
-                  "Holzlöffel"
-                ],
-                "kontrolle": "Gewürze sind gleichmässig verteilt.",
-                "parallel_hinweis": ""
-              },
-              {
-                "titel": "Sauce köcheln",
-                "text": "Sauce 20 Minuten bei niedriger Hitze köcheln lassen.",
-                "timer_min": 20,
-                "zutaten_schritt": [],
-                "zubehoer": [],
-                "kontrolle": "Sauce ist eingedickt und tiefer gefärbt.",
-                "parallel_hinweis": "Währenddessen Pasta kochen, sobald das Wasser kocht."
-              },
-              {
-                "titel": "Pasta kochen",
-                "text": "Pasta in das kochende Salzwasser geben und nach Packungsanleitung (ca. 9-12 Min.) bissfest kochen.",
-                "timer_min": 11,
-                "zutaten_schritt": [
-                  {
-                    "name": "Pasta (Spaghetti oder Penne)",
-                    "menge": "480 g"
-                  }
-                ],
-                "zubehoer": [
-                  "Holzlöffel"
-                ],
-                "kontrolle": "Pasta ist bissfest.",
-                "parallel_hinweis": ""
-              },
-              {
-                "titel": "Pasta abseihen",
-                "text": "Pasta abseihen und auffangen (ca. 240 ml Pastawasser für später).",
-                "timer_min": 0,
-                "zutaten_schritt": [],
-                "zubehoer": [
-                  "Sieb"
-                ],
-                "kontrolle": "Pasta ist abgetropft.",
-                "parallel_hinweis": ""
-              },
-              {
-                "titel": "Pasta und Sauce vermischen",
-                "text": "Pasta in die Sauce geben und vorsichtig vermischen. Falls nötig, etwas Pastawasser hinzufügen, damit die Pasta nicht zu trocken wird.",
-                "timer_min": 0,
-                "zutaten_schritt": [
-                  {
-                    "name": "Pasta (Spaghetti oder Penne)",
-                    "menge": "480 g"
-                  }
-                ],
-                "zubehoer": [
-                  "Holzlöffel"
-                ],
-                "kontrolle": "Pasta ist gleichmässig mit Sauce überzogen.",
-                "parallel_hinweis": ""
-              },
-              {
-                "titel": "Final abschmecken",
-                "text": "Nochmals Geschmack kontrollieren und bei Bedarf mit Salz und Pfeffer nachwürzen.",
-                "timer_min": 0,
-                "zutaten_schritt": [
-                  {
-                    "name": "Salz",
-                    "menge": "2 g"
-                  },
-                  {
-                    "name": "Pfeffer",
-                    "menge": "1 g"
-                  }
-                ],
-                "zubehoer": [],
-                "kontrolle": "Geschmack ist ausgewogen.",
-                "parallel_hinweis": ""
-              }
-            ],
-            "prep_next": [
-              "2 Portionen (ca. 600 g) abkühlen lassen",
-              "In verschliessbarem Behälter im Kühlschrank lagern",
-              "Morgen in Mikrowelle 3-4 Min. aufwärmen, evtl. etwas Wasser hinzufügen"
-            ],
-            "einfrieren": [
-              "2 Portionen (ca. 600 g) in Gefrierbehälter füllen",
-              "Mit Datum beschriften und einfrieren"
-            ],
-            "mittag_tag": "Do",
-            "zutaten": [
-              {
-                "name": "Pasta (Spaghetti oder Penne)",
-                "menge": "480 g"
-              },
-              {
-                "name": "Dosentomaten",
-                "menge": "1200 g"
-              },
-              {
-                "name": "Zwiebeln",
-                "menge": "200 g"
-              },
-              {
-                "name": "Knoblauch",
-                "menge": "12 g"
-              },
-              {
-                "name": "Olivenöl",
-                "menge": "60 ml"
-              },
-              {
-                "name": "Salz",
-                "menge": "12 g"
-              },
-              {
-                "name": "Pfeffer",
-                "menge": "3 g"
-              },
-              {
-                "name": "Oregano",
-                "menge": "4 g"
-              },
-              {
-                "name": "Speck",
-                "menge": "240 g"
-              }
-            ],
-            "tipp": "All'Amatriciana ist ein klassisches römisches Rezept mit Guanciale (Schweinebacke), Tomaten und Pecorino. Speck ist eine gute Alternative. Die Sauce schmeckt auch am nächsten Tag noch besser."
+            "abend": "Griechischer Bauernsalat mit Feta und Kichererbsen",
+            "zeit_aktiv": "15m",
+            "zeit_total": "15m"
           },
           {
             "tag": "Fr",
-            "abend": "Risotto mit Pilzen und Tomaten",
-            "zeit_aktiv": "30 Min.",
-            "zeit_total": "45 Min.",
-            "mittag_nächster_tag": "Risotto mit Pilzen und Tomaten",
-            "schritte_vegi": [
-              {
-                "titel": "Zwiebeln schneiden",
-                "text": "Zwiebeln schälen und in sehr feine Würfel von ca. 0,3 cm schneiden.",
-                "timer_min": 0,
-                "zutaten_schritt": [
-                  {
-                    "name": "Zwiebeln",
-                    "menge": "200 g"
-                  }
-                ],
-                "zubehoer": [
-                  "Schneidebrett",
-                  "Messer"
-                ],
-                "kontrolle": "Zwiebeln sind sehr fein gehackt.",
-                "parallel_hinweis": ""
-              },
-              {
-                "titel": "Knoblauch vorbereiten",
-                "text": "Knoblauch schälen und fein hacken.",
-                "timer_min": 0,
-                "zutaten_schritt": [
-                  {
-                    "name": "Knoblauch",
-                    "menge": "12 g"
-                  }
-                ],
-                "zubehoer": [
-                  "Schneidebrett",
-                  "Messer"
-                ],
-                "kontrolle": "Knoblauch ist fein gehackt.",
-                "parallel_hinweis": ""
-              },
-              {
-                "titel": "Pilze vorbereiten",
-                "text": "Champignons mit feuchtem Tuch abwischen und in ca. 0,5 cm dünne Scheiben schneiden.",
-                "timer_min": 0,
-                "zutaten_schritt": [
-                  {
-                    "name": "Champignons",
-                    "menge": "400 g"
-                  }
-                ],
-                "zubehoer": [
-                  "Schneidebrett",
-                  "Messer"
-                ],
-                "kontrolle": "Pilze sind gleichmässig geschnitten.",
-                "parallel_hinweis": ""
-              },
-              {
-                "titel": "Parmesan reiben",
-                "text": "Parmesan fein reiben.",
-                "timer_min": 0,
-                "zutaten_schritt": [
-                  {
-                    "name": "Parmesan",
-                    "menge": "120 g"
-                  }
-                ],
-                "zubehoer": [
-                  "Reibe"
-                ],
-                "kontrolle": "Parmesan ist fein geraspelt.",
-                "parallel_hinweis": ""
-              },
-              {
-                "titel": "Brühe erhitzen",
-                "text": "Gemüsebrühe in einem Topf auf niedriger Hitze warm halten.",
-                "timer_min": 5,
-                "zutaten_schritt": [
-                  {
-                    "name": "Gemüsebrühe",
-                    "menge": "1200 ml"
-                  }
-                ],
-                "zubehoer": [
-                  "Topf"
-                ],
-                "kontrolle": "Brühe dampft leicht.",
-                "parallel_hinweis": "Währenddessen Pilze anbraten."
-              },
-              {
-                "titel": "Pilze anbraten",
-                "text": "2 EL Olivenöl in einer Pfanne erhitzen und Pilze bei mittlerer bis hoher Hitze 5 Minuten braten, bis sie leicht goldbraun sind.",
-                "timer_min": 5,
-                "zutaten_schritt": [
-                  {
-                    "name": "Olivenöl",
-                    "menge": "30 ml"
-                  },
-                  {
-                    "name": "Champignons",
-                    "menge": "400 g"
-                  }
-                ],
-                "zubehoer": [
-                  "Pfanne",
-                  "Holzlöffel"
-                ],
-                "kontrolle": "Pilze sind leicht gebräunt, Feuchtigkeit ist entwichen.",
-                "parallel_hinweis": ""
-              },
-              {
-                "titel": "Pilze aus der Pfanne nehmen",
-                "text": "Gebratene Pilze auf einen Teller geben und beiseite stellen.",
-                "timer_min": 0,
-                "zutaten_schritt": [],
-                "zubehoer": [
-                  "Teller"
-                ],
-                "kontrolle": "Pilze sind aus der Pfanne.",
-                "parallel_hinweis": ""
-              },
-              {
-                "titel": "Olivenöl erhitzen",
-                "text": "Restliche 2 EL Olivenöl in der gleichen Pfanne bei mittlerer Hitze erhitzen.",
-                "timer_min": 1,
-                "zutaten_schritt": [
-                  {
-                    "name": "Olivenöl",
-                    "menge": "30 ml"
-                  }
-                ],
-                "zubehoer": [
-                  "Pfanne"
-                ],
-                "kontrolle": "Öl schimmert.",
-                "parallel_hinweis": ""
-              },
-              {
-                "titel": "Zwiebeln anschwitzen",
-                "text": "Zwiebeln in das heisse Öl geben und 2 Minuten unter gelegentlichem Rühren anschwitzen.",
-                "timer_min": 2,
-                "zutaten_schritt": [
-                  {
-                    "name": "Zwiebeln",
-                    "menge": "200 g"
-                  }
-                ],
-                "zubehoer": [
-                  "Holzlöffel"
-                ],
-                "kontrolle": "Zwiebeln sind durchscheinend.",
-                "parallel_hinweis": ""
-              },
-              {
-                "titel": "Knoblauch hinzufügen",
-                "text": "Knoblauch hinzufügen und 30 Sekunden mitbraten.",
-                "timer_min": 0,
-                "zutaten_schritt": [
-                  {
-                    "name": "Knoblauch",
-                    "menge": "12 g"
-                  }
-                ],
-                "zubehoer": [
-                  "Holzlöffel"
-                ],
-                "kontrolle": "Knoblauch riecht aromatisch.",
-                "parallel_hinweis": ""
-              },
-              {
-                "titel": "Reis hinzufügen",
-                "text": "Risotto-Reis hinzufügen und 2 Minuten unter ständigem Rühren toasten.",
-                "timer_min": 2,
-                "zutaten_schritt": [
-                  {
-                    "name": "Risotto-Reis (Arborio oder Carnaroli)",
-                    "menge": "480 g"
-                  }
-                ],
-                "zubehoer": [
-                  "Holzlöffel"
-                ],
-                "kontrolle": "Reis ist leicht transparant an den Rändern, Zwiebeln sind mit Reis vermischt.",
-                "parallel_hinweis": ""
-              },
-              {
-                "titel": "Wein hinzufügen",
-                "text": "Weisswein hinzugiessen und unter ständigem Rühren aufnehmen, bis der Wein aufgesogen ist.",
-                "timer_min": 2,
-                "zutaten_schritt": [
-                  {
-                    "name": "Weisswein",
-                    "menge": "120 ml"
-                  }
-                ],
-                "zubehoer": [
-                  "Holzlöffel"
-                ],
-                "kontrolle": "Reis hat den Wein aufgesogen.",
-                "parallel_hinweis": ""
-              },
-              {
-                "titel": "Brühe portionsweise hinzufügen",
-                "text": "Warme Brühe in 4-5 Portionen hinzufügen, jedes Mal unter ständigem Rühren, bis der Reis die Brühe aufgesogen hat, bevor die nächste Portion hinzugefügt wird. Dies dauert ca. 18 Minuten.",
-                "timer_min": 18,
-                "zutaten_schritt": [
-                  {
-                    "name": "Gemüsebrühe",
-                    "menge": "1200 ml"
-                  }
-                ],
-                "zubehoer": [
-                  "Holzlöffel"
-                ],
-                "kontrolle": "Reis ist cremig, aber noch bissfest. Konsistenz ähnelt Pudding.",
-                "parallel_hinweis": "Während des Rührens nach 10 Min. die Dosentomaten hinzufügen."
-              },
-              {
-                "titel": "Tomaten hinzufügen",
-                "text": "Nach ca. 10 Minuten Kochzeit Dosentomaten (mit Saft) hinzufügen und weitermachen.",
-                "timer_min": 0,
-                "zutaten_schritt": [
-                  {
-                    "name": "Dosentomaten",
-                    "menge": "600 g"
-                  }
-                ],
-                "zubehoer": [
-                  "Holzlöffel"
-                ],
-                "kontrolle": "Tomaten sind gleichmässig verteilt.",
-                "parallel_hinweis": ""
-              },
-              {
-                "titel": "Gebratene Pilze hinzufügen",
-                "text": "Die reservierten Pilze hinzufügen und vorsichtig unterrühren.",
-                "timer_min": 0,
-                "zutaten_schritt": [
-                  {
-                    "name": "Champignons",
-                    "menge": "400 g"
-                  }
-                ],
-                "zubehoer": [
-                  "Holzlöffel"
-                ],
-                "kontrolle": "Pilze sind verteilt.",
-                "parallel_hinweis": ""
-              },
-              {
-                "titel": "Thymian hinzufügen",
-                "text": "Thymian einrühren.",
-                "timer_min": 0,
-                "zutaten_schritt": [
-                  {
-                    "name": "Thymian (getrocknet)",
-                    "menge": "3 g"
-                  }
-                ],
-                "zubehoer": [
-                  "Holzlöffel"
-                ],
-                "kontrolle": "Thymian ist verteilt.",
-                "parallel_hinweis": ""
-              },
-              {
-                "titel": "Butter und Käse einarbeiten",
-                "text": "Butter und geriebenen Parmesan hinzufügen und kräftig unterrühren (Mantecatura).",
-                "timer_min": 1,
-                "zutaten_schritt": [
-                  {
-                    "name": "Butter",
-                    "menge": "80 g"
-                  },
-                  {
-                    "name": "Parmesan",
-                    "menge": "120 g"
-                  }
-                ],
-                "zubehoer": [
-                  "Holzlöffel"
-                ],
-                "kontrolle": "Risotto glänzt und ist cremig, Butter und Käse sind vollständig eingearbeitet.",
-                "parallel_hinweis": ""
-              },
-              {
-                "titel": "Würzen",
-                "text": "Mit Salz und Pfeffer abschmecken.",
-                "timer_min": 0,
-                "zutaten_schritt": [
-                  {
-                    "name": "Salz",
-                    "menge": "12 g"
-                  },
-                  {
-                    "name": "Pfeffer",
-                    "menge": "3 g"
-                  }
-                ],
-                "zubehoer": [],
-                "kontrolle": "Geschmack ist ausgewogen.",
-                "parallel_hinweis": ""
-              }
-            ],
-            "schritte_fleisch": [
-              {
-                "titel": "Zwiebeln schneiden",
-                "text": "Zwiebeln schälen und in sehr feine Würfel von ca. 0,3 cm schneiden.",
-                "timer_min": 0,
-                "zutaten_schritt": [
-                  {
-                    "name": "Zwiebeln",
-                    "menge": "200 g"
-                  }
-                ],
-                "zubehoer": [
-                  "Schneidebrett",
-                  "Messer"
-                ],
-                "kontrolle": "Zwiebeln sind sehr fein gehackt.",
-                "parallel_hinweis": ""
-              },
-              {
-                "titel": "Knoblauch vorbereiten",
-                "text": "Knoblauch schälen und fein hacken.",
-                "timer_min": 0,
-                "zutaten_schritt": [
-                  {
-                    "name": "Knoblauch",
-                    "menge": "12 g"
-                  }
-                ],
-                "zubehoer": [
-                  "Schneidebrett",
-                  "Messer"
-                ],
-                "kontrolle": "Knoblauch ist fein gehackt.",
-                "parallel_hinweis": ""
-              },
-              {
-                "titel": "Pilze vorbereiten",
-                "text": "Champignons mit feuchtem Tuch abwischen und in ca. 0,5 cm dünne Scheiben schneiden.",
-                "timer_min": 0,
-                "zutaten_schritt": [
-                  {
-                    "name": "Champignons",
-                    "menge": "400 g"
-                  }
-                ],
-                "zubehoer": [
-                  "Schneidebrett",
-                  "Messer"
-                ],
-                "kontrolle": "Pilze sind gleichmässig geschnitten.",
-                "parallel_hinweis": ""
-              },
-              {
-                "titel": "Parmesan reiben",
-                "text": "Parmesan fein reiben.",
-                "timer_min": 0,
-                "zutaten_schritt": [
-                  {
-                    "name": "Parmesan",
-                    "menge": "120 g"
-                  }
-                ],
-                "zubehoer": [
-                  "Reibe"
-                ],
-                "kontrolle": "Parmesan ist fein geraspelt.",
-                "parallel_hinweis": ""
-              },
-              {
-                "titel": "Brühe erhitzen",
-                "text": "Gemüsebrühe in einem Topf auf niedriger Hitze warm halten.",
-                "timer_min": 5,
-                "zutaten_schritt": [
-                  {
-                    "name": "Gemüsebrühe",
-                    "menge": "1200 ml"
-                  }
-                ],
-                "zubehoer": [
-                  "Topf"
-                ],
-                "kontrolle": "Brühe dampft leicht.",
-                "parallel_hinweis": "Währenddessen Pilze anbraten."
-              },
-              {
-                "titel": "Pilze anbraten",
-                "text": "2 EL Olivenöl in einer Pfanne erhitzen und Pilze bei mittlerer bis hoher Hitze 5 Minuten braten, bis sie leicht goldbraun sind.",
-                "timer_min": 5,
-                "zutaten_schritt": [
-                  {
-                    "name": "Olivenöl",
-                    "menge": "30 ml"
-                  },
-                  {
-                    "name": "Champignons",
-                    "menge": "400 g"
-                  }
-                ],
-                "zubehoer": [
-                  "Pfanne",
-                  "Holzlöffel"
-                ],
-                "kontrolle": "Pilze sind leicht gebräunt, Feuchtigkeit ist entwichen.",
-                "parallel_hinweis": ""
-              },
-              {
-                "titel": "Pilze aus der Pfanne nehmen",
-                "text": "Gebratene Pilze auf einen Teller geben und beiseite stellen.",
-                "timer_min": 0,
-                "zutaten_schritt": [],
-                "zubehoer": [
-                  "Teller"
-                ],
-                "kontrolle": "Pilze sind aus der Pfanne.",
-                "parallel_hinweis": ""
-              },
-              {
-                "titel": "Olivenöl erhitzen",
-                "text": "Restliche 2 EL Olivenöl in der gleichen Pfanne bei mittlerer Hitze erhitzen.",
-                "timer_min": 1,
-                "zutaten_schritt": [
-                  {
-                    "name": "Olivenöl",
-                    "menge": "30 ml"
-                  }
-                ],
-                "zubehoer": [
-                  "Pfanne"
-                ],
-                "kontrolle": "Öl schimmert.",
-                "parallel_hinweis": ""
-              },
-              {
-                "titel": "Zwiebeln anschwitzen",
-                "text": "Zwiebeln in das heisse Öl geben und 2 Minuten unter gelegentlichem Rühren anschwitzen.",
-                "timer_min": 2,
-                "zutaten_schritt": [
-                  {
-                    "name": "Zwiebeln",
-                    "menge": "200 g"
-                  }
-                ],
-                "zubehoer": [
-                  "Holzlöffel"
-                ],
-                "kontrolle": "Zwiebeln sind durchscheinend.",
-                "parallel_hinweis": ""
-              },
-              {
-                "titel": "Knoblauch hinzufügen",
-                "text": "Knoblauch hinzufügen und 30 Sekunden mitbraten.",
-                "timer_min": 0,
-                "zutaten_schritt": [
-                  {
-                    "name": "Knoblauch",
-                    "menge": "12 g"
-                  }
-                ],
-                "zubehoer": [
-                  "Holzlöffel"
-                ],
-                "kontrolle": "Knoblauch riecht aromatisch.",
-                "parallel_hinweis": ""
-              },
-              {
-                "titel": "Reis hinzufügen",
-                "text": "Risotto-Reis hinzufügen und 2 Minuten unter ständigem Rühren toasten.",
-                "timer_min": 2,
-                "zutaten_schritt": [
-                  {
-                    "name": "Risotto-Reis (Arborio oder Carnaroli)",
-                    "menge": "480 g"
-                  }
-                ],
-                "zubehoer": [
-                  "Holzlöffel"
-                ],
-                "kontrolle": "Reis ist leicht transparent an den Rändern, Zwiebeln sind mit Reis vermischt.",
-                "parallel_hinweis": ""
-              },
-              {
-                "titel": "Wein hinzufügen",
-                "text": "Weisswein hinzugiessen und unter ständigem Rühren aufnehmen, bis der Wein aufgesogen ist.",
-                "timer_min": 2,
-                "zutaten_schritt": [
-                  {
-                    "name": "Weisswein",
-                    "menge": "120 ml"
-                  }
-                ],
-                "zubehoer": [
-                  "Holzlöffel"
-                ],
-                "kontrolle": "Reis hat den Wein aufgesogen.",
-                "parallel_hinweis": ""
-              },
-              {
-                "titel": "Brühe portionsweise hinzufügen",
-                "text": "Warme Brühe in 4-5 Portionen hinzufügen, jedes Mal unter ständigem Rühren, bis der Reis die Brühe aufgesogen hat, bevor die nächste Portion hinzugefügt wird. Dies dauert ca. 18 Minuten.",
-                "timer_min": 18,
-                "zutaten_schritt": [
-                  {
-                    "name": "Gemüsebrühe",
-                    "menge": "1200 ml"
-                  }
-                ],
-                "zubehoer": [
-                  "Holzlöffel"
-                ],
-                "kontrolle": "Reis ist cremig, aber noch bissfest. Konsistenz ähnelt Pudding.",
-                "parallel_hinweis": "Während des Rührens nach 10 Min. die Dosentomaten hinzufügen."
-              },
-              {
-                "titel": "Tomaten hinzufügen",
-                "text": "Nach ca. 10 Minuten Kochzeit Dosentomaten (mit Saft) hinzufügen und weitermachen.",
-                "timer_min": 0,
-                "zutaten_schritt": [
-                  {
-                    "name": "Dosentomaten",
-                    "menge": "600 g"
-                  }
-                ],
-                "zubehoer": [
-                  "Holzlöffel"
-                ],
-                "kontrolle": "Tomaten sind gleichmässig verteilt.",
-                "parallel_hinweis": ""
-              },
-              {
-                "titel": "Gebratene Pilze hinzufügen",
-                "text": "Die reservierten Pilze hinzufügen und vorsichtig unterrühren.",
-                "timer_min": 0,
-                "zutaten_schritt": [
-                  {
-                    "name": "Champignons",
-                    "menge": "400 g"
-                  }
-                ],
-                "zubehoer": [
-                  "Holzlöffel"
-                ],
-                "kontrolle": "Pilze sind verteilt.",
-                "parallel_hinweis": ""
-              },
-              {
-                "titel": "Thymian hinzufügen",
-                "text": "Thymian einrühren.",
-                "timer_min": 0,
-                "zutaten_schritt": [
-                  {
-                    "name": "Thymian (getrocknet)",
-                    "menge": "3 g"
-                  }
-                ],
-                "zubehoer": [
-                  "Holzlöffel"
-                ],
-                "kontrolle": "Thymian ist verteilt.",
-                "parallel_hinweis": ""
-              },
-              {
-                "titel": "Butter und Käse einarbeiten",
-                "text": "Butter und geriebenen Parmesan hinzufügen und kräftig unterrühren (Mantecatura).",
-                "timer_min": 1,
-                "zutaten_schritt": [
-                  {
-                    "name": "Butter",
-                    "menge": "80 g"
-                  },
-                  {
-                    "name": "Parmesan",
-                    "menge": "120 g"
-                  }
-                ],
-                "zubehoer": [
-                  "Holzlöffel"
-                ],
-                "kontrolle": "Risotto glänzt und ist cremig, Butter und Käse sind vollständig eingearbeitet.",
-                "parallel_hinweis": ""
-              },
-              {
-                "titel": "Würzen",
-                "text": "Mit Salz und Pfeffer abschmecken.",
-                "timer_min": 0,
-                "zutaten_schritt": [
-                  {
-                    "name": "Salz",
-                    "menge": "12 g"
-                  },
-                  {
-                    "name": "Pfeffer",
-                    "menge": "3 g"
-                  }
-                ],
-                "zubehoer": [],
-                "kontrolle": "Geschmack ist ausgewogen.",
-                "parallel_hinweis": ""
-              }
-            ],
-            "prep_next": [
-              "2 Portionen (ca. 600 g) abkühlen lassen",
-              "In verschliessbarem Behälter im Kühlschrank lagern",
-              "Morgen in Mikrowelle 4-5 Min. aufwärmen, evtl. etwas heisse Brühe hinzufügen"
-            ],
-            "einfrieren": [
-              "2 Portionen (ca. 600 g) in Gefrierbehälter füllen",
-              "Mit Datum beschriften und einfrieren"
-            ],
-            "mittag_tag": "Sa",
-            "zutaten": [
-              {
-                "name": "Risotto-Reis (Arborio oder Carnaroli)",
-                "menge": "480 g"
-              },
-              {
-                "name": "Zwiebeln",
-                "menge": "200 g"
-              },
-              {
-                "name": "Knoblauch",
-                "menge": "12 g"
-              },
-              {
-                "name": "Champignons",
-                "menge": "400 g"
-              },
-              {
-                "name": "Dosentomaten",
-                "menge": "600 g"
-              },
-              {
-                "name": "Gemüsebrühe",
-                "menge": "1200 ml"
-              },
-              {
-                "name": "Weisswein",
-                "menge": "120 ml"
-              },
-              {
-                "name": "Olivenöl",
-                "menge": "60 ml"
-              },
-              {
-                "name": "Butter",
-                "menge": "80 g"
-              },
-              {
-                "name": "Parmesan",
-                "menge": "120 g"
-              },
-              {
-                "name": "Salz",
-                "menge": "12 g"
-              },
-              {
-                "name": "Pfeffer",
-                "menge": "3 g"
-              },
-              {
-                "name": "Thymian (getrocknet)",
-                "menge": "3 g"
-              }
-            ],
-            "tipp": "Risotto braucht ständiges Rühren und warme Brühe. Das Rühren ist wichtig, damit die Reisstärke freigesetzt wird und eine cremige Konsistenz entsteht. Champignons können auch durch TK-Pilzmischung ersetzt werden."
+            "abend": "Auberginen-Tomaten-Auflauf mit Mozzarella",
+            "zeit_aktiv": "25m",
+            "zeit_total": "50m"
           }
         ]
       },
-      "sel": 0,
+      "sel": 1,
       "n": 3,
       "personen": 2,
-      "reste": 1,
-      "freeze": 1,
+      "reste": 0,
+      "freeze": 0,
+      "budget": 1,
+      "modus": "vegi",
+      "resteMode": "nein",
+      "days": {
+        "Mo": "normal",
+        "Di": null,
+        "Mi": "normal",
+        "Do": null,
+        "Fr": "normal",
+        "Sa": null,
+        "So": null
+      },
+      "weekStart": "2026-09-07",
+      "einkaufstag": "Mi",
+      "saved": "9.9.2026",
+      "bringImportedAt": null,
+      "bringItemCount": 0,
+      "sugsAll": [
+        {
+          "id": 1,
+          "thema": "Mediterran (Variante 1)",
+          "kochabende": [
+            "Mo",
+            "Mi",
+            "Fr"
+          ],
+          "gerichte": [
+            {
+              "tag": "Mo",
+              "abend": "Gebratener Reis mit Ei und Gemüse",
+              "zeit_aktiv": "20m",
+              "zeit_total": "25m"
+            },
+            {
+              "tag": "Mi",
+              "abend": "Auberginen-Tomaten-Salat mit Feta",
+              "zeit_aktiv": "25m",
+              "zeit_total": "40m"
+            },
+            {
+              "tag": "Fr",
+              "abend": "Vegetarische Moussaka",
+              "zeit_aktiv": "30m",
+              "zeit_total": "60m"
+            }
+          ],
+          "einkaufsliste": [
+            "Eier",
+            "Langkornreis",
+            "Auberginen",
+            "Tomaten",
+            "Feta",
+            "Kartoffeln",
+            "Zwiebeln",
+            "Knoblauch",
+            "Peperoni rot",
+            "Zucchini",
+            "Oeliven",
+            "Oregano",
+            "Sambal Oelek",
+            "Olivenoel",
+            "Salz",
+            "Pfeffer"
+          ]
+        },
+        {
+          "id": 2,
+          "thema": "Mediterran",
+          "kochabende": [
+            "Mo",
+            "Mi",
+            "Fr"
+          ],
+          "gerichte": [
+            {
+              "tag": "Mo",
+              "abend": "Gebratener Reis mit Ei und Gemüse",
+              "zeit_aktiv": "20m",
+              "zeit_total": "25m"
+            },
+            {
+              "tag": "Mi",
+              "abend": "Griechischer Bauernsalat mit Feta und Kichererbsen",
+              "zeit_aktiv": "15m",
+              "zeit_total": "15m"
+            },
+            {
+              "tag": "Fr",
+              "abend": "Auberginen-Tomaten-Auflauf mit Mozzarella",
+              "zeit_aktiv": "25m",
+              "zeit_total": "50m"
+            }
+          ]
+        },
+        {
+          "id": 3,
+          "thema": "Mediterran (Variante 3)",
+          "kochabende": [
+            "Mo",
+            "Mi",
+            "Fr"
+          ],
+          "gerichte": [
+            {
+              "tag": "Mo",
+              "abend": "Gebratener Reis mit Ei und Gemüse",
+              "zeit_aktiv": "20m",
+              "zeit_total": "25m"
+            },
+            {
+              "tag": "Mi",
+              "abend": "Auberginen-Tomaten-Moussaka mit Joghurt-Topping",
+              "zeit_aktiv": "35m",
+              "zeit_total": "75m"
+            },
+            {
+              "tag": "Fr",
+              "abend": "Rucola-Linsen-Salat mit gebratener Halloumi und Sambal-Vinaigrette",
+              "zeit_aktiv": "25m",
+              "zeit_total": "40m"
+            }
+          ]
+        }
+      ],
+      "sugsPartial": true
+    }
+  },
+  {
+    "planId": "6d6e4f42-8316-4834-9d61-679db5a7c8b5",
+    "date": "2026-09-09",
+    "saved": "9.9.2026",
+    "thema": "Mediterran",
+    "personen": 2,
+    "kochabende": 1,
+    "reste": 0,
+    "freeze": 0,
+    "budget": 1,
+    "gerichte": [],
+    "status": "geplant",
+    "plan": {
+      "planId": "6d6e4f42-8316-4834-9d61-679db5a7c8b5",
+      "sug": {
+        "id": 3,
+        "thema": "Mediterran",
+        "kochabende": [
+          "Mi"
+        ],
+        "gerichte": [],
+        "einkaufsliste": [
+          "Lauch",
+          "Feta",
+          "Eier",
+          "Milch",
+          "Mehl",
+          "Butter",
+          "Salz",
+          "Pfeffer",
+          "Muskatnuss",
+          "Zwiebeln",
+          "Knoblauch",
+          "Olivenöl",
+          "Gemüsebrühe",
+          "Tomaten konserviert",
+          "Oregano",
+          "Hühnerbrust optional",
+          "Salatmix",
+          "Brot"
+        ]
+      },
+      "sel": 2,
+      "n": 1,
+      "personen": 2,
+      "reste": 0,
+      "freeze": 0,
       "budget": 1,
       "modus": "optional",
-      "resteMode": "mikro",
+      "resteMode": "nein",
+      "days": {
+        "Mo": null,
+        "Di": null,
+        "Mi": "normal",
+        "Do": null,
+        "Fr": null,
+        "Sa": null,
+        "So": null
+      },
+      "weekStart": "2026-09-07",
+      "einkaufstag": "Mi",
+      "saved": "9.9.2026",
+      "bringImportedAt": null,
+      "bringItemCount": 0,
+      "sugsAll": [
+        {
+          "id": 1,
+          "thema": "Mediterranisch",
+          "kochabende": [
+            "Mi"
+          ],
+          "gerichte": [
+            {
+              "tag": "Mi",
+              "abend": "Lauch-Tomaten-Gratin mit Hackfleisch",
+              "zeit_aktiv": "25m",
+              "zeit_total": "45m"
+            }
+          ],
+          "einkauf": [
+            "Lauch",
+            "Tomaten",
+            "Zwiebeln",
+            "Knoblauch",
+            "Rinderhackfleisch",
+            "Gruyère",
+            "Rahm",
+            "Brot",
+            "Salat",
+            "Olivenöl",
+            "Basilikum",
+            "Kartoffeln",
+            "Petersilie"
+          ]
+        },
+        {
+          "id": 2,
+          "thema": "Mediterran",
+          "kochabende": [
+            "Mi"
+          ],
+          "gerichte": [
+            {
+              "tag": "Mi",
+              "abend": "Lauch-Kartoffel-Gratin mit Schinken",
+              "zeit_aktiv": "25m",
+              "zeit_total": "50m"
+            }
+          ]
+        },
+        {
+          "id": 3,
+          "thema": "Mediterran",
+          "kochabende": [
+            "Mi"
+          ],
+          "gerichte": [],
+          "einkaufsliste": [
+            "Lauch",
+            "Feta",
+            "Eier",
+            "Milch",
+            "Mehl",
+            "Butter",
+            "Salz",
+            "Pfeffer",
+            "Muskatnuss",
+            "Zwiebeln",
+            "Knoblauch",
+            "Olivenöl",
+            "Gemüsebrühe",
+            "Tomaten konserviert",
+            "Oregano",
+            "Hühnerbrust optional",
+            "Salatmix",
+            "Brot"
+          ]
+        }
+      ],
+      "sugsPartial": true
+    }
+  },
+  {
+    "planId": "0895a500-9bf4-472d-b6a3-7e465b3863b8",
+    "date": "2026-09-09",
+    "saved": "9.9.2026",
+    "thema": "Mediterranisch",
+    "personen": 2,
+    "kochabende": 3,
+    "reste": 0,
+    "freeze": 0,
+    "budget": 1,
+    "gerichte": [
+      {
+        "tag": "Mo",
+        "abend": "Linsensuppe mit Tomaten und Spinat"
+      },
+      {
+        "tag": "Mi",
+        "abend": "Auberginen-Tomaten-Gratin mit Feta"
+      },
+      {
+        "tag": "Fr",
+        "abend": "Kichererbsen-Salat mit Zitrone und Kräutern"
+      }
+    ],
+    "status": "geplant",
+    "plan": {
+      "planId": "0895a500-9bf4-472d-b6a3-7e465b3863b8",
+      "sug": {
+        "id": 2,
+        "thema": "Mediterranisch",
+        "kochabende": [
+          "Mo",
+          "Mi",
+          "Fr"
+        ],
+        "gerichte": [
+          {
+            "tag": "Mo",
+            "abend": "Linsensuppe mit Tomaten und Spinat",
+            "zeit_aktiv": "20m",
+            "zeit_total": "40m"
+          },
+          {
+            "tag": "Mi",
+            "abend": "Auberginen-Tomaten-Gratin mit Feta",
+            "zeit_aktiv": "25m",
+            "zeit_total": "50m"
+          },
+          {
+            "tag": "Fr",
+            "abend": "Kichererbsen-Salat mit Zitrone und Kräutern",
+            "zeit_aktiv": "15m",
+            "zeit_total": "15m"
+          }
+        ]
+      },
+      "sel": 1,
+      "n": 3,
+      "personen": 2,
+      "reste": 0,
+      "freeze": 0,
+      "budget": 1,
+      "modus": "vegi",
+      "resteMode": "nein",
       "days": {
         "Mo": "normal",
         "Di": null,
@@ -1718,1656 +419,27 @@
           "gerichte": [
             {
               "tag": "Mo",
-              "abend": "Linsensuppe mit Gemüse und Speck (optional)",
-              "zeit_aktiv": "25 Min.",
-              "zeit_total": "55 Min.",
-              "mittag_nächster_tag": "Linsensuppe",
-              "schritte_vegi": [
-                {
-                  "titel": "Zwiebeln schneiden",
-                  "text": "Zwiebeln schälen und in 1 cm grosse Würfel schneiden.",
-                  "timer_min": 0,
-                  "zutaten_schritt": [
-                    {
-                      "name": "Zwiebeln",
-                      "menge": "400 g"
-                    }
-                  ],
-                  "zubehoer": [
-                    "Schneidebrett",
-                    "Messer"
-                  ],
-                  "kontrolle": "Zwiebeln sind gleichmässig gewürfelt.",
-                  "parallel_hinweis": ""
-                },
-                {
-                  "titel": "Gemüse schneiden",
-                  "text": "Rüebli und Sellerie waschen und in 1 cm grosse Würfel schneiden.",
-                  "timer_min": 0,
-                  "zutaten_schritt": [
-                    {
-                      "name": "Rüebli",
-                      "menge": "300 g"
-                    },
-                    {
-                      "name": "Sellerie",
-                      "menge": "200 g"
-                    }
-                  ],
-                  "zubehoer": [
-                    "Schneidebrett",
-                    "Messer"
-                  ],
-                  "kontrolle": "Gemüsewürfel sind gleichmässig gross.",
-                  "parallel_hinweis": ""
-                },
-                {
-                  "titel": "Kartoffeln schneiden",
-                  "text": "Kartoffeln waschen und in 1 cm grosse Würfel schneiden.",
-                  "timer_min": 0,
-                  "zutaten_schritt": [
-                    {
-                      "name": "Kartoffeln",
-                      "menge": "300 g"
-                    }
-                  ],
-                  "zubehoer": [
-                    "Schneidebrett",
-                    "Messer"
-                  ],
-                  "kontrolle": "Kartoffelwürfel sind gleichmässig.",
-                  "parallel_hinweis": ""
-                },
-                {
-                  "titel": "Öl erhitzen",
-                  "text": "Olivenöl in einem grossen Topf bei mittlerer Hitze erhitzen.",
-                  "timer_min": 1,
-                  "zutaten_schritt": [
-                    {
-                      "name": "Olivenöl",
-                      "menge": "60 ml"
-                    }
-                  ],
-                  "zubehoer": [
-                    "Grosser Topf"
-                  ],
-                  "kontrolle": "Öl ist heiss und schimmert leicht.",
-                  "parallel_hinweis": ""
-                },
-                {
-                  "titel": "Zwiebeln anschwitzen",
-                  "text": "Zwiebeln in das heisse Öl geben und 3 Minuten unter gelegentlichem Rühren anschwitzen.",
-                  "timer_min": 3,
-                  "zutaten_schritt": [
-                    {
-                      "name": "Zwiebeln",
-                      "menge": "400 g"
-                    }
-                  ],
-                  "zubehoer": [
-                    "Holzlöffel"
-                  ],
-                  "kontrolle": "Zwiebeln sind durchscheinend und leicht gebräunt.",
-                  "parallel_hinweis": ""
-                },
-                {
-                  "titel": "Tomatenmark hinzufügen",
-                  "text": "Tomatenmark einrühren und 2 Minuten mitbraten.",
-                  "timer_min": 2,
-                  "zutaten_schritt": [
-                    {
-                      "name": "Tomatenmark",
-                      "menge": "60 g"
-                    }
-                  ],
-                  "zubehoer": [
-                    "Holzlöffel"
-                  ],
-                  "kontrolle": "Tomatenmark ist gut mit den Zwiebeln vermischt.",
-                  "parallel_hinweis": ""
-                },
-                {
-                  "titel": "Gemüse hinzufügen",
-                  "text": "Rüebli, Sellerie und Kartoffeln in den Topf geben und 2 Minuten mitbraten.",
-                  "timer_min": 2,
-                  "zutaten_schritt": [
-                    {
-                      "name": "Rüebli",
-                      "menge": "300 g"
-                    },
-                    {
-                      "name": "Sellerie",
-                      "menge": "200 g"
-                    },
-                    {
-                      "name": "Kartoffeln",
-                      "menge": "300 g"
-                    }
-                  ],
-                  "zubehoer": [
-                    "Holzlöffel"
-                  ],
-                  "kontrolle": "Gemüse ist mit dem Tomatenmark vermischt.",
-                  "parallel_hinweis": ""
-                },
-                {
-                  "titel": "Brühe aufgiessen",
-                  "text": "Gemüsebrühe hinzugiessen und alles aufkochen lassen.",
-                  "timer_min": 3,
-                  "zutaten_schritt": [
-                    {
-                      "name": "Gemüsebrühe",
-                      "menge": "2400 ml"
-                    }
-                  ],
-                  "zubehoer": [
-                    "Holzlöffel"
-                  ],
-                  "kontrolle": "Flüssigkeit kocht auf und sprudelt.",
-                  "parallel_hinweis": ""
-                },
-                {
-                  "titel": "Linsen hinzufügen",
-                  "text": "Linsen hineingeben, umrühren und zum Kochen bringen.",
-                  "timer_min": 2,
-                  "zutaten_schritt": [
-                    {
-                      "name": "Rote Linsen",
-                      "menge": "480 g"
-                    }
-                  ],
-                  "zubehoer": [
-                    "Holzlöffel"
-                  ],
-                  "kontrolle": "Linsen sind verteilt.",
-                  "parallel_hinweis": ""
-                },
-                {
-                  "titel": "Hitze reduzieren und köcheln",
-                  "text": "Hitze auf niedrig stellen und die Suppe zugedeckt 25 Minuten köcheln lassen.",
-                  "timer_min": 25,
-                  "zutaten_schritt": [],
-                  "zubehoer": [
-                    "Deckel"
-                  ],
-                  "kontrolle": "Linsen und Gemüse sind weich, Suppe ist dickflüssig.",
-                  "parallel_hinweis": "Währenddessen Tische decken oder Besteck vorbereiten."
-                },
-                {
-                  "titel": "Würzen",
-                  "text": "Mit Salz und Pfeffer abschmecken.",
-                  "timer_min": 0,
-                  "zutaten_schritt": [
-                    {
-                      "name": "Salz",
-                      "menge": "12 g"
-                    },
-                    {
-                      "name": "Pfeffer",
-                      "menge": "3 g"
-                    }
-                  ],
-                  "zubehoer": [],
-                  "kontrolle": "Geschmack ist ausgewogen, nicht fad und nicht übersalzen.",
-                  "parallel_hinweis": ""
-                }
-              ],
-              "schritte_fleisch": [
-                {
-                  "titel": "Speck schneiden",
-                  "text": "Speck in 0,5 cm breite Streifen schneiden.",
-                  "timer_min": 0,
-                  "zutaten_schritt": [
-                    {
-                      "name": "Speck",
-                      "menge": "240 g"
-                    }
-                  ],
-                  "zubehoer": [
-                    "Schneidebrett",
-                    "Messer"
-                  ],
-                  "kontrolle": "Speckstreifen sind gleichmässig.",
-                  "parallel_hinweis": ""
-                },
-                {
-                  "titel": "Zwiebeln schneiden",
-                  "text": "Zwiebeln schälen und in 1 cm grosse Würfel schneiden.",
-                  "timer_min": 0,
-                  "zutaten_schritt": [
-                    {
-                      "name": "Zwiebeln",
-                      "menge": "400 g"
-                    }
-                  ],
-                  "zubehoer": [
-                    "Schneidebrett",
-                    "Messer"
-                  ],
-                  "kontrolle": "Zwiebeln sind gleichmässig gewürfelt.",
-                  "parallel_hinweis": ""
-                },
-                {
-                  "titel": "Gemüse schneiden",
-                  "text": "Rüebli und Sellerie waschen und in 1 cm grosse Würfel schneiden.",
-                  "timer_min": 0,
-                  "zutaten_schritt": [
-                    {
-                      "name": "Rüebli",
-                      "menge": "300 g"
-                    },
-                    {
-                      "name": "Sellerie",
-                      "menge": "200 g"
-                    }
-                  ],
-                  "zubehoer": [
-                    "Schneidebrett",
-                    "Messer"
-                  ],
-                  "kontrolle": "Gemüsewürfel sind gleichmässig gross.",
-                  "parallel_hinweis": ""
-                },
-                {
-                  "titel": "Kartoffeln schneiden",
-                  "text": "Kartoffeln waschen und in 1 cm grosse Würfel schneiden.",
-                  "timer_min": 0,
-                  "zutaten_schritt": [
-                    {
-                      "name": "Kartoffeln",
-                      "menge": "300 g"
-                    }
-                  ],
-                  "zubehoer": [
-                    "Schneidebrett",
-                    "Messer"
-                  ],
-                  "kontrolle": "Kartoffelwürfel sind gleichmässig.",
-                  "parallel_hinweis": ""
-                },
-                {
-                  "titel": "Speck braten",
-                  "text": "Speck in einem grossen Topf bei mittlerer Hitze auslassen, bis er knusprig ist.",
-                  "timer_min": 8,
-                  "zutaten_schritt": [
-                    {
-                      "name": "Speck",
-                      "menge": "240 g"
-                    }
-                  ],
-                  "zubehoer": [
-                    "Grosser Topf",
-                    "Holzlöffel"
-                  ],
-                  "kontrolle": "Speck ist knusprig, Fett ist ausgelassen.",
-                  "parallel_hinweis": ""
-                },
-                {
-                  "titel": "Zwiebeln anschwitzen",
-                  "text": "Zwiebeln in das heisse Speckfett geben und 3 Minuten unter gelegentlichem Rühren anschwitzen.",
-                  "timer_min": 3,
-                  "zutaten_schritt": [
-                    {
-                      "name": "Zwiebeln",
-                      "menge": "400 g"
-                    }
-                  ],
-                  "zubehoer": [
-                    "Holzlöffel"
-                  ],
-                  "kontrolle": "Zwiebeln sind durchscheinend und leicht gebräunt.",
-                  "parallel_hinweis": ""
-                },
-                {
-                  "titel": "Tomatenmark hinzufügen",
-                  "text": "Tomatenmark einrühren und 2 Minuten mitbraten.",
-                  "timer_min": 2,
-                  "zutaten_schritt": [
-                    {
-                      "name": "Tomatenmark",
-                      "menge": "60 g"
-                    }
-                  ],
-                  "zubehoer": [
-                    "Holzlöffel"
-                  ],
-                  "kontrolle": "Tomatenmark ist gut mit den Zwiebeln vermischt.",
-                  "parallel_hinweis": ""
-                },
-                {
-                  "titel": "Gemüse hinzufügen",
-                  "text": "Rüebli, Sellerie und Kartoffeln in den Topf geben und 2 Minuten mitbraten.",
-                  "timer_min": 2,
-                  "zutaten_schritt": [
-                    {
-                      "name": "Rüebli",
-                      "menge": "300 g"
-                    },
-                    {
-                      "name": "Sellerie",
-                      "menge": "200 g"
-                    },
-                    {
-                      "name": "Kartoffeln",
-                      "menge": "300 g"
-                    }
-                  ],
-                  "zubehoer": [
-                    "Holzlöffel"
-                  ],
-                  "kontrolle": "Gemüse ist mit dem Tomatenmark vermischt.",
-                  "parallel_hinweis": ""
-                },
-                {
-                  "titel": "Brühe aufgiessen",
-                  "text": "Gemüsebrühe hinzugiessen und alles aufkochen lassen.",
-                  "timer_min": 3,
-                  "zutaten_schritt": [
-                    {
-                      "name": "Gemüsebrühe",
-                      "menge": "2400 ml"
-                    }
-                  ],
-                  "zubehoer": [
-                    "Holzlöffel"
-                  ],
-                  "kontrolle": "Flüssigkeit kocht auf und sprudelt.",
-                  "parallel_hinweis": ""
-                },
-                {
-                  "titel": "Linsen hinzufügen",
-                  "text": "Linsen hineingeben, umrühren und zum Kochen bringen.",
-                  "timer_min": 2,
-                  "zutaten_schritt": [
-                    {
-                      "name": "Rote Linsen",
-                      "menge": "480 g"
-                    }
-                  ],
-                  "zubehoer": [
-                    "Holzlöffel"
-                  ],
-                  "kontrolle": "Linsen sind verteilt.",
-                  "parallel_hinweis": ""
-                },
-                {
-                  "titel": "Hitze reduzieren und köcheln",
-                  "text": "Hitze auf niedrig stellen und die Suppe zugedeckt 25 Minuten köcheln lassen.",
-                  "timer_min": 25,
-                  "zutaten_schritt": [],
-                  "zubehoer": [
-                    "Deckel"
-                  ],
-                  "kontrolle": "Linsen und Gemüse sind weich, Suppe ist dickflüssig.",
-                  "parallel_hinweis": "Währenddessen Tische decken oder Besteck vorbereiten."
-                },
-                {
-                  "titel": "Würzen",
-                  "text": "Mit Salz und Pfeffer abschmecken.",
-                  "timer_min": 0,
-                  "zutaten_schritt": [
-                    {
-                      "name": "Salz",
-                      "menge": "12 g"
-                    },
-                    {
-                      "name": "Pfeffer",
-                      "menge": "3 g"
-                    }
-                  ],
-                  "zubehoer": [],
-                  "kontrolle": "Geschmack ist ausgewogen, nicht fad und nicht übersalzen.",
-                  "parallel_hinweis": ""
-                }
-              ],
-              "prep_next": [
-                "2 Portionen (ca. 600 ml) abkühlen lassen",
-                "In verschliessbarem Behälter im Kühlschrank lagern"
-              ],
-              "einfrieren": [
-                "2 Portionen (ca. 600 ml) in Gefrierbehälter füllen",
-                "Mit Datum beschriften und einfrieren"
-              ],
-              "mittag_tag": "Di",
-              "zutaten": [
-                {
-                  "name": "Rote Linsen",
-                  "menge": "480 g"
-                },
-                {
-                  "name": "Zwiebeln",
-                  "menge": "400 g"
-                },
-                {
-                  "name": "Rüebli",
-                  "menge": "300 g"
-                },
-                {
-                  "name": "Sellerie",
-                  "menge": "200 g"
-                },
-                {
-                  "name": "Kartoffeln",
-                  "menge": "300 g"
-                },
-                {
-                  "name": "Tomatenmark",
-                  "menge": "60 g"
-                },
-                {
-                  "name": "Gemüsebrühe",
-                  "menge": "2400 ml"
-                },
-                {
-                  "name": "Olivenöl",
-                  "menge": "60 ml"
-                },
-                {
-                  "name": "Salz",
-                  "menge": "12 g"
-                },
-                {
-                  "name": "Pfeffer",
-                  "menge": "3 g"
-                },
-                {
-                  "name": "Speck",
-                  "menge": "240 g"
-                }
-              ],
-              "tipp": "Rote Linsen zerfallen natürlicherweise und geben der Suppe eine cremige Konsistenz. Wer sie fester mag, kann braunere oder grüne Linsen verwenden - Kochzeit dann auf 35 Min. verlängern."
+              "abend": "Linsensuppe mit Tomaten und Spinat",
+              "zeit_aktiv": "20m",
+              "zeit_total": "40m"
             },
             {
               "tag": "Mi",
-              "abend": "Pasta all'Amatriciana (mit Speck optional)",
-              "zeit_aktiv": "20 Min.",
-              "zeit_total": "50 Min.",
-              "mittag_nächster_tag": "Pasta all'Amatriciana",
-              "schritte_vegi": [
-                {
-                  "titel": "Zwiebeln schneiden",
-                  "text": "Zwiebeln schälen und in feine Würfel von ca. 0,5 cm schneiden.",
-                  "timer_min": 0,
-                  "zutaten_schritt": [
-                    {
-                      "name": "Zwiebeln",
-                      "menge": "200 g"
-                    }
-                  ],
-                  "zubehoer": [
-                    "Schneidebrett",
-                    "Messer"
-                  ],
-                  "kontrolle": "Zwiebeln sind fein und gleichmässig gewürfelt.",
-                  "parallel_hinweis": ""
-                },
-                {
-                  "titel": "Knoblauch vorbereiten",
-                  "text": "Knoblauch schälen und fein hacken.",
-                  "timer_min": 0,
-                  "zutaten_schritt": [
-                    {
-                      "name": "Knoblauch",
-                      "menge": "12 g"
-                    }
-                  ],
-                  "zubehoer": [
-                    "Schneidebrett",
-                    "Messer"
-                  ],
-                  "kontrolle": "Knoblauch ist fein gehackt.",
-                  "parallel_hinweis": ""
-                },
-                {
-                  "titel": "Wasser für Pasta aufsetzen",
-                  "text": "In einem grossen Topf ca. 4 Liter Wasser mit Salz aufkochen.",
-                  "timer_min": 10,
-                  "zutaten_schritt": [
-                    {
-                      "name": "Salz",
-                      "menge": "6 g"
-                    }
-                  ],
-                  "zubehoer": [
-                    "Grosser Topf"
-                  ],
-                  "kontrolle": "Wasser kocht sprudelnd.",
-                  "parallel_hinweis": "Währenddessen die Sauce zubereiten."
-                },
-                {
-                  "titel": "Öl erhitzen",
-                  "text": "Olivenöl in einer grossen Pfanne bei mittlerer Hitze erhitzen.",
-                  "timer_min": 1,
-                  "zutaten_schritt": [
-                    {
-                      "name": "Olivenöl",
-                      "menge": "60 ml"
-                    }
-                  ],
-                  "zubehoer": [
-                    "Grosse Pfanne"
-                  ],
-                  "kontrolle": "Öl ist heiss und schimmert.",
-                  "parallel_hinweis": ""
-                },
-                {
-                  "titel": "Zwiebeln anschwitzen",
-                  "text": "Zwiebeln in das heisse Öl geben und 3 Minuten unter gelegentlichem Rühren anschwitzen.",
-                  "timer_min": 3,
-                  "zutaten_schritt": [
-                    {
-                      "name": "Zwiebeln",
-                      "menge": "200 g"
-                    }
-                  ],
-                  "zubehoer": [
-                    "Holzlöffel"
-                  ],
-                  "kontrolle": "Zwiebeln sind durchscheinend.",
-                  "parallel_hinweis": ""
-                },
-                {
-                  "titel": "Knoblauch hinzufügen",
-                  "text": "Knoblauch hinzufügen und 1 Minute mitbraten.",
-                  "timer_min": 1,
-                  "zutaten_schritt": [
-                    {
-                      "name": "Knoblauch",
-                      "menge": "12 g"
-                    }
-                  ],
-                  "zubehoer": [
-                    "Holzlöffel"
-                  ],
-                  "kontrolle": "Knoblauch riecht aromatisch.",
-                  "parallel_hinweis": ""
-                },
-                {
-                  "titel": "Tomaten hinzufügen",
-                  "text": "Dosentomaten (mit Saft) in die Pfanne geben und gut vermischen.",
-                  "timer_min": 2,
-                  "zutaten_schritt": [
-                    {
-                      "name": "Dosentomaten",
-                      "menge": "1200 g"
-                    }
-                  ],
-                  "zubehoer": [
-                    "Holzlöffel"
-                  ],
-                  "kontrolle": "Tomaten sind gleichmässig verteilt.",
-                  "parallel_hinweis": ""
-                },
-                {
-                  "titel": "Sauce aufkochen",
-                  "text": "Zum Kochen bringen und dann auf mittlere Hitze reduzieren.",
-                  "timer_min": 3,
-                  "zutaten_schritt": [],
-                  "zubehoer": [
-                    "Holzlöffel"
-                  ],
-                  "kontrolle": "Sauce sprudelt.",
-                  "parallel_hinweis": ""
-                },
-                {
-                  "titel": "Gewürze hinzufügen",
-                  "text": "Oregano, Salz und Pfeffer einrühren.",
-                  "timer_min": 0,
-                  "zutaten_schritt": [
-                    {
-                      "name": "Oregano",
-                      "menge": "4 g"
-                    },
-                    {
-                      "name": "Salz",
-                      "menge": "6 g"
-                    },
-                    {
-                      "name": "Pfeffer",
-                      "menge": "3 g"
-                    }
-                  ],
-                  "zubehoer": [
-                    "Holzlöffel"
-                  ],
-                  "kontrolle": "Gewürze sind gleichmässig verteilt.",
-                  "parallel_hinweis": ""
-                },
-                {
-                  "titel": "Sauce köcheln",
-                  "text": "Sauce 20 Minuten bei niedriger Hitze köcheln lassen.",
-                  "timer_min": 20,
-                  "zutaten_schritt": [],
-                  "zubehoer": [],
-                  "kontrolle": "Sauce ist eingedickt und tiefer gefärbt.",
-                  "parallel_hinweis": "Währenddessen Pasta kochen, sobald das Wasser kocht."
-                },
-                {
-                  "titel": "Pasta kochen",
-                  "text": "Pasta in das kochende Salzwasser geben und nach Packungsanleitung (ca. 9-12 Min.) bissfest kochen.",
-                  "timer_min": 11,
-                  "zutaten_schritt": [
-                    {
-                      "name": "Pasta (Spaghetti oder Penne)",
-                      "menge": "480 g"
-                    }
-                  ],
-                  "zubehoer": [
-                    "Holzlöffel"
-                  ],
-                  "kontrolle": "Pasta ist bissfest.",
-                  "parallel_hinweis": ""
-                },
-                {
-                  "titel": "Pasta abgies sen",
-                  "text": "Pasta abseihen und auffangen (ca. 240 ml Pastawasser für später).",
-                  "timer_min": 0,
-                  "zutaten_schritt": [],
-                  "zubehoer": [
-                    "Sieb"
-                  ],
-                  "kontrolle": "Pasta ist abgetropft.",
-                  "parallel_hinweis": ""
-                },
-                {
-                  "titel": "Pasta und Sauce vermischen",
-                  "text": "Paste in die Sauce geben und vorsichtig vermischen. Falls nötig, etwas Pastawasser hinzufügen, damit die Pasta nicht zu trocken wird.",
-                  "timer_min": 0,
-                  "zutaten_schritt": [
-                    {
-                      "name": "Pasta (Spaghetti oder Penne)",
-                      "menge": "480 g"
-                    }
-                  ],
-                  "zubehoer": [
-                    "Holzlöffel"
-                  ],
-                  "kontrolle": "Pasta ist gleichmässig mit Sauce überzogen.",
-                  "parallel_hinweis": ""
-                },
-                {
-                  "titel": "Final abschmecken",
-                  "text": "Nochmals Geschmack kontrollieren und bei Bedarf mit Salz und Pfeffer nachwürzen.",
-                  "timer_min": 0,
-                  "zutaten_schritt": [
-                    {
-                      "name": "Salz",
-                      "menge": "2 g"
-                    },
-                    {
-                      "name": "Pfeffer",
-                      "menge": "1 g"
-                    }
-                  ],
-                  "zubehoer": [],
-                  "kontrolle": "Geschmack ist ausgewogen.",
-                  "parallel_hinweis": ""
-                }
-              ],
-              "schritte_fleisch": [
-                {
-                  "titel": "Speck schneiden",
-                  "text": "Speck in 0,5 cm breite Streifen schneiden.",
-                  "timer_min": 0,
-                  "zutaten_schritt": [
-                    {
-                      "name": "Speck",
-                      "menge": "240 g"
-                    }
-                  ],
-                  "zubehoer": [
-                    "Schneidebrett",
-                    "Messer"
-                  ],
-                  "kontrolle": "Speckstreifen sind gleichmässig.",
-                  "parallel_hinweis": ""
-                },
-                {
-                  "titel": "Zwiebeln schneiden",
-                  "text": "Zwiebeln schälen und in feine Würfel von ca. 0,5 cm schneiden.",
-                  "timer_min": 0,
-                  "zutaten_schritt": [
-                    {
-                      "name": "Zwiebeln",
-                      "menge": "200 g"
-                    }
-                  ],
-                  "zubehoer": [
-                    "Schneidebrett",
-                    "Messer"
-                  ],
-                  "kontrolle": "Zwiebeln sind fein und gleichmässig gewürfelt.",
-                  "parallel_hinweis": ""
-                },
-                {
-                  "titel": "Knoblauch vorbereiten",
-                  "text": "Knoblauch schälen und fein hacken.",
-                  "timer_min": 0,
-                  "zutaten_schritt": [
-                    {
-                      "name": "Knoblauch",
-                      "menge": "12 g"
-                    }
-                  ],
-                  "zubehoer": [
-                    "Schneidebrett",
-                    "Messer"
-                  ],
-                  "kontrolle": "Knoblauch ist fein gehackt.",
-                  "parallel_hinweis": ""
-                },
-                {
-                  "titel": "Wasser für Pasta aufsetzen",
-                  "text": "In einem grossen Topf ca. 4 Liter Wasser mit Salz aufkochen.",
-                  "timer_min": 10,
-                  "zutaten_schritt": [
-                    {
-                      "name": "Salz",
-                      "menge": "6 g"
-                    }
-                  ],
-                  "zubehoer": [
-                    "Grosser Topf"
-                  ],
-                  "kontrolle": "Wasser kocht sprudelnd.",
-                  "parallel_hinweis": "Währenddessen die Sauce mit Speck zubereiten."
-                },
-                {
-                  "titel": "Speck braten",
-                  "text": "Speck in einer grossen Pfanne bei mittlerer Hitze auslassen, bis er knusprig ist.",
-                  "timer_min": 8,
-                  "zutaten_schritt": [
-                    {
-                      "name": "Speck",
-                      "menge": "240 g"
-                    }
-                  ],
-                  "zubehoer": [
-                    "Grosse Pfanne",
-                    "Holzlöffel"
-                  ],
-                  "kontrolle": "Speck ist knusprig, Fett ist ausgelassen.",
-                  "parallel_hinweis": ""
-                },
-                {
-                  "titel": "Zwiebeln anschwitzen",
-                  "text": "Zwiebeln in das heisse Speckfett geben und 3 Minuten unter gelegentlichem Rühren anschwitzen.",
-                  "timer_min": 3,
-                  "zutaten_schritt": [
-                    {
-                      "name": "Zwiebeln",
-                      "menge": "200 g"
-                    }
-                  ],
-                  "zubehoer": [
-                    "Holzlöffel"
-                  ],
-                  "kontrolle": "Zwiebeln sind durchscheinend.",
-                  "parallel_hinweis": ""
-                },
-                {
-                  "titel": "Knoblauch hinzufügen",
-                  "text": "Knoblauch hinzufügen und 1 Minute mitbraten.",
-                  "timer_min": 1,
-                  "zutaten_schritt": [
-                    {
-                      "name": "Knoblauch",
-                      "menge": "12 g"
-                    }
-                  ],
-                  "zubehoer": [
-                    "Holzlöffel"
-                  ],
-                  "kontrolle": "Knoblauch riecht aromatisch.",
-                  "parallel_hinweis": ""
-                },
-                {
-                  "titel": "Tomaten hinzufügen",
-                  "text": "Dosentomaten (mit Saft) in die Pfanne geben und gut vermischen.",
-                  "timer_min": 2,
-                  "zutaten_schritt": [
-                    {
-                      "name": "Dosentomaten",
-                      "menge": "1200 g"
-                    }
-                  ],
-                  "zubehoer": [
-                    "Holzlöffel"
-                  ],
-                  "kontrolle": "Tomaten sind gleichmässig verteilt.",
-                  "parallel_hinweis": ""
-                },
-                {
-                  "titel": "Sauce aufkochen",
-                  "text": "Zum Kochen bringen und dann auf mittlere Hitze reduzieren.",
-                  "timer_min": 3,
-                  "zutaten_schritt": [],
-                  "zubehoer": [
-                    "Holzlöffel"
-                  ],
-                  "kontrolle": "Sauce sprudelt.",
-                  "parallel_hinweis": ""
-                },
-                {
-                  "titel": "Gewürze hinzufügen",
-                  "text": "Oregano, Salz und Pfeffer einrühren.",
-                  "timer_min": 0,
-                  "zutaten_schritt": [
-                    {
-                      "name": "Oregano",
-                      "menge": "4 g"
-                    },
-                    {
-                      "name": "Salz",
-                      "menge": "6 g"
-                    },
-                    {
-                      "name": "Pfeffer",
-                      "menge": "3 g"
-                    }
-                  ],
-                  "zubehoer": [
-                    "Holzlöffel"
-                  ],
-                  "kontrolle": "Gewürze sind gleichmässig verteilt.",
-                  "parallel_hinweis": ""
-                },
-                {
-                  "titel": "Sauce köcheln",
-                  "text": "Sauce 20 Minuten bei niedriger Hitze köcheln lassen.",
-                  "timer_min": 20,
-                  "zutaten_schritt": [],
-                  "zubehoer": [],
-                  "kontrolle": "Sauce ist eingedickt und tiefer gefärbt.",
-                  "parallel_hinweis": "Währenddessen Pasta kochen, sobald das Wasser kocht."
-                },
-                {
-                  "titel": "Pasta kochen",
-                  "text": "Pasta in das kochende Salzwasser geben und nach Packungsanleitung (ca. 9-12 Min.) bissfest kochen.",
-                  "timer_min": 11,
-                  "zutaten_schritt": [
-                    {
-                      "name": "Pasta (Spaghetti oder Penne)",
-                      "menge": "480 g"
-                    }
-                  ],
-                  "zubehoer": [
-                    "Holzlöffel"
-                  ],
-                  "kontrolle": "Pasta ist bissfest.",
-                  "parallel_hinweis": ""
-                },
-                {
-                  "titel": "Pasta abseihen",
-                  "text": "Pasta abseihen und auffangen (ca. 240 ml Pastawasser für später).",
-                  "timer_min": 0,
-                  "zutaten_schritt": [],
-                  "zubehoer": [
-                    "Sieb"
-                  ],
-                  "kontrolle": "Pasta ist abgetropft.",
-                  "parallel_hinweis": ""
-                },
-                {
-                  "titel": "Pasta und Sauce vermischen",
-                  "text": "Pasta in die Sauce geben und vorsichtig vermischen. Falls nötig, etwas Pastawasser hinzufügen, damit die Pasta nicht zu trocken wird.",
-                  "timer_min": 0,
-                  "zutaten_schritt": [
-                    {
-                      "name": "Pasta (Spaghetti oder Penne)",
-                      "menge": "480 g"
-                    }
-                  ],
-                  "zubehoer": [
-                    "Holzlöffel"
-                  ],
-                  "kontrolle": "Pasta ist gleichmässig mit Sauce überzogen.",
-                  "parallel_hinweis": ""
-                },
-                {
-                  "titel": "Final abschmecken",
-                  "text": "Nochmals Geschmack kontrollieren und bei Bedarf mit Salz und Pfeffer nachwürzen.",
-                  "timer_min": 0,
-                  "zutaten_schritt": [
-                    {
-                      "name": "Salz",
-                      "menge": "2 g"
-                    },
-                    {
-                      "name": "Pfeffer",
-                      "menge": "1 g"
-                    }
-                  ],
-                  "zubehoer": [],
-                  "kontrolle": "Geschmack ist ausgewogen.",
-                  "parallel_hinweis": ""
-                }
-              ],
-              "prep_next": [
-                "2 Portionen (ca. 600 g) abkühlen lassen",
-                "In verschliessbarem Behälter im Kühlschrank lagern",
-                "Morgen in Mikrowelle 3-4 Min. aufwärmen, evtl. etwas Wasser hinzufügen"
-              ],
-              "einfrieren": [
-                "2 Portionen (ca. 600 g) in Gefrierbehälter füllen",
-                "Mit Datum beschriften und einfrieren"
-              ],
-              "mittag_tag": "Do",
-              "zutaten": [
-                {
-                  "name": "Pasta (Spaghetti oder Penne)",
-                  "menge": "480 g"
-                },
-                {
-                  "name": "Dosentomaten",
-                  "menge": "1200 g"
-                },
-                {
-                  "name": "Zwiebeln",
-                  "menge": "200 g"
-                },
-                {
-                  "name": "Knoblauch",
-                  "menge": "12 g"
-                },
-                {
-                  "name": "Olivenöl",
-                  "menge": "60 ml"
-                },
-                {
-                  "name": "Salz",
-                  "menge": "12 g"
-                },
-                {
-                  "name": "Pfeffer",
-                  "menge": "3 g"
-                },
-                {
-                  "name": "Oregano",
-                  "menge": "4 g"
-                },
-                {
-                  "name": "Speck",
-                  "menge": "240 g"
-                }
-              ],
-              "tipp": "All'Amatriciana ist ein klassisches römisches Rezept mit Guanciale (Schweinebacke), Tomaten und Pecorino. Speck ist eine gute Alternative. Die Sauce schmeckt auch am nächsten Tag noch besser."
+              "abend": "Auberginen-Tomaten-Auflauf mit Käse",
+              "zeit_aktiv": "25m",
+              "zeit_total": "50m"
             },
             {
               "tag": "Fr",
-              "abend": "Risotto mit Pilzen und Tomaten",
-              "zeit_aktiv": "30 Min.",
-              "zeit_total": "45 Min.",
-              "mittag_nächster_tag": "Risotto mit Pilzen und Tomaten",
-              "schritte_vegi": [
-                {
-                  "titel": "Zwiebeln schneiden",
-                  "text": "Zwiebeln schälen und in sehr feine Würfel von ca. 0,3 cm schneiden.",
-                  "timer_min": 0,
-                  "zutaten_schritt": [
-                    {
-                      "name": "Zwiebeln",
-                      "menge": "200 g"
-                    }
-                  ],
-                  "zubehoer": [
-                    "Schneidebrett",
-                    "Messer"
-                  ],
-                  "kontrolle": "Zwiebeln sind sehr fein gehackt.",
-                  "parallel_hinweis": ""
-                },
-                {
-                  "titel": "Knoblauch vorbereiten",
-                  "text": "Knoblauch schälen und fein hacken.",
-                  "timer_min": 0,
-                  "zutaten_schritt": [
-                    {
-                      "name": "Knoblauch",
-                      "menge": "12 g"
-                    }
-                  ],
-                  "zubehoer": [
-                    "Schneidebrett",
-                    "Messer"
-                  ],
-                  "kontrolle": "Knoblauch ist fein gehackt.",
-                  "parallel_hinweis": ""
-                },
-                {
-                  "titel": "Pilze vorbereiten",
-                  "text": "Champignons mit feuchtem Tuch abwischen und in ca. 0,5 cm dünne Scheiben schneiden.",
-                  "timer_min": 0,
-                  "zutaten_schritt": [
-                    {
-                      "name": "Champignons",
-                      "menge": "400 g"
-                    }
-                  ],
-                  "zubehoer": [
-                    "Schneidebrett",
-                    "Messer"
-                  ],
-                  "kontrolle": "Pilze sind gleichmässig geschnitten.",
-                  "parallel_hinweis": ""
-                },
-                {
-                  "titel": "Parmesan reiben",
-                  "text": "Parmesan fein reiben.",
-                  "timer_min": 0,
-                  "zutaten_schritt": [
-                    {
-                      "name": "Parmesan",
-                      "menge": "120 g"
-                    }
-                  ],
-                  "zubehoer": [
-                    "Reibe"
-                  ],
-                  "kontrolle": "Parmesan ist fein geraspelt.",
-                  "parallel_hinweis": ""
-                },
-                {
-                  "titel": "Brühe erhitzen",
-                  "text": "Gemüsebrühe in einem Topf auf niedriger Hitze warm halten.",
-                  "timer_min": 5,
-                  "zutaten_schritt": [
-                    {
-                      "name": "Gemüsebrühe",
-                      "menge": "1200 ml"
-                    }
-                  ],
-                  "zubehoer": [
-                    "Topf"
-                  ],
-                  "kontrolle": "Brühe dampft leicht.",
-                  "parallel_hinweis": "Währenddessen Pilze anbraten."
-                },
-                {
-                  "titel": "Pilze anbraten",
-                  "text": "2 EL Olivenöl in einer Pfanne erhitzen und Pilze bei mittlerer bis hoher Hitze 5 Minuten braten, bis sie leicht goldbraun sind.",
-                  "timer_min": 5,
-                  "zutaten_schritt": [
-                    {
-                      "name": "Olivenöl",
-                      "menge": "30 ml"
-                    },
-                    {
-                      "name": "Champignons",
-                      "menge": "400 g"
-                    }
-                  ],
-                  "zubehoer": [
-                    "Pfanne",
-                    "Holzlöffel"
-                  ],
-                  "kontrolle": "Pilze sind leicht gebräunt, Feuchtigkeit ist entwichen.",
-                  "parallel_hinweis": ""
-                },
-                {
-                  "titel": "Pilze aus der Pfanne nehmen",
-                  "text": "Gebratene Pilze auf einen Teller geben und beiseite stellen.",
-                  "timer_min": 0,
-                  "zutaten_schritt": [],
-                  "zubehoer": [
-                    "Teller"
-                  ],
-                  "kontrolle": "Pilze sind aus der Pfanne.",
-                  "parallel_hinweis": ""
-                },
-                {
-                  "titel": "Olivenöl erhitzen",
-                  "text": "Restliche 2 EL Olivenöl in der gleichen Pfanne bei mittlerer Hitze erhitzen.",
-                  "timer_min": 1,
-                  "zutaten_schritt": [
-                    {
-                      "name": "Olivenöl",
-                      "menge": "30 ml"
-                    }
-                  ],
-                  "zubehoer": [
-                    "Pfanne"
-                  ],
-                  "kontrolle": "Öl schimmert.",
-                  "parallel_hinweis": ""
-                },
-                {
-                  "titel": "Zwiebeln anschwitzen",
-                  "text": "Zwiebeln in das heisse Öl geben und 2 Minuten unter gelegentlichem Rühren anschwitzen.",
-                  "timer_min": 2,
-                  "zutaten_schritt": [
-                    {
-                      "name": "Zwiebeln",
-                      "menge": "200 g"
-                    }
-                  ],
-                  "zubehoer": [
-                    "Holzlöffel"
-                  ],
-                  "kontrolle": "Zwiebeln sind durchscheinend.",
-                  "parallel_hinweis": ""
-                },
-                {
-                  "titel": "Knoblauch hinzufügen",
-                  "text": "Knoblauch hinzufügen und 30 Sekunden mitbraten.",
-                  "timer_min": 0,
-                  "zutaten_schritt": [
-                    {
-                      "name": "Knoblauch",
-                      "menge": "12 g"
-                    }
-                  ],
-                  "zubehoer": [
-                    "Holzlöffel"
-                  ],
-                  "kontrolle": "Knoblauch riecht aromatisch.",
-                  "parallel_hinweis": ""
-                },
-                {
-                  "titel": "Reis hinzufügen",
-                  "text": "Risotto-Reis hinzufügen und 2 Minuten unter ständigem Rühren toasten.",
-                  "timer_min": 2,
-                  "zutaten_schritt": [
-                    {
-                      "name": "Risotto-Reis (Arborio oder Carnaroli)",
-                      "menge": "480 g"
-                    }
-                  ],
-                  "zubehoer": [
-                    "Holzlöffel"
-                  ],
-                  "kontrolle": "Reis ist leicht transparant an den Rändern, Zwiebeln sind mit Reis vermischt.",
-                  "parallel_hinweis": ""
-                },
-                {
-                  "titel": "Wein hinzufügen",
-                  "text": "Weisswein hinzugiessen und unter ständigem Rühren aufnehmen, bis der Wein aufgesogen ist.",
-                  "timer_min": 2,
-                  "zutaten_schritt": [
-                    {
-                      "name": "Weisswein",
-                      "menge": "120 ml"
-                    }
-                  ],
-                  "zubehoer": [
-                    "Holzlöffel"
-                  ],
-                  "kontrolle": "Reis hat den Wein aufgesogen.",
-                  "parallel_hinweis": ""
-                },
-                {
-                  "titel": "Brühe portionsweise hinzufügen",
-                  "text": "Warme Brühe in 4-5 Portionen hinzufügen, jedes Mal unter ständigem Rühren, bis der Reis die Brühe aufgesogen hat, bevor die nächste Portion hinzugefügt wird. Dies dauert ca. 18 Minuten.",
-                  "timer_min": 18,
-                  "zutaten_schritt": [
-                    {
-                      "name": "Gemüsebrühe",
-                      "menge": "1200 ml"
-                    }
-                  ],
-                  "zubehoer": [
-                    "Holzlöffel"
-                  ],
-                  "kontrolle": "Reis ist cremig, aber noch bissfest. Konsistenz ähnelt Pudding.",
-                  "parallel_hinweis": "Während des Rührens nach 10 Min. die Dosentomaten hinzufügen."
-                },
-                {
-                  "titel": "Tomaten hinzufügen",
-                  "text": "Nach ca. 10 Minuten Kochzeit Dosentomaten (mit Saft) hinzufügen und weitermachen.",
-                  "timer_min": 0,
-                  "zutaten_schritt": [
-                    {
-                      "name": "Dosentomaten",
-                      "menge": "600 g"
-                    }
-                  ],
-                  "zubehoer": [
-                    "Holzlöffel"
-                  ],
-                  "kontrolle": "Tomaten sind gleichmässig verteilt.",
-                  "parallel_hinweis": ""
-                },
-                {
-                  "titel": "Gebratene Pilze hinzufügen",
-                  "text": "Die reservierten Pilze hinzufügen und vorsichtig unterrühren.",
-                  "timer_min": 0,
-                  "zutaten_schritt": [
-                    {
-                      "name": "Champignons",
-                      "menge": "400 g"
-                    }
-                  ],
-                  "zubehoer": [
-                    "Holzlöffel"
-                  ],
-                  "kontrolle": "Pilze sind verteilt.",
-                  "parallel_hinweis": ""
-                },
-                {
-                  "titel": "Thymian hinzufügen",
-                  "text": "Thymian einrühren.",
-                  "timer_min": 0,
-                  "zutaten_schritt": [
-                    {
-                      "name": "Thymian (getrocknet)",
-                      "menge": "3 g"
-                    }
-                  ],
-                  "zubehoer": [
-                    "Holzlöffel"
-                  ],
-                  "kontrolle": "Thymian ist verteilt.",
-                  "parallel_hinweis": ""
-                },
-                {
-                  "titel": "Butter und Käse einarbeiten",
-                  "text": "Butter und geriebenen Parmesan hinzufügen und kräftig unterrühren (Mantecatura).",
-                  "timer_min": 1,
-                  "zutaten_schritt": [
-                    {
-                      "name": "Butter",
-                      "menge": "80 g"
-                    },
-                    {
-                      "name": "Parmesan",
-                      "menge": "120 g"
-                    }
-                  ],
-                  "zubehoer": [
-                    "Holzlöffel"
-                  ],
-                  "kontrolle": "Risotto glänzt und ist cremig, Butter und Käse sind vollständig eingearbeitet.",
-                  "parallel_hinweis": ""
-                },
-                {
-                  "titel": "Würzen",
-                  "text": "Mit Salz und Pfeffer abschmecken.",
-                  "timer_min": 0,
-                  "zutaten_schritt": [
-                    {
-                      "name": "Salz",
-                      "menge": "12 g"
-                    },
-                    {
-                      "name": "Pfeffer",
-                      "menge": "3 g"
-                    }
-                  ],
-                  "zubehoer": [],
-                  "kontrolle": "Geschmack ist ausgewogen.",
-                  "parallel_hinweis": ""
-                }
-              ],
-              "schritte_fleisch": [
-                {
-                  "titel": "Zwiebeln schneiden",
-                  "text": "Zwiebeln schälen und in sehr feine Würfel von ca. 0,3 cm schneiden.",
-                  "timer_min": 0,
-                  "zutaten_schritt": [
-                    {
-                      "name": "Zwiebeln",
-                      "menge": "200 g"
-                    }
-                  ],
-                  "zubehoer": [
-                    "Schneidebrett",
-                    "Messer"
-                  ],
-                  "kontrolle": "Zwiebeln sind sehr fein gehackt.",
-                  "parallel_hinweis": ""
-                },
-                {
-                  "titel": "Knoblauch vorbereiten",
-                  "text": "Knoblauch schälen und fein hacken.",
-                  "timer_min": 0,
-                  "zutaten_schritt": [
-                    {
-                      "name": "Knoblauch",
-                      "menge": "12 g"
-                    }
-                  ],
-                  "zubehoer": [
-                    "Schneidebrett",
-                    "Messer"
-                  ],
-                  "kontrolle": "Knoblauch ist fein gehackt.",
-                  "parallel_hinweis": ""
-                },
-                {
-                  "titel": "Pilze vorbereiten",
-                  "text": "Champignons mit feuchtem Tuch abwischen und in ca. 0,5 cm dünne Scheiben schneiden.",
-                  "timer_min": 0,
-                  "zutaten_schritt": [
-                    {
-                      "name": "Champignons",
-                      "menge": "400 g"
-                    }
-                  ],
-                  "zubehoer": [
-                    "Schneidebrett",
-                    "Messer"
-                  ],
-                  "kontrolle": "Pilze sind gleichmässig geschnitten.",
-                  "parallel_hinweis": ""
-                },
-                {
-                  "titel": "Parmesan reiben",
-                  "text": "Parmesan fein reiben.",
-                  "timer_min": 0,
-                  "zutaten_schritt": [
-                    {
-                      "name": "Parmesan",
-                      "menge": "120 g"
-                    }
-                  ],
-                  "zubehoer": [
-                    "Reibe"
-                  ],
-                  "kontrolle": "Parmesan ist fein geraspelt.",
-                  "parallel_hinweis": ""
-                },
-                {
-                  "titel": "Brühe erhitzen",
-                  "text": "Gemüsebrühe in einem Topf auf niedriger Hitze warm halten.",
-                  "timer_min": 5,
-                  "zutaten_schritt": [
-                    {
-                      "name": "Gemüsebrühe",
-                      "menge": "1200 ml"
-                    }
-                  ],
-                  "zubehoer": [
-                    "Topf"
-                  ],
-                  "kontrolle": "Brühe dampft leicht.",
-                  "parallel_hinweis": "Währenddessen Pilze anbraten."
-                },
-                {
-                  "titel": "Pilze anbraten",
-                  "text": "2 EL Olivenöl in einer Pfanne erhitzen und Pilze bei mittlerer bis hoher Hitze 5 Minuten braten, bis sie leicht goldbraun sind.",
-                  "timer_min": 5,
-                  "zutaten_schritt": [
-                    {
-                      "name": "Olivenöl",
-                      "menge": "30 ml"
-                    },
-                    {
-                      "name": "Champignons",
-                      "menge": "400 g"
-                    }
-                  ],
-                  "zubehoer": [
-                    "Pfanne",
-                    "Holzlöffel"
-                  ],
-                  "kontrolle": "Pilze sind leicht gebräunt, Feuchtigkeit ist entwichen.",
-                  "parallel_hinweis": ""
-                },
-                {
-                  "titel": "Pilze aus der Pfanne nehmen",
-                  "text": "Gebratene Pilze auf einen Teller geben und beiseite stellen.",
-                  "timer_min": 0,
-                  "zutaten_schritt": [],
-                  "zubehoer": [
-                    "Teller"
-                  ],
-                  "kontrolle": "Pilze sind aus der Pfanne.",
-                  "parallel_hinweis": ""
-                },
-                {
-                  "titel": "Olivenöl erhitzen",
-                  "text": "Restliche 2 EL Olivenöl in der gleichen Pfanne bei mittlerer Hitze erhitzen.",
-                  "timer_min": 1,
-                  "zutaten_schritt": [
-                    {
-                      "name": "Olivenöl",
-                      "menge": "30 ml"
-                    }
-                  ],
-                  "zubehoer": [
-                    "Pfanne"
-                  ],
-                  "kontrolle": "Öl schimmert.",
-                  "parallel_hinweis": ""
-                },
-                {
-                  "titel": "Zwiebeln anschwitzen",
-                  "text": "Zwiebeln in das heisse Öl geben und 2 Minuten unter gelegentlichem Rühren anschwitzen.",
-                  "timer_min": 2,
-                  "zutaten_schritt": [
-                    {
-                      "name": "Zwiebeln",
-                      "menge": "200 g"
-                    }
-                  ],
-                  "zubehoer": [
-                    "Holzlöffel"
-                  ],
-                  "kontrolle": "Zwiebeln sind durchscheinend.",
-                  "parallel_hinweis": ""
-                },
-                {
-                  "titel": "Knoblauch hinzufügen",
-                  "text": "Knoblauch hinzufügen und 30 Sekunden mitbraten.",
-                  "timer_min": 0,
-                  "zutaten_schritt": [
-                    {
-                      "name": "Knoblauch",
-                      "menge": "12 g"
-                    }
-                  ],
-                  "zubehoer": [
-                    "Holzlöffel"
-                  ],
-                  "kontrolle": "Knoblauch riecht aromatisch.",
-                  "parallel_hinweis": ""
-                },
-                {
-                  "titel": "Reis hinzufügen",
-                  "text": "Risotto-Reis hinzufügen und 2 Minuten unter ständigem Rühren toasten.",
-                  "timer_min": 2,
-                  "zutaten_schritt": [
-                    {
-                      "name": "Risotto-Reis (Arborio oder Carnaroli)",
-                      "menge": "480 g"
-                    }
-                  ],
-                  "zubehoer": [
-                    "Holzlöffel"
-                  ],
-                  "kontrolle": "Reis ist leicht transparent an den Rändern, Zwiebeln sind mit Reis vermischt.",
-                  "parallel_hinweis": ""
-                },
-                {
-                  "titel": "Wein hinzufügen",
-                  "text": "Weisswein hinzugiessen und unter ständigem Rühren aufnehmen, bis der Wein aufgesogen ist.",
-                  "timer_min": 2,
-                  "zutaten_schritt": [
-                    {
-                      "name": "Weisswein",
-                      "menge": "120 ml"
-                    }
-                  ],
-                  "zubehoer": [
-                    "Holzlöffel"
-                  ],
-                  "kontrolle": "Reis hat den Wein aufgesogen.",
-                  "parallel_hinweis": ""
-                },
-                {
-                  "titel": "Brühe portionsweise hinzufügen",
-                  "text": "Warme Brühe in 4-5 Portionen hinzufügen, jedes Mal unter ständigem Rühren, bis der Reis die Brühe aufgesogen hat, bevor die nächste Portion hinzugefügt wird. Dies dauert ca. 18 Minuten.",
-                  "timer_min": 18,
-                  "zutaten_schritt": [
-                    {
-                      "name": "Gemüsebrühe",
-                      "menge": "1200 ml"
-                    }
-                  ],
-                  "zubehoer": [
-                    "Holzlöffel"
-                  ],
-                  "kontrolle": "Reis ist cremig, aber noch bissfest. Konsistenz ähnelt Pudding.",
-                  "parallel_hinweis": "Während des Rührens nach 10 Min. die Dosentomaten hinzufügen."
-                },
-                {
-                  "titel": "Tomaten hinzufügen",
-                  "text": "Nach ca. 10 Minuten Kochzeit Dosentomaten (mit Saft) hinzufügen und weitermachen.",
-                  "timer_min": 0,
-                  "zutaten_schritt": [
-                    {
-                      "name": "Dosentomaten",
-                      "menge": "600 g"
-                    }
-                  ],
-                  "zubehoer": [
-                    "Holzlöffel"
-                  ],
-                  "kontrolle": "Tomaten sind gleichmässig verteilt.",
-                  "parallel_hinweis": ""
-                },
-                {
-                  "titel": "Gebratene Pilze hinzufügen",
-                  "text": "Die reservierten Pilze hinzufügen und vorsichtig unterrühren.",
-                  "timer_min": 0,
-                  "zutaten_schritt": [
-                    {
-                      "name": "Champignons",
-                      "menge": "400 g"
-                    }
-                  ],
-                  "zubehoer": [
-                    "Holzlöffel"
-                  ],
-                  "kontrolle": "Pilze sind verteilt.",
-                  "parallel_hinweis": ""
-                },
-                {
-                  "titel": "Thymian hinzufügen",
-                  "text": "Thymian einrühren.",
-                  "timer_min": 0,
-                  "zutaten_schritt": [
-                    {
-                      "name": "Thymian (getrocknet)",
-                      "menge": "3 g"
-                    }
-                  ],
-                  "zubehoer": [
-                    "Holzlöffel"
-                  ],
-                  "kontrolle": "Thymian ist verteilt.",
-                  "parallel_hinweis": ""
-                },
-                {
-                  "titel": "Butter und Käse einarbeiten",
-                  "text": "Butter und geriebenen Parmesan hinzufügen und kräftig unterrühren (Mantecatura).",
-                  "timer_min": 1,
-                  "zutaten_schritt": [
-                    {
-                      "name": "Butter",
-                      "menge": "80 g"
-                    },
-                    {
-                      "name": "Parmesan",
-                      "menge": "120 g"
-                    }
-                  ],
-                  "zubehoer": [
-                    "Holzlöffel"
-                  ],
-                  "kontrolle": "Risotto glänzt und ist cremig, Butter und Käse sind vollständig eingearbeitet.",
-                  "parallel_hinweis": ""
-                },
-                {
-                  "titel": "Würzen",
-                  "text": "Mit Salz und Pfeffer abschmecken.",
-                  "timer_min": 0,
-                  "zutaten_schritt": [
-                    {
-                      "name": "Salz",
-                      "menge": "12 g"
-                    },
-                    {
-                      "name": "Pfeffer",
-                      "menge": "3 g"
-                    }
-                  ],
-                  "zubehoer": [],
-                  "kontrolle": "Geschmack ist ausgewogen.",
-                  "parallel_hinweis": ""
-                }
-              ],
-              "prep_next": [
-                "2 Portionen (ca. 600 g) abkühlen lassen",
-                "In verschliessbarem Behälter im Kühlschrank lagern",
-                "Morgen in Mikrowelle 4-5 Min. aufwärmen, evtl. etwas heisse Brühe hinzufügen"
-              ],
-              "einfrieren": [
-                "2 Portionen (ca. 600 g) in Gefrierbehälter füllen",
-                "Mit Datum beschriften und einfrieren"
-              ],
-              "mittag_tag": "Sa",
-              "zutaten": [
-                {
-                  "name": "Risotto-Reis (Arborio oder Carnaroli)",
-                  "menge": "480 g"
-                },
-                {
-                  "name": "Zwiebeln",
-                  "menge": "200 g"
-                },
-                {
-                  "name": "Knoblauch",
-                  "menge": "12 g"
-                },
-                {
-                  "name": "Champignons",
-                  "menge": "400 g"
-                },
-                {
-                  "name": "Dosentomaten",
-                  "menge": "600 g"
-                },
-                {
-                  "name": "Gemüsebrühe",
-                  "menge": "1200 ml"
-                },
-                {
-                  "name": "Weisswein",
-                  "menge": "120 ml"
-                },
-                {
-                  "name": "Olivenöl",
-                  "menge": "60 ml"
-                },
-                {
-                  "name": "Butter",
-                  "menge": "80 g"
-                },
-                {
-                  "name": "Parmesan",
-                  "menge": "120 g"
-                },
-                {
-                  "name": "Salz",
-                  "menge": "12 g"
-                },
-                {
-                  "name": "Pfeffer",
-                  "menge": "3 g"
-                },
-                {
-                  "name": "Thymian (getrocknet)",
-                  "menge": "3 g"
-                }
-              ],
-              "tipp": "Risotto braucht ständiges Rühren und warme Brühe. Das Rühren ist wichtig, damit die Reisstärke freigesetzt wird und eine cremige Konsistenz entsteht. Champignons können auch durch TK-Pilzmischung ersetzt werden."
+              "abend": "Kichererbsen-Salat mit Zitrone und Kräutern",
+              "zeit_aktiv": "15m",
+              "zeit_total": "15m"
             }
           ]
         },
         {
           "id": 2,
-          "thema": "Mittelmeer & Südeuropa",
+          "thema": "Mediterranisch",
           "kochabende": [
             "Mo",
             "Mi",
@@ -3376,50 +448,27 @@
           "gerichte": [
             {
               "tag": "Mo",
-              "abend": "Linsensuppe mit Gemüse und Wurst",
+              "abend": "Linsensuppe mit Tomaten und Spinat",
               "zeit_aktiv": "20m",
-              "zeit_total": "45m",
-              "mittag_nächster_tag": "Linsensuppe aufgewärmt"
+              "zeit_total": "40m"
             },
             {
               "tag": "Mi",
-              "abend": "Pasta all'Amatriciana (mit Speck optional)",
-              "zeit_aktiv": "15m",
-              "zeit_total": "25m",
-              "mittag_nächster_tag": "Pasta-Reste aufgewärmt"
+              "abend": "Auberginen-Tomaten-Gratin mit Feta",
+              "zeit_aktiv": "25m",
+              "zeit_total": "50m"
             },
             {
               "tag": "Fr",
-              "abend": "Fischauflauf mit Kartoffeln und Spinat",
-              "zeit_aktiv": "25m",
-              "zeit_total": "50m",
-              "mittag_nächster_tag": "Fischauflauf aufgewärmt"
+              "abend": "Kichererbsen-Salat mit Zitrone und Kräutern",
+              "zeit_aktiv": "15m",
+              "zeit_total": "15m"
             }
-          ],
-          "einkaufsliste": [
-            "Rote Linsen",
-            "Möhren",
-            "Sellerie",
-            "Zwiebeln",
-            "Knoblauch",
-            "Gemüsebrühe",
-            "Wurst oder Speck",
-            "Tomaten passiert",
-            "Pasta Rigatoni",
-            "Dorsch oder Kabeljau",
-            "Kartoffeln",
-            "Spinat frisch",
-            "Milch",
-            "Käse gerieben",
-            "Olivenöl",
-            "Salz, Pfeffer",
-            "Oregano",
-            "Petersilie frisch"
           ]
         },
         {
           "id": 3,
-          "thema": "Orientalisch",
+          "thema": "Mediterran (Variante 3)",
           "kochabende": [
             "Mo",
             "Mi",
@@ -3428,29 +477,196 @@
           "gerichte": [
             {
               "tag": "Mo",
-              "abend": "Linsensuppe mit Gemüse",
-              "zeit_aktiv": "15m",
-              "zeit_total": "40m",
-              "mittag_nächster_tag": "Linsensuppe aufgewärmt"
+              "abend": "Linsensuppe mit Tomaten und Spinat",
+              "zeit_aktiv": "20m",
+              "zeit_total": "40m"
             },
             {
               "tag": "Mi",
-              "abend": "Pasta all'Amatriciana (mit Speck optional)",
-              "zeit_aktiv": "15m",
-              "zeit_total": "25m",
-              "mittag_nächster_tag": "Pasta-Reste aufgewärmt"
+              "abend": "Griechischer Kartoffel-Feta-Auflauf",
+              "zeit_aktiv": "20m",
+              "zeit_total": "50m"
             },
             {
               "tag": "Fr",
-              "abend": "Lamm-Gemüse-Eintopf",
-              "zeit_aktiv": "25m",
-              "zeit_total": "50m",
-              "mittag_nächster_tag": "Eintopf aufgewärmt"
+              "abend": "Kichererbsen-Salat mit Zitrone und Kräutern",
+              "zeit_aktiv": "15m",
+              "zeit_total": "15m"
             }
           ]
         }
       ],
-      "sugsPartial": false
+      "sugsPartial": true
+    }
+  },
+  {
+    "planId": "0a93eefc-010c-4da7-8759-f89a75cfe912",
+    "date": "2026-09-09",
+    "saved": "9.9.2026",
+    "thema": "Mediterran",
+    "personen": 2,
+    "kochabende": 3,
+    "reste": 0,
+    "freeze": 0,
+    "budget": 1,
+    "gerichte": [
+      {
+        "tag": "Mo",
+        "abend": "Linsen-Gemüse-Eintopf mit Feta"
+      },
+      {
+        "tag": "Mi",
+        "abend": "Kichererbsen-Gemüse-Pfanne mit Minze"
+      },
+      {
+        "tag": "Fr",
+        "abend": "Tomaten-Zucchini-Frittata"
+      }
+    ],
+    "status": "geplant",
+    "plan": {
+      "planId": "0a93eefc-010c-4da7-8759-f89a75cfe912",
+      "sug": {
+        "id": 2,
+        "thema": "Mediterran",
+        "kochabende": [
+          "Mo",
+          "Mi",
+          "Fr"
+        ],
+        "gerichte": [
+          {
+            "tag": "Mo",
+            "abend": "Linsen-Gemüse-Eintopf mit Feta",
+            "zeit_aktiv": "20m",
+            "zeit_total": "40m"
+          },
+          {
+            "tag": "Mi",
+            "abend": "Kichererbsen-Gemüse-Pfanne mit Minze",
+            "zeit_aktiv": "22m",
+            "zeit_total": "35m"
+          },
+          {
+            "tag": "Fr",
+            "abend": "Tomaten-Zucchini-Frittata",
+            "zeit_aktiv": "18m",
+            "zeit_total": "30m"
+          }
+        ]
+      },
+      "sel": 1,
+      "n": 3,
+      "personen": 2,
+      "reste": 0,
+      "freeze": 0,
+      "budget": 1,
+      "modus": "vegi",
+      "resteMode": "nein",
+      "days": {
+        "Mo": "normal",
+        "Di": null,
+        "Mi": "normal",
+        "Do": null,
+        "Fr": "normal",
+        "Sa": null,
+        "So": null
+      },
+      "weekStart": "2026-09-07",
+      "einkaufstag": "Mi",
+      "saved": "9.9.2026",
+      "bringImportedAt": null,
+      "bringItemCount": 0,
+      "sugsAll": [
+        {
+          "id": 1,
+          "thema": "Mediterran",
+          "kochabende": [
+            "Mo",
+            "Mi",
+            "Fr"
+          ],
+          "gerichte": [
+            {
+              "tag": "Mo",
+              "abend": "Auberginen-Tomaten-Gratin",
+              "zeit_aktiv": "25m",
+              "zeit_total": "50m"
+            },
+            {
+              "tag": "Mi",
+              "abend": "Linsensuppe mit Lauch und Karotten",
+              "zeit_aktiv": "20m",
+              "zeit_total": "40m"
+            },
+            {
+              "tag": "Fr",
+              "abend": "Spinat-Kichererbsen-Curry mit Reis",
+              "zeit_aktiv": "22m",
+              "zeit_total": "38m"
+            }
+          ]
+        },
+        {
+          "id": 2,
+          "thema": "Mediterran",
+          "kochabende": [
+            "Mo",
+            "Mi",
+            "Fr"
+          ],
+          "gerichte": [
+            {
+              "tag": "Mo",
+              "abend": "Linsen-Gemüse-Eintopf mit Feta",
+              "zeit_aktiv": "20m",
+              "zeit_total": "40m"
+            },
+            {
+              "tag": "Mi",
+              "abend": "Kichererbsen-Gemüse-Pfanne mit Minze",
+              "zeit_aktiv": "22m",
+              "zeit_total": "35m"
+            },
+            {
+              "tag": "Fr",
+              "abend": "Tomaten-Zucchini-Frittata",
+              "zeit_aktiv": "18m",
+              "zeit_total": "30m"
+            }
+          ]
+        },
+        {
+          "id": 3,
+          "thema": "Mediterranisch",
+          "kochabende": [
+            "Mo",
+            "Mi",
+            "Fr"
+          ],
+          "gerichte": [
+            {
+              "tag": "Mo",
+              "abend": "Auberginen-Tomaten-Gratin",
+              "zeit_aktiv": "25m",
+              "zeit_total": "50m"
+            },
+            {
+              "tag": "Mi",
+              "abend": "Kichererbsen-Spinat-Curry",
+              "zeit_aktiv": "20m",
+              "zeit_total": "35m"
+            },
+            {
+              "tag": "Fr",
+              "abend": "Polenta mit Pilz-Ragout",
+              "zeit_aktiv": "22m",
+              "zeit_total": "40m"
+            }
+          ]
+        }
+      ],
+      "sugsPartial": true
     }
   },
   {
