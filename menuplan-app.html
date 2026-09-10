@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=yes">
-<title>Menüplan v6.49</title>
+<title>Menüplan v6.52</title>
 <meta name="theme-color" content="#e8390e">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -182,7 +182,7 @@ input[type=password]{letter-spacing:2px}
 
 <!-- HOME -->
 <div class="scr on" id="sh">
-  <div class="hero"><h1>Menüplan</h1><p id="hsub">v6.49 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
+  <div class="hero"><h1>Menüplan</h1><p id="hsub">v6.52 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
 
   <!-- Active plan card -->
 
@@ -1606,6 +1606,53 @@ function bringItemSpec(it) {
   return it.specification || it.spec || '';
 }
 
+// ─── QUALITAETSKONTROLLE DER EINKAUFSLISTE ────────────────
+// Prueft vor dem Import auf die drei Fehler, die im Laden am meisten stoeren:
+// fehlende Mengen, faktisch doppelte Eintraege und Kleinstmengen, die man so
+// gar nicht kaufen kann.
+function pruefeEinkaufsliste(items) {
+  var probleme = [];
+  var ohneMenge = [], klein = [];
+  var nachKern = {};
+
+  // "Rote Zwiebeln" und "rote Zwiebel" sind derselbe Artikel.
+  function kern(name) {
+    return String(name || '').toLowerCase().trim()
+      .replace(/[.,;]/g, ' ')
+      .replace(/\b(frisch(e|er|es)?|gemahlen(e|er)?|getrocknet(e|er)?|tk|bio)\b/g, ' ')
+      .replace(/\s+/g, ' ').trim()
+      .replace(/(en|er|e|n|s)$/, '');
+  }
+
+  (items || []).forEach(function(it) {
+    var menge = String(it.menge || '').trim();
+    if (!menge) ohneMenge.push(it.name);
+    else {
+      var num = parseMengeNum(menge), unit = (parseMengeUnit(menge) || '').toLowerCase();
+      // Unter 5 g bzw. 5 ml kauft man nicht - das ist Vorratsware.
+      if (num > 0 && (unit === 'g' || unit === 'ml') && num < 5) {
+        klein.push(it.name + ' (' + menge + ')');
+      }
+    }
+    var k = kern(it.name);
+    if (!k) return;
+    (nachKern[k] = nachKern[k] || []).push(it.name);
+  });
+
+  var doppelt = Object.keys(nachKern).filter(function(k) {
+    var namen = nachKern[k];
+    if (namen.length < 2) return false;
+    // Nur melden, wenn die Schreibweisen sich unterscheiden - identische
+    // Namen wurden bereits zusammengezaehlt.
+    return namen.some(function(n) { return n !== namen[0]; });
+  }).map(function(k) { return nachKern[k].join(' / '); });
+
+  if (ohneMenge.length) probleme.push({ art: 'menge', text: 'Ohne Mengenangabe: ' + ohneMenge.join(', ') });
+  if (doppelt.length) probleme.push({ art: 'doppelt', text: 'Möglicherweise doppelt: ' + doppelt.join(' · ') });
+  if (klein.length) probleme.push({ art: 'klein', text: 'Sehr kleine Menge: ' + klein.join(', ') });
+  return probleme;
+}
+
 function doImportItems() {
   // G.fotoImport ist der getrennte Import-Kontext fuer Foto-Rezepte. Frueher
   // wurde dafuer G.sugs/G.sel ueberschrieben - danach liefen Aktionen im
@@ -1621,6 +1668,25 @@ function doImportItems() {
   }
 
   var items = getItems(sug);
+
+  // Qualitaetskontrolle vor dem Import - danach steht man damit im Laden.
+  // Signatur der konkreten Liste statt eines globalen Schalters: ein anderer
+  // Wochenplan oder ein Foto-Rezept hat eine andere Signatur und wird deshalb
+  // erneut geprueft. Vorher genuegte EIN Bestaetigen, um alle spaeteren
+  // Importe ungeprueft durchzulassen.
+  var signatur = (items || []).map(function(it) {
+    return (it.name || '') + '\u0000' + (it.menge || '');
+  }).join('\u0001');
+  var probleme = pruefeEinkaufsliste(items);
+  if (probleme.length && window._einkaufGeprueft !== signatur) {
+    var txt = probleme.map(function(p) { return '· ' + p.text; }).join('\n\n');
+    if (!confirm('Die Einkaufsliste hat auffällige Stellen:\n\n' + txt +
+                 '\n\nTrotzdem nach Bring! übertragen?')) {
+      return;
+    }
+    window._einkaufGeprueft = signatur;
+  }
+
   var clearFirst = $('bclr').checked;
   if (clearFirst) {
     // Das Leeren trifft die GANZE Bring!-Liste, auch von Hand ergaenzte
@@ -1772,6 +1838,8 @@ function doImportItems() {
         // wurde dadurch faelschlich als erledigt gespeichert.
         var fr = window._fotoRezept;
         if (fr) { fr.status = 'einkauf'; saveFotoRezeptSilent(fr, 'einkauf'); }
+        // Der aktive Wochenplan wird durch einen Foto-Import NICHT veraendert
+        // und nicht als erneut uebertragen markiert.
       } else {
         markEinkaufDone(items ? items.length : 0);
       }
@@ -2729,8 +2797,12 @@ function getItems(sug) {
 var G_einkaufAufgeklappt = false;
 
 function einkaufIstUebertragen() {
+  // Ein Foto-Rezept hat keinen Bring!-Uebertragungsstatus des Wochenplans.
+  // Solange G.fotoImport gesetzt ist, wird eine ANDERE Einkaufsliste gezeigt -
+  // der Zustand des Plans darf darauf nicht angewendet werden, sonst waere die
+  // Foto-Liste eingeklappt und das Abhaken gesperrt.
   var p = G.activePlan;
-  return !!(p && p.bringImportedAt && !p.bringStale);
+  return !G.fotoImport && !!(p && p.bringImportedAt && !p.bringStale);
 }
 
 function toggleEinkaufListe() {
@@ -2789,6 +2861,7 @@ function markPlanChangedSinceTransfer() {
   if (!G.activePlan || !G.activePlan.bringImportedAt) return;
   G.activePlan.bringStale = true;
   G_einkaufAufgeklappt = false;          // Liste wird wieder normal angezeigt
+  window._einkaufGeprueft = null;        // geaenderte Liste erneut pruefen
   updateEinkaufAnsicht();
   localStorage.setItem(userKey('active_plan'), JSON.stringify(G.activePlan));
   var box = $('einkauf-transfer-status');
@@ -2807,6 +2880,9 @@ function updateTransferStatusUI() {
   // wurde - hier daher nicht vorab abfragen, sonst bricht die Funktion sofort ab.
   var box = $('einkauf-transfer-status');
   if (!box) return;
+  // Im Foto-Import gehoert der Status des Wochenplans nicht auf den Bildschirm -
+  // weder der erfolgreiche noch der veraltete.
+  if (G.fotoImport) { box.style.display = 'none'; return; }
   var plan = G.activePlan;
   if (plan && plan.bringImportedAt && !plan.bringStale) {
     var count = plan.bringItemCount || '';
@@ -4215,20 +4291,23 @@ function deleteGerichtFromPlan(ri) {
   var sug = G.sugs[G.sel];
   var g = sug.gerichte[ri];
   if (!g) return;
-  if (!confirm('"' + (g.abend || 'Dieses Gericht') + '" endgültig aus dem Plan entfernen? Das kann nicht rückgängig gemacht werden.')) return;
+  // Rueckfrage entfaellt: es gibt jetzt "Rueckgaengig". Der alte Hinweis
+  // "kann nicht rueckgaengig gemacht werden" stimmt ohnehin nicht mehr.
+  var snap = snapshotPlan();
   sug.gerichte.splice(ri, 1);
   markPlanChangedSinceTransfer();
   try { goWeekRender(sug, {keepTab:true}); } catch(e) { console.warn("render:", e.message); }
   persistActivePlan();
   updateDashboard();
-  showSwapToast('Gericht entfernt.', '#555');
+  toastMitUndo('Gericht entfernt.', snap, '#555');
 }
 
 function cancelGericht(ri) {
   if (!G.sugs || G.sel === null) return;
-  if (!confirm('Diesen Kochabend ausfallen lassen?')) return;
   var sug = G.sugs[G.sel];
   var g = sug.gerichte[ri];
+  if (!g) return;
+  var snap = snapshotPlan();
   // Mark as cancelled
   g._cancelled = true;
   g._origAbend = g.abend;
@@ -4237,13 +4316,15 @@ function cancelGericht(ri) {
   try { goWeekRender(sug, {keepTab:true}); } catch(e) { console.warn("render:", e.message); }
   persistActivePlan();
   updateDashboard();
-  showSwapToast('Kochabend ausgefallen – kein Einkauf nötig.', '#555');
+  toastMitUndo('Kochabend ausgefallen – kein Einkauf nötig.', snap, '#555');
 }
 
 function auswaartsGericht(ri) {
   if (!G.sugs || G.sel === null) return;
   var sug = G.sugs[G.sel];
   var g = sug.gerichte[ri];
+  if (!g) return;
+  var snap = snapshotPlan();
   var origName = g._origAbend || g.abend;
   g._cancelled = true;
   g._origAbend = origName;
@@ -4252,7 +4333,7 @@ function auswaartsGericht(ri) {
   try { goWeekRender(sug, {keepTab:true}); } catch(e) { console.warn("render:", e.message); }
   persistActivePlan();
   updateDashboard();
-  showSwapToast('Auswärts markiert', '#555');
+  toastMitUndo('Auswärts markiert', snap, '#555');
 }
 
 
@@ -4364,6 +4445,7 @@ function swapGerichte(sugIdx, fromGi, toGi) {
 
   var g1 = sug.gerichte[fromGi];
   var g2 = sug.gerichte[toGi];
+  var snapSwap = (G.sel === sugIdx) ? snapshotPlan() : null;
 
   // Check haltbarkeit warning
   var warnings = checkHaltbarkeitSwap(g1, g2, fromGi, toGi);
@@ -4394,8 +4476,13 @@ function swapGerichte(sugIdx, fromGi, toGi) {
     renderSugs();
   }
 
-  if (warnings) {
+  if (warnings && onActiveWeek) {
+    // Gerade BEI einer Warnung will man den Tausch am ehesten zuruecknehmen.
+    toastMitUndo('⚠️ ' + warnings, snapSwap, '#e65100');
+  } else if (warnings) {
     showSwapToast('⚠️ ' + warnings, '#e65100');
+  } else if (onActiveWeek) {
+    toastMitUndo('↕️ ' + g1.abend + ' ↔ ' + g2.abend + ' getauscht', snapSwap, 'var(--grn)');
   } else {
     showSwapToast('↕️ ' + g1.abend + ' ↔ ' + g2.abend + ' getauscht');
   }
@@ -4421,6 +4508,85 @@ function showSwapToast(msg, color) {
     'font-weight:600;z-index:999;white-space:nowrap;max-width:90vw;text-align:center';
   document.body.appendChild(ind);
   setTimeout(function(){ ind.remove(); }, 3000);
+}
+
+// ─── RUECKGAENGIG ─────────────────────────────────────────
+// Vor jeder Planmutation wird die Gerichteliste als Schnappschuss gesichert.
+// Das ist verlaesslicher als jede Aktion einzeln umzukehren: Verschieben,
+// Absagen und Entfernen aendern unterschiedliche Felder, ein Schnappschuss
+// deckt alle gleich ab.
+var G_undo = null;
+var UNDO_MS = 8000;
+
+function snapshotPlan() {
+  if (!G.sugs || G.sel === null || !G.sugs[G.sel]) return null;
+  var p = G.activePlan;
+  // Nicht nur die Gerichte: bringStale, fixedDishes und die Planzahlen aendern
+  // sich bei denselben Aktionen mit. Ohne sie behauptet die App nach dem
+  // Rueckgaengigmachen weiter, die Bring!-Liste sei veraltet.
+  return {
+    gerichte: JSON.parse(JSON.stringify(G.sugs[G.sel].gerichte || [])),
+    fixedDishes: JSON.parse(JSON.stringify(G.fixedDishes || {})),
+    bringStale: p ? p.bringStale : undefined,
+    bringImportedAt: p ? p.bringImportedAt : undefined,
+    bringItemCount: p ? p.bringItemCount : undefined,
+    n: p ? p.n : undefined,
+    kochabende: p && p.sug ? (p.sug.kochabende || []).slice() : undefined
+  };
+}
+
+function toastMitUndo(msg, snapshot, color) {
+  if (!snapshot) { showSwapToast(msg, color); return; }
+  G_undo = snapshot;
+  var alt = document.getElementById('undo-toast');
+  if (alt) alt.remove();
+
+  var box = document.createElement('div');
+  box.id = 'undo-toast';
+  box.style.cssText = 'position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:' +
+    (color || '#333') + ';color:#fff;padding:10px 12px 10px 16px;border-radius:8px;font-size:13px;' +
+    'font-weight:600;z-index:999;max-width:92vw;display:flex;align-items:center;gap:12px';
+  var text = document.createElement('span');
+  text.textContent = msg;
+  var knopf = document.createElement('button');
+  knopf.textContent = 'Rückgängig';
+  knopf.style.cssText = 'background:rgba(255,255,255,.2);border:none;color:#fff;font-weight:700;' +
+    'font-size:12px;padding:6px 10px;border-radius:6px;cursor:pointer;font-family:inherit;flex-shrink:0';
+  knopf.onclick = function() { undoPlanChange(); };
+  box.appendChild(text); box.appendChild(knopf);
+  document.body.appendChild(box);
+
+  setTimeout(function() {
+    if (document.getElementById('undo-toast') === box) { box.remove(); G_undo = null; }
+  }, UNDO_MS);
+}
+
+function undoPlanChange() {
+  var el = document.getElementById('undo-toast');
+  if (el) el.remove();
+  var snap = G_undo;
+  G_undo = null;
+  if (!snap || !G.sugs || G.sel === null || !G.sugs[G.sel]) return;
+
+  G.sugs[G.sel].gerichte = snap.gerichte;
+  G.fixedDishes = snap.fixedDishes;
+  var p = G.activePlan;
+  if (p) {
+    // Genau den Zustand von vorher zuruecksetzen. markPlanChangedSinceTransfer()
+    // darf hier NICHT laufen - es wuerde bringStale erneut setzen, obwohl die
+    // Aenderung gerade zurueckgenommen wurde.
+    p.bringStale = snap.bringStale;
+    p.bringImportedAt = snap.bringImportedAt;
+    p.bringItemCount = snap.bringItemCount;
+    if (snap.n !== undefined) p.n = snap.n;
+    if (snap.kochabende !== undefined && p.sug) p.sug.kochabende = snap.kochabende;
+  }
+  // Die Zutatenliste entspricht wieder dem uebertragenen Stand.
+  window._einkaufGeprueft = null;
+  try { goWeekRender(G.sugs[G.sel], { keepTab: true }); } catch(e) { console.warn('render:', e.message); }
+  persistActivePlan();
+  updateDashboard();
+  showSwapToast('Wiederhergestellt.', '#2e7d32');
 }
 
 
@@ -5453,7 +5619,13 @@ function handleFotoFile(file){
   reader.readAsDataURL(file);
 }
 function clearFoto(){G_foto.base64=null;G_foto.mime=null;$('foto-input').value='';$('foto-preview').style.display='none';$('foto-upload-area').style.display='block';$('foto-btn').disabled=true;$('foto-result').style.display='none';}
-function openFotoScreen(){go('sf');loadSavedFotoRezepte();}
+function openFotoScreen(){
+  // Einen offenen Foto-Import beenden, sonst arbeitet ein spaeterer Import
+  // noch auf dem alten Rezept.
+  clearFotoImportContext();
+  go('sf');
+  loadSavedFotoRezepte();
+}
 function syncFotoRezepte(btn){
   var origText=btn?btn.textContent:''; if(btn){btn.textContent='...';btn.disabled=true;}
   var h=getAuthHeaders();
@@ -5483,18 +5655,36 @@ function freieTageImPlan() {
 
 // Vereinheitlicht Foto-Rezept und Verlaufs-Gericht auf die Planstruktur.
 function alsPlanGericht(r) {
-  var schritte = Array.isArray(r.schritte_vegi) && r.schritte_vegi.length ? r.schritte_vegi
-               : Array.isArray(r.schritte_fleisch) && r.schritte_fleisch.length ? r.schritte_fleisch
-               : Array.isArray(r.schritte) ? r.schritte : [];
-  return {
+  var g = {
     abend: r.abend || r.name || 'Rezept',
     zutaten: (r.zutaten || []).slice(),
-    schritte_vegi: schritte.slice(),
     zeit_aktiv: r.zeit_aktiv || '',
     zeit_total: r.zeit_total || '',
     tipp: r.tipp || '',
     _extern: true                    // selbst eingeplant, nicht generiert
   };
+  // Beide Varianten getrennt uebernehmen. Ein historisches Gericht kann
+  // schritte_vegi UND schritte_fleisch haben - vorher wurde davon eine
+  // verworfen, weil alles in schritte_vegi gepresst wurde.
+  var hatV = Array.isArray(r.schritte_vegi) && r.schritte_vegi.length;
+  var hatF = Array.isArray(r.schritte_fleisch) && r.schritte_fleisch.length;
+  if (hatV) g.schritte_vegi = r.schritte_vegi.slice();
+  if (hatF) g.schritte_fleisch = r.schritte_fleisch.slice();
+  // Foto-Rezepte haben nur ein flaches schritte-Array.
+  if (!hatV && !hatF && Array.isArray(r.schritte)) g.schritte_vegi = r.schritte.slice();
+  // Reste-Angaben eines historischen Gerichts ergeben am neuen Tag keinen Sinn.
+  return g;
+}
+
+// Nach jeder Aenderung an der Gerichteliste: Anzahl und Kochabende neu
+// ableiten und den Verlaufseintrag mitziehen.
+function aktualisierePlanKennzahlen() {
+  var p = G.activePlan;
+  if (!p || !p.sug) return;
+  var aktive = (p.sug.gerichte || []).filter(function(g) { return !g._cancelled; });
+  p.n = aktive.length;
+  p.sug.kochabende = aktive.map(function(g) { return (g.tag || '').slice(0, 2); });
+  G.n = p.n;
 }
 
 function openEinplanen(r) {
@@ -5536,6 +5726,9 @@ function einplanenAuf(tag) {
     return DAYS_ORDER.indexOf((a.tag || '').slice(0, 2)) - DAYS_ORDER.indexOf((b.tag || '').slice(0, 2));
   });
   if (G.sugs && G.sel !== null && G.sugs[G.sel]) G.sugs[G.sel] = G.activePlan.sug;
+  // Planzahlen mitziehen, sonst zeigen Dashboard und Verlauf weiter die alte
+  // Anzahl Kochabende.
+  aktualisierePlanKennzahlen();
   closeEinplanen();
   // Die Einkaufsliste enthaelt jetzt neue Zutaten - Bring! hat den alten Stand.
   markPlanChangedSinceTransfer();
@@ -5604,7 +5797,11 @@ function importFotoFromResult(){
   var tmpSug={thema:r.name||'Foto-Rezept',kochabende:[],gerichte:[{tag:'Foto',abend:r.name||'Foto-Rezept',zutaten:r.zutaten||[]}]};
   // Getrennter Kontext: G.sugs/G.sel des aktiven Wochenplans bleiben unangetastet.
   G.fotoImport = tmpSug;
-  if(G.bLists&&G.bLists.length){$('blist').innerHTML=G.bLists.map(function(l){return '<option value="'+esc(l.listUuid)+'">'+esc(l.name)+'</option>';}).join('');$('blistwrap').style.display='block';$('bfields').style.display='none';}
+  if(G.bLists&&G.bLists.length){
+    $('blist').innerHTML=G.bLists.map(function(l){return '<option value="'+esc(l.listUuid)+'">'+esc(l.name)+'</option>';}).join('');
+    applyBringListPref();        // erst NACH dem Fuellen - vorher gibt es nichts auszuwaehlen
+    $('blistwrap').style.display='block';$('bfields').style.display='none';
+  }
   $('wtit').textContent=r.name||'Foto-Rezept';$('wsub').textContent='Foto-Rezept';
   renderEink(tmpSug); go('sw'); wtab('e');
   var oldBack=document.getElementById('foto-back-btn');if(oldBack)oldBack.remove();
