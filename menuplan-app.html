@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=yes">
-<title>Menüplan v6.52</title>
+<title>Menüplan v6.54</title>
 <meta name="theme-color" content="#e8390e">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -182,7 +182,7 @@ input[type=password]{letter-spacing:2px}
 
 <!-- HOME -->
 <div class="scr on" id="sh">
-  <div class="hero"><h1>Menüplan</h1><p id="hsub">v6.52 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
+  <div class="hero"><h1>Menüplan</h1><p id="hsub">v6.54 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
 
   <!-- Active plan card -->
 
@@ -2864,14 +2864,10 @@ function markPlanChangedSinceTransfer() {
   window._einkaufGeprueft = null;        // geaenderte Liste erneut pruefen
   updateEinkaufAnsicht();
   localStorage.setItem(userKey('active_plan'), JSON.stringify(G.activePlan));
-  var box = $('einkauf-transfer-status');
-  if (box) {
-    box.style.background = '#fff8e1';
-    box.style.borderColor = '#ffe082';
-    box.style.color = '#e65100';
-    box.innerHTML = '&#9888; <span id="einkauf-transfer-text">Plan wurde geändert – die an Bring! übertragene Liste ist nicht mehr aktuell.</span>';
-    box.style.display = 'block';
-  }
+  // Statusbox ueber die zentrale Funktion setzen statt hier nochmals dasselbe
+  // HTML zu schreiben. Die Kopie kannte den Foto-Kontext nicht und haette dort
+  // den Wochenplan-Status eingeblendet.
+  updateTransferStatusUI();
   updateDashboard();
 }
 
@@ -3885,7 +3881,13 @@ function updateHistoryEntryPlan(planData) {
     if (idx < 0) return;
     var sug = planData.sug || (planData.sugs && planData.sugs[planData.sel||0]);
     hist[idx].plan = planData;
-    if (sug) hist[idx].gerichte = sug.gerichte.map(function(g){ return {tag:g.tag, abend:g.abend}; });
+    if (sug) {
+      hist[idx].gerichte = sug.gerichte.map(function(g){ return {tag:g.tag, abend:g.abend}; });
+      // Die Verlaufskarte zeigt "N Abende" aus einem EIGENEN Feld, das beim
+      // Anlegen einmal gesetzt wurde. Ohne diese Zeile stuende dort weiter die
+      // alte Zahl, sobald ein Gericht dazukommt oder wegfaellt.
+      hist[idx].kochabende = sug.gerichte.filter(function(g){ return !g._cancelled; }).length;
+    }
     localStorage.setItem(userKey('local_history'), JSON.stringify(hist));
     saveHistoryToGH(hist);
   } catch (e) { /* Verlauf-Update ist best-effort, active_plan bleibt in jedem Fall aktuell */ }
@@ -4295,6 +4297,7 @@ function deleteGerichtFromPlan(ri) {
   // "kann nicht rueckgaengig gemacht werden" stimmt ohnehin nicht mehr.
   var snap = snapshotPlan();
   sug.gerichte.splice(ri, 1);
+  aktualisierePlanKennzahlen();   // n und kochabende folgen der Gerichteliste
   markPlanChangedSinceTransfer();
   try { goWeekRender(sug, {keepTab:true}); } catch(e) { console.warn("render:", e.message); }
   persistActivePlan();
@@ -4312,6 +4315,7 @@ function cancelGericht(ri) {
   g._cancelled = true;
   g._origAbend = g.abend;
   g.abend = '❌ ' + g.abend + ' (ausgefallen)';
+  aktualisierePlanKennzahlen();   // ein ausgefallener Abend zaehlt nicht mehr
   markPlanChangedSinceTransfer();
   try { goWeekRender(sug, {keepTab:true}); } catch(e) { console.warn("render:", e.message); }
   persistActivePlan();
@@ -4329,6 +4333,7 @@ function auswaartsGericht(ri) {
   g._cancelled = true;
   g._origAbend = origName;
   g.abend = '🍽 Auswärts (' + (g.tag||'').slice(0,2) + ')';
+  aktualisierePlanKennzahlen();
   markPlanChangedSinceTransfer();
   try { goWeekRender(sug, {keepTab:true}); } catch(e) { console.warn("render:", e.message); }
   persistActivePlan();
@@ -5322,6 +5327,7 @@ function loadHistory() {
   }).catch(function(){if($('hload'))$('hload').style.display='none';var lh=JSON.parse(localStorage.getItem(userKey('local_history'))||'[]');if(lh.length){renderHistoryList(lh);}else{if($('hlist'))$('hlist').innerHTML='<div style="text-align:center;padding:40px;color:var(--gr3);font-size:13px">Verlauf nicht verfügbar.</div>';}});
 }
 function renderHistoryList(history) {
+  history = history || [];   // defensiv: nie mit undefined arbeiten
   var html='';
   for(var i=0;i<history.length;i++){
     var e=history[i]; var status=e.status||'geplant'; var stars=e.stars?'<span style="color:#f59e0b">'+('★'.repeat(e.stars))+'</span>':'';
@@ -5676,8 +5682,10 @@ function alsPlanGericht(r) {
   return g;
 }
 
-// Nach jeder Aenderung an der Gerichteliste: Anzahl und Kochabende neu
-// ableiten und den Verlaufseintrag mitziehen.
+// Nach JEDER Aenderung an der Gerichteliste: Anzahl und Kochabende neu
+// ableiten. Wird von einplanenAuf(), deleteGerichtFromPlan(), cancelGericht()
+// und auswaartsGericht() aufgerufen. Beim Rueckgaengigmachen NICHT - dort
+// stellt der Schnappschuss die alten Werte exakt wieder her.
 function aktualisierePlanKennzahlen() {
   var p = G.activePlan;
   if (!p || !p.sug) return;
