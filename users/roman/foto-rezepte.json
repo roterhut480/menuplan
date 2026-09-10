@@ -87,7 +87,8 @@
     "tipp": "Der Reis sollte vor dem Braten gut abgekuehlt sein, damit er nicht matschig wird. Am besten eignet sich Reis vom Vortag.",
     "status": "gekocht",
     "stars": 4,
-    "ratingFeedback": ""
+    "ratingFeedback": "",
+    "_id": "legacy_id_1787852783796"
   },
   {
     "id": 1787674486501,
@@ -238,7 +239,8 @@
     "tipp": "Die Moussaka schmeckt am nächsten Tag oft noch besser, da die Aromen gut durchziehen können. Vor dem Schneiden kurz abkühlen lassen, damit die Schichten besser halten.",
     "status": "gekocht",
     "stars": 5,
-    "ratingFeedback": ""
+    "ratingFeedback": "",
+    "_id": "legacy_id_1787674486501"
   },
   {
     "id": 1786624218611,
@@ -378,7 +380,8 @@
       }
     ],
     "tipp": "Das Risotto sollte am Ende cremig sein, aber der Reis noch Biss haben. Geben Sie die Bouillon wirklich nur kellen-weise hinzu und warten Sie, bis sie aufgesogen ist. Der Mozzarella kann auch in der Mitte des Risottos platziert werden, damit er besonders schön schmilzt.",
-    "status": "einkauf"
+    "status": "geplant",
+    "_id": "legacy_id_1786624218611"
   },
   {
     "id": 1786622335385,
@@ -517,7 +520,8 @@
         ]
       }
     ],
-    "tipp": "Das Gemuese im Backofen entwickelt intensive Aromen. Mit Salz und Pfeffer nach Geschmack abschmecken. Ein Schuss Pastawasser sorgt fuer eine cremige Konsistenz."
+    "tipp": "Das Gemuese im Backofen entwickelt intensive Aromen. Mit Salz und Pfeffer nach Geschmack abschmecken. Ein Schuss Pastawasser sorgt fuer eine cremige Konsistenz.",
+    "_id": "legacy_id_1786622335385"
   },
   {
     "id": 1786622265695,
@@ -623,6 +627,7 @@
         "zutaten_schritt": []
       }
     ],
-    "tipp": "Das Pesto kann auch im Voraus zubereitet und im Kühlschrank aufbewahrt werden. Gesalzene Pistazien geben dem Gericht zusätzlichen Geschmack, können aber auch durch ungesalzene ersetzt werden - dann einfach mehr Salz zum Abschmecken verwenden."
+    "tipp": "Das Pesto kann auch im Voraus zubereitet und im Kühlschrank aufbewahrt werden. Gesalzene Pistazien geben dem Gericht zusätzlichen Geschmack, können aber auch durch ungesalzene ersetzt werden - dann einfach mehr Salz zum Abschmecken verwenden.",
+    "_id": "legacy_id_1786622265695"
   }
 ]
