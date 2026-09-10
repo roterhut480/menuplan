@@ -228,7 +228,8 @@
                 "menge": "1 g"
               }
             ],
-            "tipp": "Fotzelschnitte schmecken auch mit Marmelade oder Honig statt Apfelmus. Das Weissbrot muss altbacken sein, damit es die Eimischung besser aufnimmt."
+            "tipp": "Fotzelschnitte schmecken auch mit Marmelade oder Honig statt Apfelmus. Das Weissbrot muss altbacken sein, damit es die Eimischung besser aufnimmt.",
+            "_gekocht": "2026-09-10T19:23:33.566Z"
           }
         ]
       },
@@ -252,8 +253,8 @@
       "weekStart": "2026-09-07",
       "einkaufstag": "Mi",
       "saved": "10.9.2026",
-      "bringImportedAt": null,
-      "bringItemCount": 0,
+      "bringImportedAt": "10.09., 20:28",
+      "bringItemCount": 8,
       "sugsAll": [
         {
           "id": 1,
@@ -465,7 +466,8 @@
                   "menge": "1 g"
                 }
               ],
-              "tipp": "Fotzelschnitte schmecken auch mit Marmelade oder Honig statt Apfelmus. Das Weissbrot muss altbacken sein, damit es die Eimischung besser aufnimmt."
+              "tipp": "Fotzelschnitte schmecken auch mit Marmelade oder Honig statt Apfelmus. Das Weissbrot muss altbacken sein, damit es die Eimischung besser aufnimmt.",
+              "_gekocht": "2026-09-10T19:23:33.566Z"
             }
           ]
         },
@@ -500,7 +502,9 @@
           ]
         }
       ],
-      "sugsPartial": false
+      "sugsPartial": false,
+      "einkaufDone": true,
+      "bringStale": false
     }
   }
 ]
