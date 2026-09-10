@@ -1,1 +1,108 @@
-[]
+[
+  {
+    "planId": "79c577ee-3ea0-4814-b270-7383f1ce8f95",
+    "date": "2026-09-10",
+    "saved": "10.9.2026",
+    "thema": "Schweizer Klassiker",
+    "personen": 2,
+    "kochabende": 1,
+    "reste": 0,
+    "freeze": 0,
+    "budget": 1,
+    "gerichte": [
+      {
+        "tag": "Mi",
+        "abend": "Fotzelschnitte mit Käse und Apfelmus"
+      }
+    ],
+    "status": "geplant",
+    "plan": {
+      "planId": "79c577ee-3ea0-4814-b270-7383f1ce8f95",
+      "sug": {
+        "id": 1,
+        "thema": "Schweizer Klassiker",
+        "kochabende": [
+          "Mi"
+        ],
+        "gerichte": [
+          {
+            "tag": "Mi",
+            "abend": "Fotzelschnitte mit Käse und Apfelmus",
+            "zeit_aktiv": "25m",
+            "zeit_total": "30m"
+          }
+        ]
+      },
+      "sel": 0,
+      "n": 1,
+      "personen": 2,
+      "reste": 0,
+      "freeze": 0,
+      "budget": 1,
+      "modus": "vegi",
+      "resteMode": "nein",
+      "days": {
+        "Mo": null,
+        "Di": null,
+        "Mi": "normal",
+        "Do": null,
+        "Fr": null,
+        "Sa": null,
+        "So": null
+      },
+      "weekStart": "2026-09-07",
+      "einkaufstag": "Mi",
+      "saved": "10.9.2026",
+      "bringImportedAt": null,
+      "bringItemCount": 0,
+      "sugsAll": [
+        {
+          "id": 1,
+          "thema": "Schweizer Klassiker",
+          "kochabende": [
+            "Mi"
+          ],
+          "gerichte": [
+            {
+              "tag": "Mi",
+              "abend": "Fotzelschnitte mit Käse und Apfelmus",
+              "zeit_aktiv": "25m",
+              "zeit_total": "30m"
+            }
+          ]
+        },
+        {
+          "id": 2,
+          "thema": "Südwestdeutsch",
+          "kochabende": [
+            "Mi"
+          ],
+          "gerichte": [
+            {
+              "tag": "Mi",
+              "abend": "Fotzelschnitte mit Käse und Apfelkompott",
+              "zeit_aktiv": "25m",
+              "zeit_total": "40m"
+            }
+          ]
+        },
+        {
+          "id": 3,
+          "thema": "Schweizer Klassiker",
+          "kochabende": [
+            "Mi"
+          ],
+          "gerichte": [
+            {
+              "tag": "Mi",
+              "abend": "Fotzelschnitte mit Käse und Apfelkompott",
+              "zeit_aktiv": "25m",
+              "zeit_total": "35m"
+            }
+          ]
+        }
+      ],
+      "sugsPartial": true
+    }
+  }
+]
