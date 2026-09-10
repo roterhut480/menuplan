@@ -1,0 +1,628 @@
+[
+  {
+    "id": 1787852783796,
+    "date": "2026-08-27",
+    "saved": "27.8.2026",
+    "name": "Gebratener Reis mit Ei",
+    "beschreibung": "Schneller gebratener Langkornreis mit Eiern, Fruehlingszwiebeln, Erbsen und Knoblauch, verfeinert mit Sojasauce",
+    "zeit_aktiv": "5 Min.",
+    "zeit_total": "30 Min.",
+    "portionen": 4,
+    "zutaten": [
+      {
+        "name": "Langkornreis",
+        "menge": "300 g"
+      },
+      {
+        "name": "Eier",
+        "menge": "6 Stk"
+      },
+      {
+        "name": "Pflanzenoel",
+        "menge": "4 EL"
+      },
+      {
+        "name": "Knoblauchzehen, zerdrueckt",
+        "menge": "4 Stk"
+      },
+      {
+        "name": "Fruehlingszwiebeln",
+        "menge": "8 Stk"
+      },
+      {
+        "name": "Erbsen, gruen, gekochte",
+        "menge": "250 g"
+      },
+      {
+        "name": "Sojasauce",
+        "menge": "nach Geschmack"
+      },
+      {
+        "name": "Fruehlingszwiebeln zum Garnieren",
+        "menge": "2 Stk"
+      }
+    ],
+    "schritte": [
+      {
+        "titel": "Reis kochen",
+        "text": "Den Langkornreis (300 g) in einem Topf 10-12 Minuten kochen. Er sollte fast gar sein, aber noch nicht weich. Den gekochten Reis in ein Sieb giessen und unter kaltem Wasser abspuelen, dadurch wird die Staerke reduziert und der Reis klebt nicht.",
+        "timer_min": 12,
+        "zutaten_schritt": [
+          "Langkornreis"
+        ]
+      },
+      {
+        "titel": "Eier verquirlen",
+        "text": "Die 6 Eier in einer Schuessel verquirlen und in einem Topf oder Wok in etwas Oel (1 EL) bei geringer Hitze kurz leicht verruehren, jedoch nicht ganz stocken lassen. Die Fruehlingszwiebeln (8 Stueck fuer die Pfanne) klein schneiden.",
+        "timer_min": 0,
+        "zutaten_schritt": [
+          "Eier",
+          "Pflanzenoel",
+          "Fruehlingszwiebeln"
+        ]
+      },
+      {
+        "titel": "Gemuese anbraten",
+        "text": "3 EL Pflanzenoel im Wok sehr heiss werden lassen. Die geschnittenen Fruehlingszwiebeln, die gekochten gruenen Erbsen (250 g) und die 4 zerdrueckten Knoblauchzehen unter Ruehren 2 Minuten anbraten. Den abgekuehlten Reis dazugeben, gut vermischen und leicht anbraten. Nun die leicht gestockten Eier untermengen, kurz weiter braten und mit Sojasauce nach Geschmack abschmecken.",
+        "timer_min": 2,
+        "zutaten_schritt": [
+          "Pflanzenoel",
+          "Fruehlingszwiebeln",
+          "Erbsen, gruen, gekochte",
+          "Knoblauchzehen, zerdrueckt",
+          "Langkornreis",
+          "Eier",
+          "Sojasauce"
+        ]
+      },
+      {
+        "titel": "Anrichten und Garnieren",
+        "text": "Den gebratenen Reis auf Tellern anrichten und mit klein geschnittenen Fruehlingszwiebeln (2 Stueck) garnieren. Mit frischem Salat servieren.",
+        "timer_min": 0,
+        "zutaten_schritt": [
+          "Fruehlingszwiebeln zum Garnieren"
+        ]
+      }
+    ],
+    "tipp": "Der Reis sollte vor dem Braten gut abgekuehlt sein, damit er nicht matschig wird. Am besten eignet sich Reis vom Vortag.",
+    "status": "gekocht",
+    "stars": 4,
+    "ratingFeedback": ""
+  },
+  {
+    "id": 1787674486501,
+    "date": "2026-08-25",
+    "saved": "25.8.2026",
+    "name": "Moussaka",
+    "beschreibung": "Griechischer Auflauf mit geschichteten Kartoffeln, Auberginen, vegetarischem Hackfleisch und cremiger Bechamelsauce, überbacken mit Käse",
+    "zeit_aktiv": "45 Min.",
+    "zeit_total": "1 Std. 30 Min.",
+    "portionen": 4,
+    "zutaten": [
+      {
+        "name": "Kartoffeln",
+        "menge": "300 g"
+      },
+      {
+        "name": "Aubergine",
+        "menge": "300 g"
+      },
+      {
+        "name": "Vegetarisches Hackfleisch",
+        "menge": "250 g"
+      },
+      {
+        "name": "Zwiebeln",
+        "menge": "1 Stk"
+      },
+      {
+        "name": "Knoblauchzehen",
+        "menge": "2 Stk"
+      },
+      {
+        "name": "Tomaten, geschält",
+        "menge": "400 g"
+      },
+      {
+        "name": "Lorbeerblatt",
+        "menge": "1 Stk"
+      },
+      {
+        "name": "Zimtpulver",
+        "menge": "0.125 TL"
+      },
+      {
+        "name": "Salz und Pfeffer",
+        "menge": "nach Geschmack"
+      },
+      {
+        "name": "Eier",
+        "menge": "2 Stk"
+      },
+      {
+        "name": "Butter",
+        "menge": "20 g"
+      },
+      {
+        "name": "Mehl",
+        "menge": "20 g"
+      },
+      {
+        "name": "Milch",
+        "menge": "185 ml"
+      },
+      {
+        "name": "Parmesan, frisch gerieben",
+        "menge": "50 g"
+      },
+      {
+        "name": "Olivenöl",
+        "menge": "nach Bedarf"
+      },
+      {
+        "name": "Muskatnuss",
+        "menge": "1 Prise"
+      }
+    ],
+    "schritte": [
+      {
+        "titel": "Auberginen vorbereiten",
+        "text": "Die Aubergine in 2 mm feine Scheiben schneiden und mit Salz bestreuen. 30 Minuten stehen lassen, damit sie Wasser ziehen. Anschließend die Auberginenscheiben sorgfältig trocken tupfen und in einer Pfanne mit Olivenöl von jeder Seite ca. 30 Sekunden anbraten. Auf Küchenpapier abtropfen lassen.",
+        "timer_min": 30,
+        "zutaten_schritt": [
+          "Aubergine",
+          "Salz und Pfeffer",
+          "Olivenöl"
+        ]
+      },
+      {
+        "titel": "Kartoffeln anbraten",
+        "text": "Die Kartoffeln schälen und in 2 mm feine Scheiben schneiden. Etwas Olivenöl in der Pfanne erhitzen und die Kartoffelscheiben unter mehrmaligem Wenden ca. 10 Minuten goldbraun anbraten. Beiseite stellen.",
+        "timer_min": 10,
+        "zutaten_schritt": [
+          "Kartoffeln",
+          "Olivenöl"
+        ]
+      },
+      {
+        "titel": "Fleischsauce kochen",
+        "text": "In einem Topf etwas Olivenöl erhitzen. Das vegetarische Hackfleisch darin anbraten. Zwiebeln und Knoblauch fein hacken und hinzufügen. Die geschälten Tomaten zugeben und etwas zerkleinern. Mit Lorbeerblatt, Zimt, Salz, Pfeffer und Muskatnuss würzen. Bei mittlerer Hitze unter ständigem Rühren offen köcheln lassen, bis die Sauce eindickt und die Flüssigkeit verkocht ist. Das Lorbeerblatt entfernen, nochmals abschmecken. Den Topf vom Herd nehmen und 2 Eier unterrühren.",
+        "timer_min": 15,
+        "zutaten_schritt": [
+          "Vegetarisches Hackfleisch",
+          "Zwiebeln",
+          "Knoblauchzehen",
+          "Tomaten, geschält",
+          "Lorbeerblatt",
+          "Zimtpulver",
+          "Salz und Pfeffer",
+          "Muskatnuss",
+          "Eier",
+          "Olivenöl"
+        ]
+      },
+      {
+        "titel": "Bechamelsauce zubereiten",
+        "text": "In einem zweiten Topf die Butter zerlassen. Das Mehl einstreuen und kurz anschwitzen, dabei ständig rühren. Nach und nach die Milch zugießen und unter Rühren dicklich einkochen lassen. Mit Salz, Pfeffer und geriebener Muskatnuss pikant abschmecken. Den Topf vom Herd nehmen und den geriebenen Parmesan sowie die restlichen 2 Eier einrühren. Alles gut vermischen.",
+        "timer_min": 10,
+        "zutaten_schritt": [
+          "Butter",
+          "Mehl",
+          "Milch",
+          "Salz und Pfeffer",
+          "Muskatnuss",
+          "Parmesan, frisch gerieben"
+        ]
+      },
+      {
+        "titel": "Moussaka schichten",
+        "text": "Eine große, flache Auflaufform mit Olivenöl einfetten. Die Hälfte der Kartoffelscheiben gleichmäßig auf dem Boden verteilen. Mit Salz, Pfeffer und Muskatnuss würzen. Dann die Hälfte der Auberginenscheiben darauf schichten. Anschließend die gesamte Hackfleischmasse gleichmäßig darauf verteilen. Die restlichen Kartoffeln und Auberginen als weitere Schichten darauf geben. Zum Schluss die Bechamelsauce über die gesamte Moussaka gießen und mit etwas geriebenem Käse bestreuen.",
+        "timer_min": 0,
+        "zutaten_schritt": [
+          "Kartoffeln",
+          "Aubergine",
+          "Vegetarisches Hackfleisch",
+          "Salz und Pfeffer",
+          "Muskatnuss",
+          "Olivenöl",
+          "Parmesan, frisch gerieben"
+        ]
+      },
+      {
+        "titel": "Backen",
+        "text": "Die Moussaka im vorgeheizten Backofen bei 180 Grad Celsius Umluft 30 bis 40 Minuten backen, bis die Oberfläche goldbraun und die Sauce leicht gebräunt ist. Vor dem Servieren einige Minuten ruhen lassen.",
+        "timer_min": 35,
+        "zutaten_schritt": []
+      }
+    ],
+    "tipp": "Die Moussaka schmeckt am nächsten Tag oft noch besser, da die Aromen gut durchziehen können. Vor dem Schneiden kurz abkühlen lassen, damit die Schichten besser halten.",
+    "status": "gekocht",
+    "stars": 5,
+    "ratingFeedback": ""
+  },
+  {
+    "id": 1786624218611,
+    "date": "2026-08-13",
+    "saved": "13.8.2026",
+    "name": "Sommerrisotto mit Tomaten und schmelzendem Mozzarella",
+    "beschreibung": "Cremiges Sommerrisotto mit aromatischen Tomaten, Rosé-Wein und zarten Mozzarellastückchen",
+    "zeit_aktiv": "35 Min.",
+    "zeit_total": "40 Min.",
+    "portionen": 4,
+    "zutaten": [
+      {
+        "name": "Risottoreis",
+        "menge": "300 g"
+      },
+      {
+        "name": "Butter",
+        "menge": "50 g"
+      },
+      {
+        "name": "Knoblauchzehe, angedrückt",
+        "menge": "1 Stk"
+      },
+      {
+        "name": "Aromatische Tomaten, in Stücke geschnitten",
+        "menge": "500 g"
+      },
+      {
+        "name": "Rosé-Wein",
+        "menge": "1 Glas (ca. 150 ml)"
+      },
+      {
+        "name": "Bouillon",
+        "menge": "ca. 1 Liter"
+      },
+      {
+        "name": "Pfeffer",
+        "menge": "nach Geschmack"
+      },
+      {
+        "name": "Basilikum, zerrissen",
+        "menge": "1 Handvoll"
+      },
+      {
+        "name": "Parmesan, gerieben",
+        "menge": "70 g"
+      },
+      {
+        "name": "Mozzarellakugel",
+        "menge": "1 Stk (ca. 125 g)"
+      }
+    ],
+    "schritte": [
+      {
+        "text": "Setzen Sie eine Fleischbouillon auf und halten Sie diese warm. Die Bouillon sollte während der gesamten Zubereitung heiß bleiben.",
+        "timer_min": 0,
+        "zutaten_schritt": [
+          "Bouillon"
+        ]
+      },
+      {
+        "text": "Bereiten Sie den Risotto in einer tiefen Bratpfanne zu. Geben Sie die Butter in die Pfanne und lassen Sie sie bei mittlerer Hitze schmelzen.",
+        "timer_min": 2,
+        "zutaten_schritt": [
+          "Butter"
+        ]
+      },
+      {
+        "text": "Geben Sie die angedrückte Knoblauchzehe in die Pfanne und erhitzen Sie diese kurz in der Butter, damit sie ihr Aroma entfaltet.",
+        "timer_min": 1,
+        "zutaten_schritt": [
+          "Knoblauchzehe, angedrückt"
+        ]
+      },
+      {
+        "text": "Dünsten Sie die Knoblauchzehe, bis der Knoblauch duftet. Dann geben Sie die in Stücke geschnittenen Tomaten bei und lassen Sie diese langsam dünsten, bis die Tomaten etwas zerfallen.",
+        "timer_min": 5,
+        "zutaten_schritt": [
+          "Aromatische Tomaten, in Stücke geschnitten"
+        ]
+      },
+      {
+        "text": "Geben Sie den Risottoreis zu den Tomaten in die Pfanne und dünsten Sie alles zusammen noch einige Minuten, bis der Reis leicht glasig wird.",
+        "timer_min": 3,
+        "zutaten_schritt": [
+          "Risottoreis"
+        ]
+      },
+      {
+        "text": "Geben Sie etwas zerrissenes Basilikum zum Reis und den Tomaten hinzu und rühren Sie es unter.",
+        "timer_min": 0,
+        "zutaten_schritt": [
+          "Basilikum, zerrissen"
+        ]
+      },
+      {
+        "text": "Gießen Sie den Rosé-Wein zum Risotto dazu und lassen Sie den Wein einköcheln, dabei gelegentlich umrühren.",
+        "timer_min": 3,
+        "zutaten_schritt": [
+          "Rosé-Wein"
+        ]
+      },
+      {
+        "text": "Geben Sie nach und nach die heiße Bouillon zum Risotto bei. Gießen Sie immer nur so viel Bouillon an, dass der Reis gerade bedeckt ist. Warten Sie, bis die Flüssigkeit aufgesogen ist, bevor Sie die nächste Kelle Bouillon hinzufügen. Rühren Sie dabei regelmäßig um.",
+        "timer_min": 18,
+        "zutaten_schritt": [
+          "Bouillon"
+        ]
+      },
+      {
+        "text": "Wenn das Risotto fertig ist und der Reis cremig, aber noch bissfest ist, nehmen Sie die Pfanne von der Herdplatte. Schmecken Sie mit Pfeffer ab.",
+        "timer_min": 0,
+        "zutaten_schritt": [
+          "Pfeffer"
+        ]
+      },
+      {
+        "text": "Geben Sie den geriebenen Parmesan unter das fertige Risotto und rühren Sie ihn gut ein, damit das Risotto noch cremiger wird.",
+        "timer_min": 1,
+        "zutaten_schritt": [
+          "Parmesan, gerieben"
+        ]
+      },
+      {
+        "text": "Schneiden Sie die Mozzarellakugel in Stücke und untermischen Sie diese oder rupfen Sie die Mozzarella in Stücke und verteilen Sie diese über das Risotto.",
+        "timer_min": 0,
+        "zutaten_schritt": [
+          "Mozzarellakugel"
+        ]
+      },
+      {
+        "text": "Untermischen Sie noch etwas frisches, gehacktes Basilikum und servieren Sie das Risotto sofort, solange es noch schön heiß ist und der Mozzarella schmilzt.",
+        "timer_min": 0,
+        "zutaten_schritt": [
+          "Basilikum, zerrissen"
+        ]
+      }
+    ],
+    "tipp": "Das Risotto sollte am Ende cremig sein, aber der Reis noch Biss haben. Geben Sie die Bouillon wirklich nur kellen-weise hinzu und warten Sie, bis sie aufgesogen ist. Der Mozzarella kann auch in der Mitte des Risottos platziert werden, damit er besonders schön schmilzt.",
+    "status": "einkauf"
+  },
+  {
+    "id": 1786622335385,
+    "date": "2026-08-13",
+    "saved": "13.8.2026",
+    "name": "Pasta aus dem Backofen mit Tomaten und Knoblauch",
+    "beschreibung": "Eine Pasta, die nach Sueden schmeckt und duftet. Die Sauce entsteht direkt im Backofen, was fuer viel Feriengefuehl und Einfachheit sorgt.",
+    "zeit_aktiv": "15 Min.",
+    "zeit_total": "45 Min.",
+    "portionen": 4,
+    "zutaten": [
+      {
+        "name": "Spaghetti",
+        "menge": "400 g"
+      },
+      {
+        "name": "Cherrytomaten",
+        "menge": "500 g"
+      },
+      {
+        "name": "rote Peperoni",
+        "menge": "2 Stk"
+      },
+      {
+        "name": "Aubergine",
+        "menge": "1 Stk"
+      },
+      {
+        "name": "Schalotte",
+        "menge": "1 Stk"
+      },
+      {
+        "name": "Knoblauchzehen ganz",
+        "menge": "3 Stk"
+      },
+      {
+        "name": "Oliven entsteint",
+        "menge": "1 Handvoll"
+      },
+      {
+        "name": "Basilikum",
+        "menge": "1 Handvoll"
+      },
+      {
+        "name": "Petersilie grob gehackt",
+        "menge": "1 Handvoll"
+      },
+      {
+        "name": "Honig",
+        "menge": "1 EL"
+      },
+      {
+        "name": "Olivenoel",
+        "menge": "nach Bedarf"
+      },
+      {
+        "name": "Salz",
+        "menge": "nach Geschmack"
+      },
+      {
+        "name": "Pfeffer",
+        "menge": "nach Geschmack"
+      },
+      {
+        "name": "Meersalz",
+        "menge": "1 Prise"
+      },
+      {
+        "name": "Pecorino Romano gerieben",
+        "menge": "zum Servieren"
+      }
+    ],
+    "schritte": [
+      {
+        "text": "Die Peperoni und die Aubergine in Stuecke schneiden.",
+        "timer_min": 0,
+        "zutaten_schritt": [
+          "rote Peperoni",
+          "Aubergine"
+        ]
+      },
+      {
+        "text": "Tomaten, die Peperonistuecke, die Aubergine, die geschaelte Schalotte und die ganzen Knoblauchzehen auf ein mit Backpapier belegtes Blech oder in eine grosse Form legen.",
+        "timer_min": 0,
+        "zutaten_schritt": [
+          "Cherrytomaten",
+          "rote Peperoni",
+          "Aubergine",
+          "Schalotte",
+          "Knoblauchzehen ganz"
+        ]
+      },
+      {
+        "text": "Olivenoel darueber geben, mit ein wenig flockigem Meersalz wuerzen und etwas Honig darueber traeufeln. Gut mischen.",
+        "timer_min": 0,
+        "zutaten_schritt": [
+          "Olivenoel",
+          "Meersalz",
+          "Honig"
+        ]
+      },
+      {
+        "text": "Im auf 200 Grad vorgeheizten Backofen ca. 30 Minuten roesten.",
+        "timer_min": 30,
+        "zutaten_schritt": []
+      },
+      {
+        "text": "Das Gemuese aus dem Ofen nehmen, enthauten den Knoblauch und zerdruecken ihn mit einer Gabel.",
+        "timer_min": 0,
+        "zutaten_schritt": [
+          "Knoblauchzehen ganz"
+        ]
+      },
+      {
+        "text": "In der Zwischenzeit die Spaghetti gemaess Packungsangaben al dente kochen.",
+        "timer_min": 0,
+        "zutaten_schritt": [
+          "Spaghetti"
+        ]
+      },
+      {
+        "text": "Die Spaghetti mit dem Gemuese mischen, etwas heisses Pastawasser dazugeben und alles zusammen kurz erwaermen.",
+        "timer_min": 2,
+        "zutaten_schritt": [
+          "Spaghetti"
+        ]
+      },
+      {
+        "text": "Die Oliven, das zerrissene Basilikum und die grob gehackte Petersilie zur Pasta geben und servieren mit geriebenem Pecorino Romano.",
+        "timer_min": 0,
+        "zutaten_schritt": [
+          "Oliven entsteint",
+          "Basilikum",
+          "Petersilie grob gehackt",
+          "Pecorino Romano gerieben"
+        ]
+      }
+    ],
+    "tipp": "Das Gemuese im Backofen entwickelt intensive Aromen. Mit Salz und Pfeffer nach Geschmack abschmecken. Ein Schuss Pastawasser sorgt fuer eine cremige Konsistenz."
+  },
+  {
+    "id": 1786622265695,
+    "date": "2026-08-13",
+    "saved": "13.8.2026",
+    "name": "Pasta mit Pistazien-Pesto",
+    "beschreibung": "Eine kreative Variante des klassischen Pestos, verfeinert mit Pistazien, Feta und frischen Kräutern. Serviert mit Rigatoni oder anderer Pasta nach Wahl.",
+    "zeit_aktiv": "20 Min.",
+    "zeit_total": "30 Min.",
+    "portionen": 2,
+    "zutaten": [
+      {
+        "name": "Pistazienkerne",
+        "menge": "180 g"
+      },
+      {
+        "name": "Pfefferminzblätter, frisch",
+        "menge": "1 Handvoll"
+      },
+      {
+        "name": "Basilikum",
+        "menge": "1 Bund"
+      },
+      {
+        "name": "Pecorino, gerieben",
+        "menge": "50 g"
+      },
+      {
+        "name": "Feta",
+        "menge": "100 g"
+      },
+      {
+        "name": "Olivenöl",
+        "menge": "1 dl"
+      },
+      {
+        "name": "Rigatoni oder andere Pasta",
+        "menge": "400 g"
+      },
+      {
+        "name": "Salz",
+        "menge": "nach Geschmack"
+      },
+      {
+        "name": "Pistazien für Garnitur, gesalzen",
+        "menge": "nach Belieben"
+      }
+    ],
+    "schritte": [
+      {
+        "text": "Alle Pestozutaten in eine Küchenmaschine geben: Pistazienkerne, Pfefferminzblätter, Basilikum, geriebenen Pecorino, Feta und Olivenöl hinzufügen und zu einem groben Pesto pürieren.",
+        "timer_min": 0,
+        "zutaten_schritt": [
+          "Pistazienkerne",
+          "Pfefferminzblätter, frisch",
+          "Basilikum",
+          "Pecorino, gerieben",
+          "Feta",
+          "Olivenöl"
+        ]
+      },
+      {
+        "text": "Alternativ alle Zutaten mit einem Mörser zu einer Paste zerstampfen, bis die gewünschte Konsistenz erreicht ist.",
+        "timer_min": 0,
+        "zutaten_schritt": [
+          "Pistazienkerne",
+          "Pfefferminzblätter, frisch",
+          "Basilikum",
+          "Pecorino, gerieben",
+          "Feta",
+          "Olivenöl"
+        ]
+      },
+      {
+        "text": "Einen großen Topf mit Salzwasser zum Kochen bringen. Die Pasta nach Packungsanweisung al dente kochen.",
+        "timer_min": 10,
+        "zutaten_schritt": [
+          "Rigatoni oder andere Pasta",
+          "Salz"
+        ]
+      },
+      {
+        "text": "Kurz vor dem Abgießen etwa eine Kelle heißes Pastawawasser zurückbehalten und zur Seite stellen.",
+        "timer_min": 0,
+        "zutaten_schritt": []
+      },
+      {
+        "text": "Die Pasta abgießen und zurück in den Topf geben. Das Pistazien-Pesto und das zurückbehaltene Pastawawasser zur Pasta geben und gut vermischen, bis eine cremige Konsistenz entsteht.",
+        "timer_min": 0,
+        "zutaten_schritt": []
+      },
+      {
+        "text": "Die Pasta-Pesto-Mischung mit einigen Pistazienkernen garnieren. Diese können gesalzen oder ungesalzen sein. Falls ungesalzene Pistazien verwendet werden, mit etwas Salz abschmecken.",
+        "timer_min": 0,
+        "zutaten_schritt": [
+          "Pistazien für Garnitur, gesalzen",
+          "Salz"
+        ]
+      },
+      {
+        "text": "Die Pasta in schönen Schalen servieren und sofort genießen.",
+        "timer_min": 0,
+        "zutaten_schritt": []
+      }
+    ],
+    "tipp": "Das Pesto kann auch im Voraus zubereitet und im Kühlschrank aufbewahrt werden. Gesalzene Pistazien geben dem Gericht zusätzlichen Geschmack, können aber auch durch ungesalzene ersetzt werden - dann einfach mehr Salz zum Abschmecken verwenden."
+  }
+]
