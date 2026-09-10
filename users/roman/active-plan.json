@@ -234,8 +234,8 @@
   "weekStart": "2026-09-07",
   "einkaufstag": "Mi",
   "saved": "10.9.2026",
-  "bringImportedAt": null,
-  "bringItemCount": 0,
+  "bringImportedAt": "10.09., 20:28",
+  "bringItemCount": 8,
   "sugsAll": [
     {
       "id": 1,
@@ -482,5 +482,7 @@
       ]
     }
   ],
-  "sugsPartial": false
+  "sugsPartial": false,
+  "einkaufDone": true,
+  "bringStale": false
 }
