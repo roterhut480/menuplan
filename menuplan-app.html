@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=yes">
-<title>Menüplan v6.48</title>
+<title>Menüplan v6.49</title>
 <meta name="theme-color" content="#e8390e">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -182,7 +182,7 @@ input[type=password]{letter-spacing:2px}
 
 <!-- HOME -->
 <div class="scr on" id="sh">
-  <div class="hero"><h1>Menüplan</h1><p id="hsub">v6.48 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
+  <div class="hero"><h1>Menüplan</h1><p id="hsub">v6.49 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
 
   <!-- Active plan card -->
 
@@ -1897,6 +1897,10 @@ function hatSchritte(g) {
 
 // Modusabhaengige Pflichtpruefung: welche Varianten MUESSEN vorhanden sein.
 function fehlendeSchritte(g, modus) {
+  // Selbst eingeplante Rezepte (Foto, Verlauf) kommen mit genau EINER
+  // Schrittvariante - sie duerfen nicht als unvollstaendig gelten, nur weil
+  // gerade der optionale Modus eingestellt ist.
+  if (g && g._extern) return hatSchritte(g) ? null : 'Kochschritte fehlen';
   var m = modus || G.modus || 'optional';
   var hasV = Array.isArray(g.schritte_vegi) && g.schritte_vegi.length;
   var hasF = Array.isArray(g.schritte_fleisch) && g.schritte_fleisch.length;
@@ -5207,7 +5211,7 @@ function renderHistoryView() {
       new Date(hv.plan.weekStart + 'T00:00:00').toLocaleDateString('de-CH') : '') +
       ' · ' + gerichte.length + (gerichte.length === 1 ? ' Gericht' : ' Gerichte');
   }
-  var html = gerichte.map(function(g) {
+  var html = gerichte.map(function(g, gi) {
     var zut = (g.zutaten || []).map(function(z) {
       return '<div style="display:flex;justify-content:space-between;gap:10px;padding:3px 0;font-size:12px">' +
         '<span>' + esc(z.name) + '</span>' +
@@ -5222,10 +5226,22 @@ function renderHistoryView() {
         (g.mittag_nächster_tag ? '<div style="font-size:12px;color:var(--gr3);margin-top:2px">&#8594; ' +
            esc(g.mittag_tag || '') + ': ' + esc(g.mittag_nächster_tag) + '</div>' : '') +
         (zut ? '<div style="margin-top:10px;border-top:.5px solid var(--bdr);padding-top:8px">' + zut + '</div>' : '') +
+        '<button class="btn btn-out" onclick="einplanenAusVerlauf(' + gi + ')" ' +
+          'style="width:100%;padding:9px;margin-top:10px;font-size:12px">📅 Einplanen</button>' +
       '</div></div>';
   }).join('');
   if ($('hv-list')) $('hv-list').innerHTML = html ||
     '<div style="padding:16px;color:var(--gr3);font-size:13px">Keine Gerichte gespeichert.</div>';
+}
+
+// Aus der Nur-Ansicht heraus einplanen. Das historische Gericht wird kopiert,
+// der angesehene Plan bleibt unveraendert.
+function einplanenAusVerlauf(gi) {
+  var hv = G.histView;
+  if (!hv || !hv.plan || !hv.plan.sug) return;
+  var g = (hv.plan.sug.gerichte || [])[gi];
+  if (!g) return;
+  openEinplanen(JSON.parse(JSON.stringify(g)));
 }
 
 function closeHistoryView() {
@@ -5450,11 +5466,91 @@ function syncFotoRezepte(btn){
       if(btn){btn.textContent='OK';setTimeout(function(){btn.textContent=origText;btn.disabled=false;},1500);}
     }).catch(function(){if(btn){btn.textContent='Err';setTimeout(function(){btn.textContent=origText;btn.disabled=false;},1500);}});
 }
+// ─── REZEPT AUF EINEN WOCHENTAG LEGEN ─────────────────────
+// Funktioniert fuer Foto-Rezepte und fuer Gerichte aus dem Verlauf. Der aktive
+// Plan deckt genau eine Woche ab (weekStart = Montag), deshalb sind nur die
+// freien Tage DIESER Woche waehlbar. Belegte Tage werden gar nicht angeboten.
+function freieTageImPlan() {
+  var p = G.activePlan;
+  if (!p || !p.sug || !p.weekStart) return [];
+  var belegt = {};
+  (p.sug.gerichte || []).forEach(function(g) { belegt[(g.tag || '').slice(0, 2)] = true; });
+  return DAYS_ORDER.filter(function(t) { return !belegt[t]; }).map(function(t) {
+    var d = dateFromTag(p.weekStart, t);
+    return { tag: t, datum: d, label: d.toLocaleDateString('de-CH', { weekday: 'long', day: 'numeric', month: 'short' }) };
+  });
+}
+
+// Vereinheitlicht Foto-Rezept und Verlaufs-Gericht auf die Planstruktur.
+function alsPlanGericht(r) {
+  var schritte = Array.isArray(r.schritte_vegi) && r.schritte_vegi.length ? r.schritte_vegi
+               : Array.isArray(r.schritte_fleisch) && r.schritte_fleisch.length ? r.schritte_fleisch
+               : Array.isArray(r.schritte) ? r.schritte : [];
+  return {
+    abend: r.abend || r.name || 'Rezept',
+    zutaten: (r.zutaten || []).slice(),
+    schritte_vegi: schritte.slice(),
+    zeit_aktiv: r.zeit_aktiv || '',
+    zeit_total: r.zeit_total || '',
+    tipp: r.tipp || '',
+    _extern: true                    // selbst eingeplant, nicht generiert
+  };
+}
+
+function openEinplanen(r) {
+  if (!G.activePlan || !G.activePlan.sug) {
+    alert('Es gibt noch keinen aktiven Wochenplan. Plane zuerst eine Woche.');
+    return;
+  }
+  var frei = freieTageImPlan();
+  if (!frei.length) {
+    alert('Diese Woche ist bereits vollständig verplant.\n\n' +
+          'Entferne zuerst ein Gericht, wenn du dieses Rezept einplanen möchtest.');
+    return;
+  }
+  window._einplanRezept = r;
+  var html = frei.map(function(f) {
+    return '<button class="btn btn-out" onclick="einplanenAuf(\'' + f.tag + '\')" ' +
+      'style="width:100%;padding:12px;margin-bottom:6px;text-align:left;font-size:14px">' +
+      esc(f.label) + '</button>';
+  }).join('');
+  var name = r.abend || r.name || 'Rezept';
+  $('einplan-titel').textContent = name;
+  $('einplan-tage').innerHTML = html;
+  $('einplan-modal').style.display = 'flex';
+}
+
+function closeEinplanen() {
+  $('einplan-modal').style.display = 'none';
+  window._einplanRezept = null;
+}
+
+function einplanenAuf(tag) {
+  var r = window._einplanRezept;
+  if (!r || !G.activePlan || !G.activePlan.sug) return closeEinplanen();
+  var g = alsPlanGericht(r);
+  g.tag = tag;
+  G.activePlan.sug.gerichte.push(g);
+  // Nach Wochentag sortieren, damit die Reihenfolge stimmt.
+  G.activePlan.sug.gerichte.sort(function(a, b) {
+    return DAYS_ORDER.indexOf((a.tag || '').slice(0, 2)) - DAYS_ORDER.indexOf((b.tag || '').slice(0, 2));
+  });
+  if (G.sugs && G.sel !== null && G.sugs[G.sel]) G.sugs[G.sel] = G.activePlan.sug;
+  closeEinplanen();
+  // Die Einkaufsliste enthaelt jetzt neue Zutaten - Bring! hat den alten Stand.
+  markPlanChangedSinceTransfer();
+  persistActivePlan();
+  renderActivePlan();
+  if ($('sw') && $('sw').classList.contains('on')) goWeekRender(G.activePlan.sug, { keepTab: true });
+  var d = dateFromTag(G.activePlan.weekStart, tag);
+  showSwapToast('Eingeplant für ' + d.toLocaleDateString('de-CH', { weekday: 'short', day: 'numeric', month: 'short' }), '#2e7d32');
+}
+
 function loadSavedFotoRezepte(){
   var saved=JSON.parse(localStorage.getItem(userKey('foto_rezepte'))||'[]');var sec=$('foto-saved-section');
   if(!saved.length){if(sec)sec.style.display='none';return;}
   if(sec)sec.style.display='block';
-  var html=saved.map(function(r,i){return '<div style="background:#fff;border-radius:var(--r);border:.5px solid var(--bdr);padding:10px 14px;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between;gap:8px"><div style="flex:1;min-width:0"><div style="font-size:14px;font-weight:600;color:var(--txt);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+esc(r.name||'Rezept')+'</div><div style="font-size:11px;color:var(--gr3);margin-top:2px">'+esc(r.saved||r.date||'')+' · '+personenLabel(r.portionen||2)+(r.zeit_total?' · '+esc(r.zeit_total):'')+'</div></div><div style="display:flex;gap:6px;flex-shrink:0"><button onclick="loadSavedFotoRezeptDetail('+i+')" class="btn btn-out" style="width:auto;padding:7px 12px;font-size:12px">Öffnen</button><button onclick="deleteSavedFotoRezept('+i+')" style="background:none;border:none;color:var(--gr3);font-size:18px;cursor:pointer;padding:0 4px">✕</button></div></div>';}).join('');
+  var html=saved.map(function(r,i){return '<div style="background:#fff;border-radius:var(--r);border:.5px solid var(--bdr);padding:10px 14px;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between;gap:8px"><div style="flex:1;min-width:0"><div style="font-size:14px;font-weight:600;color:var(--txt);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+esc(r.name||'Rezept')+'</div><div style="font-size:11px;color:var(--gr3);margin-top:2px">'+esc(r.saved||r.date||'')+' · '+personenLabel(r.portionen||2)+(r.zeit_total?' · '+esc(r.zeit_total):'')+'</div></div><div style="display:flex;gap:6px;flex-shrink:0"><button onclick="openEinplanen(window._savedFotoRezepte['+i+'])" class="btn btn-out" style="width:auto;padding:7px 10px;font-size:12px" title="Einplanen">📅</button><button onclick="loadSavedFotoRezeptDetail('+i+')" class="btn btn-out" style="width:auto;padding:7px 12px;font-size:12px">Öffnen</button><button onclick="deleteSavedFotoRezept('+i+')" style="background:none;border:none;color:var(--gr3);font-size:18px;cursor:pointer;padding:0 4px">✕</button></div></div>';}).join('');
   if($('foto-saved-list'))$('foto-saved-list').innerHTML=html; window._savedFotoRezepte=saved;
 }
 function loadSavedFotoRezeptDetail(i){
@@ -5991,6 +6087,17 @@ var STAR_LABELS = ['', 'Nicht so gut', 'Geht so', 'Gut', 'Sehr gut', 'Ausgezeich
   <div style="font-size:11px;color:var(--gr3);padding:4px 20px 30px;line-height:1.5">
     Mit <b>MP_USERS</b> markierte Konten stammen aus der Cloudflare-Variable. Sie lassen sich
     hier nicht löschen, aber über „Passwort" auf ein gehashtes Konto umstellen.
+  </div>
+</div>
+
+<!-- REZEPT EINPLANEN -->
+<div id="einplan-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:500;align-items:flex-end;justify-content:center" onclick="if(event.target===this)closeEinplanen()">
+  <div style="background:#fff;width:100%;max-width:480px;border-radius:var(--rlg) var(--rlg) 0 0;padding:18px 16px calc(18px + env(safe-area-inset-bottom))">
+    <div style="font-size:12px;color:var(--gr3);text-transform:uppercase;letter-spacing:.4px">Einplanen</div>
+    <div id="einplan-titel" style="font-size:16px;font-weight:700;color:var(--txt);margin:2px 0 4px"></div>
+    <div style="font-size:12px;color:var(--gr3);margin-bottom:12px">An welchem Tag dieser Woche?</div>
+    <div id="einplan-tage"></div>
+    <button class="btn btn-out" onclick="closeEinplanen()" style="width:100%;padding:11px;margin-top:4px">Abbrechen</button>
   </div>
 </div>
 
