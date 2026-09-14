@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=yes">
-<title>Menüplan v6.58</title>
+<title>Menüplan v6.59</title>
 <meta name="theme-color" content="#e8390e">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -193,7 +193,7 @@ input[type=password]{letter-spacing:2px}
 
 <!-- HOME -->
 <div class="scr on" id="sh">
-  <div class="hero"><h1>Menüplan</h1><p id="hsub">v6.58 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
+  <div class="hero"><h1>Menüplan</h1><p id="hsub">v6.59 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
 
   <!-- Active plan card -->
 
@@ -3342,6 +3342,28 @@ function adjPort(d) {
   rescaleZutaten();
 }
 
+// Rundet die skalierte Menge passend zur Einheit. "1.5 Prise" oder
+// "0.3 Messerspitze" sind beim Kochen sinnlos - solche Masse gibt es nur ganz.
+// Bei TL und EL sind halbe Schritte ueblich, bei Gramm und Millilitern zaehlt
+// die tatsaechliche Zahl.
+function skalierteMenge(basis, faktor, einheit) {
+  var e = String(einheit || '').toLowerCase().replace('.', '');
+  var wert = basis * faktor;
+  // Nur ganzzahlig sinnvoll
+  if (/^(prise|prisen|messerspitze|msp|zweig|zweige|bund|handvoll|stueck|stück|stk|zehe|zehen|dose|dosen|packung|blatt)$/.test(e)) {
+    return String(Math.max(1, Math.round(wert)));
+  }
+  // Halbe Schritte
+  if (/^(tl|el|kl|essloeffel|esslöffel|teeloeffel|teelöffel|kaffeeloeffel|kaffeelöffel)$/.test(e)) {
+    var halb = Math.round(wert * 2) / 2;
+    if (halb < 0.5) halb = 0.5;
+    return String(halb);
+  }
+  // Gewicht und Volumen: ab 10 auf ganze Zahlen, darunter eine Nachkommastelle
+  if (wert >= 10) return String(Math.round(wert));
+  return String(Math.round(wert * 10) / 10);
+}
+
 function rescaleZutaten() {
   // Skaliert sowohl die Zutatenuebersicht VOR dem Kochen (#cing) als auch die
   // "Zutaten fuer diesen Schritt"-Box WAEHREND des Kochens (#cbody) - beide
@@ -3354,9 +3376,7 @@ function rescaleZutaten() {
     var unit = rows[i].dataset.unit || '';
     var cell = rows[i].querySelector('.zutat-menge');
     if (cell && !isNaN(base) && base > 0) {
-      var scaled = Math.round(base * factor * 10) / 10;
-      var display = scaled.toString();
-      cell.textContent = display + (unit ? ' ' + unit : '');
+      cell.textContent = skalierteMenge(base, factor, unit) + (unit ? ' ' + unit : '');
     }
   }
 }
