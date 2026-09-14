@@ -5,13 +5,17 @@
     "saved": "14.9.2026",
     "thema": "Mediterran",
     "personen": 2,
-    "kochabende": 3,
+    "kochabende": 4,
     "reste": 1,
     "freeze": 1,
     "budget": 0,
     "gerichte": [
       {
         "tag": "Mo",
+        "abend": "Auberginen-Tomaten-Auflauf"
+      },
+      {
+        "tag": "Di",
         "abend": "Auberginen-Tomaten-Auflauf"
       },
       {
@@ -31,6 +35,7 @@
         "thema": "Mediterran",
         "kochabende": [
           "Mo",
+          "Di",
           "Mi",
           "Fr"
         ],
@@ -510,6 +515,472 @@
               }
             ],
             "tipp": "Auberginen können auch gegrillt statt gebraten werden. Mozzarella kann durch Ricotta ersetzt werden."
+          },
+          {
+            "abend": "Auberginen-Tomaten-Auflauf",
+            "zutaten": [
+              {
+                "name": "Auberginen",
+                "menge": "1200 g"
+              },
+              {
+                "name": "Zwiebeln",
+                "menge": "400 g"
+              },
+              {
+                "name": "Knoblauch",
+                "menge": "30 g"
+              },
+              {
+                "name": "Tomaten, geschält (Dose)",
+                "menge": "1400 g"
+              },
+              {
+                "name": "Tomatenmark",
+                "menge": "80 g"
+              },
+              {
+                "name": "Olivenöl",
+                "menge": "120 ml"
+              },
+              {
+                "name": "Salz",
+                "menge": "12 g"
+              },
+              {
+                "name": "Pfeffer",
+                "menge": "4 g"
+              },
+              {
+                "name": "Oregano getrocknet",
+                "menge": "8 g"
+              },
+              {
+                "name": "Thymian getrocknet",
+                "menge": "4 g"
+              },
+              {
+                "name": "Mozzarella",
+                "menge": "300 g"
+              },
+              {
+                "name": "Parmesan gerieben",
+                "menge": "100 g"
+              },
+              {
+                "name": "Basilikum frisch",
+                "menge": "20 g"
+              }
+            ],
+            "zeit_aktiv": "50 Min",
+            "zeit_total": "120 Min",
+            "tipp": "Auberginen können auch gegrillt statt gebraten werden. Mozzarella kann durch Ricotta ersetzt werden.",
+            "_extern": true,
+            "schritte_vegi": [
+              {
+                "titel": "Auberginen vorbereiten",
+                "text": "Auberginen waschen und der Länge nach in 8mm dünne Scheiben schneiden.",
+                "timer_min": 0,
+                "zutaten_schritt": [
+                  {
+                    "name": "Auberginen",
+                    "menge": "1200 g"
+                  }
+                ],
+                "zubehoer": [
+                  "Schneidebrett",
+                  "scharfes Messer"
+                ],
+                "kontrolle": "Scheiben sind gleichmässig dünn.",
+                "parallel_hinweis": ""
+              },
+              {
+                "titel": "Auberginen salzen",
+                "text": "Auberginen-Scheiben auf Tüchern auslegen und mit 6g Salz bestreuen, 15 Minuten ruhen lassen.",
+                "timer_min": 15,
+                "zutaten_schritt": [
+                  {
+                    "name": "Salz",
+                    "menge": "6 g"
+                  }
+                ],
+                "zubehoer": [
+                  "Küchenrollen"
+                ],
+                "kontrolle": "Flüssigkeit tritt aus.",
+                "parallel_hinweis": "Zwiebeln und Knoblauch schneiden"
+              },
+              {
+                "titel": "Zwiebeln und Knoblauch schneiden",
+                "text": "Zwiebeln schälen und in feine Würfel schneiden.",
+                "timer_min": 0,
+                "zutaten_schritt": [
+                  {
+                    "name": "Zwiebeln",
+                    "menge": "400 g"
+                  }
+                ],
+                "zubehoer": [
+                  "Schneidebrett",
+                  "Messer"
+                ],
+                "kontrolle": "Würfel sind gleichmässig klein.",
+                "parallel_hinweis": ""
+              },
+              {
+                "titel": "Knoblauch vorbereiten",
+                "text": "Knoblauch schälen und fein hacken.",
+                "timer_min": 0,
+                "zutaten_schritt": [
+                  {
+                    "name": "Knoblauch",
+                    "menge": "30 g"
+                  }
+                ],
+                "zubehoer": [
+                  "Schneidebrett",
+                  "Messer"
+                ],
+                "kontrolle": "Knoblauch ist fein gehackt.",
+                "parallel_hinweis": ""
+              },
+              {
+                "titel": "Auberginen trocknen",
+                "text": "Auberginen-Scheiben mit Küchenrollen trocken tupfen.",
+                "timer_min": 0,
+                "zutaten_schritt": [
+                  {
+                    "name": "Auberginen",
+                    "menge": "1200 g"
+                  }
+                ],
+                "zubehoer": [
+                  "Küchenrollen"
+                ],
+                "kontrolle": "Oberfläche ist trocken.",
+                "parallel_hinweis": ""
+              },
+              {
+                "titel": "Auberginen braten (erste Portion)",
+                "text": "60ml Olivenöl in grosser Pfanne erhitzen und 400g Auberginen-Scheiben von jeder Seite 3-4 Minuten braten.",
+                "timer_min": 8,
+                "zutaten_schritt": [
+                  {
+                    "name": "Auberginen",
+                    "menge": "400 g"
+                  },
+                  {
+                    "name": "Olivenöl",
+                    "menge": "60 ml"
+                  }
+                ],
+                "zubehoer": [
+                  "grosse Pfanne"
+                ],
+                "kontrolle": "Scheiben sind goldbraun.",
+                "parallel_hinweis": ""
+              },
+              {
+                "titel": "Auberginen braten (zweite Portion)",
+                "text": "Restliche 400g Auberginen-Scheiben mit restlichen 60ml Öl braten.",
+                "timer_min": 8,
+                "zutaten_schritt": [
+                  {
+                    "name": "Auberginen",
+                    "menge": "400 g"
+                  },
+                  {
+                    "name": "Olivenöl",
+                    "menge": "60 ml"
+                  }
+                ],
+                "zubehoer": [
+                  "grosse Pfanne"
+                ],
+                "kontrolle": "Scheiben sind goldbraun.",
+                "parallel_hinweis": "Sauce vorbereiten"
+              },
+              {
+                "titel": "Tomatensauce starten",
+                "text": "Zwiebel und Knoblauch in Topf geben und 3 Minuten bei mittlerer Hitze anschwitzen.",
+                "timer_min": 3,
+                "zutaten_schritt": [
+                  {
+                    "name": "Zwiebeln",
+                    "menge": "400 g"
+                  },
+                  {
+                    "name": "Knoblauch",
+                    "menge": "30 g"
+                  }
+                ],
+                "zubehoer": [
+                  "Topf",
+                  "Holzlöffel"
+                ],
+                "kontrolle": "Zwiebel ist glasig.",
+                "parallel_hinweis": ""
+              },
+              {
+                "titel": "Tomatenmark einrühren",
+                "text": "Tomatenmark hinzufügen und 2 Minuten mitbraten.",
+                "timer_min": 2,
+                "zutaten_schritt": [
+                  {
+                    "name": "Tomatenmark",
+                    "menge": "80 g"
+                  }
+                ],
+                "zubehoer": [
+                  "Holzlöffel"
+                ],
+                "kontrolle": "Tomatenmark ist gut verteilt.",
+                "parallel_hinweis": ""
+              },
+              {
+                "titel": "Tomaten hinzufügen",
+                "text": "Dosentomaten mit Saft hinzugeben und umrühren.",
+                "timer_min": 0,
+                "zutaten_schritt": [
+                  {
+                    "name": "Tomaten, geschält (Dose)",
+                    "menge": "1400 g"
+                  }
+                ],
+                "zubehoer": [
+                  "Holzlöffel"
+                ],
+                "kontrolle": "Zutaten sind vermischt.",
+                "parallel_hinweis": ""
+              },
+              {
+                "titel": "Gewürze hinzufügen",
+                "text": "Oregano, Thymian, restliche 6g Salz und Pfeffer einrühren.",
+                "timer_min": 0,
+                "zutaten_schritt": [
+                  {
+                    "name": "Oregano getrocknet",
+                    "menge": "8 g"
+                  },
+                  {
+                    "name": "Thymian getrocknet",
+                    "menge": "4 g"
+                  },
+                  {
+                    "name": "Salz",
+                    "menge": "6 g"
+                  },
+                  {
+                    "name": "Pfeffer",
+                    "menge": "4 g"
+                  }
+                ],
+                "zubehoer": [
+                  "Holzlöffel"
+                ],
+                "kontrolle": "Sauce ist gut gewürzt.",
+                "parallel_hinweis": ""
+              },
+              {
+                "titel": "Sauce köcheln",
+                "text": "Sauce 15 Minuten bei mittlerer Hitze köcheln lassen.",
+                "timer_min": 15,
+                "zutaten_schritt": [],
+                "zubehoer": [],
+                "kontrolle": "Sauce ist cremig und reduziert.",
+                "parallel_hinweis": ""
+              },
+              {
+                "titel": "Backofen vorheizen",
+                "text": "Backofen auf 180°C Umluft vorheizen.",
+                "timer_min": 10,
+                "zutaten_schritt": [],
+                "zubehoer": [
+                  "Backofen"
+                ],
+                "kontrolle": "Backofen hat Zieltemperatur erreicht.",
+                "parallel_hinweis": "Mozzarella reissen"
+              },
+              {
+                "titel": "Mozzarella vorbereiten",
+                "text": "Mozzarella in feine Scheiben schneiden.",
+                "timer_min": 0,
+                "zutaten_schritt": [
+                  {
+                    "name": "Mozzarella",
+                    "menge": "300 g"
+                  }
+                ],
+                "zubehoer": [
+                  "Schneidebrett",
+                  "Messer"
+                ],
+                "kontrolle": "Scheiben sind dünn und gleichmässig.",
+                "parallel_hinweis": ""
+              },
+              {
+                "titel": "Auflaufform schichten (erste Sauce-Schicht)",
+                "text": "Dünne Schicht Tomatensauce (etwa 100ml) auf den Boden einer Auflaufform (25x35cm) geben.",
+                "timer_min": 0,
+                "zutaten_schritt": [
+                  {
+                    "name": "Tomaten, geschält (Dose)",
+                    "menge": "100 g"
+                  }
+                ],
+                "zubehoer": [
+                  "Auflaufform",
+                  "Löffel"
+                ],
+                "kontrolle": "Boden ist dünn bedeckt.",
+                "parallel_hinweis": ""
+              },
+              {
+                "titel": "Erste Auberginen-Schicht legen",
+                "text": "400g gebratene Auberginen-Scheiben überlappend auslegen.",
+                "timer_min": 0,
+                "zutaten_schritt": [
+                  {
+                    "name": "Auberginen",
+                    "menge": "400 g"
+                  }
+                ],
+                "zubehoer": [],
+                "kontrolle": "Scheiben liegen dicht nebeneinander.",
+                "parallel_hinweis": ""
+              },
+              {
+                "titel": "Erste Mozzarella-Schicht",
+                "text": "150g Mozzarella-Scheiben auslegen.",
+                "timer_min": 0,
+                "zutaten_schritt": [
+                  {
+                    "name": "Mozzarella",
+                    "menge": "150 g"
+                  }
+                ],
+                "zubehoer": [],
+                "kontrolle": "Käse bedeckt Auberginen.",
+                "parallel_hinweis": ""
+              },
+              {
+                "titel": "Zweite Sauce-Schicht",
+                "text": "Etwa 350ml Tomatensauce darübergiessen.",
+                "timer_min": 0,
+                "zutaten_schritt": [
+                  {
+                    "name": "Tomaten, geschält (Dose)",
+                    "menge": "350 g"
+                  }
+                ],
+                "zubehoer": [
+                  "Löffel"
+                ],
+                "kontrolle": "Schicht ist gleichmässig verteilt.",
+                "parallel_hinweis": ""
+              },
+              {
+                "titel": "Zweite Auberginen-Schicht legen",
+                "text": "Restliche 400g Auberginen-Scheiben auslegen.",
+                "timer_min": 0,
+                "zutaten_schritt": [
+                  {
+                    "name": "Auberginen",
+                    "menge": "400 g"
+                  }
+                ],
+                "zubehoer": [],
+                "kontrolle": "Scheiben liegen gleichmässig.",
+                "parallel_hinweis": ""
+              },
+              {
+                "titel": "Restliche Sauce und Käse",
+                "text": "Restliche Sauce (etwa 950ml) und Mozzarella (150g) gleichmässig verteilen, mit Parmesan bestreuen.",
+                "timer_min": 0,
+                "zutaten_schritt": [
+                  {
+                    "name": "Tomaten, geschält (Dose)",
+                    "menge": "950 g"
+                  },
+                  {
+                    "name": "Mozzarella",
+                    "menge": "150 g"
+                  },
+                  {
+                    "name": "Parmesan gerieben",
+                    "menge": "100 g"
+                  }
+                ],
+                "zubehoer": [
+                  "Löffel"
+                ],
+                "kontrolle": "Oberfläche ist gleichmässig bedeckt.",
+                "parallel_hinweis": ""
+              },
+              {
+                "titel": "Auflauf backen",
+                "text": "Auflauf 35 Minuten im vorgeheizten Backofen bei 180°C backen.",
+                "timer_min": 35,
+                "zutaten_schritt": [],
+                "zubehoer": [
+                  "Backofen"
+                ],
+                "kontrolle": "Käse ist goldbraun und Auflauf brodelt.",
+                "parallel_hinweis": ""
+              },
+              {
+                "titel": "Auflauf ruhen lassen",
+                "text": "Auflauf 5 Minuten aus dem Ofen nehmen und ruhen lassen.",
+                "timer_min": 5,
+                "zutaten_schritt": [],
+                "zubehoer": [],
+                "kontrolle": "Auflauf ist stabil.",
+                "parallel_hinweis": "Basilikum hacken"
+              },
+              {
+                "titel": "Basilikum hacken",
+                "text": "Frisches Basilikum fein hacken.",
+                "timer_min": 0,
+                "zutaten_schritt": [
+                  {
+                    "name": "Basilikum frisch",
+                    "menge": "20 g"
+                  }
+                ],
+                "zubehoer": [
+                  "Schneidebrett",
+                  "Messer"
+                ],
+                "kontrolle": "Basilikum ist fein gehackt.",
+                "parallel_hinweis": ""
+              },
+              {
+                "titel": "Mit Basilikum garnieren",
+                "text": "Auflauf mit frischem Basilikum garnieren.",
+                "timer_min": 0,
+                "zutaten_schritt": [
+                  {
+                    "name": "Basilikum frisch",
+                    "menge": "20 g"
+                  }
+                ],
+                "zubehoer": [],
+                "kontrolle": "Basilikum ist sichtbar verteilt.",
+                "parallel_hinweis": ""
+              },
+              {
+                "titel": "Portionen abteilen",
+                "text": "Auflauf in 6 Portionen teilen: 2 Portionen für Abendessen, 2 Portionen für morgen Mittag (abkühlen), 2 Portionen zum Einfrieren (abkühlen).",
+                "timer_min": 0,
+                "zutaten_schritt": [],
+                "zubehoer": [
+                  "Besteck"
+                ],
+                "kontrolle": "Portionen sind gleichmässig gross.",
+                "parallel_hinweis": ""
+              }
+            ],
+            "tag": "Di"
           },
           {
             "tag": "Mi",
@@ -1406,7 +1877,7 @@
         ]
       },
       "sel": 0,
-      "n": 3,
+      "n": 4,
       "personen": 2,
       "reste": 1,
       "freeze": 1,
@@ -1425,8 +1896,8 @@
       "weekStart": "2026-09-14",
       "einkaufstag": "Mo",
       "saved": "14.9.2026",
-      "bringImportedAt": null,
-      "bringItemCount": 0,
+      "bringImportedAt": "14.09., 15:54",
+      "bringItemCount": 27,
       "sugsAll": [
         {
           "id": 1,
@@ -2872,7 +3343,9 @@
           ]
         }
       ],
-      "sugsPartial": false
+      "sugsPartial": false,
+      "einkaufDone": true,
+      "bringStale": true
     }
   },
   {
