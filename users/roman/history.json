@@ -1,5 +1,187 @@
 [
   {
+    "planId": "b4075620-a586-405e-b724-38e1f2978ebc",
+    "date": "2026-09-14",
+    "saved": "14.9.2026",
+    "thema": "Mediterran",
+    "personen": 2,
+    "kochabende": 3,
+    "reste": 1,
+    "freeze": 1,
+    "budget": 0,
+    "gerichte": [
+      {
+        "tag": "Mo",
+        "abend": "Auberginen-Tomaten-Auflauf"
+      },
+      {
+        "tag": "Mi",
+        "abend": "Linsen-Gemüseeintopf mit Feta"
+      },
+      {
+        "tag": "Fr",
+        "abend": "Spinat-Ricotta-Cannelloni"
+      }
+    ],
+    "status": "geplant",
+    "plan": {
+      "planId": "b4075620-a586-405e-b724-38e1f2978ebc",
+      "sug": {
+        "id": 1,
+        "thema": "Mediterran",
+        "kochabende": [
+          "Mo",
+          "Mi",
+          "Fr"
+        ],
+        "gerichte": [
+          {
+            "tag": "Mo",
+            "abend": "Auberginen-Tomaten-Auflauf",
+            "zeit_aktiv": "25m",
+            "zeit_total": "50m",
+            "mittag_nächster_tag": "Auflauf aufgewärmt"
+          },
+          {
+            "tag": "Mi",
+            "abend": "Linsen-Gemüseeintopf mit Feta",
+            "zeit_aktiv": "20m",
+            "zeit_total": "40m",
+            "mittag_nächster_tag": "Eintopf aufgewärmt"
+          },
+          {
+            "tag": "Fr",
+            "abend": "Spinat-Ricotta-Cannelloni",
+            "zeit_aktiv": "30m",
+            "zeit_total": "45m",
+            "mittag_nächster_tag": "Cannelloni aufgewärmt"
+          }
+        ]
+      },
+      "sel": 0,
+      "n": 3,
+      "personen": 2,
+      "reste": 1,
+      "freeze": 1,
+      "budget": 0,
+      "modus": "vegi",
+      "resteMode": "mikro",
+      "days": {
+        "Mo": "normal",
+        "Di": null,
+        "Mi": "normal",
+        "Do": null,
+        "Fr": "normal",
+        "Sa": null,
+        "So": null
+      },
+      "weekStart": "2026-09-14",
+      "einkaufstag": "Mo",
+      "saved": "14.9.2026",
+      "bringImportedAt": null,
+      "bringItemCount": 0,
+      "sugsAll": [
+        {
+          "id": 1,
+          "thema": "Mediterran",
+          "kochabende": [
+            "Mo",
+            "Mi",
+            "Fr"
+          ],
+          "gerichte": [
+            {
+              "tag": "Mo",
+              "abend": "Auberginen-Tomaten-Auflauf",
+              "zeit_aktiv": "25m",
+              "zeit_total": "50m",
+              "mittag_nächster_tag": "Auflauf aufgewärmt"
+            },
+            {
+              "tag": "Mi",
+              "abend": "Linsen-Gemüseeintopf mit Feta",
+              "zeit_aktiv": "20m",
+              "zeit_total": "40m",
+              "mittag_nächster_tag": "Eintopf aufgewärmt"
+            },
+            {
+              "tag": "Fr",
+              "abend": "Spinat-Ricotta-Cannelloni",
+              "zeit_aktiv": "30m",
+              "zeit_total": "45m",
+              "mittag_nächster_tag": "Cannelloni aufgewärmt"
+            }
+          ]
+        },
+        {
+          "id": 2,
+          "thema": "Mediterran (Variante 2)",
+          "kochabende": [
+            "Mo",
+            "Mi",
+            "Fr"
+          ],
+          "gerichte": [
+            {
+              "tag": "Mo",
+              "abend": "Linsenbolognese mit Pappardelle",
+              "zeit_aktiv": "25m",
+              "zeit_total": "40m",
+              "mittag_nächster_tag": "Pasta-Reste aufgewärmt"
+            },
+            {
+              "tag": "Mi",
+              "abend": "Gemüse-Risotto mit Pilzen und Parmesan",
+              "zeit_aktiv": "30m",
+              "zeit_total": "45m",
+              "mittag_nächster_tag": "Risotto-Reste aufgewärmt"
+            },
+            {
+              "tag": "Fr",
+              "abend": "Tomaten-Kartoffel-Eintopf mit weissen Bohnen",
+              "zeit_aktiv": "20m",
+              "zeit_total": "50m",
+              "mittag_nächster_tag": "Eintopf-Reste aufgewärmt"
+            }
+          ]
+        },
+        {
+          "id": 3,
+          "thema": "Mediterran (Variante 3)",
+          "kochabende": [
+            "Mo",
+            "Mi",
+            "Fr"
+          ],
+          "gerichte": [
+            {
+              "tag": "Mo",
+              "abend": "Gemüse-Auberginen-Gratin mit Tomatensosse",
+              "zeit_aktiv": "25m",
+              "zeit_total": "50m",
+              "mittag_nächster_tag": "Gratin-Reste aufgewärmt"
+            },
+            {
+              "tag": "Mi",
+              "abend": "Linsensuppe mit Spinat und Feta",
+              "zeit_aktiv": "20m",
+              "zeit_total": "40m",
+              "mittag_nächster_tag": "Linsensuppe aufgewärmt"
+            },
+            {
+              "tag": "Fr",
+              "abend": "Risotto mit Pilzen und Thymian",
+              "zeit_aktiv": "30m",
+              "zeit_total": "40m",
+              "mittag_nächster_tag": "Risotto aufgewärmt"
+            }
+          ]
+        }
+      ],
+      "sugsPartial": true
+    }
+  },
+  {
     "planId": "79c577ee-3ea0-4814-b270-7383f1ce8f95",
     "date": "2026-09-10",
     "saved": "10.9.2026",
