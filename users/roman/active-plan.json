@@ -12,23 +12,1370 @@
       {
         "tag": "Mo",
         "abend": "Auberginen-Tomaten-Auflauf",
-        "zeit_aktiv": "25m",
-        "zeit_total": "50m",
-        "mittag_nächster_tag": "Auflauf aufgewärmt"
+        "zeit_aktiv": "50 Min",
+        "zeit_total": "120 Min",
+        "mittag_nächster_tag": "Auberginen-Tomaten-Auflauf",
+        "schritte_vegi": [
+          {
+            "titel": "Auberginen vorbereiten",
+            "text": "Auberginen waschen und der Länge nach in 8mm dünne Scheiben schneiden.",
+            "timer_min": 0,
+            "zutaten_schritt": [
+              {
+                "name": "Auberginen",
+                "menge": "1200 g"
+              }
+            ],
+            "zubehoer": [
+              "Schneidebrett",
+              "scharfes Messer"
+            ],
+            "kontrolle": "Scheiben sind gleichmässig dünn.",
+            "parallel_hinweis": ""
+          },
+          {
+            "titel": "Auberginen salzen",
+            "text": "Auberginen-Scheiben auf Tüchern auslegen und mit 6g Salz bestreuen, 15 Minuten ruhen lassen.",
+            "timer_min": 15,
+            "zutaten_schritt": [
+              {
+                "name": "Salz",
+                "menge": "6 g"
+              }
+            ],
+            "zubehoer": [
+              "Küchenrollen"
+            ],
+            "kontrolle": "Flüssigkeit tritt aus.",
+            "parallel_hinweis": "Zwiebeln und Knoblauch schneiden"
+          },
+          {
+            "titel": "Zwiebeln und Knoblauch schneiden",
+            "text": "Zwiebeln schälen und in feine Würfel schneiden.",
+            "timer_min": 0,
+            "zutaten_schritt": [
+              {
+                "name": "Zwiebeln",
+                "menge": "400 g"
+              }
+            ],
+            "zubehoer": [
+              "Schneidebrett",
+              "Messer"
+            ],
+            "kontrolle": "Würfel sind gleichmässig klein.",
+            "parallel_hinweis": ""
+          },
+          {
+            "titel": "Knoblauch vorbereiten",
+            "text": "Knoblauch schälen und fein hacken.",
+            "timer_min": 0,
+            "zutaten_schritt": [
+              {
+                "name": "Knoblauch",
+                "menge": "30 g"
+              }
+            ],
+            "zubehoer": [
+              "Schneidebrett",
+              "Messer"
+            ],
+            "kontrolle": "Knoblauch ist fein gehackt.",
+            "parallel_hinweis": ""
+          },
+          {
+            "titel": "Auberginen trocknen",
+            "text": "Auberginen-Scheiben mit Küchenrollen trocken tupfen.",
+            "timer_min": 0,
+            "zutaten_schritt": [
+              {
+                "name": "Auberginen",
+                "menge": "1200 g"
+              }
+            ],
+            "zubehoer": [
+              "Küchenrollen"
+            ],
+            "kontrolle": "Oberfläche ist trocken.",
+            "parallel_hinweis": ""
+          },
+          {
+            "titel": "Auberginen braten (erste Portion)",
+            "text": "60ml Olivenöl in grosser Pfanne erhitzen und 400g Auberginen-Scheiben von jeder Seite 3-4 Minuten braten.",
+            "timer_min": 8,
+            "zutaten_schritt": [
+              {
+                "name": "Auberginen",
+                "menge": "400 g"
+              },
+              {
+                "name": "Olivenöl",
+                "menge": "60 ml"
+              }
+            ],
+            "zubehoer": [
+              "grosse Pfanne"
+            ],
+            "kontrolle": "Scheiben sind goldbraun.",
+            "parallel_hinweis": ""
+          },
+          {
+            "titel": "Auberginen braten (zweite Portion)",
+            "text": "Restliche 400g Auberginen-Scheiben mit restlichen 60ml Öl braten.",
+            "timer_min": 8,
+            "zutaten_schritt": [
+              {
+                "name": "Auberginen",
+                "menge": "400 g"
+              },
+              {
+                "name": "Olivenöl",
+                "menge": "60 ml"
+              }
+            ],
+            "zubehoer": [
+              "grosse Pfanne"
+            ],
+            "kontrolle": "Scheiben sind goldbraun.",
+            "parallel_hinweis": "Sauce vorbereiten"
+          },
+          {
+            "titel": "Tomatensauce starten",
+            "text": "Zwiebel und Knoblauch in Topf geben und 3 Minuten bei mittlerer Hitze anschwitzen.",
+            "timer_min": 3,
+            "zutaten_schritt": [
+              {
+                "name": "Zwiebeln",
+                "menge": "400 g"
+              },
+              {
+                "name": "Knoblauch",
+                "menge": "30 g"
+              }
+            ],
+            "zubehoer": [
+              "Topf",
+              "Holzlöffel"
+            ],
+            "kontrolle": "Zwiebel ist glasig.",
+            "parallel_hinweis": ""
+          },
+          {
+            "titel": "Tomatenmark einrühren",
+            "text": "Tomatenmark hinzufügen und 2 Minuten mitbraten.",
+            "timer_min": 2,
+            "zutaten_schritt": [
+              {
+                "name": "Tomatenmark",
+                "menge": "80 g"
+              }
+            ],
+            "zubehoer": [
+              "Holzlöffel"
+            ],
+            "kontrolle": "Tomatenmark ist gut verteilt.",
+            "parallel_hinweis": ""
+          },
+          {
+            "titel": "Tomaten hinzufügen",
+            "text": "Dosentomaten mit Saft hinzugeben und umrühren.",
+            "timer_min": 0,
+            "zutaten_schritt": [
+              {
+                "name": "Tomaten, geschält (Dose)",
+                "menge": "1400 g"
+              }
+            ],
+            "zubehoer": [
+              "Holzlöffel"
+            ],
+            "kontrolle": "Zutaten sind vermischt.",
+            "parallel_hinweis": ""
+          },
+          {
+            "titel": "Gewürze hinzufügen",
+            "text": "Oregano, Thymian, restliche 6g Salz und Pfeffer einrühren.",
+            "timer_min": 0,
+            "zutaten_schritt": [
+              {
+                "name": "Oregano getrocknet",
+                "menge": "8 g"
+              },
+              {
+                "name": "Thymian getrocknet",
+                "menge": "4 g"
+              },
+              {
+                "name": "Salz",
+                "menge": "6 g"
+              },
+              {
+                "name": "Pfeffer",
+                "menge": "4 g"
+              }
+            ],
+            "zubehoer": [
+              "Holzlöffel"
+            ],
+            "kontrolle": "Sauce ist gut gewürzt.",
+            "parallel_hinweis": ""
+          },
+          {
+            "titel": "Sauce köcheln",
+            "text": "Sauce 15 Minuten bei mittlerer Hitze köcheln lassen.",
+            "timer_min": 15,
+            "zutaten_schritt": [],
+            "zubehoer": [],
+            "kontrolle": "Sauce ist cremig und reduziert.",
+            "parallel_hinweis": ""
+          },
+          {
+            "titel": "Backofen vorheizen",
+            "text": "Backofen auf 180°C Umluft vorheizen.",
+            "timer_min": 10,
+            "zutaten_schritt": [],
+            "zubehoer": [
+              "Backofen"
+            ],
+            "kontrolle": "Backofen hat Zieltemperatur erreicht.",
+            "parallel_hinweis": "Mozzarella reissen"
+          },
+          {
+            "titel": "Mozzarella vorbereiten",
+            "text": "Mozzarella in feine Scheiben schneiden.",
+            "timer_min": 0,
+            "zutaten_schritt": [
+              {
+                "name": "Mozzarella",
+                "menge": "300 g"
+              }
+            ],
+            "zubehoer": [
+              "Schneidebrett",
+              "Messer"
+            ],
+            "kontrolle": "Scheiben sind dünn und gleichmässig.",
+            "parallel_hinweis": ""
+          },
+          {
+            "titel": "Auflaufform schichten (erste Sauce-Schicht)",
+            "text": "Dünne Schicht Tomatensauce (etwa 100ml) auf den Boden einer Auflaufform (25x35cm) geben.",
+            "timer_min": 0,
+            "zutaten_schritt": [
+              {
+                "name": "Tomaten, geschält (Dose)",
+                "menge": "100 g"
+              }
+            ],
+            "zubehoer": [
+              "Auflaufform",
+              "Löffel"
+            ],
+            "kontrolle": "Boden ist dünn bedeckt.",
+            "parallel_hinweis": ""
+          },
+          {
+            "titel": "Erste Auberginen-Schicht legen",
+            "text": "400g gebratene Auberginen-Scheiben überlappend auslegen.",
+            "timer_min": 0,
+            "zutaten_schritt": [
+              {
+                "name": "Auberginen",
+                "menge": "400 g"
+              }
+            ],
+            "zubehoer": [],
+            "kontrolle": "Scheiben liegen dicht nebeneinander.",
+            "parallel_hinweis": ""
+          },
+          {
+            "titel": "Erste Mozzarella-Schicht",
+            "text": "150g Mozzarella-Scheiben auslegen.",
+            "timer_min": 0,
+            "zutaten_schritt": [
+              {
+                "name": "Mozzarella",
+                "menge": "150 g"
+              }
+            ],
+            "zubehoer": [],
+            "kontrolle": "Käse bedeckt Auberginen.",
+            "parallel_hinweis": ""
+          },
+          {
+            "titel": "Zweite Sauce-Schicht",
+            "text": "Etwa 350ml Tomatensauce darübergiessen.",
+            "timer_min": 0,
+            "zutaten_schritt": [
+              {
+                "name": "Tomaten, geschält (Dose)",
+                "menge": "350 g"
+              }
+            ],
+            "zubehoer": [
+              "Löffel"
+            ],
+            "kontrolle": "Schicht ist gleichmässig verteilt.",
+            "parallel_hinweis": ""
+          },
+          {
+            "titel": "Zweite Auberginen-Schicht legen",
+            "text": "Restliche 400g Auberginen-Scheiben auslegen.",
+            "timer_min": 0,
+            "zutaten_schritt": [
+              {
+                "name": "Auberginen",
+                "menge": "400 g"
+              }
+            ],
+            "zubehoer": [],
+            "kontrolle": "Scheiben liegen gleichmässig.",
+            "parallel_hinweis": ""
+          },
+          {
+            "titel": "Restliche Sauce und Käse",
+            "text": "Restliche Sauce (etwa 950ml) und Mozzarella (150g) gleichmässig verteilen, mit Parmesan bestreuen.",
+            "timer_min": 0,
+            "zutaten_schritt": [
+              {
+                "name": "Tomaten, geschält (Dose)",
+                "menge": "950 g"
+              },
+              {
+                "name": "Mozzarella",
+                "menge": "150 g"
+              },
+              {
+                "name": "Parmesan gerieben",
+                "menge": "100 g"
+              }
+            ],
+            "zubehoer": [
+              "Löffel"
+            ],
+            "kontrolle": "Oberfläche ist gleichmässig bedeckt.",
+            "parallel_hinweis": ""
+          },
+          {
+            "titel": "Auflauf backen",
+            "text": "Auflauf 35 Minuten im vorgeheizten Backofen bei 180°C backen.",
+            "timer_min": 35,
+            "zutaten_schritt": [],
+            "zubehoer": [
+              "Backofen"
+            ],
+            "kontrolle": "Käse ist goldbraun und Auflauf brodelt.",
+            "parallel_hinweis": ""
+          },
+          {
+            "titel": "Auflauf ruhen lassen",
+            "text": "Auflauf 5 Minuten aus dem Ofen nehmen und ruhen lassen.",
+            "timer_min": 5,
+            "zutaten_schritt": [],
+            "zubehoer": [],
+            "kontrolle": "Auflauf ist stabil.",
+            "parallel_hinweis": "Basilikum hacken"
+          },
+          {
+            "titel": "Basilikum hacken",
+            "text": "Frisches Basilikum fein hacken.",
+            "timer_min": 0,
+            "zutaten_schritt": [
+              {
+                "name": "Basilikum frisch",
+                "menge": "20 g"
+              }
+            ],
+            "zubehoer": [
+              "Schneidebrett",
+              "Messer"
+            ],
+            "kontrolle": "Basilikum ist fein gehackt.",
+            "parallel_hinweis": ""
+          },
+          {
+            "titel": "Mit Basilikum garnieren",
+            "text": "Auflauf mit frischem Basilikum garnieren.",
+            "timer_min": 0,
+            "zutaten_schritt": [
+              {
+                "name": "Basilikum frisch",
+                "menge": "20 g"
+              }
+            ],
+            "zubehoer": [],
+            "kontrolle": "Basilikum ist sichtbar verteilt.",
+            "parallel_hinweis": ""
+          },
+          {
+            "titel": "Portionen abteilen",
+            "text": "Auflauf in 6 Portionen teilen: 2 Portionen für Abendessen, 2 Portionen für morgen Mittag (abkühlen), 2 Portionen zum Einfrieren (abkühlen).",
+            "timer_min": 0,
+            "zutaten_schritt": [],
+            "zubehoer": [
+              "Besteck"
+            ],
+            "kontrolle": "Portionen sind gleichmässig gross.",
+            "parallel_hinweis": ""
+          }
+        ],
+        "schritte_fleisch": [],
+        "prep_next": [
+          "2 Portionen abkühlen lassen und in Behälter füllen",
+          "Di Mittag: 4 Minuten in Mikrowelle aufwärmen"
+        ],
+        "einfrieren": [
+          "2 Portionen nach vollständigem Abkühlen einfrieren",
+          "Mit Datum und Gericht beschriften"
+        ],
+        "mittag_tag": "Di",
+        "zutaten": [
+          {
+            "name": "Auberginen",
+            "menge": "1200 g"
+          },
+          {
+            "name": "Zwiebeln",
+            "menge": "400 g"
+          },
+          {
+            "name": "Knoblauch",
+            "menge": "30 g"
+          },
+          {
+            "name": "Tomaten, geschält (Dose)",
+            "menge": "1400 g"
+          },
+          {
+            "name": "Tomatenmark",
+            "menge": "80 g"
+          },
+          {
+            "name": "Olivenöl",
+            "menge": "120 ml"
+          },
+          {
+            "name": "Salz",
+            "menge": "12 g"
+          },
+          {
+            "name": "Pfeffer",
+            "menge": "4 g"
+          },
+          {
+            "name": "Oregano getrocknet",
+            "menge": "8 g"
+          },
+          {
+            "name": "Thymian getrocknet",
+            "menge": "4 g"
+          },
+          {
+            "name": "Mozzarella",
+            "menge": "300 g"
+          },
+          {
+            "name": "Parmesan gerieben",
+            "menge": "100 g"
+          },
+          {
+            "name": "Basilikum frisch",
+            "menge": "20 g"
+          }
+        ],
+        "tipp": "Auberginen können auch gegrillt statt gebraten werden. Mozzarella kann durch Ricotta ersetzt werden."
       },
       {
         "tag": "Mi",
         "abend": "Linsen-Gemüseeintopf mit Feta",
-        "zeit_aktiv": "20m",
-        "zeit_total": "40m",
-        "mittag_nächster_tag": "Eintopf aufgewärmt"
+        "zeit_aktiv": "45 Min",
+        "zeit_total": "105 Min",
+        "mittag_nächster_tag": "Linsen-Gemüseeintopf mit Feta",
+        "schritte_vegi": [
+          {
+            "titel": "Linsen spülen",
+            "text": "Linsen in Sieb unter kaltem Wasser spülen.",
+            "timer_min": 0,
+            "zutaten_schritt": [
+              {
+                "name": "Linsen (braun/grün)",
+                "menge": "480 g"
+              }
+            ],
+            "zubehoer": [
+              "Sieb"
+            ],
+            "kontrolle": "Linsen sind sauber.",
+            "parallel_hinweis": ""
+          },
+          {
+            "titel": "Zwiebeln schneiden",
+            "text": "Zwiebeln schälen und in feine Würfel schneiden.",
+            "timer_min": 0,
+            "zutaten_schritt": [
+              {
+                "name": "Zwiebeln",
+                "menge": "400 g"
+              }
+            ],
+            "zubehoer": [
+              "Schneidebrett",
+              "Messer"
+            ],
+            "kontrolle": "Würfel sind gleichmässig klein.",
+            "parallel_hinweis": ""
+          },
+          {
+            "titel": "Knoblauch vorbereiten",
+            "text": "Knoblauch schälen und fein hacken.",
+            "timer_min": 0,
+            "zutaten_schritt": [
+              {
+                "name": "Knoblauch",
+                "menge": "24 g"
+              }
+            ],
+            "zubehoer": [
+              "Schneidebrett",
+              "Messer"
+            ],
+            "kontrolle": "Knoblauch ist fein gehackt.",
+            "parallel_hinweis": ""
+          },
+          {
+            "titel": "Karotten schneiden",
+            "text": "Karotten schälen und in 1cm Würfel schneiden.",
+            "timer_min": 0,
+            "zutaten_schritt": [
+              {
+                "name": "Karotten",
+                "menge": "600 g"
+              }
+            ],
+            "zubehoer": [
+              "Schneidebrett",
+              "Messer",
+              "Sparschäler"
+            ],
+            "kontrolle": "Würfel sind gleichmässig gross.",
+            "parallel_hinweis": ""
+          },
+          {
+            "titel": "Sellerie schneiden",
+            "text": "Sellerie waschen und in 1cm Würfel schneiden.",
+            "timer_min": 0,
+            "zutaten_schritt": [
+              {
+                "name": "Sellerie",
+                "menge": "300 g"
+              }
+            ],
+            "zubehoer": [
+              "Schneidebrett",
+              "Messer"
+            ],
+            "kontrolle": "Würfel sind gleichmässig gross.",
+            "parallel_hinweis": ""
+          },
+          {
+            "titel": "Zwiebel und Knoblauch anschwitzen",
+            "text": "Olivenöl in grossem Topf erhitzen und Zwiebel mit Knoblauch 3 Minuten anschwitzen.",
+            "timer_min": 3,
+            "zutaten_schritt": [
+              {
+                "name": "Olivenöl",
+                "menge": "80 ml"
+              },
+              {
+                "name": "Zwiebeln",
+                "menge": "400 g"
+              },
+              {
+                "name": "Knoblauch",
+                "menge": "24 g"
+              }
+            ],
+            "zubehoer": [
+              "grosser Topf",
+              "Holzlöffel"
+            ],
+            "kontrolle": "Zwiebel ist glasig.",
+            "parallel_hinweis": ""
+          },
+          {
+            "titel": "Gewürze hinzufügen",
+            "text": "Kreuzkümmel und Paprika einrühren und 1 Minute kurz mitbraten.",
+            "timer_min": 1,
+            "zutaten_schritt": [
+              {
+                "name": "Kreuzkümmel",
+                "menge": "6 g"
+              },
+              {
+                "name": "Paprika mild",
+                "menge": "8 g"
+              }
+            ],
+            "zubehoer": [
+              "Holzlöffel"
+            ],
+            "kontrolle": "Gewürze sind duftend.",
+            "parallel_hinweis": ""
+          },
+          {
+            "titel": "Gemüse hinzufügen",
+            "text": "Karotten und Sellerie hinzugeben und 3 Minuten mitbraten.",
+            "timer_min": 3,
+            "zutaten_schritt": [
+              {
+                "name": "Karotten",
+                "menge": "600 g"
+              },
+              {
+                "name": "Sellerie",
+                "menge": "300 g"
+              }
+            ],
+            "zubehoer": [
+              "Holzlöffel"
+            ],
+            "kontrolle": "Gemüse ist angebraten.",
+            "parallel_hinweis": ""
+          },
+          {
+            "titel": "Linsen hinzufügen",
+            "text": "Gespülte Linsen in den Topf geben und umrühren.",
+            "timer_min": 0,
+            "zutaten_schritt": [
+              {
+                "name": "Linsen (braun/grün)",
+                "menge": "480 g"
+              }
+            ],
+            "zubehoer": [
+              "Holzlöffel"
+            ],
+            "kontrolle": "Linsen sind verteilt.",
+            "parallel_hinweis": ""
+          },
+          {
+            "titel": "Brühe und Tomaten hinzufügen",
+            "text": "Gemüsebrühe und Dosentomaten mit Saft hinzugeben.",
+            "timer_min": 0,
+            "zutaten_schritt": [
+              {
+                "name": "Gemüsebrühe",
+                "menge": "1200 ml"
+              },
+              {
+                "name": "Tomaten, geschält (Dose)",
+                "menge": "800 g"
+              }
+            ],
+            "zubehoer": [
+              "Holzlöffel"
+            ],
+            "kontrolle": "Flüssigkeit bedeckt das Gemüse.",
+            "parallel_hinweis": ""
+          },
+          {
+            "titel": "Würzen",
+            "text": "Salz und Pfeffer hinzufügen und gut umrühren.",
+            "timer_min": 0,
+            "zutaten_schritt": [
+              {
+                "name": "Salz",
+                "menge": "12 g"
+              },
+              {
+                "name": "Pfeffer",
+                "menge": "4 g"
+              }
+            ],
+            "zubehoer": [
+              "Holzlöffel"
+            ],
+            "kontrolle": "Eintopf ist gut gewürzt.",
+            "parallel_hinweis": ""
+          },
+          {
+            "titel": "Eintopf köcheln",
+            "text": "Topf aufkochen und dann 30 Minuten bei mittlerer Hitze köcheln lassen bis Linsen gar sind.",
+            "timer_min": 30,
+            "zutaten_schritt": [],
+            "zubehoer": [],
+            "kontrolle": "Linsen sind weich, Gemüse ist gar.",
+            "parallel_hinweis": ""
+          },
+          {
+            "titel": "Zitronensaft hinzufügen",
+            "text": "Zitronensaft einrühren und Geschmack abschmecken.",
+            "timer_min": 0,
+            "zutaten_schritt": [
+              {
+                "name": "Zitronensaft",
+                "menge": "40 ml"
+              }
+            ],
+            "zubehoer": [
+              "Holzlöffel"
+            ],
+            "kontrolle": "Eintopf hat frische Note.",
+            "parallel_hinweis": ""
+          },
+          {
+            "titel": "Petersilie vorbereiten",
+            "text": "Petersilie waschen und fein hacken.",
+            "timer_min": 0,
+            "zutaten_schritt": [
+              {
+                "name": "Petersilie frisch",
+                "menge": "30 g"
+              }
+            ],
+            "zubehoer": [
+              "Schneidebrett",
+              "Messer"
+            ],
+            "kontrolle": "Petersilie ist fein gehackt.",
+            "parallel_hinweis": ""
+          },
+          {
+            "titel": "Feta vorbereiten",
+            "text": "Feta in würfel schneiden.",
+            "timer_min": 0,
+            "zutaten_schritt": [
+              {
+                "name": "Feta",
+                "menge": "300 g"
+              }
+            ],
+            "zubehoer": [
+              "Schneidebrett",
+              "Messer"
+            ],
+            "kontrolle": "Würfel sind gleichmässig gross.",
+            "parallel_hinweis": ""
+          },
+          {
+            "titel": "Portionen abteilen",
+            "text": "Eintopf in 6 Portionen teilen: 2 Portionen für Abendessen (warm), 2 Portionen für morgen Mittag (abkühlen), 2 Portionen zum Einfrieren (abkühlen).",
+            "timer_min": 0,
+            "zutaten_schritt": [],
+            "zubehoer": [
+              "Besteck"
+            ],
+            "kontrolle": "Portionen sind gleichmässig gross.",
+            "parallel_hinweis": ""
+          },
+          {
+            "titel": "Feta und Petersilie für Abendessen",
+            "text": "2 Portionen Eintopf mit je 25g Feta und 5g Petersilie garnieren und servieren.",
+            "timer_min": 0,
+            "zutaten_schritt": [
+              {
+                "name": "Feta",
+                "menge": "50 g"
+              },
+              {
+                "name": "Petersilie frisch",
+                "menge": "10 g"
+              }
+            ],
+            "zubehoer": [],
+            "kontrolle": "Portionen sind garniert.",
+            "parallel_hinweis": ""
+          },
+          {
+            "titel": "Eintopf für morgen vorbereiten",
+            "text": "2 Portionen Eintopf (ohne Feta und Petersilie) abkühlen lassen und in Behälter füllen.",
+            "timer_min": 0,
+            "zutaten_schritt": [],
+            "zubehoer": [
+              "Behälter"
+            ],
+            "kontrolle": "Eintopf ist abgekühlt.",
+            "parallel_hinweis": ""
+          },
+          {
+            "titel": "Eintopf zum Einfrieren vorbereiten",
+            "text": "2 Portionen Eintopf (ohne Feta und Petersilie) nach vollständigem Abkühlen in Gefrierbehälter füllen.",
+            "timer_min": 0,
+            "zutaten_schritt": [],
+            "zubehoer": [
+              "Gefrierbehälter"
+            ],
+            "kontrolle": "Eintopf ist abgekühlt.",
+            "parallel_hinweis": ""
+          }
+        ],
+        "schritte_fleisch": [],
+        "prep_next": [
+          "2 Portionen abkühlen lassen und in Behälter füllen",
+          "Do Mittag: 4 Minuten in Mikrowelle aufwärmen, dann Feta und Petersilie hinzufügen"
+        ],
+        "einfrieren": [
+          "2 Portionen nach vollständigem Abkühlen einfrieren",
+          "Mit Datum und Gericht beschriften",
+          "Beim Aufwärmen Feta und Petersilie separat hinzufügen"
+        ],
+        "mittag_tag": "Do",
+        "zutaten": [
+          {
+            "name": "Linsen (braun/grün)",
+            "menge": "480 g"
+          },
+          {
+            "name": "Zwiebeln",
+            "menge": "400 g"
+          },
+          {
+            "name": "Knoblauch",
+            "menge": "24 g"
+          },
+          {
+            "name": "Karotten",
+            "menge": "600 g"
+          },
+          {
+            "name": "Sellerie",
+            "menge": "300 g"
+          },
+          {
+            "name": "Tomaten, geschält (Dose)",
+            "menge": "800 g"
+          },
+          {
+            "name": "Gemüsebrühe",
+            "menge": "1200 ml"
+          },
+          {
+            "name": "Olivenöl",
+            "menge": "80 ml"
+          },
+          {
+            "name": "Zitronensaft",
+            "menge": "40 ml"
+          },
+          {
+            "name": "Salz",
+            "menge": "12 g"
+          },
+          {
+            "name": "Pfeffer",
+            "menge": "4 g"
+          },
+          {
+            "name": "Kreuzkümmel",
+            "menge": "6 g"
+          },
+          {
+            "name": "Paprika mild",
+            "menge": "8 g"
+          },
+          {
+            "name": "Feta",
+            "menge": "300 g"
+          },
+          {
+            "name": "Petersilie frisch",
+            "menge": "30 g"
+          }
+        ],
+        "tipp": "Feta kann durch Ziegenkäse ersetzt werden. Für mehr Würze zusätzliche Chilischoten hinzufügen."
       },
       {
         "tag": "Fr",
         "abend": "Spinat-Ricotta-Cannelloni",
-        "zeit_aktiv": "30m",
-        "zeit_total": "45m",
-        "mittag_nächster_tag": "Cannelloni aufgewärmt"
+        "zeit_aktiv": "50 Min",
+        "zeit_total": "120 Min",
+        "mittag_nächster_tag": "Spinat-Ricotta-Cannelloni",
+        "schritte_vegi": [
+          {
+            "titel": "Spinat auftauen",
+            "text": "TK-Spinat in Sieb auftauen und dabei Flüssigkeit abtropfen lassen.",
+            "timer_min": 0,
+            "zutaten_schritt": [
+              {
+                "name": "Spinat tiefgefroren",
+                "menge": "600 g"
+              }
+            ],
+            "zubehoer": [
+              "Sieb"
+            ],
+            "kontrolle": "Spinat ist aufgetaut und trocken.",
+            "parallel_hinweis": ""
+          },
+          {
+            "titel": "Spinat auspressen",
+            "text": "Aufgetauten Spinat mit den Händen oder in einem Tuch auspressen bis möglichst wenig Flüssigkeit austritt.",
+            "timer_min": 0,
+            "zutaten_schritt": [
+              {
+                "name": "Spinat tiefgefroren",
+                "menge": "600 g"
+              }
+            ],
+            "zubehoer": [
+              "Küchenrollen"
+            ],
+            "kontrolle": "Spinat ist gut gepresst.",
+            "parallel_hinweis": ""
+          },
+          {
+            "titel": "Eier und Ricotta mischen",
+            "text": "Eier in eine Schüssel schlagen und mit Ricotta glatt verrühren.",
+            "timer_min": 0,
+            "zutaten_schritt": [
+              {
+                "name": "Ei",
+                "menge": "2 Stück"
+              },
+              {
+                "name": "Ricotta",
+                "menge": "500 g"
+              }
+            ],
+            "zubehoer": [
+              "Schüssel",
+              "Schneebesen"
+            ],
+            "kontrolle": "Mischung ist cremig.",
+            "parallel_hinweis": ""
+          },
+          {
+            "titel": "Spinat zur Ricotta hinzufügen",
+            "text": "Ausgeprresster Spinat zur Ricotta-Ei-Mischung geben und verrühren.",
+            "timer_min": 0,
+            "zutaten_schritt": [
+              {
+                "name": "Spinat tiefgefroren",
+                "menge": "600 g"
+              }
+            ],
+            "zubehoer": [
+              "Holzlöffel"
+            ],
+            "kontrolle": "Spinat ist gut verteilt.",
+            "parallel_hinweis": ""
+          },
+          {
+            "titel": "Parmesan hinzufügen",
+            "text": "100g Parmesan zur Spinat-Ricotta-Mischung hinzufügen und vermischen.",
+            "timer_min": 0,
+            "zutaten_schritt": [
+              {
+                "name": "Parmesan gerieben",
+                "menge": "100 g"
+              }
+            ],
+            "zubehoer": [
+              "Holzlöffel"
+            ],
+            "kontrolle": "Käse ist verteilt.",
+            "parallel_hinweis": ""
+          },
+          {
+            "titel": "Füllung würzen",
+            "text": "Füllung mit 6g Salz, Pfeffer und Muskatnuss würzen.",
+            "timer_min": 0,
+            "zutaten_schritt": [
+              {
+                "name": "Salz",
+                "menge": "6 g"
+              },
+              {
+                "name": "Pfeffer",
+                "menge": "2 g"
+              },
+              {
+                "name": "Muskatnuss",
+                "menge": "2 g"
+              }
+            ],
+            "zubehoer": [
+              "Holzlöffel"
+            ],
+            "kontrolle": "Füllung schmeckt aromatisch.",
+            "parallel_hinweis": ""
+          },
+          {
+            "titel": "Zwiebeln schneiden",
+            "text": "Zwiebeln schälen und in feine Würfel schneiden.",
+            "timer_min": 0,
+            "zutaten_schritt": [
+              {
+                "name": "Zwiebeln",
+                "menge": "300 g"
+              }
+            ],
+            "zubehoer": [
+              "Schneidebrett",
+              "Messer"
+            ],
+            "kontrolle": "Würfel sind gleichmässig klein.",
+            "parallel_hinweis": ""
+          },
+          {
+            "titel": "Knoblauch vorbereiten",
+            "text": "Knoblauch schälen und fein hacken.",
+            "timer_min": 0,
+            "zutaten_schritt": [
+              {
+                "name": "Knoblauch",
+                "menge": "20 g"
+              }
+            ],
+            "zubehoer": [
+              "Schneidebrett",
+              "Messer"
+            ],
+            "kontrolle": "Knoblauch ist fein gehackt.",
+            "parallel_hinweis": ""
+          },
+          {
+            "titel": "Tomatensauce starten",
+            "text": "Olivenöl in Topf erhitzen und Zwiebel mit Knoblauch 3 Minuten anschwitzen.",
+            "timer_min": 3,
+            "zutaten_schritt": [
+              {
+                "name": "Olivenöl",
+                "menge": "80 ml"
+              },
+              {
+                "name": "Zwiebeln",
+                "menge": "300 g"
+              },
+              {
+                "name": "Knoblauch",
+                "menge": "20 g"
+              }
+            ],
+            "zubehoer": [
+              "Topf",
+              "Holzlöffel"
+            ],
+            "kontrolle": "Zwiebel ist glasig.",
+            "parallel_hinweis": ""
+          },
+          {
+            "titel": "Tomatenmark einrühren",
+            "text": "Tomatenmark hinzufügen und 1 Minute mitbraten.",
+            "timer_min": 1,
+            "zutaten_schritt": [
+              {
+                "name": "Tomatenmark",
+                "menge": "60 g"
+              }
+            ],
+            "zubehoer": [
+              "Holzlöffel"
+            ],
+            "kontrolle": "Tomatenmark ist duftig.",
+            "parallel_hinweis": ""
+          },
+          {
+            "titel": "Dosentomaten hinzufügen",
+            "text": "Dosentomaten mit Saft hinzugeben und umrühren.",
+            "timer_min": 0,
+            "zutaten_schritt": [
+              {
+                "name": "Tomaten, geschält (Dose)",
+                "menge": "1200 g"
+              }
+            ],
+            "zubehoer": [
+              "Holzlöffel"
+            ],
+            "kontrolle": "Zutaten sind vermischt.",
+            "parallel_hinweis": ""
+          },
+          {
+            "titel": "Sauce würzen",
+            "text": "Oregano, restliche 6g Salz und restliche 2g Pfeffer einrühren.",
+            "timer_min": 0,
+            "zutaten_schritt": [
+              {
+                "name": "Oregano getrocknet",
+                "menge": "6 g"
+              },
+              {
+                "name": "Salz",
+                "menge": "6 g"
+              },
+              {
+                "name": "Pfeffer",
+                "menge": "2 g"
+              }
+            ],
+            "zubehoer": [
+              "Holzlöffel"
+            ],
+            "kontrolle": "Sauce ist gut gewürzt.",
+            "parallel_hinweis": ""
+          },
+          {
+            "titel": "Sauce köcheln",
+            "text": "Sauce 15 Minuten bei mittlerer Hitze köcheln lassen.",
+            "timer_min": 15,
+            "zutaten_schritt": [],
+            "zubehoer": [],
+            "kontrolle": "Sauce ist leicht reduziert.",
+            "parallel_hinweis": "Cannelloni-Röhren vorbereiten"
+          },
+          {
+            "titel": "Cannelloni-Röhren füllen",
+            "text": "Mit Hilfe eines Löffels oder einer Spritzbeutel die Spinat-Ricotta-Füllung in 24 Cannelloni-Röhren füllen.",
+            "timer_min": 0,
+            "zutaten_schritt": [
+              {
+                "name": "Cannelloni-Röhren",
+                "menge": "240 g"
+              }
+            ],
+            "zubehoer": [
+              "Löffel oder Spritzbeutel"
+            ],
+            "kontrolle": "Alle Röhren sind gefüllt.",
+            "parallel_hinweis": ""
+          },
+          {
+            "titel": "Backofen vorheizen",
+            "text": "Backofen auf 180°C Umluft vorheizen.",
+            "timer_min": 10,
+            "zutaten_schritt": [],
+            "zubehoer": [
+              "Backofen"
+            ],
+            "kontrolle": "Backofen hat Zieltemperatur erreicht.",
+            "parallel_hinweis": "Mozzarella schneiden"
+          },
+          {
+            "titel": "Mozzarella vorbereiten",
+            "text": "Mozzarella in dünne Scheiben schneiden.",
+            "timer_min": 0,
+            "zutaten_schritt": [
+              {
+                "name": "Mozzarella",
+                "menge": "200 g"
+              }
+            ],
+            "zubehoer": [
+              "Schneidebrett",
+              "Messer"
+            ],
+            "kontrolle": "Scheiben sind dünn.",
+            "parallel_hinweis": ""
+          },
+          {
+            "titel": "Erste Auflaufform schichten (Sauce)",
+            "text": "Dünne Schicht Tomatensauce (etwa 150ml) auf den Boden einer 25x35cm Auflaufform geben.",
+            "timer_min": 0,
+            "zutaten_schritt": [
+              {
+                "name": "Tomaten, geschält (Dose)",
+                "menge": "150 g"
+              }
+            ],
+            "zubehoer": [
+              "Auflaufform",
+              "Löffel"
+            ],
+            "kontrolle": "Boden ist dünn bedeckt.",
+            "parallel_hinweis": ""
+          },
+          {
+            "titel": "Cannelloni auslegen",
+            "text": "12 gefüllte Cannelloni-Röhren nebeneinander in die Form legen.",
+            "timer_min": 0,
+            "zutaten_schritt": [
+              {
+                "name": "Cannelloni-Röhren",
+                "menge": "120 g"
+              }
+            ],
+            "zubehoer": [],
+            "kontrolle": "Röhren liegen dicht nebeneinander.",
+            "parallel_hinweis": ""
+          },
+          {
+            "titel": "Sauce darüber",
+            "text": "Etwa 400ml Tomatensauce über die Cannelloni giessen.",
+            "timer_min": 0,
+            "zutaten_schritt": [
+              {
+                "name": "Tomaten, geschält (Dose)",
+                "menge": "400 g"
+              }
+            ],
+            "zubehoer": [
+              "Löffel"
+            ],
+            "kontrolle": "Cannelloni sind halb bedeckt.",
+            "parallel_hinweis": ""
+          },
+          {
+            "titel": "Mozzarella und Parmesan",
+            "text": "100g Mozzarella und 75g Parmesan über die Sauce verteilen.",
+            "timer_min": 0,
+            "zutaten_schritt": [
+              {
+                "name": "Mozzarella",
+                "menge": "100 g"
+              },
+              {
+                "name": "Parmesan gerieben",
+                "menge": "75 g"
+              }
+            ],
+            "zubehoer": [],
+            "kontrolle": "Käse ist verteilt.",
+            "parallel_hinweis": ""
+          },
+          {
+            "titel": "Zweite Schicht Cannelloni",
+            "text": "Restliche 12 Cannelloni-Röhren auf den Käse legen.",
+            "timer_min": 0,
+            "zutaten_schritt": [
+              {
+                "name": "Cannelloni-Röhren",
+                "menge": "120 g"
+              }
+            ],
+            "zubehoer": [],
+            "kontrolle": "Röhren liegen dicht nebeneinander.",
+            "parallel_hinweis": ""
+          },
+          {
+            "titel": "Finale Sauce und Käse",
+            "text": "Restliche Sauce (etwa 650ml) und Käse (100g Mozzarella, 75g Parmesan) gleichmässig verteilen.",
+            "timer_min": 0,
+            "zutaten_schritt": [
+              {
+                "name": "Tomaten, geschält (Dose)",
+                "menge": "650 g"
+              },
+              {
+                "name": "Mozzarella",
+                "menge": "100 g"
+              },
+              {
+                "name": "Parmesan gerieben",
+                "menge": "75 g"
+              }
+            ],
+            "zubehoer": [
+              "Löffel"
+            ],
+            "kontrolle": "Oberfläche ist vollständig bedeckt.",
+            "parallel_hinweis": ""
+          },
+          {
+            "titel": "Cannelloni backen",
+            "text": "Auflauf 30 Minuten im vorgeheizten Backofen bei 180°C backen.",
+            "timer_min": 30,
+            "zutaten_schritt": [],
+            "zubehoer": [
+              "Backofen"
+            ],
+            "kontrolle": "Käse ist goldbraun und Gericht brodelt.",
+            "parallel_hinweis": ""
+          },
+          {
+            "titel": "Cannelloni ruhen lassen",
+            "text": "Auflauf 5 Minuten aus dem Ofen nehmen und ruhen lassen.",
+            "timer_min": 5,
+            "zutaten_schritt": [],
+            "zubehoer": [],
+            "kontrolle": "Auflauf ist stabil.",
+            "parallel_hinweis": ""
+          },
+          {
+            "titel": "Portionen abteilen",
+            "text": "Cannelloni-Auflauf in 6 Portionen teilen: 2 Portionen für Abendessen, 2 Portionen für morgen Mittag (abkühlen), 2 Portionen zum Einfrieren (abkühlen).",
+            "timer_min": 0,
+            "zutaten_schritt": [],
+            "zubehoer": [
+              "Besteck"
+            ],
+            "kontrolle": "Portionen sind gleichmässig gross.",
+            "parallel_hinweis": ""
+          }
+        ],
+        "schritte_fleisch": [],
+        "prep_next": [
+          "2 Portionen abkühlen lassen und in Behälter füllen",
+          "Sa Mittag: 5 Minuten in Mikrowelle aufwärmen"
+        ],
+        "einfrieren": [
+          "2 Portionen nach vollständigem Abkühlen einfrieren",
+          "Mit Datum und Gericht beschriften"
+        ],
+        "mittag_tag": "Sa",
+        "zutaten": [
+          {
+            "name": "Cannelloni-Röhren",
+            "menge": "240 g"
+          },
+          {
+            "name": "Spinat tiefgefroren",
+            "menge": "600 g"
+          },
+          {
+            "name": "Ricotta",
+            "menge": "500 g"
+          },
+          {
+            "name": "Parmesan gerieben",
+            "menge": "150 g"
+          },
+          {
+            "name": "Zwiebeln",
+            "menge": "300 g"
+          },
+          {
+            "name": "Knoblauch",
+            "menge": "20 g"
+          },
+          {
+            "name": "Tomaten, geschält (Dose)",
+            "menge": "1200 g"
+          },
+          {
+            "name": "Tomatenmark",
+            "menge": "60 g"
+          },
+          {
+            "name": "Olivenöl",
+            "menge": "80 ml"
+          },
+          {
+            "name": "Salz",
+            "menge": "12 g"
+          },
+          {
+            "name": "Pfeffer",
+            "menge": "4 g"
+          },
+          {
+            "name": "Muskatnuss",
+            "menge": "2 g"
+          },
+          {
+            "name": "Oregano getrocknet",
+            "menge": "6 g"
+          },
+          {
+            "name": "Mozzarella",
+            "menge": "200 g"
+          },
+          {
+            "name": "Ei",
+            "menge": "2 Stück"
+          }
+        ],
+        "tipp": "Für leichtere Version: Ricotta zur Hälfte durch Quark ersetzen. Getrocknete Cranberries oder Rosinen in die Füllung mischen für süßliche Note."
       }
     ]
   },
@@ -67,23 +1414,1370 @@
         {
           "tag": "Mo",
           "abend": "Auberginen-Tomaten-Auflauf",
-          "zeit_aktiv": "25m",
-          "zeit_total": "50m",
-          "mittag_nächster_tag": "Auflauf aufgewärmt"
+          "zeit_aktiv": "50 Min",
+          "zeit_total": "120 Min",
+          "mittag_nächster_tag": "Auberginen-Tomaten-Auflauf",
+          "schritte_vegi": [
+            {
+              "titel": "Auberginen vorbereiten",
+              "text": "Auberginen waschen und der Länge nach in 8mm dünne Scheiben schneiden.",
+              "timer_min": 0,
+              "zutaten_schritt": [
+                {
+                  "name": "Auberginen",
+                  "menge": "1200 g"
+                }
+              ],
+              "zubehoer": [
+                "Schneidebrett",
+                "scharfes Messer"
+              ],
+              "kontrolle": "Scheiben sind gleichmässig dünn.",
+              "parallel_hinweis": ""
+            },
+            {
+              "titel": "Auberginen salzen",
+              "text": "Auberginen-Scheiben auf Tüchern auslegen und mit 6g Salz bestreuen, 15 Minuten ruhen lassen.",
+              "timer_min": 15,
+              "zutaten_schritt": [
+                {
+                  "name": "Salz",
+                  "menge": "6 g"
+                }
+              ],
+              "zubehoer": [
+                "Küchenrollen"
+              ],
+              "kontrolle": "Flüssigkeit tritt aus.",
+              "parallel_hinweis": "Zwiebeln und Knoblauch schneiden"
+            },
+            {
+              "titel": "Zwiebeln und Knoblauch schneiden",
+              "text": "Zwiebeln schälen und in feine Würfel schneiden.",
+              "timer_min": 0,
+              "zutaten_schritt": [
+                {
+                  "name": "Zwiebeln",
+                  "menge": "400 g"
+                }
+              ],
+              "zubehoer": [
+                "Schneidebrett",
+                "Messer"
+              ],
+              "kontrolle": "Würfel sind gleichmässig klein.",
+              "parallel_hinweis": ""
+            },
+            {
+              "titel": "Knoblauch vorbereiten",
+              "text": "Knoblauch schälen und fein hacken.",
+              "timer_min": 0,
+              "zutaten_schritt": [
+                {
+                  "name": "Knoblauch",
+                  "menge": "30 g"
+                }
+              ],
+              "zubehoer": [
+                "Schneidebrett",
+                "Messer"
+              ],
+              "kontrolle": "Knoblauch ist fein gehackt.",
+              "parallel_hinweis": ""
+            },
+            {
+              "titel": "Auberginen trocknen",
+              "text": "Auberginen-Scheiben mit Küchenrollen trocken tupfen.",
+              "timer_min": 0,
+              "zutaten_schritt": [
+                {
+                  "name": "Auberginen",
+                  "menge": "1200 g"
+                }
+              ],
+              "zubehoer": [
+                "Küchenrollen"
+              ],
+              "kontrolle": "Oberfläche ist trocken.",
+              "parallel_hinweis": ""
+            },
+            {
+              "titel": "Auberginen braten (erste Portion)",
+              "text": "60ml Olivenöl in grosser Pfanne erhitzen und 400g Auberginen-Scheiben von jeder Seite 3-4 Minuten braten.",
+              "timer_min": 8,
+              "zutaten_schritt": [
+                {
+                  "name": "Auberginen",
+                  "menge": "400 g"
+                },
+                {
+                  "name": "Olivenöl",
+                  "menge": "60 ml"
+                }
+              ],
+              "zubehoer": [
+                "grosse Pfanne"
+              ],
+              "kontrolle": "Scheiben sind goldbraun.",
+              "parallel_hinweis": ""
+            },
+            {
+              "titel": "Auberginen braten (zweite Portion)",
+              "text": "Restliche 400g Auberginen-Scheiben mit restlichen 60ml Öl braten.",
+              "timer_min": 8,
+              "zutaten_schritt": [
+                {
+                  "name": "Auberginen",
+                  "menge": "400 g"
+                },
+                {
+                  "name": "Olivenöl",
+                  "menge": "60 ml"
+                }
+              ],
+              "zubehoer": [
+                "grosse Pfanne"
+              ],
+              "kontrolle": "Scheiben sind goldbraun.",
+              "parallel_hinweis": "Sauce vorbereiten"
+            },
+            {
+              "titel": "Tomatensauce starten",
+              "text": "Zwiebel und Knoblauch in Topf geben und 3 Minuten bei mittlerer Hitze anschwitzen.",
+              "timer_min": 3,
+              "zutaten_schritt": [
+                {
+                  "name": "Zwiebeln",
+                  "menge": "400 g"
+                },
+                {
+                  "name": "Knoblauch",
+                  "menge": "30 g"
+                }
+              ],
+              "zubehoer": [
+                "Topf",
+                "Holzlöffel"
+              ],
+              "kontrolle": "Zwiebel ist glasig.",
+              "parallel_hinweis": ""
+            },
+            {
+              "titel": "Tomatenmark einrühren",
+              "text": "Tomatenmark hinzufügen und 2 Minuten mitbraten.",
+              "timer_min": 2,
+              "zutaten_schritt": [
+                {
+                  "name": "Tomatenmark",
+                  "menge": "80 g"
+                }
+              ],
+              "zubehoer": [
+                "Holzlöffel"
+              ],
+              "kontrolle": "Tomatenmark ist gut verteilt.",
+              "parallel_hinweis": ""
+            },
+            {
+              "titel": "Tomaten hinzufügen",
+              "text": "Dosentomaten mit Saft hinzugeben und umrühren.",
+              "timer_min": 0,
+              "zutaten_schritt": [
+                {
+                  "name": "Tomaten, geschält (Dose)",
+                  "menge": "1400 g"
+                }
+              ],
+              "zubehoer": [
+                "Holzlöffel"
+              ],
+              "kontrolle": "Zutaten sind vermischt.",
+              "parallel_hinweis": ""
+            },
+            {
+              "titel": "Gewürze hinzufügen",
+              "text": "Oregano, Thymian, restliche 6g Salz und Pfeffer einrühren.",
+              "timer_min": 0,
+              "zutaten_schritt": [
+                {
+                  "name": "Oregano getrocknet",
+                  "menge": "8 g"
+                },
+                {
+                  "name": "Thymian getrocknet",
+                  "menge": "4 g"
+                },
+                {
+                  "name": "Salz",
+                  "menge": "6 g"
+                },
+                {
+                  "name": "Pfeffer",
+                  "menge": "4 g"
+                }
+              ],
+              "zubehoer": [
+                "Holzlöffel"
+              ],
+              "kontrolle": "Sauce ist gut gewürzt.",
+              "parallel_hinweis": ""
+            },
+            {
+              "titel": "Sauce köcheln",
+              "text": "Sauce 15 Minuten bei mittlerer Hitze köcheln lassen.",
+              "timer_min": 15,
+              "zutaten_schritt": [],
+              "zubehoer": [],
+              "kontrolle": "Sauce ist cremig und reduziert.",
+              "parallel_hinweis": ""
+            },
+            {
+              "titel": "Backofen vorheizen",
+              "text": "Backofen auf 180°C Umluft vorheizen.",
+              "timer_min": 10,
+              "zutaten_schritt": [],
+              "zubehoer": [
+                "Backofen"
+              ],
+              "kontrolle": "Backofen hat Zieltemperatur erreicht.",
+              "parallel_hinweis": "Mozzarella reissen"
+            },
+            {
+              "titel": "Mozzarella vorbereiten",
+              "text": "Mozzarella in feine Scheiben schneiden.",
+              "timer_min": 0,
+              "zutaten_schritt": [
+                {
+                  "name": "Mozzarella",
+                  "menge": "300 g"
+                }
+              ],
+              "zubehoer": [
+                "Schneidebrett",
+                "Messer"
+              ],
+              "kontrolle": "Scheiben sind dünn und gleichmässig.",
+              "parallel_hinweis": ""
+            },
+            {
+              "titel": "Auflaufform schichten (erste Sauce-Schicht)",
+              "text": "Dünne Schicht Tomatensauce (etwa 100ml) auf den Boden einer Auflaufform (25x35cm) geben.",
+              "timer_min": 0,
+              "zutaten_schritt": [
+                {
+                  "name": "Tomaten, geschält (Dose)",
+                  "menge": "100 g"
+                }
+              ],
+              "zubehoer": [
+                "Auflaufform",
+                "Löffel"
+              ],
+              "kontrolle": "Boden ist dünn bedeckt.",
+              "parallel_hinweis": ""
+            },
+            {
+              "titel": "Erste Auberginen-Schicht legen",
+              "text": "400g gebratene Auberginen-Scheiben überlappend auslegen.",
+              "timer_min": 0,
+              "zutaten_schritt": [
+                {
+                  "name": "Auberginen",
+                  "menge": "400 g"
+                }
+              ],
+              "zubehoer": [],
+              "kontrolle": "Scheiben liegen dicht nebeneinander.",
+              "parallel_hinweis": ""
+            },
+            {
+              "titel": "Erste Mozzarella-Schicht",
+              "text": "150g Mozzarella-Scheiben auslegen.",
+              "timer_min": 0,
+              "zutaten_schritt": [
+                {
+                  "name": "Mozzarella",
+                  "menge": "150 g"
+                }
+              ],
+              "zubehoer": [],
+              "kontrolle": "Käse bedeckt Auberginen.",
+              "parallel_hinweis": ""
+            },
+            {
+              "titel": "Zweite Sauce-Schicht",
+              "text": "Etwa 350ml Tomatensauce darübergiessen.",
+              "timer_min": 0,
+              "zutaten_schritt": [
+                {
+                  "name": "Tomaten, geschält (Dose)",
+                  "menge": "350 g"
+                }
+              ],
+              "zubehoer": [
+                "Löffel"
+              ],
+              "kontrolle": "Schicht ist gleichmässig verteilt.",
+              "parallel_hinweis": ""
+            },
+            {
+              "titel": "Zweite Auberginen-Schicht legen",
+              "text": "Restliche 400g Auberginen-Scheiben auslegen.",
+              "timer_min": 0,
+              "zutaten_schritt": [
+                {
+                  "name": "Auberginen",
+                  "menge": "400 g"
+                }
+              ],
+              "zubehoer": [],
+              "kontrolle": "Scheiben liegen gleichmässig.",
+              "parallel_hinweis": ""
+            },
+            {
+              "titel": "Restliche Sauce und Käse",
+              "text": "Restliche Sauce (etwa 950ml) und Mozzarella (150g) gleichmässig verteilen, mit Parmesan bestreuen.",
+              "timer_min": 0,
+              "zutaten_schritt": [
+                {
+                  "name": "Tomaten, geschält (Dose)",
+                  "menge": "950 g"
+                },
+                {
+                  "name": "Mozzarella",
+                  "menge": "150 g"
+                },
+                {
+                  "name": "Parmesan gerieben",
+                  "menge": "100 g"
+                }
+              ],
+              "zubehoer": [
+                "Löffel"
+              ],
+              "kontrolle": "Oberfläche ist gleichmässig bedeckt.",
+              "parallel_hinweis": ""
+            },
+            {
+              "titel": "Auflauf backen",
+              "text": "Auflauf 35 Minuten im vorgeheizten Backofen bei 180°C backen.",
+              "timer_min": 35,
+              "zutaten_schritt": [],
+              "zubehoer": [
+                "Backofen"
+              ],
+              "kontrolle": "Käse ist goldbraun und Auflauf brodelt.",
+              "parallel_hinweis": ""
+            },
+            {
+              "titel": "Auflauf ruhen lassen",
+              "text": "Auflauf 5 Minuten aus dem Ofen nehmen und ruhen lassen.",
+              "timer_min": 5,
+              "zutaten_schritt": [],
+              "zubehoer": [],
+              "kontrolle": "Auflauf ist stabil.",
+              "parallel_hinweis": "Basilikum hacken"
+            },
+            {
+              "titel": "Basilikum hacken",
+              "text": "Frisches Basilikum fein hacken.",
+              "timer_min": 0,
+              "zutaten_schritt": [
+                {
+                  "name": "Basilikum frisch",
+                  "menge": "20 g"
+                }
+              ],
+              "zubehoer": [
+                "Schneidebrett",
+                "Messer"
+              ],
+              "kontrolle": "Basilikum ist fein gehackt.",
+              "parallel_hinweis": ""
+            },
+            {
+              "titel": "Mit Basilikum garnieren",
+              "text": "Auflauf mit frischem Basilikum garnieren.",
+              "timer_min": 0,
+              "zutaten_schritt": [
+                {
+                  "name": "Basilikum frisch",
+                  "menge": "20 g"
+                }
+              ],
+              "zubehoer": [],
+              "kontrolle": "Basilikum ist sichtbar verteilt.",
+              "parallel_hinweis": ""
+            },
+            {
+              "titel": "Portionen abteilen",
+              "text": "Auflauf in 6 Portionen teilen: 2 Portionen für Abendessen, 2 Portionen für morgen Mittag (abkühlen), 2 Portionen zum Einfrieren (abkühlen).",
+              "timer_min": 0,
+              "zutaten_schritt": [],
+              "zubehoer": [
+                "Besteck"
+              ],
+              "kontrolle": "Portionen sind gleichmässig gross.",
+              "parallel_hinweis": ""
+            }
+          ],
+          "schritte_fleisch": [],
+          "prep_next": [
+            "2 Portionen abkühlen lassen und in Behälter füllen",
+            "Di Mittag: 4 Minuten in Mikrowelle aufwärmen"
+          ],
+          "einfrieren": [
+            "2 Portionen nach vollständigem Abkühlen einfrieren",
+            "Mit Datum und Gericht beschriften"
+          ],
+          "mittag_tag": "Di",
+          "zutaten": [
+            {
+              "name": "Auberginen",
+              "menge": "1200 g"
+            },
+            {
+              "name": "Zwiebeln",
+              "menge": "400 g"
+            },
+            {
+              "name": "Knoblauch",
+              "menge": "30 g"
+            },
+            {
+              "name": "Tomaten, geschält (Dose)",
+              "menge": "1400 g"
+            },
+            {
+              "name": "Tomatenmark",
+              "menge": "80 g"
+            },
+            {
+              "name": "Olivenöl",
+              "menge": "120 ml"
+            },
+            {
+              "name": "Salz",
+              "menge": "12 g"
+            },
+            {
+              "name": "Pfeffer",
+              "menge": "4 g"
+            },
+            {
+              "name": "Oregano getrocknet",
+              "menge": "8 g"
+            },
+            {
+              "name": "Thymian getrocknet",
+              "menge": "4 g"
+            },
+            {
+              "name": "Mozzarella",
+              "menge": "300 g"
+            },
+            {
+              "name": "Parmesan gerieben",
+              "menge": "100 g"
+            },
+            {
+              "name": "Basilikum frisch",
+              "menge": "20 g"
+            }
+          ],
+          "tipp": "Auberginen können auch gegrillt statt gebraten werden. Mozzarella kann durch Ricotta ersetzt werden."
         },
         {
           "tag": "Mi",
           "abend": "Linsen-Gemüseeintopf mit Feta",
-          "zeit_aktiv": "20m",
-          "zeit_total": "40m",
-          "mittag_nächster_tag": "Eintopf aufgewärmt"
+          "zeit_aktiv": "45 Min",
+          "zeit_total": "105 Min",
+          "mittag_nächster_tag": "Linsen-Gemüseeintopf mit Feta",
+          "schritte_vegi": [
+            {
+              "titel": "Linsen spülen",
+              "text": "Linsen in Sieb unter kaltem Wasser spülen.",
+              "timer_min": 0,
+              "zutaten_schritt": [
+                {
+                  "name": "Linsen (braun/grün)",
+                  "menge": "480 g"
+                }
+              ],
+              "zubehoer": [
+                "Sieb"
+              ],
+              "kontrolle": "Linsen sind sauber.",
+              "parallel_hinweis": ""
+            },
+            {
+              "titel": "Zwiebeln schneiden",
+              "text": "Zwiebeln schälen und in feine Würfel schneiden.",
+              "timer_min": 0,
+              "zutaten_schritt": [
+                {
+                  "name": "Zwiebeln",
+                  "menge": "400 g"
+                }
+              ],
+              "zubehoer": [
+                "Schneidebrett",
+                "Messer"
+              ],
+              "kontrolle": "Würfel sind gleichmässig klein.",
+              "parallel_hinweis": ""
+            },
+            {
+              "titel": "Knoblauch vorbereiten",
+              "text": "Knoblauch schälen und fein hacken.",
+              "timer_min": 0,
+              "zutaten_schritt": [
+                {
+                  "name": "Knoblauch",
+                  "menge": "24 g"
+                }
+              ],
+              "zubehoer": [
+                "Schneidebrett",
+                "Messer"
+              ],
+              "kontrolle": "Knoblauch ist fein gehackt.",
+              "parallel_hinweis": ""
+            },
+            {
+              "titel": "Karotten schneiden",
+              "text": "Karotten schälen und in 1cm Würfel schneiden.",
+              "timer_min": 0,
+              "zutaten_schritt": [
+                {
+                  "name": "Karotten",
+                  "menge": "600 g"
+                }
+              ],
+              "zubehoer": [
+                "Schneidebrett",
+                "Messer",
+                "Sparschäler"
+              ],
+              "kontrolle": "Würfel sind gleichmässig gross.",
+              "parallel_hinweis": ""
+            },
+            {
+              "titel": "Sellerie schneiden",
+              "text": "Sellerie waschen und in 1cm Würfel schneiden.",
+              "timer_min": 0,
+              "zutaten_schritt": [
+                {
+                  "name": "Sellerie",
+                  "menge": "300 g"
+                }
+              ],
+              "zubehoer": [
+                "Schneidebrett",
+                "Messer"
+              ],
+              "kontrolle": "Würfel sind gleichmässig gross.",
+              "parallel_hinweis": ""
+            },
+            {
+              "titel": "Zwiebel und Knoblauch anschwitzen",
+              "text": "Olivenöl in grossem Topf erhitzen und Zwiebel mit Knoblauch 3 Minuten anschwitzen.",
+              "timer_min": 3,
+              "zutaten_schritt": [
+                {
+                  "name": "Olivenöl",
+                  "menge": "80 ml"
+                },
+                {
+                  "name": "Zwiebeln",
+                  "menge": "400 g"
+                },
+                {
+                  "name": "Knoblauch",
+                  "menge": "24 g"
+                }
+              ],
+              "zubehoer": [
+                "grosser Topf",
+                "Holzlöffel"
+              ],
+              "kontrolle": "Zwiebel ist glasig.",
+              "parallel_hinweis": ""
+            },
+            {
+              "titel": "Gewürze hinzufügen",
+              "text": "Kreuzkümmel und Paprika einrühren und 1 Minute kurz mitbraten.",
+              "timer_min": 1,
+              "zutaten_schritt": [
+                {
+                  "name": "Kreuzkümmel",
+                  "menge": "6 g"
+                },
+                {
+                  "name": "Paprika mild",
+                  "menge": "8 g"
+                }
+              ],
+              "zubehoer": [
+                "Holzlöffel"
+              ],
+              "kontrolle": "Gewürze sind duftend.",
+              "parallel_hinweis": ""
+            },
+            {
+              "titel": "Gemüse hinzufügen",
+              "text": "Karotten und Sellerie hinzugeben und 3 Minuten mitbraten.",
+              "timer_min": 3,
+              "zutaten_schritt": [
+                {
+                  "name": "Karotten",
+                  "menge": "600 g"
+                },
+                {
+                  "name": "Sellerie",
+                  "menge": "300 g"
+                }
+              ],
+              "zubehoer": [
+                "Holzlöffel"
+              ],
+              "kontrolle": "Gemüse ist angebraten.",
+              "parallel_hinweis": ""
+            },
+            {
+              "titel": "Linsen hinzufügen",
+              "text": "Gespülte Linsen in den Topf geben und umrühren.",
+              "timer_min": 0,
+              "zutaten_schritt": [
+                {
+                  "name": "Linsen (braun/grün)",
+                  "menge": "480 g"
+                }
+              ],
+              "zubehoer": [
+                "Holzlöffel"
+              ],
+              "kontrolle": "Linsen sind verteilt.",
+              "parallel_hinweis": ""
+            },
+            {
+              "titel": "Brühe und Tomaten hinzufügen",
+              "text": "Gemüsebrühe und Dosentomaten mit Saft hinzugeben.",
+              "timer_min": 0,
+              "zutaten_schritt": [
+                {
+                  "name": "Gemüsebrühe",
+                  "menge": "1200 ml"
+                },
+                {
+                  "name": "Tomaten, geschält (Dose)",
+                  "menge": "800 g"
+                }
+              ],
+              "zubehoer": [
+                "Holzlöffel"
+              ],
+              "kontrolle": "Flüssigkeit bedeckt das Gemüse.",
+              "parallel_hinweis": ""
+            },
+            {
+              "titel": "Würzen",
+              "text": "Salz und Pfeffer hinzufügen und gut umrühren.",
+              "timer_min": 0,
+              "zutaten_schritt": [
+                {
+                  "name": "Salz",
+                  "menge": "12 g"
+                },
+                {
+                  "name": "Pfeffer",
+                  "menge": "4 g"
+                }
+              ],
+              "zubehoer": [
+                "Holzlöffel"
+              ],
+              "kontrolle": "Eintopf ist gut gewürzt.",
+              "parallel_hinweis": ""
+            },
+            {
+              "titel": "Eintopf köcheln",
+              "text": "Topf aufkochen und dann 30 Minuten bei mittlerer Hitze köcheln lassen bis Linsen gar sind.",
+              "timer_min": 30,
+              "zutaten_schritt": [],
+              "zubehoer": [],
+              "kontrolle": "Linsen sind weich, Gemüse ist gar.",
+              "parallel_hinweis": ""
+            },
+            {
+              "titel": "Zitronensaft hinzufügen",
+              "text": "Zitronensaft einrühren und Geschmack abschmecken.",
+              "timer_min": 0,
+              "zutaten_schritt": [
+                {
+                  "name": "Zitronensaft",
+                  "menge": "40 ml"
+                }
+              ],
+              "zubehoer": [
+                "Holzlöffel"
+              ],
+              "kontrolle": "Eintopf hat frische Note.",
+              "parallel_hinweis": ""
+            },
+            {
+              "titel": "Petersilie vorbereiten",
+              "text": "Petersilie waschen und fein hacken.",
+              "timer_min": 0,
+              "zutaten_schritt": [
+                {
+                  "name": "Petersilie frisch",
+                  "menge": "30 g"
+                }
+              ],
+              "zubehoer": [
+                "Schneidebrett",
+                "Messer"
+              ],
+              "kontrolle": "Petersilie ist fein gehackt.",
+              "parallel_hinweis": ""
+            },
+            {
+              "titel": "Feta vorbereiten",
+              "text": "Feta in würfel schneiden.",
+              "timer_min": 0,
+              "zutaten_schritt": [
+                {
+                  "name": "Feta",
+                  "menge": "300 g"
+                }
+              ],
+              "zubehoer": [
+                "Schneidebrett",
+                "Messer"
+              ],
+              "kontrolle": "Würfel sind gleichmässig gross.",
+              "parallel_hinweis": ""
+            },
+            {
+              "titel": "Portionen abteilen",
+              "text": "Eintopf in 6 Portionen teilen: 2 Portionen für Abendessen (warm), 2 Portionen für morgen Mittag (abkühlen), 2 Portionen zum Einfrieren (abkühlen).",
+              "timer_min": 0,
+              "zutaten_schritt": [],
+              "zubehoer": [
+                "Besteck"
+              ],
+              "kontrolle": "Portionen sind gleichmässig gross.",
+              "parallel_hinweis": ""
+            },
+            {
+              "titel": "Feta und Petersilie für Abendessen",
+              "text": "2 Portionen Eintopf mit je 25g Feta und 5g Petersilie garnieren und servieren.",
+              "timer_min": 0,
+              "zutaten_schritt": [
+                {
+                  "name": "Feta",
+                  "menge": "50 g"
+                },
+                {
+                  "name": "Petersilie frisch",
+                  "menge": "10 g"
+                }
+              ],
+              "zubehoer": [],
+              "kontrolle": "Portionen sind garniert.",
+              "parallel_hinweis": ""
+            },
+            {
+              "titel": "Eintopf für morgen vorbereiten",
+              "text": "2 Portionen Eintopf (ohne Feta und Petersilie) abkühlen lassen und in Behälter füllen.",
+              "timer_min": 0,
+              "zutaten_schritt": [],
+              "zubehoer": [
+                "Behälter"
+              ],
+              "kontrolle": "Eintopf ist abgekühlt.",
+              "parallel_hinweis": ""
+            },
+            {
+              "titel": "Eintopf zum Einfrieren vorbereiten",
+              "text": "2 Portionen Eintopf (ohne Feta und Petersilie) nach vollständigem Abkühlen in Gefrierbehälter füllen.",
+              "timer_min": 0,
+              "zutaten_schritt": [],
+              "zubehoer": [
+                "Gefrierbehälter"
+              ],
+              "kontrolle": "Eintopf ist abgekühlt.",
+              "parallel_hinweis": ""
+            }
+          ],
+          "schritte_fleisch": [],
+          "prep_next": [
+            "2 Portionen abkühlen lassen und in Behälter füllen",
+            "Do Mittag: 4 Minuten in Mikrowelle aufwärmen, dann Feta und Petersilie hinzufügen"
+          ],
+          "einfrieren": [
+            "2 Portionen nach vollständigem Abkühlen einfrieren",
+            "Mit Datum und Gericht beschriften",
+            "Beim Aufwärmen Feta und Petersilie separat hinzufügen"
+          ],
+          "mittag_tag": "Do",
+          "zutaten": [
+            {
+              "name": "Linsen (braun/grün)",
+              "menge": "480 g"
+            },
+            {
+              "name": "Zwiebeln",
+              "menge": "400 g"
+            },
+            {
+              "name": "Knoblauch",
+              "menge": "24 g"
+            },
+            {
+              "name": "Karotten",
+              "menge": "600 g"
+            },
+            {
+              "name": "Sellerie",
+              "menge": "300 g"
+            },
+            {
+              "name": "Tomaten, geschält (Dose)",
+              "menge": "800 g"
+            },
+            {
+              "name": "Gemüsebrühe",
+              "menge": "1200 ml"
+            },
+            {
+              "name": "Olivenöl",
+              "menge": "80 ml"
+            },
+            {
+              "name": "Zitronensaft",
+              "menge": "40 ml"
+            },
+            {
+              "name": "Salz",
+              "menge": "12 g"
+            },
+            {
+              "name": "Pfeffer",
+              "menge": "4 g"
+            },
+            {
+              "name": "Kreuzkümmel",
+              "menge": "6 g"
+            },
+            {
+              "name": "Paprika mild",
+              "menge": "8 g"
+            },
+            {
+              "name": "Feta",
+              "menge": "300 g"
+            },
+            {
+              "name": "Petersilie frisch",
+              "menge": "30 g"
+            }
+          ],
+          "tipp": "Feta kann durch Ziegenkäse ersetzt werden. Für mehr Würze zusätzliche Chilischoten hinzufügen."
         },
         {
           "tag": "Fr",
           "abend": "Spinat-Ricotta-Cannelloni",
-          "zeit_aktiv": "30m",
-          "zeit_total": "45m",
-          "mittag_nächster_tag": "Cannelloni aufgewärmt"
+          "zeit_aktiv": "50 Min",
+          "zeit_total": "120 Min",
+          "mittag_nächster_tag": "Spinat-Ricotta-Cannelloni",
+          "schritte_vegi": [
+            {
+              "titel": "Spinat auftauen",
+              "text": "TK-Spinat in Sieb auftauen und dabei Flüssigkeit abtropfen lassen.",
+              "timer_min": 0,
+              "zutaten_schritt": [
+                {
+                  "name": "Spinat tiefgefroren",
+                  "menge": "600 g"
+                }
+              ],
+              "zubehoer": [
+                "Sieb"
+              ],
+              "kontrolle": "Spinat ist aufgetaut und trocken.",
+              "parallel_hinweis": ""
+            },
+            {
+              "titel": "Spinat auspressen",
+              "text": "Aufgetauten Spinat mit den Händen oder in einem Tuch auspressen bis möglichst wenig Flüssigkeit austritt.",
+              "timer_min": 0,
+              "zutaten_schritt": [
+                {
+                  "name": "Spinat tiefgefroren",
+                  "menge": "600 g"
+                }
+              ],
+              "zubehoer": [
+                "Küchenrollen"
+              ],
+              "kontrolle": "Spinat ist gut gepresst.",
+              "parallel_hinweis": ""
+            },
+            {
+              "titel": "Eier und Ricotta mischen",
+              "text": "Eier in eine Schüssel schlagen und mit Ricotta glatt verrühren.",
+              "timer_min": 0,
+              "zutaten_schritt": [
+                {
+                  "name": "Ei",
+                  "menge": "2 Stück"
+                },
+                {
+                  "name": "Ricotta",
+                  "menge": "500 g"
+                }
+              ],
+              "zubehoer": [
+                "Schüssel",
+                "Schneebesen"
+              ],
+              "kontrolle": "Mischung ist cremig.",
+              "parallel_hinweis": ""
+            },
+            {
+              "titel": "Spinat zur Ricotta hinzufügen",
+              "text": "Ausgeprresster Spinat zur Ricotta-Ei-Mischung geben und verrühren.",
+              "timer_min": 0,
+              "zutaten_schritt": [
+                {
+                  "name": "Spinat tiefgefroren",
+                  "menge": "600 g"
+                }
+              ],
+              "zubehoer": [
+                "Holzlöffel"
+              ],
+              "kontrolle": "Spinat ist gut verteilt.",
+              "parallel_hinweis": ""
+            },
+            {
+              "titel": "Parmesan hinzufügen",
+              "text": "100g Parmesan zur Spinat-Ricotta-Mischung hinzufügen und vermischen.",
+              "timer_min": 0,
+              "zutaten_schritt": [
+                {
+                  "name": "Parmesan gerieben",
+                  "menge": "100 g"
+                }
+              ],
+              "zubehoer": [
+                "Holzlöffel"
+              ],
+              "kontrolle": "Käse ist verteilt.",
+              "parallel_hinweis": ""
+            },
+            {
+              "titel": "Füllung würzen",
+              "text": "Füllung mit 6g Salz, Pfeffer und Muskatnuss würzen.",
+              "timer_min": 0,
+              "zutaten_schritt": [
+                {
+                  "name": "Salz",
+                  "menge": "6 g"
+                },
+                {
+                  "name": "Pfeffer",
+                  "menge": "2 g"
+                },
+                {
+                  "name": "Muskatnuss",
+                  "menge": "2 g"
+                }
+              ],
+              "zubehoer": [
+                "Holzlöffel"
+              ],
+              "kontrolle": "Füllung schmeckt aromatisch.",
+              "parallel_hinweis": ""
+            },
+            {
+              "titel": "Zwiebeln schneiden",
+              "text": "Zwiebeln schälen und in feine Würfel schneiden.",
+              "timer_min": 0,
+              "zutaten_schritt": [
+                {
+                  "name": "Zwiebeln",
+                  "menge": "300 g"
+                }
+              ],
+              "zubehoer": [
+                "Schneidebrett",
+                "Messer"
+              ],
+              "kontrolle": "Würfel sind gleichmässig klein.",
+              "parallel_hinweis": ""
+            },
+            {
+              "titel": "Knoblauch vorbereiten",
+              "text": "Knoblauch schälen und fein hacken.",
+              "timer_min": 0,
+              "zutaten_schritt": [
+                {
+                  "name": "Knoblauch",
+                  "menge": "20 g"
+                }
+              ],
+              "zubehoer": [
+                "Schneidebrett",
+                "Messer"
+              ],
+              "kontrolle": "Knoblauch ist fein gehackt.",
+              "parallel_hinweis": ""
+            },
+            {
+              "titel": "Tomatensauce starten",
+              "text": "Olivenöl in Topf erhitzen und Zwiebel mit Knoblauch 3 Minuten anschwitzen.",
+              "timer_min": 3,
+              "zutaten_schritt": [
+                {
+                  "name": "Olivenöl",
+                  "menge": "80 ml"
+                },
+                {
+                  "name": "Zwiebeln",
+                  "menge": "300 g"
+                },
+                {
+                  "name": "Knoblauch",
+                  "menge": "20 g"
+                }
+              ],
+              "zubehoer": [
+                "Topf",
+                "Holzlöffel"
+              ],
+              "kontrolle": "Zwiebel ist glasig.",
+              "parallel_hinweis": ""
+            },
+            {
+              "titel": "Tomatenmark einrühren",
+              "text": "Tomatenmark hinzufügen und 1 Minute mitbraten.",
+              "timer_min": 1,
+              "zutaten_schritt": [
+                {
+                  "name": "Tomatenmark",
+                  "menge": "60 g"
+                }
+              ],
+              "zubehoer": [
+                "Holzlöffel"
+              ],
+              "kontrolle": "Tomatenmark ist duftig.",
+              "parallel_hinweis": ""
+            },
+            {
+              "titel": "Dosentomaten hinzufügen",
+              "text": "Dosentomaten mit Saft hinzugeben und umrühren.",
+              "timer_min": 0,
+              "zutaten_schritt": [
+                {
+                  "name": "Tomaten, geschält (Dose)",
+                  "menge": "1200 g"
+                }
+              ],
+              "zubehoer": [
+                "Holzlöffel"
+              ],
+              "kontrolle": "Zutaten sind vermischt.",
+              "parallel_hinweis": ""
+            },
+            {
+              "titel": "Sauce würzen",
+              "text": "Oregano, restliche 6g Salz und restliche 2g Pfeffer einrühren.",
+              "timer_min": 0,
+              "zutaten_schritt": [
+                {
+                  "name": "Oregano getrocknet",
+                  "menge": "6 g"
+                },
+                {
+                  "name": "Salz",
+                  "menge": "6 g"
+                },
+                {
+                  "name": "Pfeffer",
+                  "menge": "2 g"
+                }
+              ],
+              "zubehoer": [
+                "Holzlöffel"
+              ],
+              "kontrolle": "Sauce ist gut gewürzt.",
+              "parallel_hinweis": ""
+            },
+            {
+              "titel": "Sauce köcheln",
+              "text": "Sauce 15 Minuten bei mittlerer Hitze köcheln lassen.",
+              "timer_min": 15,
+              "zutaten_schritt": [],
+              "zubehoer": [],
+              "kontrolle": "Sauce ist leicht reduziert.",
+              "parallel_hinweis": "Cannelloni-Röhren vorbereiten"
+            },
+            {
+              "titel": "Cannelloni-Röhren füllen",
+              "text": "Mit Hilfe eines Löffels oder einer Spritzbeutel die Spinat-Ricotta-Füllung in 24 Cannelloni-Röhren füllen.",
+              "timer_min": 0,
+              "zutaten_schritt": [
+                {
+                  "name": "Cannelloni-Röhren",
+                  "menge": "240 g"
+                }
+              ],
+              "zubehoer": [
+                "Löffel oder Spritzbeutel"
+              ],
+              "kontrolle": "Alle Röhren sind gefüllt.",
+              "parallel_hinweis": ""
+            },
+            {
+              "titel": "Backofen vorheizen",
+              "text": "Backofen auf 180°C Umluft vorheizen.",
+              "timer_min": 10,
+              "zutaten_schritt": [],
+              "zubehoer": [
+                "Backofen"
+              ],
+              "kontrolle": "Backofen hat Zieltemperatur erreicht.",
+              "parallel_hinweis": "Mozzarella schneiden"
+            },
+            {
+              "titel": "Mozzarella vorbereiten",
+              "text": "Mozzarella in dünne Scheiben schneiden.",
+              "timer_min": 0,
+              "zutaten_schritt": [
+                {
+                  "name": "Mozzarella",
+                  "menge": "200 g"
+                }
+              ],
+              "zubehoer": [
+                "Schneidebrett",
+                "Messer"
+              ],
+              "kontrolle": "Scheiben sind dünn.",
+              "parallel_hinweis": ""
+            },
+            {
+              "titel": "Erste Auflaufform schichten (Sauce)",
+              "text": "Dünne Schicht Tomatensauce (etwa 150ml) auf den Boden einer 25x35cm Auflaufform geben.",
+              "timer_min": 0,
+              "zutaten_schritt": [
+                {
+                  "name": "Tomaten, geschält (Dose)",
+                  "menge": "150 g"
+                }
+              ],
+              "zubehoer": [
+                "Auflaufform",
+                "Löffel"
+              ],
+              "kontrolle": "Boden ist dünn bedeckt.",
+              "parallel_hinweis": ""
+            },
+            {
+              "titel": "Cannelloni auslegen",
+              "text": "12 gefüllte Cannelloni-Röhren nebeneinander in die Form legen.",
+              "timer_min": 0,
+              "zutaten_schritt": [
+                {
+                  "name": "Cannelloni-Röhren",
+                  "menge": "120 g"
+                }
+              ],
+              "zubehoer": [],
+              "kontrolle": "Röhren liegen dicht nebeneinander.",
+              "parallel_hinweis": ""
+            },
+            {
+              "titel": "Sauce darüber",
+              "text": "Etwa 400ml Tomatensauce über die Cannelloni giessen.",
+              "timer_min": 0,
+              "zutaten_schritt": [
+                {
+                  "name": "Tomaten, geschält (Dose)",
+                  "menge": "400 g"
+                }
+              ],
+              "zubehoer": [
+                "Löffel"
+              ],
+              "kontrolle": "Cannelloni sind halb bedeckt.",
+              "parallel_hinweis": ""
+            },
+            {
+              "titel": "Mozzarella und Parmesan",
+              "text": "100g Mozzarella und 75g Parmesan über die Sauce verteilen.",
+              "timer_min": 0,
+              "zutaten_schritt": [
+                {
+                  "name": "Mozzarella",
+                  "menge": "100 g"
+                },
+                {
+                  "name": "Parmesan gerieben",
+                  "menge": "75 g"
+                }
+              ],
+              "zubehoer": [],
+              "kontrolle": "Käse ist verteilt.",
+              "parallel_hinweis": ""
+            },
+            {
+              "titel": "Zweite Schicht Cannelloni",
+              "text": "Restliche 12 Cannelloni-Röhren auf den Käse legen.",
+              "timer_min": 0,
+              "zutaten_schritt": [
+                {
+                  "name": "Cannelloni-Röhren",
+                  "menge": "120 g"
+                }
+              ],
+              "zubehoer": [],
+              "kontrolle": "Röhren liegen dicht nebeneinander.",
+              "parallel_hinweis": ""
+            },
+            {
+              "titel": "Finale Sauce und Käse",
+              "text": "Restliche Sauce (etwa 650ml) und Käse (100g Mozzarella, 75g Parmesan) gleichmässig verteilen.",
+              "timer_min": 0,
+              "zutaten_schritt": [
+                {
+                  "name": "Tomaten, geschält (Dose)",
+                  "menge": "650 g"
+                },
+                {
+                  "name": "Mozzarella",
+                  "menge": "100 g"
+                },
+                {
+                  "name": "Parmesan gerieben",
+                  "menge": "75 g"
+                }
+              ],
+              "zubehoer": [
+                "Löffel"
+              ],
+              "kontrolle": "Oberfläche ist vollständig bedeckt.",
+              "parallel_hinweis": ""
+            },
+            {
+              "titel": "Cannelloni backen",
+              "text": "Auflauf 30 Minuten im vorgeheizten Backofen bei 180°C backen.",
+              "timer_min": 30,
+              "zutaten_schritt": [],
+              "zubehoer": [
+                "Backofen"
+              ],
+              "kontrolle": "Käse ist goldbraun und Gericht brodelt.",
+              "parallel_hinweis": ""
+            },
+            {
+              "titel": "Cannelloni ruhen lassen",
+              "text": "Auflauf 5 Minuten aus dem Ofen nehmen und ruhen lassen.",
+              "timer_min": 5,
+              "zutaten_schritt": [],
+              "zubehoer": [],
+              "kontrolle": "Auflauf ist stabil.",
+              "parallel_hinweis": ""
+            },
+            {
+              "titel": "Portionen abteilen",
+              "text": "Cannelloni-Auflauf in 6 Portionen teilen: 2 Portionen für Abendessen, 2 Portionen für morgen Mittag (abkühlen), 2 Portionen zum Einfrieren (abkühlen).",
+              "timer_min": 0,
+              "zutaten_schritt": [],
+              "zubehoer": [
+                "Besteck"
+              ],
+              "kontrolle": "Portionen sind gleichmässig gross.",
+              "parallel_hinweis": ""
+            }
+          ],
+          "schritte_fleisch": [],
+          "prep_next": [
+            "2 Portionen abkühlen lassen und in Behälter füllen",
+            "Sa Mittag: 5 Minuten in Mikrowelle aufwärmen"
+          ],
+          "einfrieren": [
+            "2 Portionen nach vollständigem Abkühlen einfrieren",
+            "Mit Datum und Gericht beschriften"
+          ],
+          "mittag_tag": "Sa",
+          "zutaten": [
+            {
+              "name": "Cannelloni-Röhren",
+              "menge": "240 g"
+            },
+            {
+              "name": "Spinat tiefgefroren",
+              "menge": "600 g"
+            },
+            {
+              "name": "Ricotta",
+              "menge": "500 g"
+            },
+            {
+              "name": "Parmesan gerieben",
+              "menge": "150 g"
+            },
+            {
+              "name": "Zwiebeln",
+              "menge": "300 g"
+            },
+            {
+              "name": "Knoblauch",
+              "menge": "20 g"
+            },
+            {
+              "name": "Tomaten, geschält (Dose)",
+              "menge": "1200 g"
+            },
+            {
+              "name": "Tomatenmark",
+              "menge": "60 g"
+            },
+            {
+              "name": "Olivenöl",
+              "menge": "80 ml"
+            },
+            {
+              "name": "Salz",
+              "menge": "12 g"
+            },
+            {
+              "name": "Pfeffer",
+              "menge": "4 g"
+            },
+            {
+              "name": "Muskatnuss",
+              "menge": "2 g"
+            },
+            {
+              "name": "Oregano getrocknet",
+              "menge": "6 g"
+            },
+            {
+              "name": "Mozzarella",
+              "menge": "200 g"
+            },
+            {
+              "name": "Ei",
+              "menge": "2 Stück"
+            }
+          ],
+          "tipp": "Für leichtere Version: Ricotta zur Hälfte durch Quark ersetzen. Getrocknete Cranberries oder Rosinen in die Füllung mischen für süßliche Note."
         }
       ]
     },
@@ -152,5 +2846,5 @@
       ]
     }
   ],
-  "sugsPartial": true
+  "sugsPartial": false
 }
