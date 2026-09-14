@@ -1,490 +1,156 @@
 {
-  "planId": "79c577ee-3ea0-4814-b270-7383f1ce8f95",
+  "planId": "b4075620-a586-405e-b724-38e1f2978ebc",
   "sug": {
     "id": 1,
-    "thema": "Schweizer Klassiker",
+    "thema": "Mediterran",
     "kochabende": [
-      "Mi"
+      "Mo",
+      "Mi",
+      "Fr"
     ],
     "gerichte": [
       {
+        "tag": "Mo",
+        "abend": "Auberginen-Tomaten-Auflauf",
+        "zeit_aktiv": "25m",
+        "zeit_total": "50m",
+        "mittag_nächster_tag": "Auflauf aufgewärmt"
+      },
+      {
         "tag": "Mi",
-        "abend": "Fotzelschnitte mit Käse und Apfelmus",
-        "zeit_aktiv": "15 Minuten",
-        "zeit_total": "25 Minuten",
-        "schritte_vegi": [
-          {
-            "titel": "Weissbrot schneiden",
-            "text": "Weissbrot in 1cm dicke Scheiben schneiden.",
-            "timer_min": 0,
-            "zutaten_schritt": [
-              {
-                "name": "Weissbrot",
-                "menge": "200 g"
-              }
-            ],
-            "zubehoer": [
-              "Brotmesser",
-              "Schneidebrett"
-            ],
-            "kontrolle": "Scheiben sind gleichmässig dick.",
-            "parallel_hinweis": ""
-          },
-          {
-            "titel": "Käse reiben",
-            "text": "Emmentaler Käse grob reiben.",
-            "timer_min": 0,
-            "zutaten_schritt": [
-              {
-                "name": "Emmentaler Käse",
-                "menge": "80 g"
-              }
-            ],
-            "zubehoer": [
-              "Küchenreibe"
-            ],
-            "kontrolle": "Käse ist grob gerieben.",
-            "parallel_hinweis": ""
-          },
-          {
-            "titel": "Eimischung vorbereiten",
-            "text": "Eier mit Milch, Salz und Pfeffer verquirlen.",
-            "timer_min": 0,
-            "zutaten_schritt": [
-              {
-                "name": "Eier",
-                "menge": "2 Stück"
-              },
-              {
-                "name": "Milch",
-                "menge": "100 ml"
-              },
-              {
-                "name": "Salz",
-                "menge": "2 g"
-              },
-              {
-                "name": "Pfeffer",
-                "menge": "1 g"
-              }
-            ],
-            "zubehoer": [
-              "Schüssel",
-              "Gabel"
-            ],
-            "kontrolle": "Mischung ist homogen.",
-            "parallel_hinweis": ""
-          },
-          {
-            "titel": "Brot in Eimischung tränken",
-            "text": "Brotscheiben beidseitig in die Eimischung tauchen und gut durchtränken.",
-            "timer_min": 0,
-            "zutaten_schritt": [
-              {
-                "name": "Weissbrot",
-                "menge": "200 g"
-              }
-            ],
-            "zubehoer": [
-              "Teller",
-              "Teller"
-            ],
-            "kontrolle": "Scheiben sind vollständig durchgetränkt.",
-            "parallel_hinweis": ""
-          },
-          {
-            "titel": "Käse auf Brot verteilen",
-            "text": "Auf jede getränkte Scheibe geriebenen Käse gleichmässig streuen.",
-            "timer_min": 0,
-            "zutaten_schritt": [
-              {
-                "name": "Emmentaler Käse",
-                "menge": "80 g"
-              }
-            ],
-            "zubehoer": [
-              "Teller"
-            ],
-            "kontrolle": "Käse ist gleichmässig verteilt.",
-            "parallel_hinweis": ""
-          },
-          {
-            "titel": "Butter in Pfanne erhitzen",
-            "text": "Butter in einer Bratpfanne bei mittlerer Hitze schmelzen.",
-            "timer_min": 2,
-            "zutaten_schritt": [
-              {
-                "name": "Butter",
-                "menge": "30 g"
-              }
-            ],
-            "zubehoer": [
-              "Bratpfanne",
-              "Pfannenwender"
-            ],
-            "kontrolle": "Butter ist geschmolzen und schäumt leicht.",
-            "parallel_hinweis": ""
-          },
-          {
-            "titel": "Fotzelschnitte braten",
-            "text": "Käseseite nach unten in die heisse Butter legen und 3-4 Minuten braten bis der Käse schmilzt.",
-            "timer_min": 4,
-            "zutaten_schritt": [
-              {
-                "name": "Weissbrot",
-                "menge": "200 g"
-              }
-            ],
-            "zubehoer": [
-              "Bratpfanne",
-              "Pfannenwender"
-            ],
-            "kontrolle": "Käse ist geschmolzen, Unterseite ist goldbraun.",
-            "parallel_hinweis": "Apfelmus in eine Schüssel füllen."
-          },
-          {
-            "titel": "Wenden und fertig braten",
-            "text": "Scheiben vorsichtig wenden und auf der anderen Seite 2-3 Minuten braten bis sie goldbraun sind.",
-            "timer_min": 3,
-            "zutaten_schritt": [
-              {
-                "name": "Weissbrot",
-                "menge": "200 g"
-              }
-            ],
-            "zubehoer": [
-              "Bratpfanne",
-              "Pfannenwender"
-            ],
-            "kontrolle": "Beide Seiten sind golden und knusprig.",
-            "parallel_hinweis": ""
-          },
-          {
-            "titel": "Apfelmus anrichten",
-            "text": "Fotzelschnitte auf Tellern anrichten und Apfelmus daneben oder darüber servieren.",
-            "timer_min": 0,
-            "zutaten_schritt": [
-              {
-                "name": "Apfelmus",
-                "menge": "200 g"
-              }
-            ],
-            "zubehoer": [
-              "Teller"
-            ],
-            "kontrolle": "Gericht ist appetitlich angerichtet.",
-            "parallel_hinweis": ""
-          }
-        ],
-        "zutaten": [
-          {
-            "name": "Weissbrot",
-            "menge": "200 g"
-          },
-          {
-            "name": "Eier",
-            "menge": "2 Stück"
-          },
-          {
-            "name": "Milch",
-            "menge": "100 ml"
-          },
-          {
-            "name": "Emmentaler Käse",
-            "menge": "80 g"
-          },
-          {
-            "name": "Butter",
-            "menge": "30 g"
-          },
-          {
-            "name": "Apfelmus",
-            "menge": "200 g"
-          },
-          {
-            "name": "Salz",
-            "menge": "2 g"
-          },
-          {
-            "name": "Pfeffer",
-            "menge": "1 g"
-          }
-        ],
-        "tipp": "Fotzelschnitte schmecken auch mit Marmelade oder Honig statt Apfelmus. Das Weissbrot muss altbacken sein, damit es die Eimischung besser aufnimmt.",
-        "_gekocht": "2026-09-10T19:23:33.566Z"
+        "abend": "Linsen-Gemüseeintopf mit Feta",
+        "zeit_aktiv": "20m",
+        "zeit_total": "40m",
+        "mittag_nächster_tag": "Eintopf aufgewärmt"
+      },
+      {
+        "tag": "Fr",
+        "abend": "Spinat-Ricotta-Cannelloni",
+        "zeit_aktiv": "30m",
+        "zeit_total": "45m",
+        "mittag_nächster_tag": "Cannelloni aufgewärmt"
       }
     ]
   },
   "sel": 0,
-  "n": 1,
+  "n": 3,
   "personen": 2,
-  "reste": 0,
-  "freeze": 0,
-  "budget": 1,
+  "reste": 1,
+  "freeze": 1,
+  "budget": 0,
   "modus": "vegi",
-  "resteMode": "nein",
+  "resteMode": "mikro",
   "days": {
-    "Mo": null,
+    "Mo": "normal",
     "Di": null,
     "Mi": "normal",
     "Do": null,
-    "Fr": null,
+    "Fr": "normal",
     "Sa": null,
     "So": null
   },
-  "weekStart": "2026-09-07",
-  "einkaufstag": "Mi",
-  "saved": "10.9.2026",
-  "bringImportedAt": "10.09., 20:28",
-  "bringItemCount": 8,
+  "weekStart": "2026-09-14",
+  "einkaufstag": "Mo",
+  "saved": "14.9.2026",
+  "bringImportedAt": null,
+  "bringItemCount": 0,
   "sugsAll": [
     {
       "id": 1,
-      "thema": "Schweizer Klassiker",
+      "thema": "Mediterran",
       "kochabende": [
-        "Mi"
+        "Mo",
+        "Mi",
+        "Fr"
       ],
       "gerichte": [
         {
+          "tag": "Mo",
+          "abend": "Auberginen-Tomaten-Auflauf",
+          "zeit_aktiv": "25m",
+          "zeit_total": "50m",
+          "mittag_nächster_tag": "Auflauf aufgewärmt"
+        },
+        {
           "tag": "Mi",
-          "abend": "Fotzelschnitte mit Käse und Apfelmus",
-          "zeit_aktiv": "15 Minuten",
-          "zeit_total": "25 Minuten",
-          "schritte_vegi": [
-            {
-              "titel": "Weissbrot schneiden",
-              "text": "Weissbrot in 1cm dicke Scheiben schneiden.",
-              "timer_min": 0,
-              "zutaten_schritt": [
-                {
-                  "name": "Weissbrot",
-                  "menge": "200 g"
-                }
-              ],
-              "zubehoer": [
-                "Brotmesser",
-                "Schneidebrett"
-              ],
-              "kontrolle": "Scheiben sind gleichmässig dick.",
-              "parallel_hinweis": ""
-            },
-            {
-              "titel": "Käse reiben",
-              "text": "Emmentaler Käse grob reiben.",
-              "timer_min": 0,
-              "zutaten_schritt": [
-                {
-                  "name": "Emmentaler Käse",
-                  "menge": "80 g"
-                }
-              ],
-              "zubehoer": [
-                "Küchenreibe"
-              ],
-              "kontrolle": "Käse ist grob gerieben.",
-              "parallel_hinweis": ""
-            },
-            {
-              "titel": "Eimischung vorbereiten",
-              "text": "Eier mit Milch, Salz und Pfeffer verquirlen.",
-              "timer_min": 0,
-              "zutaten_schritt": [
-                {
-                  "name": "Eier",
-                  "menge": "2 Stück"
-                },
-                {
-                  "name": "Milch",
-                  "menge": "100 ml"
-                },
-                {
-                  "name": "Salz",
-                  "menge": "2 g"
-                },
-                {
-                  "name": "Pfeffer",
-                  "menge": "1 g"
-                }
-              ],
-              "zubehoer": [
-                "Schüssel",
-                "Gabel"
-              ],
-              "kontrolle": "Mischung ist homogen.",
-              "parallel_hinweis": ""
-            },
-            {
-              "titel": "Brot in Eimischung tränken",
-              "text": "Brotscheiben beidseitig in die Eimischung tauchen und gut durchtränken.",
-              "timer_min": 0,
-              "zutaten_schritt": [
-                {
-                  "name": "Weissbrot",
-                  "menge": "200 g"
-                }
-              ],
-              "zubehoer": [
-                "Teller",
-                "Teller"
-              ],
-              "kontrolle": "Scheiben sind vollständig durchgetränkt.",
-              "parallel_hinweis": ""
-            },
-            {
-              "titel": "Käse auf Brot verteilen",
-              "text": "Auf jede getränkte Scheibe geriebenen Käse gleichmässig streuen.",
-              "timer_min": 0,
-              "zutaten_schritt": [
-                {
-                  "name": "Emmentaler Käse",
-                  "menge": "80 g"
-                }
-              ],
-              "zubehoer": [
-                "Teller"
-              ],
-              "kontrolle": "Käse ist gleichmässig verteilt.",
-              "parallel_hinweis": ""
-            },
-            {
-              "titel": "Butter in Pfanne erhitzen",
-              "text": "Butter in einer Bratpfanne bei mittlerer Hitze schmelzen.",
-              "timer_min": 2,
-              "zutaten_schritt": [
-                {
-                  "name": "Butter",
-                  "menge": "30 g"
-                }
-              ],
-              "zubehoer": [
-                "Bratpfanne",
-                "Pfannenwender"
-              ],
-              "kontrolle": "Butter ist geschmolzen und schäumt leicht.",
-              "parallel_hinweis": ""
-            },
-            {
-              "titel": "Fotzelschnitte braten",
-              "text": "Käseseite nach unten in die heisse Butter legen und 3-4 Minuten braten bis der Käse schmilzt.",
-              "timer_min": 4,
-              "zutaten_schritt": [
-                {
-                  "name": "Weissbrot",
-                  "menge": "200 g"
-                }
-              ],
-              "zubehoer": [
-                "Bratpfanne",
-                "Pfannenwender"
-              ],
-              "kontrolle": "Käse ist geschmolzen, Unterseite ist goldbraun.",
-              "parallel_hinweis": "Apfelmus in eine Schüssel füllen."
-            },
-            {
-              "titel": "Wenden und fertig braten",
-              "text": "Scheiben vorsichtig wenden und auf der anderen Seite 2-3 Minuten braten bis sie goldbraun sind.",
-              "timer_min": 3,
-              "zutaten_schritt": [
-                {
-                  "name": "Weissbrot",
-                  "menge": "200 g"
-                }
-              ],
-              "zubehoer": [
-                "Bratpfanne",
-                "Pfannenwender"
-              ],
-              "kontrolle": "Beide Seiten sind golden und knusprig.",
-              "parallel_hinweis": ""
-            },
-            {
-              "titel": "Apfelmus anrichten",
-              "text": "Fotzelschnitte auf Tellern anrichten und Apfelmus daneben oder darüber servieren.",
-              "timer_min": 0,
-              "zutaten_schritt": [
-                {
-                  "name": "Apfelmus",
-                  "menge": "200 g"
-                }
-              ],
-              "zubehoer": [
-                "Teller"
-              ],
-              "kontrolle": "Gericht ist appetitlich angerichtet.",
-              "parallel_hinweis": ""
-            }
-          ],
-          "zutaten": [
-            {
-              "name": "Weissbrot",
-              "menge": "200 g"
-            },
-            {
-              "name": "Eier",
-              "menge": "2 Stück"
-            },
-            {
-              "name": "Milch",
-              "menge": "100 ml"
-            },
-            {
-              "name": "Emmentaler Käse",
-              "menge": "80 g"
-            },
-            {
-              "name": "Butter",
-              "menge": "30 g"
-            },
-            {
-              "name": "Apfelmus",
-              "menge": "200 g"
-            },
-            {
-              "name": "Salz",
-              "menge": "2 g"
-            },
-            {
-              "name": "Pfeffer",
-              "menge": "1 g"
-            }
-          ],
-          "tipp": "Fotzelschnitte schmecken auch mit Marmelade oder Honig statt Apfelmus. Das Weissbrot muss altbacken sein, damit es die Eimischung besser aufnimmt.",
-          "_gekocht": "2026-09-10T19:23:33.566Z"
+          "abend": "Linsen-Gemüseeintopf mit Feta",
+          "zeit_aktiv": "20m",
+          "zeit_total": "40m",
+          "mittag_nächster_tag": "Eintopf aufgewärmt"
+        },
+        {
+          "tag": "Fr",
+          "abend": "Spinat-Ricotta-Cannelloni",
+          "zeit_aktiv": "30m",
+          "zeit_total": "45m",
+          "mittag_nächster_tag": "Cannelloni aufgewärmt"
         }
       ]
     },
     {
       "id": 2,
-      "thema": "Südwestdeutsch",
+      "thema": "Mediterran (Variante 2)",
       "kochabende": [
-        "Mi"
+        "Mo",
+        "Mi",
+        "Fr"
       ],
       "gerichte": [
         {
-          "tag": "Mi",
-          "abend": "Fotzelschnitte mit Käse und Apfelkompott",
+          "tag": "Mo",
+          "abend": "Linsenbolognese mit Pappardelle",
           "zeit_aktiv": "25m",
-          "zeit_total": "40m"
+          "zeit_total": "40m",
+          "mittag_nächster_tag": "Pasta-Reste aufgewärmt"
+        },
+        {
+          "tag": "Mi",
+          "abend": "Gemüse-Risotto mit Pilzen und Parmesan",
+          "zeit_aktiv": "30m",
+          "zeit_total": "45m",
+          "mittag_nächster_tag": "Risotto-Reste aufgewärmt"
+        },
+        {
+          "tag": "Fr",
+          "abend": "Tomaten-Kartoffel-Eintopf mit weissen Bohnen",
+          "zeit_aktiv": "20m",
+          "zeit_total": "50m",
+          "mittag_nächster_tag": "Eintopf-Reste aufgewärmt"
         }
       ]
     },
     {
       "id": 3,
-      "thema": "Schweizer Klassiker",
+      "thema": "Mediterran (Variante 3)",
       "kochabende": [
-        "Mi"
+        "Mo",
+        "Mi",
+        "Fr"
       ],
       "gerichte": [
         {
-          "tag": "Mi",
-          "abend": "Fotzelschnitte mit Käse und Apfelkompott",
+          "tag": "Mo",
+          "abend": "Gemüse-Auberginen-Gratin mit Tomatensosse",
           "zeit_aktiv": "25m",
-          "zeit_total": "35m"
+          "zeit_total": "50m",
+          "mittag_nächster_tag": "Gratin-Reste aufgewärmt"
+        },
+        {
+          "tag": "Mi",
+          "abend": "Linsensuppe mit Spinat und Feta",
+          "zeit_aktiv": "20m",
+          "zeit_total": "40m",
+          "mittag_nächster_tag": "Linsensuppe aufgewärmt"
+        },
+        {
+          "tag": "Fr",
+          "abend": "Risotto mit Pilzen und Thymian",
+          "zeit_aktiv": "30m",
+          "zeit_total": "40m",
+          "mittag_nächster_tag": "Risotto aufgewärmt"
         }
       ]
     }
   ],
-  "sugsPartial": false,
-  "einkaufDone": true,
-  "bringStale": false
+  "sugsPartial": true
 }
