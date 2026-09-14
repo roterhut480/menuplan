@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=yes">
-<title>Menüplan v6.57</title>
+<title>Menüplan v6.58</title>
 <meta name="theme-color" content="#e8390e">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -193,7 +193,7 @@ input[type=password]{letter-spacing:2px}
 
 <!-- HOME -->
 <div class="scr on" id="sh">
-  <div class="hero"><h1>Menüplan</h1><p id="hsub">v6.57 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
+  <div class="hero"><h1>Menüplan</h1><p id="hsub">v6.58 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
 
   <!-- Active plan card -->
 
@@ -220,13 +220,9 @@ input[type=password]{letter-spacing:2px}
         <button onclick="skipBringForNow()" style="width:100%;background:none;border:none;font-size:11px;color:var(--gr3);cursor:pointer;font-family:inherit;text-decoration:underline;margin-top:8px">Später</button>
       </div>
 
-      <div id="dash-bring-connected" style="display:none;background:#e8f5e9;border:.5px solid #a5d6a7;border-radius:var(--rlg);padding:11px 16px;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between">
-        <div style="display:flex;align-items:center;gap:8px">
-          <span style="font-size:16px">✅</span>
-          <span style="font-size:13px;color:#2e7d32;font-weight:600">Bring! verbunden</span>
-        </div>
-        <button onclick="clearBringSession(false)" style="background:none;border:none;font-size:11px;color:#2e7d32;cursor:pointer;font-family:inherit;text-decoration:underline">Trennen</button>
-      </div>
+      <!-- Der Verbunden-Hinweis steht jetzt in den Praeferenzen. Auf der
+           Startseite erscheint nur noch die Anmeldekarte, solange NICHT
+           verbunden ist - ein dauerhafter Haken nimmt dort nur Platz weg. -->
 
       <div id="dash-no-plan" style="display:none;background:#fff;border-radius:var(--rlg);border:.5px solid var(--bdr);padding:24px;text-align:center;margin-bottom:12px">
         <div style="font-size:40px;margin-bottom:10px">📅</div>
@@ -604,6 +600,20 @@ input[type=password]{letter-spacing:2px}
       <input id="pref-avoid" placeholder="z.B. Erdnuesse, Sellerie, zu scharf..."></div>
     <button class="btn btn-red" onclick="savePrefs()" style="margin-top:4px">Präferenzen speichern</button>
     <div id="prefs-saved" style="display:none;font-size:12px;color:var(--grn);text-align:center;margin-top:8px">&#10003; Gespeichert!</div>
+  </div></div>
+  <div class="card"><div class="cp">
+    <div class="clbl">Bring!-Verbindung</div>
+    <div id="prefs-bring-connected" style="display:none;align-items:center;justify-content:space-between;gap:10px;background:#e8f5e9;border:.5px solid #a5d6a7;border-radius:8px;padding:11px 14px">
+      <div style="display:flex;align-items:center;gap:8px">
+        <span style="font-size:16px">✅</span>
+        <span style="font-size:13px;color:#2e7d32;font-weight:600">Bring! verbunden</span>
+      </div>
+      <button onclick="clearBringSession(false)" style="background:none;border:none;font-size:11px;color:#2e7d32;cursor:pointer;font-family:inherit;text-decoration:underline">Trennen</button>
+    </div>
+    <div id="prefs-bring-off" style="display:none;font-size:12px;color:var(--gr3);line-height:1.5">
+      Nicht verbunden. Die Einkaufsliste lässt sich dann nicht an Bring! übertragen –
+      auf der Startseite kannst du dich anmelden.
+    </div>
   </div></div>
   <div class="card"><div class="cp">
     <div class="clbl">Lernprofil aus Bewertungen</div>
@@ -5373,8 +5383,8 @@ function updateDashboard() {
   // Bring!-Status auf dem Dashboard: verbunden / Karte zum Anmelden / ausgeblendet ("Später")
   var bringConnected = !!G.bToken;
   var bringSkipped = localStorage.getItem('bring_skip_' + session.username) === '1';
-  if ($('dash-bring-connected')) $('dash-bring-connected').style.display = bringConnected ? 'flex' : 'none';
   if ($('dash-bring-card')) $('dash-bring-card').style.display = (!bringConnected && !bringSkipped) ? 'block' : 'none';
+  updatePrefsBringUI();
   var h = new Date().getHours();
   var greeting = h < 12 ? 'Guten Morgen' : h < 18 ? 'Guten Tag' : 'Guten Abend';
   if ($('dash-greeting')) $('dash-greeting').textContent = greeting + ', ' + session.username + '!';
@@ -6316,7 +6326,16 @@ function loadPrefs(){
   if($('pref-einkaufstag')) $('pref-einkaufstag').value = G.einkaufstag;
   return prefs;}catch(e){return{};}
 }
+// Bring!-Zustand in den Praeferenzen. Wird sowohl beim Aktualisieren des
+// Dashboards als auch beim Oeffnen der Praeferenzen aufgerufen.
+function updatePrefsBringUI() {
+  var verbunden = !!G.bToken;
+  if ($('prefs-bring-connected')) $('prefs-bring-connected').style.display = verbunden ? 'flex' : 'none';
+  if ($('prefs-bring-off')) $('prefs-bring-off').style.display = verbunden ? 'none' : 'block';
+}
+
 function openPrefs(){
+  updatePrefsBringUI();
   // Unbestaetigte Auswahl aus einem frueheren, abgebrochenen Besuch verwerfen -
   // sonst wurde sie beim naechsten Speichern stillschweigend uebernommen.
   window._tempPrefs = {};
