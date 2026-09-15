@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=yes">
-<title>Menüplan v6.60</title>
+<title>Menüplan v6.61</title>
 <meta name="theme-color" content="#e8390e">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -23,7 +23,13 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
    transform:translateZ(0) ist zwingend - es macht #app-shell zum Containing
    Block fuer position:fixed-Kinder (Cook-Footer, Modals, Toasts). Ein blosses
    position:relative reicht dafuer NICHT aus. */
-#app-shell{max-width:480px;margin:0 auto;position:relative;transform:translateZ(0);min-height:100vh;background:#f3f3f3;box-shadow:0 0 24px rgba(0,0,0,.06)}
+#app-shell{max-width:480px;margin:0 auto;position:relative;transform:translateZ(0);min-height:100vh;background:#f3f3f3;box-shadow:0 0 24px rgba(0,0,0,.06);transition:max-width .2s}
+/* Die Druckansicht ist die einzige Seite, die nicht in Handybreite gehoert:
+   auf Rechner und Tablet soll das Rezept als eine Seite lesbar sein, mit
+   Zutaten und Zubereitung nebeneinander. */
+#app-shell.breit{max-width:900px}
+/* Unterhalb dieser Breite stapeln sich die beiden Spalten wieder. */
+@media (max-width:700px){ #pcon .druck-spalten{display:block !important} }
 .scr{display:none;min-height:100vh;background:#f3f3f3;padding-bottom:32px}
 .scr.on{display:block}
 /* topbar */
@@ -193,7 +199,7 @@ input[type=password]{letter-spacing:2px}
 
 <!-- HOME -->
 <div class="scr on" id="sh">
-  <div class="hero"><h1>Menüplan</h1><p id="hsub">v6.60 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
+  <div class="hero"><h1>Menüplan</h1><p id="hsub">v6.61 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
 
   <!-- Active plan card -->
 
@@ -743,6 +749,9 @@ function go(id) {
   var screens = document.querySelectorAll('.scr');
   for (var i = 0; i < screens.length; i++) screens[i].classList.remove('on');
   $(id).classList.add('on');
+  // Nur die Druckansicht darf die Handybreite verlassen.
+  var shell = document.getElementById('app-shell');
+  if (shell) shell.classList.toggle('breit', id === 'sp');
   window.scrollTo(0, 0);
   if (id === 'snew') setTimeout(initDayPicker, 50);
 }
@@ -3898,7 +3907,7 @@ function baueDruckInhalt(ri) {
       (g.mittag_tag ? '<p style="font-size:12px;color:#888;margin:0">&#8594; ' + esc(g.mittag_tag) + ': ' + esc(g.mittag_nächster_tag) + '</p>' : '') +
     '</div>' +
     metaHtml +
-    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:24px">' +
+    '<div class="druck-spalten" style="display:grid;grid-template-columns:1fr 1.3fr;gap:28px">' +
       '<div>' +
         '<h2 style="font-size:14px;font-weight:700;color:#1a1a1a;border-bottom:2px solid #e8390e;padding-bottom:6px;margin-bottom:12px">Zutaten</h2>' +
         '<table style="width:100%;border-collapse:collapse">' + zRows + '</table>' +
@@ -3936,7 +3945,9 @@ function baueDruckHTML(ri) {
     '<title>' + esc((g && g.abend) || 'Rezept') + '</title>' +
     '<style>body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;' +
     'margin:0;padding:24px;background:#fff;color:#1a1a1a;max-width:900px}' +
-    '@media(max-width:700px){div[style*="grid-template-columns"]{display:block!important}}' +
+    // Auf schmalen Bildschirmen stapeln, sonst zwei Spalten. Zielt jetzt auf
+    // die Klasse statt auf ein Inline-Stil-Fragment - das war zu brüchig.
+    '@media(max-width:700px){.druck-spalten{display:block!important}}' +
     '@media print{body{padding:0}}</style></head><body>' + inhalt + '</body></html>';
 }
 
