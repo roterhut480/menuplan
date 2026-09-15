@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=yes">
-<title>Menüplan v6.61</title>
+<title>Menüplan v6.62</title>
 <meta name="theme-color" content="#e8390e">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -199,7 +199,7 @@ input[type=password]{letter-spacing:2px}
 
 <!-- HOME -->
 <div class="scr on" id="sh">
-  <div class="hero"><h1>Menüplan</h1><p id="hsub">v6.61 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
+  <div class="hero"><h1>Menüplan</h1><p id="hsub">v6.62 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
 
   <!-- Active plan card -->
 
@@ -984,7 +984,11 @@ window.addEventListener('DOMContentLoaded', function() {
 
 
 function doLogin() {
-  var username = ($('login-user').value || '').trim().toLowerCase().replace(/[^a-z0-9_.@-]/g, '').replace(/[.@-]+$/, '');
+  // Gleiche Regel wie validUsername() im Worker: a-z, 0-9, _ und -, 2 bis 32
+  // Zeichen. Punkte und @ waren hier noch erlaubt, wurden vom Worker aber
+  // abgelehnt - der Login gelang, der Zugriff auf die Daten dann nicht.
+  var username = ($('login-user').value || '').trim().toLowerCase()
+    .replace(/[^a-z0-9_-]/g, '').slice(0, 32);
   var pw = $('login-pw').value;
   var err = $('login-err');
   var loginBtn = $('login-btn');
@@ -1762,6 +1766,11 @@ function doImportItems() {
   // und der catch schluckte jeden anderen Fehler. Ein fehlgeschlagenes Leeren
   // war dadurch von einem erfolgreichen nicht zu unterscheiden - der Import
   // meldete anschliessend trotzdem Erfolg.
+  // Zustand des VORHERIGEN Imports zuruecksetzen - sonst wuerde ein alter
+  // Fehlschlag beim naechsten Versuch erneut gemeldet oder umgekehrt ein
+  // frischer Fehlschlag von einem alten Erfolg verdeckt.
+  G.bringClearFailed = null;
+  G.bringClearVerified = false;
   G.bringLog = [];
   function blog(line) {
     G.bringLog.push(line);
@@ -1781,14 +1790,16 @@ function doImportItems() {
       .then(function(d) {
         var arr = extractBringPurchase(d);
         if (arr === null) {
-          blog('WARNUNG: Artikel nicht gefunden. Felder: ' + Object.keys(d || {}).join(', ') +
+          blog('Artikel nicht gefunden. Felder: ' + Object.keys(d || {}).join(', ') +
                (d && d.items && !Array.isArray(d.items)
                  ? ' | items: ' + Object.keys(d.items).join(', ') : ''));
-          return;
+          // Unbekannte Antwortstruktur heisst: wir wissen nicht, ob die Liste
+          // leer ist. Das darf nicht als Erfolg durchgehen.
+          throw new Error('Bring!-Antwort nicht verstanden - Liste nicht lesbar.');
         }
         blog('Gefunden: ' + arr.length + ' Artikel');
         if (arr.length) blog('Feldnamen: ' + Object.keys(arr[0] || {}).join(', '));
-        if (!arr.length) return;
+        if (!arr.length) { G.bringClearVerified = true; return; }
         var removes = arr.map(function(it) {
           return { itemId: bringItemName(it), spec: bringItemSpec(it), operation: 'REMOVE',
                    accuracy: '0.0', altitude: '0.0', latitude: '0.0', longitude: '0.0' };
@@ -1816,7 +1827,11 @@ function doImportItems() {
               var restArr = extractBringPurchase(d2);
               var rest = restArr ? restArr.length : -1;
               blog('Kontrolle nach Leeren: ' + (rest < 0 ? 'nicht lesbar' : rest + ' Artikel uebrig'));
-              if (rest > 0) blog('WARNUNG: Liste wurde NICHT vollstaendig geleert');
+              // Nur ein NACHGEWIESEN leeres Ergebnis zaehlt als Erfolg. Eine
+              // unlesbare Kontrolle ist kein Beweis, sondern ein Fehler.
+              if (rest === 0) { G.bringClearVerified = true; return; }
+              if (rest < 0) throw new Error('Leeren nicht überprüfbar (Liste nicht lesbar).');
+              throw new Error('Liste wurde nicht geleert (' + rest + ' Artikel übrig).');
             });
         });
       })
@@ -1841,6 +1856,22 @@ function doImportItems() {
 
   // Add items
   promise.then(function() {
+    // Wurde "Liste zuerst leeren" gewaehlt, das Leeren aber nicht bestaetigt,
+    // wuerden die neuen Artikel an die ALTE Liste angehaengt - genau der
+    // Zustand, den der Haken verhindern soll. Deshalb nachfragen statt still
+    // fortzufahren.
+    if (clearFirst && !G.bringClearVerified) {
+      var grund = G.bringClearFailed || 'Das Leeren konnte nicht bestätigt werden.';
+      if (!confirm('Die Bring!-Liste wurde NICHT geleert.\n\n' + grund +
+                   '\n\nDie ' + items.length + ' Artikel würden zur bestehenden Liste ' +
+                   'dazukommen. Trotzdem hinzufügen?')) {
+        showSt('ist', 'Import abgebrochen – die Liste wurde nicht geleert.', 'er');
+        btn.innerHTML = 'In Bring! importieren';
+        btn.disabled = false;
+        $('iprog').style.display = 'none';
+        throw new Error('ABGEBROCHEN');
+      }
+    }
     $('iprogb').style.width = '0%';
     var changes = items.map(function(it) {
       return { itemId: it.name, spec: it.menge, operation: 'TO_PURCHASE', accuracy: '0.0', altitude: '0.0', latitude: '0.0', longitude: '0.0' };
@@ -1892,6 +1923,8 @@ function doImportItems() {
   .catch(function(e) {
     btn.innerHTML = 'Nochmals versuchen'; btn.disabled = false;
     if (e && /401|403|expired|Unauthorized/i.test(e.message || '')) { clearBringSession(true); return; }
+    // Ein bewusster Abbruch ist kein Fehlschlag - die Meldung steht schon.
+    if (e && e.message === 'ABGEBROCHEN') return;
     showSt('ist', 'Import fehlgeschlagen: ' + e.message, 'er');
   });
 }
@@ -3832,7 +3865,10 @@ function teileRezept(ri) {
     $('qr-inhalt').innerHTML = svg
       ? '<div style="background:#fff;padding:10px;border-radius:10px;display:inline-block">' + svg + '</div>'
       : '<div style="font-size:13px;color:var(--gr3)">QR-Code konnte nicht erzeugt werden.</div>';
-    $('qr-hinweis').innerHTML = 'Mit dem Tablet scannen. Der Link gilt 24 Stunden.' +
+    // Ausdruecklich sagen, dass der Link ungeschuetzt ist - wer ihn hat, sieht
+    // das Rezept, ohne sich anzumelden.
+    $('qr-hinweis').innerHTML = 'Mit dem Tablet scannen. <b>Wer diesen Link hat, ' +
+      'kann das Rezept 24 Stunden lang ohne Anmeldung ansehen.</b> Danach verfällt er.' +
       '<div style="margin-top:8px"><a href="' + esc(url) + '" target="_blank" ' +
       'style="color:var(--red);font-size:11px;word-break:break-all">' + esc(url) + '</a></div>';
   })
@@ -3965,7 +4001,7 @@ function saveToHistory(planData) {
     saved: new Date().toLocaleDateString('de-CH'),
     thema: sug ? sug.thema : 'Menüplan',
     personen: planData.personen || 2,
-    kochabende: planData.n || 3,
+    kochabende: planData.n != null ? planData.n : 3,
     reste: planData.reste,
     freeze: planData.freeze,
     budget: planData.budget,
@@ -4654,10 +4690,14 @@ function showSwapToast(msg, color) {
 // einzelne Datei und funktioniert installiert auch offline. Ein CDN-Skript
 // wuerde das aufheben, ein QR-Dienst wuerde die Links an Fremde schicken.
 // Byte-Modus, Fehlerkorrektur L, Version automatisch.
+// NUR Version 1 bis 6. Ab Version 7 verlangt der Standard zusaetzliche
+// Ausrichtungsmuster und ein eigenes Versionsinformationsfeld - beides ist hier
+// nicht umgesetzt, die erzeugten Codes waeren unlesbar. Gegen eine
+// Referenzimplementierung geprueft: 1-6 stimmen bitgenau, 7-10 nicht.
+// Version 6 fasst rund 134 Byte, die Teilen-Links brauchen etwa 60.
 var QR_EC_L = {
   // [Version]: [Datenbytes gesamt, EC-Bytes pro Block, Anzahl Bloecke]
-  1:[19,7,1], 2:[34,10,1], 3:[55,15,1], 4:[80,20,1], 5:[108,26,1],
-  6:[136,18,2], 7:[156,20,2], 8:[194,24,2], 9:[232,30,2], 10:[274,18,4]
+  1:[19,7,1], 2:[34,10,1], 3:[55,15,1], 4:[80,20,1], 5:[108,26,1], 6:[136,18,2]
 };
 
 function qrGaloisTabellen() {
@@ -4795,7 +4835,7 @@ function qrBaueMatrix(version, bits) {
 function qrMatrix(text) {
   var utf8 = unescape(encodeURIComponent(text));
   var version = 0, info = null;
-  for (var v = 1; v <= 10; v++) {
+  for (var v = 1; v <= 6; v++) {
     var i = QR_EC_L[v];
     var kopf = 4 + (v < 10 ? 8 : 16);           // Modusanzeige + Laengenfeld
     if (utf8.length + Math.ceil(kopf / 8) <= i[0]) { version = v; info = i; break; }
@@ -5684,7 +5724,7 @@ function renderHistoryList(history) {
       +'<div style="padding:10px 14px;border-bottom:.5px solid var(--gr)">'
         +'<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:6px"><div style="font-size:15px;font-weight:700;color:var(--txt);flex:1">'+esc(e.thema||'Menüplan')+stars+'</div>'+statusBadge(status)+'</div>'
         +(isLoved && e.tags && e.tags.includes && e.tags.includes('unbedingt wieder') ? '<div style="font-size:11px;color:var(--red);font-weight:600;margin-bottom:4px">♥ unbedingt wieder</div>' : '')
-        +'<div style="font-size:11px;color:var(--gr3)">'+esc(e.saved||e.date||'')+' · '+(e.personen||2)+' Pers. · '+(e.kochabende||3)+' Abende</div>'
+        +'<div style="font-size:11px;color:var(--gr3)">'+esc(e.saved||e.date||'')+' · '+(e.personen||2)+' Pers. · '+(e.kochabende != null ? e.kochabende : 3)+' Abende</div>'
       +'</div>'
       +'<div style="padding:8px 14px">'+dishes+'</div>'
       +'<div style="padding:0 14px 10px;display:flex;flex-direction:column;gap:6px">'
