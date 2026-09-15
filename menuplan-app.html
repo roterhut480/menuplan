@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=yes">
-<title>Menüplan v6.62</title>
+<title>Menüplan v6.63</title>
 <meta name="theme-color" content="#e8390e">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -199,7 +199,7 @@ input[type=password]{letter-spacing:2px}
 
 <!-- HOME -->
 <div class="scr on" id="sh">
-  <div class="hero"><h1>Menüplan</h1><p id="hsub">v6.62 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
+  <div class="hero"><h1>Menüplan</h1><p id="hsub">v6.63 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
 
   <!-- Active plan card -->
 
@@ -985,15 +985,20 @@ window.addEventListener('DOMContentLoaded', function() {
 
 function doLogin() {
   // Gleiche Regel wie validUsername() im Worker: a-z, 0-9, _ und -, 2 bis 32
-  // Zeichen. Punkte und @ waren hier noch erlaubt, wurden vom Worker aber
-  // abgelehnt - der Login gelang, der Zugriff auf die Daten dann nicht.
-  var username = ($('login-user').value || '').trim().toLowerCase()
-    .replace(/[^a-z0-9_-]/g, '').slice(0, 32);
+  // Zeichen. NICHT stillschweigend zurechtschneiden - aus "pam.test" wuerde
+  // sonst unbemerkt "pamtest" und der Nutzer landete auf einem fremden Konto
+  // oder wunderte sich ueber eine abgelehnte Anmeldung. Lieber klar ablehnen.
+  var username = ($('login-user').value || '').trim().toLowerCase();
   var pw = $('login-pw').value;
   var err = $('login-err');
   var loginBtn = $('login-btn');
 
   if (!username) { err.textContent = 'Bitte Benutzernamen eingeben'; err.style.display = 'block'; return; }
+  if (!/^[a-z0-9_-]{2,32}$/.test(username)) {
+    err.textContent = 'Benutzername: 2–32 Zeichen, nur a–z, 0–9, _ und – (keine Punkte, kein @).';
+    err.style.display = 'block';
+    return;
+  }
   if (!pw) { err.textContent = 'Bitte Passwort eingeben'; err.style.display = 'block'; return; }
 
   if (loginBtn) { loginBtn.disabled = true; loginBtn.textContent = 'Prüfe...'; }
@@ -1046,24 +1051,6 @@ function doLogin() {
 }
 
 
-function getGHToken() {
-  var session = getSession();
-  if (!session) return null;
-  var users = [];
-  var user = users.find(function(u) { return u.username === session.username; });
-  if (!user) return null;
-  try {
-    var dec = decodeURIComponent(escape(atob(null)));
-    var parts = dec.split('|||');
-    if (parts[1] === session.pw) return parts[0];
-  } catch(e) {}
-  return null;
-}
-
-function nsKey(key) {
-  var s = getSession();
-  return s ? key + '_' + s.username : key;
-}
 function getSession() {
   try { return JSON.parse(localStorage.getItem('gh_session')); } catch(e) { return null; }
 }
@@ -1921,10 +1908,13 @@ function doImportItems() {
     }
   })
   .catch(function(e) {
+    // Ein bewusster Abbruch ist kein Fehlschlag: Meldung und Knopftext stehen
+    // bereits richtig. Diese Pruefung muss VOR dem Zuruecksetzen des
+    // Knopftextes kommen, sonst ueberschreibt "Nochmals versuchen" das zuvor
+    // gesetzte "In Bring! importieren".
+    if (e && e.message === 'ABGEBROCHEN') return;
     btn.innerHTML = 'Nochmals versuchen'; btn.disabled = false;
     if (e && /401|403|expired|Unauthorized/i.test(e.message || '')) { clearBringSession(true); return; }
-    // Ein bewusster Abbruch ist kein Fehlschlag - die Meldung steht schon.
-    if (e && e.message === 'ABGEBROCHEN') return;
     showSt('ist', 'Import fehlgeschlagen: ' + e.message, 'er');
   });
 }
@@ -6493,16 +6483,6 @@ function toggleUserMenu(){
 }
 
 // ─── TOKEN & PASSWORT ──────────────────────────────────────
-function showTokenRefresh(){var s=$('token-refresh-section');if(s)s.style.display=s.style.display==='none'?'block':'none';}
-function refreshToken(){
-  var tok=$('new-token')?$('new-token').value.trim():'';
-  if(!tok||!tok.startsWith('ghp_')){alert('Bitte gültigen GitHub Token eingeben (ghp_...)');return;}
-  var session=getSession();if(!session)return;
-  var users=[];var user=users.find(function(u){return u.username===session.username;});
-  /* legacy token update removed */
-  if($('new-token'))$('new-token').value='';if($('token-refresh-section'))$('token-refresh-section').style.display='none';
-  alert('Token erneuert!');
-}
 </script>
 <script>
 // ─── RATING ────────────────────────────────────────────────
@@ -6670,7 +6650,7 @@ var STAR_LABELS = ['', 'Nicht so gut', 'Geht so', 'Gut', 'Sehr gut', 'Ausgezeich
       <div class="fld"><label>Benutzername</label>
         <input type="text" id="admin-new-name" placeholder="z.B. familie-meier" autocapitalize="none" autocorrect="off" spellcheck="false"></div>
       <div class="fld"><label>Passwort (mind. 8 Zeichen)</label>
-        <input type="text" id="admin-new-pw" placeholder="Passwort vergeben" autocomplete="off"></div>
+        <input type="password" id="admin-new-pw" placeholder="Passwort vergeben" autocomplete="new-password"></div>
       <label style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--txt);margin:4px 0 12px;cursor:pointer">
         <input type="checkbox" id="admin-new-admin" style="width:18px;height:18px"> Darf ebenfalls Benutzer verwalten</label>
       <button class="btn btn-red" id="admin-add-btn" onclick="adminAddUser()" style="width:100%;padding:12px">Benutzer anlegen</button>
@@ -6686,8 +6666,10 @@ var STAR_LABELS = ['', 'Nicht so gut', 'Geht so', 'Gut', 'Sehr gut', 'Ausgezeich
   </div>
 
   <div style="font-size:11px;color:var(--gr3);padding:4px 20px 30px;line-height:1.5">
-    Mit <b>MP_USERS</b> markierte Konten stammen aus der Cloudflare-Variable. Sie lassen sich
-    hier nicht löschen, aber über „Passwort" auf ein gehashtes Konto umstellen.
+    Mit <b>MP_USERS</b> markierte Konten stammen aus der Cloudflare-Variable. Über
+    „Passwort" lassen sie sich auf ein gehashtes Konto umstellen. Gelöschte Konten
+    werden dauerhaft gesperrt – ihr Name bleibt belegt, damit niemand die Pläne
+    der früheren Person zu sehen bekommt.
   </div>
 </div>
 
@@ -6729,9 +6711,8 @@ var STAR_LABELS = ['', 'Nicht so gut', 'Geht so', 'Gut', 'Sehr gut', 'Ausgezeich
 </div>
 
 <!-- TOKEN REFRESH (versteckt, für Notfall) -->
-<div id="token-refresh-modal" style="display:none">
-  <input type="password" id="new-token" placeholder="ghp_...">
-</div>
+<!-- Der frueher hier versteckte Token-Dialog ist entfallen: der GitHub-Token
+     liegt ausschliesslich im Worker, die App kennt ihn gar nicht. -->
 
 </div><!-- /app-shell -->
 </body>
