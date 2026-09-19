@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=yes">
-<title>Menüplan v6.63</title>
+<title>Menüplan v6.64</title>
 <meta name="theme-color" content="#e8390e">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -199,7 +199,7 @@ input[type=password]{letter-spacing:2px}
 
 <!-- HOME -->
 <div class="scr on" id="sh">
-  <div class="hero"><h1>Menüplan</h1><p id="hsub">v6.63 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
+  <div class="hero"><h1>Menüplan</h1><p id="hsub">v6.64 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
 
   <!-- Active plan card -->
 
@@ -2416,6 +2416,12 @@ function goSuggest() {
 
   // Prompt kommt aus dem Worker
 
+  // Jedem der drei parallelen Aufrufe eine EIGENE Küche zuweisen. Vorher
+  // sollte jeder Aufruf selbst "eine andere Küche" waehlen - was nicht gehen
+  // kann, weil keiner die anderen kennt. Nur wenn der Nutzer kein eigenes
+  // Thema eingetippt hat.
+  var _kuechen = theme ? [] : waehleKuechen(3, letzteKuechen(2));
+
   // Load all 3 suggestions in parallel
   function loadOne(id) {
     // 400 war zu knapp: ein einzelner Vorschlag mit drei Gerichten liegt genau
@@ -2423,7 +2429,12 @@ function goSuggest() {
     // sporadisch nur 1 von 3 Vorschlaegen. Ausgabe-Tokens werden nur nach
     // tatsaechlichem Verbrauch berechnet, ein hoeheres Limit kostet also
     // nichts, solange die Antwort kurz bleibt.
-    return callWorker('overview', msg + ' Vorschlag ' + id + ' von 3. Wähle eine andere Küche als die anderen Vorschläge.', 2000)
+    var _kueche = _kuechen[id - 1];
+    var _zusatz = _kueche
+      ? ' Küche für diesen Vorschlag: ' + _kueche + '. Setze das Thema auf "' + _kueche +
+        '" und waehle typische Gerichte dieser Küche.'
+      : ' Vorschlag ' + id + ' von 3.';
+    return callWorker('overview', msg + _zusatz, 2000)
       .then(function(raw) {
           var parsed = parseJSON(raw);
           var validErr = validateOverview(parsed, G.n, expectedCookingTags);
@@ -6438,6 +6449,91 @@ function savePrefs(){
   G.einkaufstag = prefs.einkaufstag;
   if($('prefs-saved')){$('prefs-saved').style.display='block';setTimeout(function(){$('prefs-saved').style.display='none';go('sh');},1500);}
 }
+// ─── KÜCHENROTATION ───────────────────────────────────────
+// Die drei Vorschlaege entstehen in DREI PARALLELEN Aufrufen. Keiner weiss,
+// was die anderen waehlen - die Anweisung "waehle eine andere Kueche als die
+// anderen Vorschlaege" war deshalb wirkungslos: in 17 von 30 Faellen kam
+// zweimal dasselbe Thema. Die Kueche wird daher hier vergeben, nicht geraten.
+//
+// Die Gewichte folgen der Verbreitung in Schweizer Haushalten, nicht einer
+// Gleichverteilung - sonst gaebe es jede dritte Woche aethiopisch.
+var KUECHEN = [
+  // Europäisch inkl. Schweiz, zusammen ~47
+  { name: 'Schweizerisch',      region: 'Europäisch',   w: 14 },
+  { name: 'Deutsch',            region: 'Europäisch',   w:  7 },
+  { name: 'Französisch',        region: 'Europäisch',   w:  8 },
+  { name: 'Österreichisch',     region: 'Europäisch',   w:  4 },
+  { name: 'Osteuropäisch',      region: 'Europäisch',   w:  5 },
+  { name: 'Skandinavisch',      region: 'Europäisch',   w:  4 },
+  { name: 'Britisch',           region: 'Europäisch',   w:  3 },
+  { name: 'Ungarisch',          region: 'Europäisch',   w:  2 },
+  // Mediterran, zusammen ~32
+  { name: 'Italienisch',        region: 'Mediterran',   w: 13 },
+  { name: 'Spanisch',           region: 'Mediterran',   w:  5 },
+  { name: 'Griechisch',         region: 'Mediterran',   w:  5 },
+  { name: 'Libanesisch',        region: 'Mediterran',   w:  3 },
+  { name: 'Marokkanisch',       region: 'Mediterran',   w:  3 },
+  { name: 'Kroatisch',          region: 'Mediterran',   w:  2 },
+  { name: 'Tunesisch',          region: 'Mediterran',   w:  1 },
+  // Asiatisch, zusammen ~12
+  { name: 'Indisch',            region: 'Asiatisch',    w:  4 },
+  { name: 'Thailändisch',       region: 'Asiatisch',    w:  3 },
+  { name: 'Chinesisch',         region: 'Asiatisch',    w:  2 },
+  { name: 'Japanisch',          region: 'Asiatisch',    w:  1 },
+  { name: 'Vietnamesisch',      region: 'Asiatisch',    w:  1 },
+  { name: 'Koreanisch',         region: 'Asiatisch',    w:  1 },
+  // Amerikanisch, zusammen ~5
+  { name: 'Mexikanisch',        region: 'Amerikanisch', w:  3 },
+  { name: 'US-amerikanisch',    region: 'Amerikanisch', w:  1 },
+  { name: 'Peruanisch',         region: 'Amerikanisch', w:  1 },
+  // Selten
+  { name: 'Äthiopisch',         region: 'Afrikanisch',  w:  1 },
+  { name: 'Westafrikanisch',    region: 'Afrikanisch',  w:  1 },
+  { name: 'Pazifisch',          region: 'Ozeanisch',    w:  1 }
+];
+
+// Zieht n verschiedene Küchen, gewichtet. Küchen der letzten Wochen werden
+// ausgeschlossen, damit nicht zweimal hintereinander dasselbe kommt.
+function waehleKuechen(n, ausschluss) {
+  var rest = KUECHEN.filter(function(k) {
+    return (ausschluss || []).indexOf(k.name) < 0;
+  });
+  if (rest.length < n) rest = KUECHEN.slice();   // Ausschluss notfalls aufgeben
+  var gewaehlt = [];
+  for (var i = 0; i < n && rest.length; i++) {
+    var summe = rest.reduce(function(a, k) { return a + k.w; }, 0);
+    var wurf = Math.random() * summe;
+    var idx = 0;
+    for (var j = 0; j < rest.length; j++) {
+      wurf -= rest[j].w;
+      if (wurf <= 0) { idx = j; break; }
+      idx = j;
+    }
+    gewaehlt.push(rest[idx]);
+    var region = rest[idx].region;
+    // Nur die gezogene Kueche entfernen, nicht die ganze Region. Bei sechs
+    // Regionen und drei Ziehungen wuerde sonst jede Woche eine seltene Region
+    // den dritten Platz fuellen - Europaeisch kaeme auf 32 statt 47 Prozent
+    // und jede achte Woche haette einen aethiopischen Vorschlag.
+    rest = rest.filter(function(k) { return k.name !== gewaehlt[gewaehlt.length-1].name; });
+    // Aber: hoechstens zwei Vorschlaege aus derselben Region, sonst sind es
+    // drei Spielarten desselben Themas.
+    var ausRegion = gewaehlt.filter(function(k) { return k.region === region; }).length;
+    if (ausRegion >= 2) rest = rest.filter(function(k) { return k.region !== region; });
+  }
+  return gewaehlt.map(function(k) { return k.name; });
+}
+
+// Küchen der zuletzt geplanten Wochen, damit sie nicht gleich wiederkommen.
+function letzteKuechen(anzahl) {
+  try {
+    var hist = JSON.parse(localStorage.getItem(userKey('local_history')) || '[]');
+    return hist.slice(0, anzahl || 2)
+      .map(function(h) { return String(h.thema || '').split(' (')[0]; })
+      .filter(Boolean);
+  } catch (e) { return []; }
+}
+
 function buildLearningProfile(){
   var ratings=[];
   var _prefs={}; try{_prefs=JSON.parse(localStorage.getItem(getPrefKey())||'{}');}catch(e){}
@@ -6454,8 +6550,24 @@ function buildLearningProfile(){
   if(!ratings.length)return'';
   var loved=ratings.filter(function(r){return r.stars>=4;});var disliked=ratings.filter(function(r){return r.stars<=2;});var feedbacks=ratings.filter(function(r){return r.feedback&&r.feedback.length>3;});
   var profile='';
-  if(loved.length)profile+='Gut bewertet (ähnlichen Stil): '+loved.slice(0,4).map(function(r){return r.name+(r.tags&&r.tags.length?' ['+r.tags.join(',')+']':'')+'('+r.stars+'★)';}).join(', ')+'. ';
-  if(disliked.length)profile+='Schlecht bewertet (vermeiden): '+disliked.slice(0,3).map(function(r){return r.name+(r.tags&&r.tags.length?' ['+r.tags.join(',')+']':'');}).join(', ')+'. ';
+  // Der Stil-Hinweis greift erst ab 5 Bewertungen. Zwei Einträge sind keine
+  // gelernte Vorliebe, sondern Zufall - bei uns hat ein einziges gut
+  // bewertetes Moussaka zehn Generierungen lang Auberginen erzeugt, weil die
+  // fruehere Formulierung als Stilvorgabe gelesen wurde.
+  var STIL_AB = 5;
+  if (loved.length >= STIL_AB) {
+    profile += 'Kamen gut an (ab und zu etwas in dieser Richtung, aber nicht jede Woche): '
+      + loved.slice(0,4).map(function(r){return r.name+(r.tags&&r.tags.length?' ['+r.tags.join(',')+']':'')+'('+r.stars+'★)';}).join(', ') + '. ';
+  }
+  if (disliked.length) {
+    // Einzelne schlecht bewertete Gerichte werden ab der ersten Bewertung
+    // nicht wiederholt - das ist etwas anderes als eine Stilvorgabe.
+    profile += 'Diese Gerichte nicht wiederholen: '
+      + disliked.slice(0,3).map(function(r){return r.name+(r.tags&&r.tags.length?' ['+r.tags.join(',')+']':'');}).join(', ') + '. ';
+    if (disliked.length >= STIL_AB) {
+      profile += 'Ähnliches nur noch selten bis gar nicht. ';
+    }
+  }
   if(feedbacks.length)profile+='Feedback: '+feedbacks.slice(0,3).map(function(r){return (r.tags&&r.tags.length?r.tags.join(', ')+': ':'')+r.feedback;}).join('; ')+'. ';
   // Positive tags summary
   var positiveTags = ratings.filter(function(r){return r.tags&&r.tags.some(function(t){return t==='unbedingt wieder'||t==='gut zum Einfrieren'||t==='gute Reste';});});
