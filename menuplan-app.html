@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=yes">
-<title>Menüplan v6.70</title>
+<title>Menüplan v6.72</title>
 <meta name="theme-color" content="#5B7C78">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -257,7 +257,7 @@ input[type=password]{letter-spacing:2px}
 
 <!-- HOME -->
 <div class="scr on" id="sh">
-  <div class="hero"><h1>Menüplan</h1><p id="hsub">v6.70 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
+  <div class="hero"><h1>Menüplan</h1><p id="hsub">v6.72 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
 
   <!-- Active plan card -->
 
@@ -821,6 +821,61 @@ function go(id) {
 
 document.addEventListener('DOMContentLoaded', function() { setTimeout(initDayPicker, 100); });
 
+// ─── OFFLINE ──────────────────────────────────────────────
+// Ohne Service Worker zeigt die installierte App ohne Netz eine
+// Browser-Fehlerseite - obwohl alle Daten lokal liegen. sw.js muss neben
+// dieser Datei im selben Ordner liegen.
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function() {
+    navigator.serviceWorker.register('sw.js').then(function(reg) {
+      // Wartet eine neue Fassung? Dann anbieten statt still zu bleiben.
+      function pruefeUpdate() {
+        if (reg.waiting) zeigeUpdateHinweis(reg);
+      }
+      pruefeUpdate();
+      reg.addEventListener('updatefound', function() {
+        var neu = reg.installing;
+        if (!neu) return;
+        neu.addEventListener('statechange', function() {
+          if (neu.state === 'installed' && navigator.serviceWorker.controller) {
+            zeigeUpdateHinweis(reg);
+          }
+        });
+      });
+    }).catch(function(e) { console.warn('Service Worker:', e && e.message); });
+
+    // Nach dem Wechsel einmal neu laden, damit keine gemischten Staende
+    // entstehen.
+    var neugeladen = false;
+    navigator.serviceWorker.addEventListener('controllerchange', function() {
+      if (neugeladen) return;
+      neugeladen = true;
+      window.location.reload();
+    });
+  });
+}
+
+function zeigeUpdateHinweis(reg) {
+  if (document.getElementById('update-hinweis')) return;
+  var d = document.createElement('div');
+  d.id = 'update-hinweis';
+  d.style.cssText = 'position:fixed;bottom:20px;left:50%;transform:translateX(-50%);' +
+    'background:var(--primary);color:#fff;padding:10px 12px 10px 16px;border-radius:12px;' +
+    'font-size:13px;font-weight:600;z-index:999;display:flex;align-items:center;gap:12px;max-width:92vw';
+  var t = document.createElement('span');
+  t.textContent = 'Neue Version verfügbar';
+  var b = document.createElement('button');
+  b.textContent = 'Neu laden';
+  b.style.cssText = 'background:rgba(255,255,255,.2);border:none;color:#fff;font-weight:700;' +
+    'font-size:12px;padding:6px 10px;border-radius:8px;cursor:pointer;font-family:inherit;flex-shrink:0';
+  b.onclick = function() {
+    if (reg.waiting) reg.waiting.postMessage('jetzt-aktualisieren');
+    d.remove();
+  };
+  d.appendChild(t); d.appendChild(b);
+  document.body.appendChild(d);
+}
+
 // Zurueck in der App (Tabwechsel, App aus dem Hintergrund holen): erneut
 // abgleichen, aber hoechstens alle zwei Minuten.
 document.addEventListener('visibilitychange', function() {
@@ -1217,22 +1272,97 @@ function ghGet(filepath) {
 // Plans) sich gegenseitig mit veralteter SHA ueberschreiben (409 Conflict).
 var _ghWriteQueue = {};
 
+// Fuehrt bei einem Schreibkonflikt den fremden Stand mit dem eigenen zusammen.
+// Ohne das gewinnt schlicht, wer zuletzt schreibt - und die Aenderung des
+// anderen Geraets ist still verloren.
+var GH_MERGE = {
+  // Verlauf: Eintraege ueber die stabile planId zusammenfuehren, neuere gewinnt.
+  'history.json': function(fremd, eigen) {
+    if (!Array.isArray(fremd) || !Array.isArray(eigen)) return eigen;
+    var nachId = {};
+    fremd.concat(eigen).forEach(function(e) {
+      if (!e) return;
+      var k = e.planId || (e.thema + '|' + (e.date || e.saved || ''));
+      // Der spaeter einsortierte Eintrag stammt aus der eigenen Liste und ist
+      // der frischere - er ueberschreibt den fremden mit gleichem Schluessel.
+      nachId[k] = e;
+    });
+    return Object.keys(nachId).map(function(k) { return nachId[k]; })
+      .sort(function(a, b) { return String(b.date || '').localeCompare(String(a.date || '')); })
+      .slice(0, 52);
+  },
+  // Foto-Rezepte: ueber _id, Tombstones werden separat gefuehrt.
+  'foto-rezepte.json': function(fremd, eigen) {
+    if (!Array.isArray(fremd) || !Array.isArray(eigen)) return eigen;
+    var zus = migrateFotoIds(eigen.slice());
+    migrateFotoIds(fremd).forEach(function(f) { if (!findFotoDup(zus, f)) zus.push(f); });
+    return zus;
+  },
+  // Loeschliste: eine Loeschung auf IRGENDEINEM Geraet gilt ueberall.
+  'foto-geloescht.json': function(fremd, eigen) {
+    if (!fremd || typeof fremd !== 'object' || Array.isArray(fremd)) return eigen;
+    var z = Object.assign({}, fremd, eigen || {});
+    Object.keys(fremd).forEach(function(k) {
+      if (!z[k] || fremd[k] > z[k]) z[k] = fremd[k];
+    });
+    return z;
+  },
+  // Bewertungen: additiv, neuere Bewertung desselben Gerichts gewinnt.
+  'ratings.json': function(fremd, eigen) {
+    if (!Array.isArray(fremd) || !Array.isArray(eigen)) return eigen;
+    var k = {};
+    fremd.concat(eigen).forEach(function(r) { if (r && r.name) k[r.name] = r; });
+    return Object.keys(k).map(function(n) { return k[n]; });
+  }
+  // active-plan.json bewusst NICHT: ein Wochenplan laesst sich nicht sinnvoll
+  // verschmelzen. Dort meldet sich der Konflikt beim Nutzer (siehe unten).
+};
+
+function ghDecode(antwort) {
+  try {
+    if (!antwort || !antwort.content) return null;
+    return JSON.parse(decodeURIComponent(escape(atob(String(antwort.content).split('\n').join('')))));
+  } catch (e) { return null; }
+}
+
 function ghPut(filename, data, message) {
   var h = getAuthHeaders();
   if (!h) return Promise.resolve(null);
   var filepath = ghFile(filename);
-  var encoded = btoa(unescape(encodeURIComponent(JSON.stringify(data, null, 2))));
+  // Der Inhalt liegt in einer Variablen, NICHT fest kodiert: bei einem Konflikt
+  // wird er mit dem fremden Stand zusammengefuehrt und neu serialisiert.
+  var aktuell = data;
 
   function attempt(retriesLeft) {
     return fetch(PROXY + '/gh/' + filepath, { headers: h })
       .then(function(r) { return r.ok ? r.json() : null; })
       .then(function(existing) {
-        var body = { message: message || 'Update', content: encoded };
+        var body = {
+          message: message || 'Update',
+          content: btoa(unescape(encodeURIComponent(JSON.stringify(aktuell, null, 2))))
+        };
         if (existing && existing.sha) body.sha = existing.sha;
         return fetch(PROXY + '/gh/' + filepath, { method: 'PUT', headers: h, body: JSON.stringify(body) });
       })
       .then(function(r) {
         if (r && r.status === 409 && retriesLeft > 0) {
+          // Vor dem naechsten Versuch den fremden Stand holen und einmischen.
+          // Frueher wurde derselbe, inzwischen veraltete Inhalt erneut
+          // hochgeladen - die Aenderung des anderen Geraets war damit weg.
+          var mischen = GH_MERGE[filename];
+          if (mischen) {
+            return fetch(PROXY + '/gh/' + filepath, { headers: h })
+              .then(function(rr) { return rr.ok ? rr.json() : null; })
+              .then(function(dd) {
+                var fremd = ghDecode(dd);
+                if (fremd) {
+                  try { aktuell = mischen(fremd, aktuell); }
+                  catch (e) { console.warn('Zusammenfuehren fehlgeschlagen:', e.message); }
+                }
+                return new Promise(function(res) { setTimeout(res, 150 + Math.random() * 200); });
+              })
+              .then(function() { return attempt(retriesLeft - 1); });
+          }
           // Kurze, leicht zufaellige Pause bevor mit frischer SHA erneut versucht wird.
           // 5 statt 3 Versuche: bei einem kompletten Kochvorgang koennen mehrere
           // Funktionen (Rezepte nachladen, als gekocht markieren, bewerten) kurz
