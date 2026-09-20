@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=yes">
-<title>Menüplan v6.74</title>
+<title>Menüplan v6.75</title>
 <meta name="theme-color" content="#5B7C78">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -257,7 +257,7 @@ input[type=password]{letter-spacing:2px}
 
 <!-- HOME -->
 <div class="scr on" id="sh">
-  <div class="hero"><h1>Menüplan</h1><p id="hsub">v6.74 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
+  <div class="hero"><h1>Menüplan</h1><p id="hsub">v6.75 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
 
   <!-- Active plan card -->
 
@@ -2562,7 +2562,9 @@ var G_generiertGerade = false;
 
 function goSuggest() {
   if (G_generiertGerade) { console.warn('Generierung laeuft bereits'); return; }
-  G_generiertGerade = true;
+  // Die Sperre wird ERST nach allen Vorabpruefungen gesetzt. Frueher stand sie
+  // hier oben - nach "Bitte mindestens einen Kochtag auswählen" blieb sie
+  // gesetzt und das Generieren war bis zum Neuladen der Seite tot.
   // Ohne Kochtag gibt es nichts zu planen. Frueher wurde G.n auf 1 gezwungen
   // und Claude generierte trotzdem ein Gericht fuer einen Tag, den der Nutzer
   // ausdruecklich abgewaehlt hatte.
@@ -2656,6 +2658,8 @@ function goSuggest() {
   // sollte jeder Aufruf selbst "eine andere Küche" waehlen - was nicht gehen
   // kann, weil keiner die anderen kennt. Nur wenn der Nutzer kein eigenes
   // Thema eingetippt hat.
+  // Ab hier laufen Netzaufrufe - jetzt sperren.
+  G_generiertGerade = true;
   var _ketten = theme ? [] : waehleKetten(3, letzteKuechen(2), G.modus);
 
   // ─── VIELFALTSPRUEFUNG ──────────────────────────────────

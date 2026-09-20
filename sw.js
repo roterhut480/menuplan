@@ -11,7 +11,7 @@
 // API-Aufrufe werden NIE zwischengespeichert - eine gecachte Menügenerierung
 // oder ein gecachter Bring!-Import wären schlimmer als ein Fehler.
 
-const CACHE = 'menuplan-v6.74';
+const CACHE = 'menuplan-v6.75';
 const DOKUMENT = './menuplan-app.html';
 
 // Pfade, die immer ans Netz gehen müssen.
@@ -19,10 +19,16 @@ const NUR_NETZ = [/\/generate\b/, /\/gh\//, /\/bring/, /\/auth\b/,
                   /\/share\b/, /\/r\//, /\/users\b/, /api\.anthropic\.com/];
 
 self.addEventListener('install', (e) => {
-  e.waitUntil(
-    caches.open(CACHE).then((c) => c.addAll([DOKUMENT, './']))
-      .then(() => self.skipWaiting())
-  );
+  // NUR das App-Dokument vorab ablegen. Frueher stand hier auch './' - auf
+  // GitHub Pages liefert das Verzeichnis ohne index.html aber eine 404, und
+  // addAll() bricht bei JEDER nicht-2xx-Antwort komplett ab. Ergebnis: der
+  // Service Worker installierte sich NIE. Ein lokaler Testserver verdeckte
+  // das, weil er fuer './' eine Verzeichnisauflistung mit 200 liefert.
+  //
+  // KEIN skipWaiting() hier: die neue Fassung soll warten, bis der Nutzer im
+  // Hinweis auf "Neu laden" tippt. Sonst uebernimmt sie sofort und die Seite
+  // laedt mitten in der Bedienung neu.
+  e.waitUntil(caches.open(CACHE).then((c) => c.add(DOKUMENT)));
 });
 
 self.addEventListener('activate', (e) => {
@@ -50,7 +56,14 @@ self.addEventListener('fetch', (e) => {
         }
         return antwort;
       })
-      .catch(() => caches.match(e.request).then((t) => t || caches.match(DOKUMENT)))
+      .catch(() => caches.match(e.request).then((t) => {
+        if (t) return t;
+        // Das App-Dokument nur als Ersatz fuer einen SEITENAUFRUF liefern.
+        // Frueher bekam auch ein fehlendes Bild das HTML zurueck - mit
+        // falschem Content-Type statt eines sauberen Fehlers.
+        if (e.request.mode === 'navigate') return caches.match(DOKUMENT);
+        return new Response('Offline', { status: 504, statusText: 'Offline' });
+      }))
   );
 });
 
