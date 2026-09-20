@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=yes">
-<title>Menüplan v6.67</title>
+<title>Menüplan v6.68</title>
 <meta name="theme-color" content="#5B7C78">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -257,7 +257,7 @@ input[type=password]{letter-spacing:2px}
 
 <!-- HOME -->
 <div class="scr on" id="sh">
-  <div class="hero"><h1>Menüplan</h1><p id="hsub">v6.67 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
+  <div class="hero"><h1>Menüplan</h1><p id="hsub">v6.68 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
 
   <!-- Active plan card -->
 
@@ -506,6 +506,7 @@ input[type=password]{letter-spacing:2px}
       <div id="einkauf-transfer-status" style="display:none;background:#E8F2EC;border:.5px solid #B8D5C4;border-radius:8px;padding:9px 12px;margin-bottom:10px;font-size:12px;color:#4F8067">
         ✅ <span id="einkauf-transfer-text"></span>
       </div>
+      <div id="iskip" style="display:none;font-size:11.5px;color:var(--text-secondary);margin-bottom:8px"></div>
       <button class="btn btn-red" id="ibtn" onclick="doImport()">In Bring! importieren</button>
       <div class="prog" id="iprog" style="display:none"><div class="progb" id="iprogb"></div></div>
       <div id="idbg" style="display:none" class="dbg"></div>
@@ -1752,7 +1753,26 @@ function doImportItems() {
     return;
   }
 
-  var items = getItems(sug);
+  var alleItems = getItems(sug);
+  // Abgehakte Artikel sind das, was schon zu Hause ist - sie gehoeren NICHT
+  // auf die Bring!-Liste. Bisher wurde die ganze Liste uebertragen und das
+  // Abhaken war vor dem Import wirkungslos.
+  var items = alleItems.filter(function(it) {
+    return !(G.checked && G.checked[itemKey(it)]);
+  });
+  var uebersprungen = alleItems.length - items.length;
+
+  if (!items.length) {
+    showSt('ist', alleItems.length
+      ? 'Alle ' + alleItems.length + ' Artikel sind abgehakt – nichts zu übertragen.'
+      : 'Die Einkaufsliste ist leer.', 'er');
+    // doImportItems() kennt kein btn - der Knopf gehoert zu doImport().
+    var b0 = $('ibtn');
+    if (b0) { b0.innerHTML = 'In Bring! importieren'; b0.disabled = false; }
+    var pr = $('iprog');
+    if (pr) pr.style.display = 'none';
+    return;
+  }
 
   // Qualitaetskontrolle vor dem Import - danach steht man damit im Laden.
   // Signatur der konkreten Liste statt eines globalen Schalters: ein anderer
@@ -1941,7 +1961,10 @@ function doImportItems() {
                G.bringClearFailed, 'er');
         btn.innerHTML = 'Importiert – Liste nicht geleert';
       } else {
-        showSt('ist', items.length + ' Artikel in Bring! importiert!', 'ok');
+        showSt('ist', items.length + ' Artikel in Bring! importiert!' +
+          (uebersprungen > 0 ? ' (' + uebersprungen +
+            (uebersprungen === 1 ? ' abgehakter Artikel' : ' abgehakte Artikel') +
+            ' übersprungen)' : ''), 'ok');
         btn.innerHTML = 'Importiert';
       }
       if (G.fotoImport) {
@@ -1954,6 +1977,9 @@ function doImportItems() {
         // und nicht als erneut uebertragen markiert.
       } else {
         markEinkaufDone(items ? items.length : 0);
+        if (uebersprungen > 0) {
+          blog(uebersprungen + ' bereits abgehakte Artikel nicht uebertragen');
+        }
       }
     } else if (r && r.status === 401) {
       // Session abgelaufen - neu einloggen
@@ -2952,6 +2978,22 @@ function toggleEinkaufListe() {
   updateEinkaufAnsicht();
 }
 
+// Zeigt vor dem Import an, wie viele Artikel wegen eines Hakens NICHT
+// uebertragen werden. Ohne das wundert man sich hinterher ueber die Zahl.
+function updateSkipHinweis() {
+  var el = $('iskip');
+  if (!el) return;
+  var items = G.einkaufItems || [];
+  var n = items.filter(function(it) {
+    return G.checked && G.checked[itemKey(it)];
+  }).length;
+  if (!n) { el.style.display = 'none'; return; }
+  el.style.display = 'block';
+  el.textContent = n === 1
+    ? '1 abgehakter Artikel wird nicht übertragen – du hast ihn schon.'
+    : n + ' abgehakte Artikel werden nicht übertragen – die hast du schon.';
+}
+
 function updateEinkaufAnsicht() {
   var uebertragen = einkaufIstUebertragen();
   var zeigen = !uebertragen || G_einkaufAufgeklappt;
@@ -2994,6 +3036,7 @@ function renderEink(sug) {
   applyCheckedItems();
   updateTransferStatusUI();
   updateEinkaufAnsicht();
+  updateSkipHinweis();
 }
 
 function markPlanChangedSinceTransfer() {
@@ -3060,6 +3103,7 @@ function togItem(i) {
   // Nach dem Import wird in Bring! abgehakt - hier waere ein zweiter,
   // widersprechender Zustand.
   if (einkaufIstUebertragen()) return;
+  setTimeout(updateSkipHinweis, 0);
   var items = G.einkaufItems || [];
   var key = itemKey(items[i]);
   if (!key) return;
