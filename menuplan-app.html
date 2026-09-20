@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=yes">
-<title>Menüplan v6.75</title>
+<title>Menüplan v6.77</title>
 <meta name="theme-color" content="#5B7C78">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -89,7 +89,7 @@ h1,h2,h3{letter-spacing:-.02em}
 /* Kopfleiste bleibt beim Scrollen stehen, damit der Zurueck-Knopf immer
    erreichbar ist - in der Zeitachse scrollt man ueber viele Wochen. */
 .tbar{background:var(--red);padding:14px 16px 12px;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:60;min-height:var(--tbar-h);box-sizing:border-box}
-.tbar-bk{color:#fff;font-size:22px;cursor:pointer;padding-right:6px;line-height:1}
+.tbar-bk{min-width:44px;min-height:44px;display:inline-flex;align-items:center;justify-content:center;margin-left:-10px;color:#fff;font-size:22px;cursor:pointer;padding-right:6px;line-height:1}
 .tbar h1{font-size:17px;font-weight:700;color:#fff;flex:1}
 /* Volles Weiss: rgba(255,255,255,.7) erreicht auf --primary nur 3.1:1. */
 .tbar-sub{font-size:11.5px;color:#F7FBFA;margin-top:1px}
@@ -121,7 +121,7 @@ h1,h2,h3{letter-spacing:-.02em}
 .btnrow+.btn{margin-top:8px}
 /* chips - always buttons for reliable mobile click */
 .chips{display:flex;gap:8px;flex-wrap:wrap}
-.chip{padding:7px 14px;border-radius:100px;font-size:13px;font-weight:600;cursor:pointer;border:1.5px solid var(--border);background:var(--surface);color:var(--gr3);font-family:inherit;outline:none;transition:all .15s}
+.chip{padding:11px 14px;min-height:44px;border-radius:100px;font-size:13px;font-weight:600;cursor:pointer;border:1.5px solid var(--border);background:var(--surface);color:var(--gr3);font-family:inherit;outline:none;transition:all .15s}
 .chip.on{background:var(--rl);border-color:var(--red);color:var(--red)}
 /* inputs */
 input,select{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:10px;color:var(--txt);font-size:14px;padding:10px 12px;outline:none;font-family:inherit;transition:border-color .2s}
@@ -131,7 +131,7 @@ input[type=password]{letter-spacing:2px}
 .fld label{display:block;font-size:12px;color:var(--txt2);margin-bottom:5px;font-weight:500}
 /* tabs */
 .tabs{display:flex;background:#ebebeb;border-radius:8px;padding:3px;margin:10px 10px 0}
-.tab{flex:1;padding:7px;border-radius:6px;font-size:13px;font-weight:600;text-align:center;cursor:pointer;color:var(--gr3);transition:all .15s}
+.tab{min-height:44px;display:flex;align-items:center;justify-content:center;flex:1;padding:7px;border-radius:6px;font-size:13px;font-weight:600;text-align:center;cursor:pointer;color:var(--gr3);transition:all .15s}
 .tab.on{background:#fff;color:var(--txt);box-shadow:0 1px 3px rgba(0,0,0,.1)}
 /* status */
 .st{padding:10px 12px;border-radius:8px;font-size:13px;line-height:1.5;margin:10px 10px 0}
@@ -257,7 +257,7 @@ input[type=password]{letter-spacing:2px}
 
 <!-- HOME -->
 <div class="scr on" id="sh">
-  <div class="hero"><h1>Menüplan</h1><p id="hsub">v6.75 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
+  <div class="hero"><h1>Menüplan</h1><p id="hsub">v6.77 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
 
   <!-- Active plan card -->
 
@@ -266,7 +266,7 @@ input[type=password]{letter-spacing:2px}
     <div id="dashboard">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
         <div id="dash-greeting" style="font-size:20px;font-weight:800;color:var(--txt)">Guten Abend</div>
-        <button onclick="toggleUserMenu()" id="user-menu-btn" style="display:none;width:38px;height:38px;border-radius:50%;background:var(--red);color:#fff;border:none;font-size:16px;cursor:pointer">👤</button>
+        <button onclick="toggleUserMenu()" id="user-menu-btn" style="display:none;width:44px;height:44px;border-radius:50%;background:var(--red);color:#fff;border:none;font-size:16px;cursor:pointer;flex-shrink:0">👤</button>
       </div>
 
       <div id="dash-bring-card" style="display:none;background:#fff;border-radius:var(--rlg);border:.5px solid var(--bdr);padding:14px 16px;margin-bottom:12px">
@@ -281,7 +281,7 @@ input[type=password]{letter-spacing:2px}
         <div class="fld" style="margin-bottom:10px"><input type="password" id="dash-bpw" placeholder="Passwort" autocomplete="current-password" onkeydown="if(event.key==='Enter')connectBringFromDashboard()"></div>
         <div id="dash-bring-err" style="font-size:12px;color:var(--danger);margin-bottom:8px;display:none"></div>
         <button class="btn btn-red" id="dash-bring-btn" onclick="connectBringFromDashboard()" style="padding:10px;font-size:13px">Verbinden</button>
-        <button onclick="skipBringForNow()" style="width:100%;background:none;border:none;font-size:11px;color:var(--gr3);cursor:pointer;font-family:inherit;text-decoration:underline;margin-top:8px">Später</button>
+        <button onclick="skipBringForNow()" style="width:100%;background:none;border:none;font-size:12px;color:var(--gr3);cursor:pointer;font-family:inherit;text-decoration:underline;margin-top:4px;min-height:44px">Später</button>
       </div>
 
       <!-- Der Verbunden-Hinweis steht jetzt in den Praeferenzen. Auf der
@@ -370,12 +370,12 @@ input[type=password]{letter-spacing:2px}
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
           <label style="margin:0">👤 Personen</label>
           <div style="display:flex;align-items:center;gap:12px">
-            <button onclick="setP(G.personen-1)" style="width:32px;height:32px;border-radius:50%;background:#f5f5f5;border:1.5px solid var(--bdr);font-size:18px;cursor:pointer;font-family:inherit;line-height:1;display:flex;align-items:center;justify-content:center">−</button>
+            <button onclick="setP(G.personen-1)" style="width:44px;height:44px;border-radius:50%;background:#f5f5f5;border:1.5px solid var(--bdr);font-size:18px;cursor:pointer;font-family:inherit;line-height:1;display:flex;align-items:center;justify-content:center">−</button>
             <div style="min-width:80px;text-align:center">
               <div id="p-display" style="font-size:24px;font-weight:800;color:var(--red)">2</div>
               <div style="font-size:11px;color:var(--gr3)">Personen (1–6)</div>
             </div>
-            <button onclick="setP(G.personen+1)" style="width:32px;height:32px;border-radius:50%;background:#f5f5f5;border:1.5px solid var(--bdr);font-size:18px;cursor:pointer;font-family:inherit;line-height:1;display:flex;align-items:center;justify-content:center">+</button>
+            <button onclick="setP(G.personen+1)" style="width:44px;height:44px;border-radius:50%;background:#f5f5f5;border:1.5px solid var(--bdr);font-size:18px;cursor:pointer;font-family:inherit;line-height:1;display:flex;align-items:center;justify-content:center">+</button>
           </div>
         </div>
       </div>
@@ -812,6 +812,7 @@ function go(id) {
   var screens = document.querySelectorAll('.scr');
   for (var i = 0; i < screens.length; i++) screens[i].classList.remove('on');
   $(id).classList.add('on');
+  setTimeout(messeKopfleiste, 0);
   // Nur die Druckansicht darf die Handybreite verlassen.
   var shell = document.getElementById('app-shell');
   if (shell) shell.classList.toggle('breit', id === 'sp');
@@ -820,6 +821,22 @@ function go(id) {
 }
 
 document.addEventListener('DOMContentLoaded', function() { setTimeout(initDayPicker, 100); });
+
+// Hoehe der Kopfleiste messen und als CSS-Variable setzen. Sie war fest auf
+// 48px verdrahtet; als die Knoepfe auf 44px Trefferflaeche wuchsen, schob sich
+// die klebende Zeitachsen-Leiste unter die Kopfleiste.
+function messeKopfleiste() {
+  var bars = document.querySelectorAll('.tbar');
+  var h = 0;
+  for (var i = 0; i < bars.length; i++) {
+    var el = bars[i];
+    if (el.offsetParent === null) continue;          // unsichtbar
+    h = Math.max(h, Math.round(el.getBoundingClientRect().height));
+  }
+  if (h > 0) document.documentElement.style.setProperty('--tbar-h', h + 'px');
+}
+document.addEventListener('DOMContentLoaded', function() { setTimeout(messeKopfleiste, 150); });
+window.addEventListener('resize', messeKopfleiste);
 
 // ─── OFFLINE ──────────────────────────────────────────────
 // Ohne Service Worker zeigt die installierte App ohne Netz eine
@@ -1308,11 +1325,23 @@ var GH_MERGE = {
     return z;
   },
   // Bewertungen: additiv, neuere Bewertung desselben Gerichts gewinnt.
+  // ACHTUNG: Der Gerichtsname steht im Feld "gericht", NICHT in "name" -
+  // letzteres gibt es nur im Lernprofil. Mit r.name waere der Schluessel
+  // ueberall undefined gewesen und alle Bewertungen zu EINER zusammengefallen.
   'ratings.json': function(fremd, eigen) {
     if (!Array.isArray(fremd) || !Array.isArray(eigen)) return eigen;
     var k = {};
-    fremd.concat(eigen).forEach(function(r) { if (r && r.name) k[r.name] = r; });
-    return Object.keys(k).map(function(n) { return k[n]; });
+    fremd.concat(eigen).forEach(function(r) {
+      if (!r) return;
+      // Schluessel: Gericht plus Datum - dasselbe Gericht kann an
+      // verschiedenen Tagen verschieden bewertet worden sein.
+      var s = r.gericht || r.name;
+      if (!s) return;
+      var key = s + '|' + (r.date || '');
+      var alt = k[key];
+      if (!alt || String(r.date || '') >= String(alt.date || '')) k[key] = r;
+    });
+    return Object.keys(k).map(function(n) { return k[n]; }).slice(0, 200);
   }
   // active-plan.json bewusst NICHT: ein Wochenplan laesst sich nicht sinnvoll
   // verschmelzen. Dort meldet sich der Konflikt beim Nutzer (siehe unten).
@@ -3909,9 +3938,9 @@ function showIngOverview(g) {
     '<div style="background:#f9f9f9;border-radius:var(--r);padding:12px;margin-bottom:16px;border:.5px solid var(--bdr)">' +
       '<div style="font-size:12px;font-weight:600;color:var(--txt2);margin-bottom:8px">Portionen anpassen</div>' +
       '<div style="display:flex;align-items:center;gap:12px">' +
-        '<button onclick="adjPort(-1)" style="width:34px;height:34px;border-radius:50%;background:#fff;border:1.5px solid var(--bdr);font-size:20px;cursor:pointer;font-family:inherit;line-height:1">-</button>' +
+        '<button onclick="adjPort(-1)" style="width:44px;height:44px;border-radius:50%;background:#fff;border:1.5px solid var(--bdr);font-size:20px;cursor:pointer;font-family:inherit;line-height:1">-</button>' +
         '<div style="flex:1;text-align:center"><div id="port-display" style="font-size:22px;font-weight:700;color:var(--red)">' + G_cook_port + '</div><div style="font-size:11px;color:var(--gr3)">Portionen</div></div>' +
-        '<button onclick="adjPort(1)" style="width:34px;height:34px;border-radius:50%;background:#fff;border:1.5px solid var(--bdr);font-size:20px;cursor:pointer;font-family:inherit;line-height:1">+</button>' +
+        '<button onclick="adjPort(1)" style="width:44px;height:44px;border-radius:50%;background:#fff;border:1.5px solid var(--bdr);font-size:20px;cursor:pointer;font-family:inherit;line-height:1">+</button>' +
       '</div></div>' +
     '<button class="btn btn-red" onclick="beginCook()">Los geht\'s</button>';
 
@@ -5818,7 +5847,14 @@ function adminAddUser() {
   }).then(function(r) { return r.json().then(function(d) { return { ok: r.ok, d: d }; }); })
     .then(function(res) {
       if (btn) { btn.disabled = false; btn.textContent = 'Benutzer anlegen'; }
-      if (!res.ok) return adminMsg((res.d && res.d.error) || 'Anlegen fehlgeschlagen', 'er');
+      if (!res.ok) {
+        // Die Ursache steht im Feld detail - ohne sie sieht man nur
+        // "Interner Fehler im Worker" und weiss nichts.
+        var txt = (res.d && res.d.error) || 'Anlegen fehlgeschlagen';
+        if (res.d && res.d.detail) txt += ' — ' + res.d.detail;
+        console.error('Benutzer anlegen:', res.d);
+        return adminMsg(txt, 'er');
+      }
       $('admin-new-name').value = ''; $('admin-new-pw').value = '';
       if ($('admin-new-admin')) $('admin-new-admin').checked = false;
       adminMsg('"' + name + '" angelegt. Zugangsdaten jetzt weitergeben – ' +
@@ -7286,7 +7322,7 @@ var STAR_LABELS = ['', 'Nicht so gut', 'Geht so', 'Gut', 'Sehr gut', 'Ausgezeich
 <!-- VERLAUF: NUR-ANSICHT (read-only, komplett getrennt vom aktiven Plan) -->
 <div class="scr" id="shview">
   <div class="hero" style="display:flex;align-items:center;gap:12px">
-    <button onclick="closeHistoryView()" style="background:none;border:none;color:#fff;font-size:20px;cursor:pointer;padding:0">&#8592;</button>
+    <button onclick="closeHistoryView()" style="background:none;border:none;color:#fff;font-size:20px;cursor:pointer;min-width:44px;min-height:44px;margin-left:-10px;padding:0">&#8592;</button>
     <div style="min-width:0"><h1 style="font-size:18px;margin:0" id="hv-title"></h1>
       <p style="margin:2px 0 0" id="hv-sub"></p></div>
   </div>
@@ -7303,7 +7339,7 @@ var STAR_LABELS = ['', 'Nicht so gut', 'Geht so', 'Gut', 'Sehr gut', 'Ausgezeich
 <!-- ADMIN: BENUTZERVERWALTUNG -->
 <div class="scr" id="sadmin">
   <div class="hero" style="display:flex;align-items:center;gap:12px">
-    <button onclick="go('sh')" style="background:none;border:none;color:#fff;font-size:20px;cursor:pointer;padding:0">&#8592;</button>
+    <button onclick="go('sh')" style="background:none;border:none;color:#fff;font-size:20px;cursor:pointer;min-width:44px;min-height:44px;margin-left:-10px;padding:0">&#8592;</button>
     <div><h1 style="font-size:18px;margin:0">Benutzer verwalten</h1>
       <p style="margin:2px 0 0" id="admin-count"></p></div>
   </div>
