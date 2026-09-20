@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=yes">
-<title>Menüplan v6.68</title>
+<title>Menüplan v6.70</title>
 <meta name="theme-color" content="#5B7C78">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -257,7 +257,7 @@ input[type=password]{letter-spacing:2px}
 
 <!-- HOME -->
 <div class="scr on" id="sh">
-  <div class="hero"><h1>Menüplan</h1><p id="hsub">v6.68 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
+  <div class="hero"><h1>Menüplan</h1><p id="hsub">v6.70 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
 
   <!-- Active plan card -->
 
@@ -1763,9 +1763,16 @@ function doImportItems() {
   var uebersprungen = alleItems.length - items.length;
 
   if (!items.length) {
-    showSt('ist', alleItems.length
-      ? 'Alle ' + alleItems.length + ' Artikel sind abgehakt – nichts zu übertragen.'
-      : 'Die Einkaufsliste ist leer.', 'er');
+    // Alles abgehakt heisst: alles schon zu Hause. Dann ist der Einkauf
+    // erledigt - auch wenn nichts an Bring! ging. Frueher blieb die Startseite
+    // auf "zu übertragen" stehen, obwohl nichts mehr zu tun war.
+    if (alleItems.length) {
+      markEinkaufDone(0);
+      showSt('ist', 'Alle ' + alleItems.length +
+        ' Artikel sind bereits vorhanden – Einkauf als erledigt markiert.', 'ok');
+    } else {
+      showSt('ist', 'Die Einkaufsliste ist leer.', 'er');
+    }
     // doImportItems() kennt kein btn - der Knopf gehoert zu doImport().
     var b0 = $('ibtn');
     if (b0) { b0.innerHTML = 'In Bring! importieren'; b0.disabled = false; }
@@ -2509,8 +2516,58 @@ function goSuggest() {
   // Thema eingetippt hat.
   var _ketten = theme ? [] : waehleKetten(3, letzteKuechen(2), G.modus);
 
+  // ─── VIELFALTSPRUEFUNG ──────────────────────────────────
+  // Ein Prompt allein reicht nicht zuverlaessig: mehrfach kamen drei Varianten
+  // desselben Gerichts zurueck. Deshalb wird jeder Vorschlag nach der Antwort
+  // geprueft und bei Bedarf EINMAL neu angefordert - nur der betroffene.
+  var GERICHTSFORMEN = ['auflauf','gratin','pfanne','wok','suppe','eintopf','pasta',
+    'risotto','curry','salat','bowl','blech','waehe','wähe','puree','püree','gebacken',
+    'sandwich','pizza','tarte','quiche'];
+
+  function formVon(g) {
+    if (g.form) return String(g.form).toLowerCase().trim();
+    // Rueckfallebene fuer Antworten ohne form-Feld: aus dem Namen ableiten.
+    var n = String(g.abend || '').toLowerCase();
+    for (var i = 0; i < GERICHTSFORMEN.length; i++) {
+      if (n.indexOf(GERICHTSFORMEN[i]) >= 0) return GERICHTSFORMEN[i];
+    }
+    return '';
+  }
+
+  // Wie aehnlich sind zwei Gerichtsnamen? Vergleicht die bedeutungstragenden
+  // Woerter, nicht die Zeichen - "Hoernli-Auflauf mit Spinat" und
+  // "Hoernli-Auflauf mit Pilzen" teilen zwei von drei.
+  function namensUeberlappung(a, b) {
+    function worte(x) {
+      return String(x || '').toLowerCase()
+        .replace(/[^a-zäöüß]+/g, ' ').split(' ')
+        .filter(function(w) { return w.length > 3 && ['mit','und','aus','ohne','vom'].indexOf(w) < 0; });
+    }
+    var wa = worte(a), wb = worte(b);
+    if (!wa.length || !wb.length) return 0;
+    var treffer = wa.filter(function(w) { return wb.indexOf(w) >= 0; }).length;
+    return treffer / Math.min(wa.length, wb.length);
+  }
+
+  // Gibt null zurueck, wenn der Vorschlag taugt - sonst den Grund.
+  function pruefeVielfalt(sug) {
+    var g = (sug && sug.gerichte) || [];
+    if (g.length < 2) return null;
+    var formen = g.map(formVon).filter(Boolean);
+    var doppelt = formen.filter(function(f, i) { return formen.indexOf(f) !== i; });
+    if (doppelt.length) return 'Gerichtsart doppelt: ' + doppelt[0];
+    for (var i = 0; i < g.length; i++) {
+      for (var j = i + 1; j < g.length; j++) {
+        if (namensUeberlappung(g[i].abend, g[j].abend) >= 0.6) {
+          return 'zu aehnlich: "' + g[i].abend + '" / "' + g[j].abend + '"';
+        }
+      }
+    }
+    return null;
+  }
+
   // Load all 3 suggestions in parallel
-  function loadOne(id) {
+  function loadOne(id, istWiederholung) {
     // 400 war zu knapp: ein einzelner Vorschlag mit drei Gerichten liegt genau
     // an der Grenze, mal passt er, mal wird er abgeschnitten - daher kamen
     // sporadisch nur 1 von 3 Vorschlaegen. Ausgabe-Tokens werden nur nach
@@ -2519,9 +2576,20 @@ function goSuggest() {
     var _kette = _ketten[id - 1];
     var _zusatz = ' Vorschlag ' + id + ' von 3.';
     if (_kette) {
-      _zusatz = ' THEMA dieses Vorschlags: ' + _kette.n +
-        '. Baue die Woche um diese Kernzutaten: ' + _kette.z +
-        '. Setze das Feld thema auf "' + _kette.n.replace(/-Kette$| Kette$/, '') + '".';
+      _zusatz = ' EINKAUFSKETTE dieses Vorschlags: ' + _kette.n +
+        '. Diese Zutaten sollen ueber die Woche mehrfach vorkommen: ' + _kette.z +
+        '. Setze das Feld thema auf "' + _kette.n.replace(/-Kette$| Kette$/, '') + '".' +
+        // Der entscheidende Teil: die Kette verbindet ZUTATEN, nicht Gerichte.
+        // Ohne diese Regel wurde aus "Wähen-Kette" dreimal eine Wähe.
+        ' WICHTIG - die Kette gilt fuer die EINKAUFSZUTATEN, nicht fuer die Gerichtsart. ' +
+        'Die Abende muessen sich deutlich unterscheiden: ' +
+        'KEINE Gerichtsart doppelt (nicht zweimal Auflauf, Suppe, Pasta, Wähe, Curry, Salat, Bowl, Blech). ' +
+        'Die Hauptbeilage (Reis, Teigwaren, Kartoffeln, Brot/Teig, Polenta) moeglichst nicht wiederholen. ' +
+        'Mindestens zwei verschiedene Zubereitungsarten (Ofen, Pfanne, Topf, kalt). ' +
+        'Mindestens zwei verschiedene Proteinquellen. ' +
+        'Kein Gericht darf eine blosse Variante eines anderen sein - ' +
+        '"Hoernli-Auflauf mit Spinat" und "Hoernli-Auflauf mit Pilzen" waeren unzulaessig, ' +
+        '"Spinat-Hoernli-Auflauf" und "Pilzrisotto" dagegen richtig.';
       if (G.resteMode === 'kette') {
         // Der erste Kochabend kocht auf Vorrat und darf deshalb laenger dauern -
         // die spaeteren Abende bestehen groesstenteils aus Zusammensetzen.
@@ -2535,6 +2603,10 @@ function goSuggest() {
           'verwendet wird. Der letzte Kochabend verbraucht möglichst alle Reste.';
       }
     }
+    if (istWiederholung) {
+      _zusatz += ' Der vorherige Versuch enthielt zu aehnliche Gerichte. ' +
+        'Achte besonders darauf, dass jedes Gericht eine ANDERE Gerichtsart hat.';
+    }
     return callWorker('overview', msg + _zusatz, 2000)
       .then(function(raw) {
           var parsed = parseJSON(raw);
@@ -2542,6 +2614,16 @@ function goSuggest() {
           if (validErr) throw new Error(validErr);
           var sugs = parsed.vorschlaege || [];
           if (!sugs.length) throw new Error('Antwort enthielt keinen Vorschlag');
+
+          // Vielfaltspruefung: bei drei Varianten desselben Gerichts genau
+          // EINMAL neu anfordern - nur diesen Vorschlag, nicht alle drei.
+          var maengel = pruefeVielfalt(sugs[0]);
+          if (maengel && !istWiederholung) {
+            console.warn('Vorschlag ' + id + ' zu eintoenig (' + maengel + ') - neuer Versuch');
+            return loadOne(id, true);
+          }
+          if (maengel) console.warn('Vorschlag ' + id + ' bleibt eintoenig: ' + maengel);
+
           sugs[0].id = id;
           // Dedupe by thema — bei Dublette Thema eindeutig machen statt verwerfen
           var exists = G.sugs.some(function(s){ return s.thema === sugs[0].thema; });
@@ -4288,7 +4370,9 @@ function markEinkaufDone(itemCount) {
   G.activePlan.bringImportedAt = new Date().toLocaleString('de-CH', {day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});
   G.activePlan.bringStale = false;
   G_einkaufAufgeklappt = false;          // frisch uebertragen: eingeklappt zeigen
-  if (itemCount) G.activePlan.bringItemCount = itemCount;
+  // Auch 0 uebernehmen: "alles schon vorhanden" ist ein gueltiges Ergebnis,
+  // "if (itemCount)" haette die Null verworfen und die alte Zahl stehen lassen.
+  if (itemCount != null) G.activePlan.bringItemCount = itemCount;
   localStorage.setItem(userKey('active_plan'), JSON.stringify(G.activePlan));
   renderActivePlan();
   updateTransferStatusUI();
@@ -5755,12 +5839,16 @@ function updateDashboard() {
     if ($('dash-einkauf-txt')) $('dash-einkauf-txt').textContent = stale
       ? 'Plan geändert – Liste nicht mehr aktuell'
       : imported
-        ? (plan.bringItemCount || totalItems) + ' Artikel an Bring! übertragen'
+        ? (plan.bringItemCount === 0
+            ? 'Einkauf erledigt – alles war schon vorhanden'
+            : (plan.bringItemCount || totalItems) + ' Artikel an Bring! übertragen')
         : 'Noch nicht an Bring! übertragen';
     if ($('dash-einkauf-sub')) $('dash-einkauf-sub').textContent = stale
       ? 'Zuletzt übertragen: ' + plan.bringImportedAt + ' · bitte erneut übertragen'
       : imported
-        ? 'Zuletzt: ' + plan.bringImportedAt + ' · Abhaken in Bring!'
+        ? (plan.bringItemCount === 0
+            ? 'Zuletzt: ' + plan.bringImportedAt + ' · nichts einzukaufen'
+            : 'Zuletzt: ' + plan.bringImportedAt + ' · Abhaken in Bring!')
         : totalItems + ' Artikel bereit zum Übertragen';
     if ($('dash-einkauf-dot')) $('dash-einkauf-dot').style.background = stale ? '#B97836' : imported ? 'var(--grn)' : 'var(--gr2)';
     if ($('dash-einkauf-btn')) $('dash-einkauf-btn').textContent = (imported || stale)
@@ -6356,7 +6444,7 @@ function analyzeFoto(){
   var msg='Analysiere dieses Foto und leite ein vollständiges Rezept für '+p+' Personen ab. Gib alle Zutaten mit genauen Mengen an. Schritte detailliert.'+(hint?' Hinweis: '+hint+'.':'');
   var session=getSession(); var authH=session?{'X-MP-User':session.username,'X-MP-Pass':session.pw,'Content-Type':'application/json'}:{'Content-Type':'application/json'};
   fetch(PROXY+'/generate',{method:'POST',headers:authH,body:JSON.stringify({
-    kind:'photo', opts:currentOpts(), model:'claude-sonnet-4-5-20250929', max_tokens:3000,
+    kind:'photo', opts:currentOpts(), model:'claude-sonnet-5', max_tokens:3000,
     messages:[{role:'user',content:[{type:'image',source:{type:'base64',media_type:G_foto.mime,data:G_foto.base64}},{type:'text',text:msg}]}]})})
   .then(function(r){return r.json();})
   .then(function(d){
@@ -6653,10 +6741,10 @@ var KETTEN = [
   // ── Europäisch (inkl. Schweiz), zusammen ~47 ──
   { n:'Schweizer Alpen-Kette',      z:'Kartoffeln, Rahm, Käse, Lauch, Zwiebeln', r:'Europäisch',   w:10, vegi:1, s:0 },
   { n:'Wurzelgemüse-Kette',         z:'Rüebli, Sellerie, Pastinaken, Petersilie, Kartoffeln', r:'Europäisch', w:4, vegi:1, s:0 },
-  { n:'Kartoffelstock-Kette',       z:'Kartoffeln, Milch, Butter, Muskatnuss, Zwiebeln', r:'Europäisch', w:4, vegi:1, s:0 },
-  { n:'Teigwaren-Auflauf-Kette',    z:'Hörnli, Käsemischung, Rahm, Zwiebeln', r:'Europäisch',   w:5, vegi:1, s:0 },
-  { n:'Wähen-Kette',                z:'Kuchenteig, Ei-Rahm-Guss, Käse, Gemüse', r:'Europäisch',  w:5, vegi:1, s:0 },
-  { n:'Suppentopf-Kette',           z:'Gemüsebouillon, Suppengemüse, Einlagen, Kräuter', r:'Europäisch', w:3, vegi:1, s:1 },
+  { n:'Kartoffel-Kette',            z:'Kartoffeln, Butter, Zwiebeln, Lauch, Käse', r:'Europäisch', w:4, vegi:1, s:0 },
+  { n:'Käse-und-Rahm-Kette',        z:'Reibkäse, Rahm, Zwiebeln, Hörnli, Kartoffeln', r:'Europäisch', w:5, vegi:1, s:0 },
+  { n:'Ei-und-Teig-Kette',          z:'Eier, Kuchenteig, Rahm, Käse, Saisongemüse', r:'Europäisch', w:5, vegi:1, s:0 },
+  { n:'Bouillon-und-Gemüse-Kette',  z:'Gemüsebouillon, Suppengemüse, Kräuter, Getreide', r:'Europäisch', w:3, vegi:1, s:1 },
   { n:'Pilz-Kette',                 z:'Champignons, Steinpilze, Rahm, Thymian', r:'Europäisch',  w:3, vegi:1, s:1 },
   { n:'Kürbis- und Marroni-Kette',  z:'Kürbis, Marroni, Salbei, Muskat', r:'Europäisch',        w:3, vegi:1, s:1 },
   { n:'Französische Bistro-Kette',  z:'Rotwein, Schalotten, Pilze, Rindfleisch', r:'Europäisch', w:4, vegi:0, s:1 },
@@ -6665,17 +6753,17 @@ var KETTEN = [
   { n:'Osteuropäische Kette',       z:'Randen, Kabis, Sauerrahm, Rindfleisch', r:'Europäisch',   w:2, vegi:0, s:1 },
   { n:'Skandinavische Kette',       z:'Lachs, Dill, Kartoffeln, Sauerrahm', r:'Europäisch',      w:2, vegi:0, s:0 },
   // ── Mediterran, zusammen ~32 ──
-  { n:'Italienische Pasta-Kette',   z:'Pesto, Pinienkerne, Parmesan, Tomaten', r:'Mediterran',   w:8, vegi:1, s:0 },
+  { n:'Italienische Kette',         z:'Parmesan, Basilikum, Tomaten, Pinienkerne, Teigwaren', r:'Mediterran', w:8, vegi:1, s:0 },
   { n:'Tomaten-Saucen-Kette',       z:'Passata, frische Tomaten, Basilikum, Knoblauch', r:'Mediterran', w:7, vegi:1, s:0 },
   { n:'Mediterrane Hack-Kette',     z:'Hackfleisch, Tomaten, Zucchini, Auberginen, Peperoni', r:'Mediterran', w:6, vegi:0, s:0 },
   { n:'Levantinische Kette',        z:'Kichererbsen, Feta, Fladenbrot, Grillgemüse, Joghurt', r:'Mediterran', w:5, vegi:1, s:0 },
   { n:'Griechische Tavernen-Kette', z:'Feta, Oliven, Gurken, Auberginen', r:'Mediterran',        w:5, vegi:1, s:0 },
   { n:'Spanische Tapas-Kette',      z:'Chorizo, Knoblauch, Peperoni, Kartoffeln', r:'Mediterran', w:3, vegi:0, s:0 },
-  { n:'Polenta- und Mais-Kette',    z:'Maisgriess, Parmesan, Pilze, Schmorjus', r:'Mediterran',  w:2, vegi:1, s:1 },
+  { n:'Herbstliche Pilz-Kette',     z:'Pilze, Maisgriess, Parmesan, Thymian', r:'Mediterran',  w:2, vegi:1, s:1 },
   // ── Asiatisch, zusammen ~12 ──
   { n:'Asiatische Wok-Kette',       z:'Ingwer, Knoblauch, Kokosmilch, Wok-Gemüse, Jasminreis', r:'Asiatisch', w:4, vegi:1, s:0 },
   { n:'Indische Curry-Kette',       z:'Linsen, Kichererbsen, Garam Masala, Naan', r:'Asiatisch', w:3, vegi:1, s:0 },
-  { n:'Grosse-Reis-Kette',          z:'Jasminreis, Frühlingszwiebeln, Ei, Sesamöl', r:'Asiatisch', w:2, vegi:1, s:0 },
+  { n:'Ostasiatische Kette',        z:'Jasminreis, Sojasauce, Frühlingszwiebeln, Ei, Sesamöl', r:'Asiatisch', w:2, vegi:1, s:0 },
   // ── Amerikanisch, zusammen ~5 ──
   { n:'Tex-Mex-Kette',              z:'Bohnen, Mais, Tortillas, Cheddar, Chili', r:'Amerikanisch', w:3, vegi:1, s:0 },
   { n:'BBQ-Kette',                  z:'Schmorfleisch, BBQ-Sauce, Kabis, Kartoffeln', r:'Amerikanisch', w:1, vegi:0, s:2 },
