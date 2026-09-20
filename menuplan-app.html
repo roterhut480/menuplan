@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=yes">
-<title>Menüplan v6.72</title>
+<title>Menüplan v6.74</title>
 <meta name="theme-color" content="#5B7C78">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -104,7 +104,7 @@ h1,h2,h3{letter-spacing:-.02em}
 .cp{padding:14px 16px}
 .clbl{font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--gr3);margin-bottom:10px}
 /* buttons */
-.btn{width:100%;padding:13px;border:none;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:transform .1s,opacity .15s;font-family:inherit}
+.btn{width:100%;padding:13px;min-height:44px;border:none;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:transform .1s,opacity .15s;font-family:inherit}
 .btn:active{transform:scale(.97);opacity:.9}
 .btn-red{background:var(--red);color:#fff}
 .btn-out{background:#fff;color:var(--txt2);border:.5px solid var(--bdr)}
@@ -257,7 +257,7 @@ input[type=password]{letter-spacing:2px}
 
 <!-- HOME -->
 <div class="scr on" id="sh">
-  <div class="hero"><h1>Menüplan</h1><p id="hsub">v6.72 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
+  <div class="hero"><h1>Menüplan</h1><p id="hsub">v6.74 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
 
   <!-- Active plan card -->
 
@@ -347,7 +347,7 @@ input[type=password]{letter-spacing:2px}
         <div id="login-err" style="font-size:12px;color:var(--danger);margin-bottom:8px;display:none"></div>
         <button class="btn btn-red" id="login-btn" onclick="doLogin()" style="padding:11px">Anmelden</button>
         <div style="margin-top:8px;text-align:center">
-          <button onclick="resetLocalUsers()" style="background:none;border:none;font-size:11px;color:var(--gr3);cursor:pointer;font-family:inherit;text-decoration:underline">Neues Gerät einrichten</button>
+          <button onclick="resetLocalUsers()" style="background:none;border:none;font-size:12px;color:var(--gr3);cursor:pointer;font-family:inherit;text-decoration:underline;min-height:44px;padding:0 8px">Neues Gerät einrichten</button>
         </div>
       </div>
     </div>
@@ -2461,18 +2461,23 @@ function readAnthropicStream(response, onProgress) {
   return pump();
 }
 
-function callWorker(kind, message, maxTokens, opts, model, onProgress) {
+// messagesOverride: fuer Anfragen mit Bild - dort steht statt eines Textes ein
+// eigenes messages-Array. Frueher ging die Fotoanalyse an callWorker() vorbei
+// und hatte dadurch weder Streaming noch Zeitueberschreitung, Wiederholung
+// oder Diagnose.
+function callWorker(kind, message, maxTokens, opts, model, onProgress, messagesOverride) {
   var s = getSession();
   var h = { 'Content-Type': 'application/json' };
   if (s) { h['X-MP-User'] = s.username; h['X-MP-Pass'] = s.pw; }
-  var payload = JSON.stringify({
+  var _p = {
     kind: kind,
     opts: currentOpts(opts),
-    message: message,
     max_tokens: maxTokens || 1000,
     model: model || 'claude-haiku-4-5-20251001',
     stream: true
-  });
+  };
+  if (messagesOverride) _p.messages = messagesOverride; else _p.message = message;
+  var payload = JSON.stringify(_p);
 
   function attempt() {
     var ctrl = (typeof AbortController === 'function') ? new AbortController() : null;
@@ -2550,7 +2555,14 @@ function callWorker(kind, message, maxTokens, opts, model, onProgress) {
 }
 
 
+// Laeuft gerade eine Generierung? Der Knopf wird zwar deaktiviert, aber ein
+// zweiter Aufruf ueber die Tastatur, einen haengenden ersten Lauf oder die
+// Konsole erzeugte bisher sechs Anfragen statt drei.
+var G_generiertGerade = false;
+
 function goSuggest() {
+  if (G_generiertGerade) { console.warn('Generierung laeuft bereits'); return; }
+  G_generiertGerade = true;
   // Ohne Kochtag gibt es nichts zu planen. Frueher wurde G.n auf 1 gezwungen
   // und Claude generierte trotzdem ein Gericht fuer einen Tag, den der Nutzer
   // ausdruecklich abgewaehlt hatte.
@@ -2650,18 +2662,52 @@ function goSuggest() {
   // Ein Prompt allein reicht nicht zuverlaessig: mehrfach kamen drei Varianten
   // desselben Gerichts zurueck. Deshalb wird jeder Vorschlag nach der Antwort
   // geprueft und bei Bedarf EINMAL neu angefordert - nur der betroffene.
-  var GERICHTSFORMEN = ['auflauf','gratin','pfanne','wok','suppe','eintopf','pasta',
-    'risotto','curry','salat','bowl','blech','waehe','wähe','puree','püree','gebacken',
-    'sandwich','pizza','tarte','quiche'];
+  // Formen zu GRUPPEN zusammenfassen: "waehe" und "wähe" waren frueher zwei
+  // verschiedene Werte, "gratin" und "auflauf" sind kulinarisch dasselbe.
+  // Ohne Gruppierung rutschten drei fast gleiche Abende durch die Pruefung.
+  var FORM_GRUPPEN = {
+    auflauf:  ['auflauf','gratin','ofenschlupfer','lasagne','moussaka','ueberbacken','überbacken'],
+    waehe:    ['waehe','wähe','quiche','tarte','pizza','blech','blechkuchen'],
+    suppe:    ['suppe','eintopf','topf','bouillon','minestrone'],
+    pfanne:   ['pfanne','wok','geschnetzeltes','gebraten','roesti','rösti','frittata','omelette','tortilla','puffer'],
+    pasta:    ['pasta','teigwaren','nudeln','gnocchi','ravioli','cannelloni','spaetzli','spätzli'],
+    reis:     ['risotto','reis','paella','pilaw','bowl'],
+    curry:    ['curry','masala','ragout','geschmort','schmortopf'],
+    salat:    ['salat','kalt','antipasti','platte'],
+    puree:    ['puree','püree','stock','brei'],
+    gebacken: ['gebacken','ofen','ofengemuese','ofengemüse','gefuellt','gefüllt'],
+    sandwich: ['sandwich','wrap','wraps','burger','taco','tacos','fladen','brot']
+  };
+  var GERICHTSFORMEN = Object.keys(FORM_GRUPPEN).reduce(function(a, g) {
+    return a.concat(FORM_GRUPPEN[g]);
+  }, []);
+
+  // Liefert die GRUPPE, nicht das Einzelwort.
+  function formGruppe(wort) {
+    if (!wort) return '';
+    var w = String(wort).toLowerCase().trim();
+    var treffer = '';
+    Object.keys(FORM_GRUPPEN).forEach(function(g) {
+      if (treffer) return;
+      if (FORM_GRUPPEN[g].indexOf(w) >= 0) treffer = g;
+    });
+    return treffer || w;
+  }
 
   function formVon(g) {
-    if (g.form) return String(g.form).toLowerCase().trim();
+    // Die Angabe des Modells wird geprueft, nicht blind geglaubt: steht dort
+    // etwas Unbekanntes, wird zusaetzlich der Name ausgewertet.
+    if (g.form) {
+      var gr = formGruppe(g.form);
+      if (gr && GERICHTSFORMEN.indexOf(String(g.form).toLowerCase().trim()) >= 0) return gr;
+    }
     // Rueckfallebene fuer Antworten ohne form-Feld: aus dem Namen ableiten.
     var n = String(g.abend || '').toLowerCase();
     for (var i = 0; i < GERICHTSFORMEN.length; i++) {
-      if (n.indexOf(GERICHTSFORMEN[i]) >= 0) return GERICHTSFORMEN[i];
+      if (n.indexOf(GERICHTSFORMEN[i]) >= 0) return formGruppe(GERICHTSFORMEN[i]);
     }
-    return '';
+    // Letzte Rueckfallebene: die Angabe des Modells, auch wenn unbekannt.
+    return g.form ? formGruppe(g.form) : '';
   }
 
   // Wie aehnlich sind zwei Gerichtsnamen? Vergleicht die bedeutungstragenden
@@ -2745,6 +2791,19 @@ function goSuggest() {
           var sugs = parsed.vorschlaege || [];
           if (!sugs.length) throw new Error('Antwort enthielt keinen Vorschlag');
 
+          // Fixierte Gerichte VOR der Pruefung einsetzen: sie sind Teil des
+          // fertigen Vorschlags. Frueher wurde der Vorschlag geprueft und
+          // DANACH veraendert - die Pruefung sah also etwas anderes als der
+          // Nutzer am Ende.
+          var fixVorab = G.fixedSnapshot || [];
+          if (fixVorab.length && sugs[0].gerichte) {
+            fixVorab.forEach(function(f) {
+              if (f.j < sugs[0].gerichte.length) {
+                sugs[0].gerichte[f.j] = JSON.parse(JSON.stringify(f.gericht));
+              }
+            });
+          }
+
           // Vielfaltspruefung: bei drei Varianten desselben Gerichts genau
           // EINMAL neu anfordern - nur diesen Vorschlag, nicht alle drei.
           var maengel = pruefeVielfalt(sugs[0]);
@@ -2752,7 +2811,12 @@ function goSuggest() {
             console.warn('Vorschlag ' + id + ' zu eintoenig (' + maengel + ') - neuer Versuch');
             return loadOne(id, true);
           }
-          if (maengel) console.warn('Vorschlag ' + id + ' bleibt eintoenig: ' + maengel);
+          if (maengel) {
+            // Nicht still uebernehmen: der Nutzer soll sehen, dass dieser
+            // Vorschlag die Vielfaltspruefung nicht bestanden hat.
+            console.warn('Vorschlag ' + id + ' bleibt eintoenig: ' + maengel);
+            sugs[0]._eintoenig = maengel;
+          }
 
           sugs[0].id = id;
           // Dedupe by thema — bei Dublette Thema eindeutig machen statt verwerfen
@@ -2791,6 +2855,8 @@ function goSuggest() {
   }
 
   Promise.all([loadOne(1), loadOne(2), loadOne(3)])
+    .then(function(r) { G_generiertGerade = false; return r; },
+          function(e) { G_generiertGerade = false; throw e; })
     .then(function() {
       if (G._loadIv) { clearInterval(G._loadIv); G._loadIv = null; }
       $('sload').style.display = 'none';
@@ -2893,7 +2959,13 @@ function renderSugs() {
     var zeitInfo = s.gerichte.length > 0 && s.gerichte[0].zeit_total ?
       '<div style="font-size:11px;color:var(--gr3);margin-top:4px">&#9200; ca. ' + esc(s.gerichte[0].zeit_total) + ' pro Abend</div>' : '';
     html += '<div class="sug' + sel + '" onclick="selSug(' + i + ')">' +
-      '<div class="sug-h"><div class="sug-n">Option ' + (i+1) + (sel?' &#10003;':'') + '</div><div class="sug-t">' + esc(s.thema) + '</div>' + zeitInfo + '</div>' +
+      '<div class="sug-h"><div class="sug-n">Option ' + (i+1) + (sel?' &#10003;':'') + '</div><div class="sug-t">' + esc(s.thema) + '</div>' + zeitInfo +
+        // Vorschlaege, die die Vielfaltspruefung auch im zweiten Anlauf nicht
+        // bestanden haben, werden gekennzeichnet statt still uebernommen.
+        (s._eintoenig
+          ? '<div style="font-size:11px;color:var(--warning);margin-top:4px">&#9888; wenig Abwechslung – ' + esc(s._eintoenig) + '</div>'
+          : '') +
+      '</div>' +
       '<div class="sug-b">' + days + '</div></div>';
   }
   $('slist').innerHTML = html;
@@ -3068,6 +3140,7 @@ function currentWeekTab() {
 }
 
 function goWeekRender(sug, opts) {
+  if (!sug || !Array.isArray(sug.gerichte)) sug = { thema: (sug && sug.thema) || '', gerichte: [] };
   releaseWakeLock();
   clearAllCookTimers();
   clearFotoImportContext();
@@ -3234,6 +3307,9 @@ function updateEinkaufAnsicht() {
 }
 
 function renderEink(sug) {
+  // Beschaedigte oder halb synchronisierte Plaene duerfen die Oberflaeche
+  // nicht zerlegen - frueher warf das hier eine Ausnahme.
+  if (!sug || !Array.isArray(sug.gerichte)) sug = { gerichte: [] };
   var items = getItems(sug);
   // Aktuelle Liste merken: der Check-Zustand haengt am Zutaten-Key, nicht am
   // Array-Index - sonst verrutschen die Haken, sobald sich die Liste aendert.
@@ -6411,12 +6487,52 @@ function deleteHistoryRecipe(i) {
 // ─── FOTO REZEPT ───────────────────────────────────────────
 var G_foto={base64:null,mime:null,portionen:2};
 function setFotoP(n){G_foto.portionen=n;var chips=$('foto-pchips').querySelectorAll('.chip');for(var i=0;i<chips.length;i++)chips[i].classList.toggle('on',i===n-1);}
+// Verkleinert ein Bild auf hoechstens 1500 Pixel Kantenlaenge. Eine
+// Handykamera liefert leicht 12 Megapixel - als Base64 sind das mehrere
+// Megabyte, die im Mobilfunk lange brauchen und frueher am Grenzwert von
+// 8 MB abgewiesen wurden. Fuer das Lesen eines Rezepts reichen 1500 Pixel
+// deutlich aus.
+var FOTO_MAX_KANTE = 1500;
+
+function verkleinereBild(file, callback) {
+  var leser = new FileReader();
+  leser.onload = function(e) {
+    var bild = new Image();
+    bild.onload = function() {
+      var w = bild.naturalWidth, h = bild.naturalHeight;
+      var f = Math.min(1, FOTO_MAX_KANTE / Math.max(w, h));
+      if (f >= 1) { callback(e.target.result, file.type); return; }   // schon klein genug
+      try {
+        var c = document.createElement('canvas');
+        c.width = Math.round(w * f); c.height = Math.round(h * f);
+        c.getContext('2d').drawImage(bild, 0, 0, c.width, c.height);
+        // JPEG: deutlich kleiner als PNG, und fuer ein Foto genau richtig.
+        callback(c.toDataURL('image/jpeg', 0.85), 'image/jpeg');
+      } catch (err) {
+        console.warn('Verkleinern fehlgeschlagen:', err && err.message);
+        callback(e.target.result, file.type);
+      }
+    };
+    bild.onerror = function() { callback(e.target.result, file.type); };
+    bild.src = e.target.result;
+  };
+  leser.readAsDataURL(file);
+}
+
 function handleFotoFile(file){
-  if(!file||!file.type.startsWith('image/'))return; G_foto.mime=file.type;
-  if (file.size > 8*1024*1024) { alert('Foto zu gross (max. 8 MB). Bitte kleineres Bild waehlen.'); return; }
-  var reader=new FileReader();
-  reader.onload=function(e){var dataUrl=e.target.result;G_foto.base64=dataUrl.split(',')[1];$('foto-img').src=dataUrl;$('foto-preview').style.display='block';$('foto-upload-area').style.display='none';$('foto-btn').disabled=false;$('foto-result').style.display='none';if($('foto-err'))$('foto-err').style.display='none';};
-  reader.readAsDataURL(file);
+  if(!file||!file.type.startsWith('image/'))return;
+  // Kein hartes Limit mehr noetig: gross wird vor dem Senden verkleinert.
+  if (file.size > 30*1024*1024) { alert('Foto zu gross (über 30 MB).'); return; }
+  verkleinereBild(file, function(dataUrl, mime) {
+    G_foto.mime = mime;
+    G_foto.base64 = dataUrl.split(',')[1];
+    $('foto-img').src = dataUrl;
+    $('foto-preview').style.display='block';
+    $('foto-upload-area').style.display='none';
+    $('foto-btn').disabled=false;
+    $('foto-result').style.display='none';
+    if($('foto-err'))$('foto-err').style.display='none';
+  });
 }
 function clearFoto(){G_foto.base64=null;G_foto.mime=null;$('foto-input').value='';$('foto-preview').style.display='none';$('foto-upload-area').style.display='block';$('foto-btn').disabled=true;$('foto-result').style.display='none';}
 function openFotoScreen(){
@@ -6572,14 +6688,26 @@ function analyzeFoto(){
   var hint=$('foto-hint').value.trim(); var p=G_foto.portionen;
   // Foto-Prompt liegt im Worker
   var msg='Analysiere dieses Foto und leite ein vollständiges Rezept für '+p+' Personen ab. Gib alle Zutaten mit genauen Mengen an. Schritte detailliert.'+(hint?' Hinweis: '+hint+'.':'');
-  var session=getSession(); var authH=session?{'X-MP-User':session.username,'X-MP-Pass':session.pw,'Content-Type':'application/json'}:{'Content-Type':'application/json'};
-  fetch(PROXY+'/generate',{method:'POST',headers:authH,body:JSON.stringify({
-    kind:'photo', opts:currentOpts(), model:'claude-sonnet-5', max_tokens:3000,
-    messages:[{role:'user',content:[{type:'image',source:{type:'base64',media_type:G_foto.mime,data:G_foto.base64}},{type:'text',text:msg}]}]})})
-  .then(function(r){return r.json();})
-  .then(function(d){
+  var bildNachricht = [{ role: 'user', content: [
+    { type: 'image', source: { type: 'base64', media_type: G_foto.mime, data: G_foto.base64 } },
+    { type: 'text', text: msg }
+  ]}];
+  // Ueber callWorker(): damit gelten Streaming, Leerlauf-Frist, ein
+  // Wiederholungsversuch bei Verbindungsabbruch und die Diagnose in der
+  // Fehlermeldung auch fuer die Fotoanalyse.
+  callWorker('photo', msg, 3000, currentOpts(), 'claude-sonnet-5', function(teil) {
+    var el = $('foto-load');
+    if (el && teil) {
+      var z = el.querySelector('.foto-fortschritt');
+      if (!z) { z = document.createElement('div');
+        z.className = 'foto-fortschritt';
+        z.style.cssText = 'font-size:12px;color:var(--text-secondary);margin-top:8px';
+        el.appendChild(z); }
+      z.textContent = 'Rezept wird gelesen… ' + teil.length + ' Zeichen';
+    }
+  }, bildNachricht)
+  .then(function(raw){
     $('foto-load').style.display='none'; $('foto-btn').disabled=false;
-    var raw=(d.content&&d.content[0]&&d.content[0].text)?d.content[0].text:'';
     if(!raw)throw new Error('Keine Antwort');
     var rezept=parseJSON(raw);
     var fotoValidationError = validateFotoRecipe(rezept);
