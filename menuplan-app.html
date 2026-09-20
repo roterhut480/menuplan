@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=yes">
-<title>Menüplan v6.77</title>
+<title>Menüplan v6.78</title>
 <meta name="theme-color" content="#5B7C78">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -257,7 +257,7 @@ input[type=password]{letter-spacing:2px}
 
 <!-- HOME -->
 <div class="scr on" id="sh">
-  <div class="hero"><h1>Menüplan</h1><p id="hsub">v6.77 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
+  <div class="hero"><h1>Menüplan</h1><p id="hsub">v6.78 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
 
   <!-- Active plan card -->
 
@@ -844,7 +844,16 @@ window.addEventListener('resize', messeKopfleiste);
 // dieser Datei im selben Ordner liegen.
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', function() {
-    navigator.serviceWorker.register('sw.js').then(function(reg) {
+    // Erst nachsehen, ob sw.js ueberhaupt danebenliegt. Wird die App als
+    // einzelne Datei betrachtet - Vorschau, lokal geoeffnet, woanders
+    // eingebettet -, gibt es keine sw.js, und der Browser schreibt eine
+    // 404-Warnung in die Konsole, bevor unser catch greifen kann.
+    fetch('sw.js', { method: 'HEAD' })
+      .then(function(r) {
+        if (!r || !r.ok) throw new Error('sw.js nicht vorhanden');
+        return navigator.serviceWorker.register('sw.js');
+      })
+      .then(function(reg) {
       // Wartet eine neue Fassung? Dann anbieten statt still zu bleiben.
       function pruefeUpdate() {
         if (reg.waiting) zeigeUpdateHinweis(reg);
@@ -859,7 +868,12 @@ if ('serviceWorker' in navigator) {
           }
         });
       });
-    }).catch(function(e) { console.warn('Service Worker:', e && e.message); });
+      })
+      .catch(function(e) {
+        // Kein Grund zur Sorge: ohne sw.js laeuft alles wie bisher, nur ohne
+        // Offline-Faehigkeit.
+        console.info('Offline-Modus nicht aktiv:', (e && e.message) || e);
+      });
 
     // Nach dem Wechsel einmal neu laden, damit keine gemischten Staende
     // entstehen.
