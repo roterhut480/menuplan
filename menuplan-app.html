@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=yes">
-<title>Menüplan v6.82</title>
+<title>Menüplan v6.83</title>
 <meta name="theme-color" content="#5B7C78">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -265,7 +265,7 @@ input[type=password]{letter-spacing:2px}
 
 <!-- HOME -->
 <div class="scr on" id="sh">
-  <div class="hero"><h1>Menüplan</h1><p id="hsub">v6.82 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
+  <div class="hero"><h1>Menüplan</h1><p id="hsub">v6.83 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
 
   <!-- Active plan card -->
 
@@ -286,8 +286,8 @@ input[type=password]{letter-spacing:2px}
             <div style="font-size:12px;color:var(--gr3)">Damit Einkaufslisten direkt übertragen werden können</div>
           </div>
         </div>
-        <div class="fld" style="margin-bottom:8px"><input type="email" id="dash-bemail" placeholder="Bring! E-Mail" autocomplete="email"></div>
-        <div class="fld" style="margin-bottom:10px"><input type="password" id="dash-bpw" placeholder="Passwort" autocomplete="current-password" onkeydown="if(event.key==='Enter')connectBringFromDashboard()"></div>
+        <div class="fld" style="margin-bottom:8px"><input type="email" id="dash-bemail" placeholder="Bring! E-Mail" autocomplete="email" aria-label="Bring! E-Mail"></div>
+        <div class="fld" style="margin-bottom:10px"><input type="password" id="dash-bpw" placeholder="Passwort" autocomplete="current-password" onkeydown="if(event.key==='Enter')connectBringFromDashboard()" aria-label="Passwort"></div>
         <div id="dash-bring-err" style="font-size:12px;color:var(--danger);margin-bottom:8px;display:none"></div>
         <button class="btn btn-red" id="dash-bring-btn" onclick="connectBringFromDashboard()" style="padding:10px;font-size:13px">Verbinden</button>
         <button onclick="skipBringForNow()" style="width:100%;background:none;border:none;font-size:12px;color:var(--gr3);cursor:pointer;font-family:inherit;text-decoration:underline;margin-top:4px;min-height:44px">Später</button>
@@ -351,8 +351,8 @@ input[type=password]{letter-spacing:2px}
           <div style="font-size:12px;color:var(--grn)">Melde dich mit den Zugangsdaten an, die du erhalten hast. Ein Konto muss vorher vom Admin angelegt werden.</div>
         </div>
         <div class="clbl" id="login-title">Anmelden</div>
-        <div class="fld"><label>Benutzername</label><input id="login-user" placeholder="z.B. roman, anna..." autocomplete="username" onkeydown="if(event.key==='Enter')$('login-pw').focus()"></div>
-        <div class="fld"><label>Passwort</label><input type="password" id="login-pw" placeholder="Passwort..." autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()"></div>
+        <div class="fld"><label for="login-user">Benutzername</label><input id="login-user" placeholder="z.B. roman, anna..." autocomplete="username" onkeydown="if(event.key==='Enter')$('login-pw').focus()" aria-label="z.B. roman, anna..."></div>
+        <div class="fld"><label for="login-pw">Passwort</label><input type="password" id="login-pw" placeholder="Passwort..." autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()" aria-label="Passwort..."></div>
         <div id="login-err" style="font-size:12px;color:var(--danger);margin-bottom:8px;display:none"></div>
         <button class="btn btn-red" id="login-btn" onclick="doLogin()" style="padding:11px">Anmelden</button>
         <div style="margin-top:8px;text-align:center">
@@ -449,8 +449,8 @@ input[type=password]{letter-spacing:2px}
       </div>
 
       <!-- Thema & Vorhandenes -->
-      <div class="fld" style="margin-top:10px"><label>🌍 Thema (optional)</label><input id="theme" placeholder="mediterran, asiatisch, mexikanisch..."></div>
-      <div class="fld"><label>🥕 Vorhandenes (optional)</label><input id="exist" placeholder="z.B. Kichererbsen, Kartoffeln 1kg..."></div>
+      <div class="fld" style="margin-top:10px"><label for="theme">🌍 Thema (optional)</label><input id="theme" placeholder="mediterran, asiatisch, mexikanisch..." aria-label="mediterran, asiatisch, mexikanisch..."></div>
+      <div class="fld"><label for="exist">🥕 Vorhandenes (optional)</label><input id="exist" placeholder="z.B. Kichererbsen, Kartoffeln 1kg..." aria-label="z.B. Kichererbsen, Kartoffeln 1kg..."></div>
     </div>
   </div>
 
@@ -482,7 +482,7 @@ input[type=password]{letter-spacing:2px}
     <button class="btn btn-red" id="set-plan-btn" onclick="setActivePlanAndGo()" disabled style="opacity:.35;cursor:not-allowed">Als aktiven Plan setzen</button>
     <div style="margin-top:16px;padding-top:16px;border-top:.5px solid var(--bdr)">
       <div style="font-size:12px;color:var(--gr3);margin-bottom:6px;font-weight:500">Nicht zufrieden? Sag Claude warum:</div>
-      <textarea id="feedback" placeholder="z.B. zu wenig Proteine, kein Pasta-Gericht, zu aufwaendig..." style="width:100%;background:#fff;border:1px solid var(--bdr);border-radius:7px;color:var(--txt);font-size:14px;padding:10px 12px;font-family:inherit;resize:none;height:72px;outline:none;transition:border-color .2s" onfocus="this.style.borderColor='var(--red)'" onblur="this.style.borderColor='var(--bdr)'"></textarea>
+      <textarea id="feedback" placeholder="z.B. zu wenig Proteine, kein Pasta-Gericht, zu aufwaendig..." style="width:100%;background:#fff;border:1px solid var(--bdr);border-radius:7px;color:var(--txt);font-size:14px;padding:10px 12px;font-family:inherit;resize:none;height:72px;outline:none;transition:border-color .2s" onfocus="this.style.borderColor='var(--red)'" onblur="this.style.borderColor='var(--bdr)'" aria-label="z.B. zu wenig Proteine, kein Pasta-Gericht, zu aufwaendig..."></textarea>
       <button class="btn btn-out" style="margin-top:8px" onclick="goSuggest()">Neue Vorschläge generieren</button>
     </div>
   </div>
@@ -503,11 +503,11 @@ input[type=password]{letter-spacing:2px}
     <div class="card"><div class="cp">
       <div class="clbl">In Bring! importieren</div>
       <div id="bfields">
-        <div class="fld"><label>Bring! E-Mail</label><input type="email" id="bemail" autocomplete="email"></div>
-        <div class="fld"><label>Passwort</label><input type="password" id="bpw" autocomplete="current-password"></div>
+        <div class="fld"><label for="bemail">Bring! E-Mail</label><input type="email" id="bemail" autocomplete="email"></div>
+        <div class="fld"><label for="bpw">Passwort</label><input type="password" id="bpw" autocomplete="current-password"></div>
       </div>
       <div id="blistwrap" style="display:none">
-        <div class="fld"><label>Welche Liste?</label><select id="blist" onchange="onBringListChange()"></select></div>
+        <div class="fld"><label for="blist">Welche Liste?</label><select id="blist" onchange="onBringListChange()"></select></div>
         <label style="display:flex;align-items:center;gap:8px;margin-bottom:12px;cursor:pointer;font-size:13px;color:var(--txt2)">
           <input type="checkbox" id="bclr" checked style="width:18px;height:18px;accent-color:var(--red)">
           Liste vor Import leeren
@@ -582,7 +582,7 @@ input[type=password]{letter-spacing:2px}
     <input type="file" id="foto-input" accept="image/*" style="display:none" onchange="handleFotoFile(this.files[0])">
 
     <div id="foto-preview" style="display:none;margin-bottom:10px;text-align:center">
-      <img id="foto-img" style="max-width:100%;max-height:200px;border-radius:var(--r);border:.5px solid var(--bdr)">
+      <img id="foto-img" alt="Vorschau des gewählten Rezeptfotos" style="max-width:100%;max-height:200px;border-radius:var(--r);border:.5px solid var(--bdr)">
       <div style="margin-top:8px">
         <button class="btn btn-out" onclick="clearFoto()" style="width:auto;padding:8px 16px;font-size:12px">&#x2715; Anderes Foto</button>
       </div>
@@ -598,8 +598,8 @@ input[type=password]{letter-spacing:2px}
       </div>
     </div>
     <div class="fld" style="margin-top:8px">
-      <label>Hinweis (optional)</label>
-      <input id="foto-hint" placeholder="z.B. vegetarisch, ohne Nuesse, fuer 2 Personen...">
+      <label for="foto-hint">Hinweis (optional)</label>
+      <input id="foto-hint" placeholder="z.B. vegetarisch, ohne Nuesse, fuer 2 Personen..." aria-label="z.B. vegetarisch, ohne Nuesse, fuer 2 Personen...">
     </div>
 
     <button class="btn btn-red" id="foto-btn" onclick="analyzeFoto()" disabled style="margin-top:4px">Rezept ableiten</button>
@@ -661,7 +661,7 @@ input[type=password]{letter-spacing:2px}
         <button class="chip" onclick="setPref('freeze',0)">Nein</button>
       </div>
     </div>
-    <div class="fld" style="margin-top:10px"><label>Einkaufstag</label>
+    <div class="fld" style="margin-top:10px"><label for="pref-einkaufstag">Einkaufstag</label>
       <select id="pref-einkaufstag">
         <option value="Mo">Montag</option>
         <option value="Di">Dienstag</option>
@@ -673,10 +673,10 @@ input[type=password]{letter-spacing:2px}
       </select>
       <div style="font-size:11px;color:var(--gr3);margin-top:4px">Der Wochenplan beginnt an diesem Tag - er gilt als "frisch eingekauft".</div>
     </div>
-    <div class="fld" style="margin-top:10px"><label>Lieblingsküchen (optional)</label>
-      <input id="pref-kuechen" placeholder="z.B. asiatisch, mediterran, mexikanisch..."></div>
-    <div class="fld"><label>Abneigungen / Allergien (optional)</label>
-      <input id="pref-avoid" placeholder="z.B. Erdnuesse, Sellerie, zu scharf..."></div>
+    <div class="fld" style="margin-top:10px"><label for="pref-kuechen">Lieblingsküchen (optional)</label>
+      <input id="pref-kuechen" placeholder="z.B. asiatisch, mediterran, mexikanisch..." aria-label="z.B. asiatisch, mediterran, mexikanisch..."></div>
+    <div class="fld"><label for="pref-avoid">Abneigungen / Allergien (optional)</label>
+      <input id="pref-avoid" placeholder="z.B. Erdnuesse, Sellerie, zu scharf..." aria-label="z.B. Erdnuesse, Sellerie, zu scharf..."></div>
     <button class="btn btn-red" onclick="savePrefs()" style="margin-top:4px">Präferenzen speichern</button>
     <div id="prefs-saved" style="display:none;font-size:12px;color:var(--grn);text-align:center;margin-top:8px">&#10003; Gespeichert!</div>
   </div></div>
@@ -2951,7 +2951,9 @@ function goSuggest() {
   }
 
   // Obergrenze pro Zeitrahmen. Bei "aufwendig" gibt es keine.
-  var ZEIT_MAX = { schnell: 25, normal: 50 };
+  // Dieselben Werte wie in der Oberflaeche ("max. ~20 Min." / "30-45 Min.")
+  // und im Prompt. Frueher 25/50 - ein 48-Minuten-Gericht galt als "normal".
+  var ZEIT_MAX = { schnell: 20, normal: 45 };
 
   // Verletzt ein Gericht den Zeitrahmen seines Tages? Frueher kam bei "Normal
   // 30-45 Min." ein Vorschlag mit 60 Minuten pro Abend durch.
@@ -3406,7 +3408,22 @@ function goWeek() {
     goWeekRender(sug, { keepTab: true });
   })
   .catch(function(e) {
+    // Auch bei Teilerfolg: war das ein Zukunftsplan, tritt die laufende Woche
+    // wieder in den Vordergrund. Die gelungenen Rezepte sind ueber
+    // persistActivePlan() -> updateHistoryEntryPlan() laengst im Verlauf
+    // gesichert und lassen sich von dort spaeter ergaenzen.
+    var warZukunftTeil = e && e.teilweise && G.activePlan && !wocheEnthaelt(G.activePlan.weekStart, new Date());
+    if (warZukunftTeil && G.activePlan && G.sel !== null && G.sugs[G.sel] === sug) persistActivePlan();
     G_ladeRezepte = false;
+    if (warZukunftTeil && befoerdereWochenplan()) {
+      goWeekRender(G.activePlan.sug, { keepTab: true });
+      if ($('rlist')) $('rlist').insertAdjacentHTML('afterbegin',
+        '<div class="st inf" style="margin:10px 10px 0">Plan „' + esc(sug.thema) + '" (' +
+        esc(wochenEtikett(G_zuletztAktiviert)) + ') ist gespeichert, aber unvollständig: ' + esc(e.message) +
+        ' Die fehlenden Rezepte lassen sich später im Verlauf nachholen. Bis dahin bleibt die laufende Woche im Vordergrund.</div>');
+      logFehler('rezepte', 'Zukunftsplan unvollständig', e.message);
+      return;
+    }
     // Diagnose mitanzeigen: ob ueberhaupt gestreamt wurde, wie lange die
     // Kopfzeilen brauchten und wie viel Text ankam. Ohne das laesst sich ein
     // Verbindungsabbruch nicht von einem nicht-streamenden Worker unterscheiden.
@@ -3493,11 +3510,16 @@ var G_timelineScrolled = false; // verhindert wiederholtes Auto-Scrollen bei jed
 // wo man war, statt am aeltesten Eintrag der Zeitachse.
 var G_tabScroll = { e: 0, r: 0 };
 var G_aktiverTab = 'e';
+// Fortlaufend merken: die Reiter sitzen oben, zum Antippen muss man also
+// hochscrollen - beim Wechsel waere die Position sonst immer 0.
+window.addEventListener('scroll', function() {
+  var sw = document.getElementById('sw');
+  if (sw && sw.classList.contains('on') && window.scrollY > 0) G_tabScroll[G_aktiverTab] = window.scrollY;
+}, { passive: true });
 
 function wtab(t) {
   var tabs = document.querySelectorAll('.tabs .tab');
   if (!tabs || tabs.length < 2) return;
-  G_tabScroll[G_aktiverTab] = window.scrollY;
   var wechsel = G_aktiverTab !== t;
   G_aktiverTab = t;
   tabs[0].setAttribute('aria-selected', t === 'e'); tabs[1].setAttribute('aria-selected', t === 'r');
@@ -3515,10 +3537,7 @@ function wtab(t) {
     G_timelineScrolled = true;
     // Kurzer Timeout: DOM muss erst fertig eingefuegt sein (innerHTML lief
     // synchron in renderRez, aber layout/scrollHeight braucht einen Tick).
-    setTimeout(function() {
-      var el = document.getElementById('timeline-today-anchor');
-      if (el && el.scrollIntoView) el.scrollIntoView({ block: 'start', behavior: 'auto' });
-    }, 50);
+    setTimeout(function() { scrollTimelineToToday(true); }, 50);
   }
 }
 
@@ -3891,9 +3910,16 @@ function toggleTimelineCard(key) {
   renderRez();
 }
 
-function scrollTimelineToToday() {
-  var el = document.getElementById('timeline-today-anchor');
-  if (el) el.scrollIntoView({ block: 'start', behavior: 'smooth' });
+// Springt zur HEUTIGEN Karte, nicht mehr zum leeren Anker davor. Die Karte
+// traegt scroll-margin-top und landet damit unterhalb der klebenden
+// Kopfzeile; der Anker hatte das nicht und verschwand dahinter.
+function heutigeKarte() {
+  var iso = isoDateLocal(new Date());
+  return document.querySelector('.tl-day[data-tliso="' + iso + '"]');
+}
+function scrollTimelineToToday(sofort) {
+  var el = heutigeKarte() || document.getElementById('timeline-today-anchor');
+  if (el && el.scrollIntoView) el.scrollIntoView({ block: 'start', behavior: sofort ? 'auto' : 'smooth' });
 }
 
 // Oeffnet gezielt die Karte eines bestimmten Gerichts in der Zeitachse und
@@ -4989,12 +5015,34 @@ function wocheEnthaelt(weekStartIso, datum) {
   return datum >= a && datum < b;
 }
 
+// Aeltere Verlaufseintraege haben die planId nur am Eintrag, nur am inneren
+// Plan oder gar nicht. Ohne ID findet befoerdereWochenplan() sie nicht, und die
+// laufende Woche bliebe ohne aktiven Plan. Hier wird einmalig vereinheitlicht
+// und persistent gespeichert.
+function migrierePlanIds() {
+  var hist;
+  try { hist = JSON.parse(localStorage.getItem(userKey('local_history')) || '[]'); }
+  catch (e) { return; }
+  var geaendert = false;
+  hist.forEach(function(e) {
+    if (!e) return;
+    var id = e.planId || (e.plan && e.plan.planId);
+    if (!id) { id = generatePlanId(); geaendert = true; }
+    if (e.planId !== id) { e.planId = id; geaendert = true; }
+    if (e.plan && e.plan.planId !== id) { e.plan.planId = id; geaendert = true; }
+  });
+  if (geaendert) {
+    try { localStorage.setItem(userKey('local_history'), JSON.stringify(hist)); } catch (e) {}
+  }
+}
+
 function planImVerlaufFuerWoche(weekStartIso) {
   try {
+    migrierePlanIds();
     var hist = JSON.parse(localStorage.getItem(userKey('local_history')) || '[]');
     for (var i = 0; i < hist.length; i++) {
       var pl = hist[i].plan;
-      if (pl && pl.weekStart === weekStartIso && pl.sug && pl.planId) return pl;
+      if (pl && pl.weekStart === weekStartIso && pl.sug) return pl;
     }
   } catch (e) {}
   return null;
@@ -6911,7 +6959,7 @@ function loadHistoryRecipes() {
       +'<div style="padding:8px 14px;display:flex;flex-direction:column;gap:6px">'
         +'<div style="width:100%;margin-bottom:4px">'+statusBadge(r.status||'gespeichert')+'</div>'
         +'<div style="display:flex;gap:6px"><button class="btn btn-red" onclick="openHistoryRecipe('+i+')" style="flex:1;padding:9px;font-size:12px">Öffnen</button><button class="btn btn-out" onclick="showFotoRating('+i+')" style="flex:1;padding:9px;font-size:12px">★ Bewerten</button></div>'
-        +'<div style="display:flex;gap:6px"><button class="btn btn-out" onclick="importHistoryRecipeToBring('+i+')" style="flex:1;padding:9px;font-size:12px">In Bring!</button>'+(r.status!=='gekocht'?'<button class="btn btn-out" onclick="markFotoRezeptGekocht('+i+')" style="flex:1;padding:9px;font-size:11px">🍽 Gekocht</button>':'')+(r.status!=='geplant'?'<button class="btn btn-out" onclick="resetFotoRezeptStatus('+i+')" style="padding:9px;font-size:12px">✕</button>':'')+'<button onclick="deleteHistoryRecipe('+i+')" style="background:none;border:.5px solid var(--bdr);border-radius:8px;padding:9px 12px;color:var(--gr3);cursor:pointer;font-size:16px">✕</button></div>'
+        +'<div style="display:flex;gap:6px"><button class="btn btn-out" onclick="importHistoryRecipeToBring('+i+')" style="flex:1;padding:9px;font-size:12px">In Bring!</button>'+(r.status!=='gekocht'?'<button class="btn btn-out" onclick="markFotoRezeptGekocht('+i+')" style="flex:1;padding:9px;font-size:11px">🍽 Gekocht</button>':'')+((r.status==='einkauf'||r.status==='gekocht')?'<button class="btn btn-out" onclick="resetFotoRezeptStatus('+i+')" style="padding:9px;font-size:12px" title="Status zurücksetzen">✕</button>':'')+'<button onclick="deleteHistoryRecipe('+i+')" style="background:none;border:.5px solid var(--bdr);border-radius:8px;padding:9px 12px;color:var(--gr3);cursor:pointer;font-size:16px">✕</button></div>'
       +'</div>'
     +'</div>';
   }).join('');
@@ -6929,7 +6977,7 @@ function importHistoryRecipeToBring(i) {
   window._fotoRezept=r; G_foto.portionen=r.portionen||2; importFotoFromResult();
 }
 function nochmalKochenFoto(i) {
-  var saved = JSON.parse(localStorage.getItem(userKey('foto_rezepte')) || '[]');
+  var saved = migriereFotoStatus(JSON.parse(localStorage.getItem(userKey('foto_rezepte')) || '[]'));
   var r = saved[i]; if (!r) return;
   window._fotoRezept = r;
   G_foto.portionen = r.portionen || 2;
@@ -6944,7 +6992,7 @@ function markFotoRezeptGekocht(i) {
 }
 function resetFotoRezeptStatus(i) {
   var saved=JSON.parse(localStorage.getItem(userKey('foto_rezepte'))||'[]'); if(!saved[i])return;
-  saved[i].status='geplant'; localStorage.setItem(userKey('foto_rezepte'),JSON.stringify(saved)); saveFotoRezepteToGH(saved); loadHistoryRecipes(); loadSavedFotoRezepte();
+  saved[i].status='gespeichert'; localStorage.setItem(userKey('foto_rezepte'),JSON.stringify(saved)); saveFotoRezepteToGH(saved); loadHistoryRecipes(); loadSavedFotoRezepte();
 }
 function deleteHistoryRecipe(i) {
   if(!confirm('Rezept löschen?'))return;
@@ -7131,8 +7179,18 @@ function einplanenAuf(tag) {
   showSwapToast('Eingeplant für ' + d.toLocaleDateString('de-CH', { weekday: 'short', day: 'numeric', month: 'short' }), '#4F8067');
 }
 
+// Foto-Rezepte trugen frueher den Standardstatus "geplant", obwohl sie nur
+// gespeichert waren. Einmalig auf "gespeichert" migrieren - "einkauf" und
+// "gekocht" sind echte Zustaende und bleiben.
+function migriereFotoStatus(saved) {
+  var geaendert = false;
+  saved.forEach(function(r) { if (r && (r.status === 'geplant' || !r.status)) { r.status = 'gespeichert'; geaendert = true; } });
+  if (geaendert) { try { localStorage.setItem(userKey('foto_rezepte'), JSON.stringify(saved)); } catch (e) {} }
+  return saved;
+}
+
 function loadSavedFotoRezepte(){
-  var saved=JSON.parse(localStorage.getItem(userKey('foto_rezepte'))||'[]');var sec=$('foto-saved-section');
+  var saved=migriereFotoStatus(JSON.parse(localStorage.getItem(userKey('foto_rezepte'))||'[]'));var sec=$('foto-saved-section');
   if(!saved.length){if(sec)sec.style.display='none';return;}
   if(sec)sec.style.display='block';
   var html=saved.map(function(r,i){return '<div style="background:#fff;border-radius:var(--r);border:.5px solid var(--bdr);padding:10px 14px;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between;gap:8px"><div style="flex:1;min-width:0"><div style="font-size:14px;font-weight:600;color:var(--txt);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+esc(r.name||'Rezept')+'</div><div style="font-size:11px;color:var(--gr3);margin-top:2px">'+esc(r.saved||r.date||'')+' · '+personenLabel(r.portionen||2)+(r.zeit_total?' · '+esc(r.zeit_total):'')+'</div></div><div style="display:flex;gap:6px;flex-shrink:0"><button onclick="openEinplanen(window._savedFotoRezepte['+i+'])" class="btn btn-out" style="width:auto;padding:7px 10px;font-size:12px" title="Einplanen">📅</button><button onclick="loadSavedFotoRezeptDetail('+i+')" class="btn btn-out" style="width:auto;padding:7px 12px;font-size:12px">Öffnen</button><button onclick="deleteSavedFotoRezept('+i+')" style="background:none;border:none;color:var(--gr3);font-size:18px;cursor:pointer;padding:0 4px">✕</button></div></div>';}).join('');
@@ -7344,7 +7402,7 @@ function fotoRezeptId(r){
 
 function saveFotoRezeptSilent(r,status){
   var _fid=fotoRezeptId(r);
-  var entry={_id:_fid,id:Date.now(),date:isoDateLocal(new Date()),saved:new Date().toLocaleDateString('de-CH'),name:r.name||'Foto-Rezept',beschreibung:r.beschreibung||'',zeit_aktiv:r.zeit_aktiv||'',zeit_total:r.zeit_total||'',portionen:G_foto.portionen,zutaten:r.zutaten||[],schritte:r.schritte||[],tipp:r.tipp||'',status:status||r.status||'geplant',stars:r.stars,ratingFeedback:r.ratingFeedback};
+  var entry={_id:_fid,id:Date.now(),date:isoDateLocal(new Date()),saved:new Date().toLocaleDateString('de-CH'),name:r.name||'Foto-Rezept',beschreibung:r.beschreibung||'',zeit_aktiv:r.zeit_aktiv||'',zeit_total:r.zeit_total||'',portionen:G_foto.portionen,zutaten:r.zutaten||[],schritte:r.schritte||[],tipp:r.tipp||'',status:status||r.status||'gespeichert',stars:r.stars,ratingFeedback:r.ratingFeedback};
   var saved=JSON.parse(localStorage.getItem(userKey('foto_rezepte'))||'[]');
   // Primaer ueber die stabile _id zuordnen; Namensvergleich nur noch als
   // Fallback fuer Alt-Eintraege, die noch keine _id haben.
@@ -7691,7 +7749,7 @@ var STAR_LABELS = ['', 'Nicht so gut', 'Geht so', 'Gut', 'Sehr gut', 'Ausgezeich
         <button class="chip" onclick="toggleRepTag(this,'zu viele Zutaten')">zu viele Zutaten</button>
         <button class="chip" onclick="toggleRepTag(this,'anderes gewünscht')">anderes gewünscht</button>
       </div>
-      <input id="rep-hint" placeholder="Oder eigener Wunsch: z.B. etwas Asiatisches, schnell...">
+      <input id="rep-hint" placeholder="Oder eigener Wunsch: z.B. etwas Asiatisches, schnell..." aria-label="Oder eigener Wunsch: z.B. etwas Asiatisches, schnell...">
     </div>
     <div id="rep-load" style="display:none;text-align:center;padding:20px 0">
       <div class="spin" style="width:22px;height:22px;margin:0 auto 8px;border-width:2px"></div>
@@ -7744,8 +7802,8 @@ var STAR_LABELS = ['', 'Nicht so gut', 'Geht so', 'Gut', 'Sehr gut', 'Ausgezeich
       <button class="chip" onclick="toggleRmTag(this,'gute Reste')">gute Reste</button>
     </div>
     <div class="fld">
-      <label>Kommentar (optional)</label>
-      <textarea id="rm-feedback" placeholder="Was hat gefallen? Was würde ich ändern?" style="width:100%;background:#fff;border:1px solid var(--bdr);border-radius:7px;color:var(--txt);font-size:14px;padding:10px 12px;font-family:inherit;resize:none;height:76px;outline:none"></textarea>
+      <label for="rm-feedback">Kommentar (optional)</label>
+      <textarea id="rm-feedback" placeholder="Was hat gefallen? Was würde ich ändern?" style="width:100%;background:#fff;border:1px solid var(--bdr);border-radius:7px;color:var(--txt);font-size:14px;padding:10px 12px;font-family:inherit;resize:none;height:76px;outline:none" aria-label="Was hat gefallen? Was würde ich ändern?"></textarea>
     </div>
     <div style="display:flex;gap:8px;margin-top:4px">
       <button class="btn btn-out" onclick="closeRating()" style="flex:1;padding:11px;font-size:13px">Überspringen</button>
@@ -7784,10 +7842,10 @@ var STAR_LABELS = ['', 'Nicht so gut', 'Geht so', 'Gut', 'Sehr gut', 'Ausgezeich
   <div class="card" style="margin:10px">
     <div class="chead">Neuen Benutzer anlegen</div>
     <div class="cbody">
-      <div class="fld"><label>Benutzername</label>
-        <input type="text" id="admin-new-name" placeholder="z.B. familie-meier" autocapitalize="none" autocorrect="off" spellcheck="false"></div>
-      <div class="fld"><label>Passwort (mind. 8 Zeichen)</label>
-        <input type="password" id="admin-new-pw" placeholder="Passwort vergeben" autocomplete="new-password"></div>
+      <div class="fld"><label for="admin-new-name">Benutzername</label>
+        <input type="text" id="admin-new-name" placeholder="z.B. familie-meier" autocapitalize="none" autocorrect="off" spellcheck="false" aria-label="z.B. familie-meier"></div>
+      <div class="fld"><label for="admin-new-pw">Passwort (mind. 8 Zeichen)</label>
+        <input type="password" id="admin-new-pw" placeholder="Passwort vergeben" autocomplete="new-password" aria-label="Passwort vergeben"></div>
       <label style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--txt);margin:4px 0 12px;cursor:pointer">
         <input type="checkbox" id="admin-new-admin" style="width:18px;height:18px"> Darf ebenfalls Benutzer verwalten</label>
       <button class="btn btn-red" id="admin-add-btn" onclick="adminAddUser()" style="width:100%;padding:12px">Benutzer anlegen</button>
@@ -7846,9 +7904,9 @@ var STAR_LABELS = ['', 'Nicht so gut', 'Geht so', 'Gut', 'Sehr gut', 'Ausgezeich
   <div style="background:#fff;border-radius:20px 20px 0 0;padding:24px 20px 36px;width:100%;max-width:480px">
     <div style="font-size:16px;font-weight:700;color:var(--txt);margin-bottom:6px">Passwort ändern</div>
     <div style="font-size:11px;color:var(--gr3);margin-bottom:14px;line-height:1.5">Gilt sofort auf allen Geräten. Mindestens 8 Zeichen.</div>
-    <div class="fld"><label>Aktuelles Passwort</label><input type="password" id="pw-old" autocomplete="current-password"></div>
-    <div class="fld"><label>Neues Passwort</label><input type="password" id="pw-new" autocomplete="new-password"></div>
-    <div class="fld"><label>Neues Passwort wiederholen</label><input type="password" id="pw-new2" autocomplete="new-password"></div>
+    <div class="fld"><label for="pw-old">Aktuelles Passwort</label><input type="password" id="pw-old" autocomplete="current-password"></div>
+    <div class="fld"><label for="pw-new">Neues Passwort</label><input type="password" id="pw-new" autocomplete="new-password"></div>
+    <div class="fld"><label for="pw-new2">Neues Passwort wiederholen</label><input type="password" id="pw-new2" autocomplete="new-password"></div>
     <div id="pw-err" style="font-size:12px;color:var(--danger);margin-bottom:8px;display:none"></div>
     <div style="display:flex;gap:8px">
       <button class="btn btn-out" onclick="$('pw-modal').style.display='none'" style="flex:1;padding:11px;font-size:13px">Abbrechen</button>
