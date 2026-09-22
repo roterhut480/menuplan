@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=yes">
-<title>Menüplan v6.78</title>
+<title>Menüplan v6.82</title>
 <meta name="theme-color" content="#5B7C78">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -68,15 +68,21 @@
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 /* Abgerundete Systemschriften - keine externe Schrift, damit die installierte
    App offline unveraendert aussieht. Faellt sauber auf system-ui zurueck. */
-body{font-family:ui-rounded,"SF Pro Rounded","Avenir Next","Segoe UI",system-ui,sans-serif;
+/* margin:0 - der Browser-Standardrand von 8px liess die App auf jedem Handy
+   16px schmaler laufen, als der Bildschirm ist. */
+body{margin:0;font-family:ui-rounded,"SF Pro Rounded","Avenir Next","Segoe UI",system-ui,sans-serif;
   background:var(--background);color:var(--text);min-height:100vh;
   -webkit-font-smoothing:antialiased;letter-spacing:-.005em}
 h1,h2,h3{letter-spacing:-.02em}
-/* Desktop-Zentrierung: begrenzt die App auf Handybreite und zentriert sie.
-   transform:translateZ(0) ist zwingend - es macht #app-shell zum Containing
-   Block fuer position:fixed-Kinder (Cook-Footer, Modals, Toasts). Ein blosses
-   position:relative reicht dafuer NICHT aus. */
-#app-shell{max-width:480px;margin:0 auto;position:relative;transform:translateZ(0);min-height:100vh;background:var(--background);box-shadow:0 0 24px rgba(0,0,0,.06);transition:max-width .2s}
+/* Tastaturfokus sichtbar - nur bei Tastaturbedienung, nicht beim Tippen. */
+:focus-visible{outline:3px solid var(--primary);outline-offset:2px;border-radius:6px}
+button:focus:not(:focus-visible),[role=button]:focus:not(:focus-visible){outline:none}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important;scroll-behavior:auto!important}}
+/* KEIN transform hier: ein Transform macht das Element zum Bezugsrahmen fuer
+   alles position:fixed darin. Die Dialoge (QR, Wochenwahl, Bewertung, Tausch)
+   liegen im Shell und rutschten deshalb beim Scrollen mit - bei tiefer
+   Zeitachse lagen Titel und Schliessen-Knopf oberhalb des Bildschirms. */
+#app-shell{max-width:480px;margin:0 auto;position:relative;min-height:100vh;background:var(--background);box-shadow:0 0 24px rgba(0,0,0,.06);transition:max-width .2s}
 /* Die Druckansicht ist die einzige Seite, die nicht in Handybreite gehoert:
    auf Rechner und Tablet soll das Rezept als eine Seite lesbar sein, mit
    Zutaten und Zubereitung nebeneinander. */
@@ -99,6 +105,8 @@ h1,h2,h3{letter-spacing:-.02em}
 /* cards */
 /* Karten ohne harten Rahmen: ein sehr dezenter Schatten traegt die Trennung.
    Der Rahmen liess die Liste frueher wie eine Tabelle wirken. */
+/* Beim Sprung zu "Heute" sonst hinter der klebenden Kopfleiste. */
+.tl-day{scroll-margin-top:calc(var(--tbar-h) + 52px)}
 .card{background:var(--surface);border-radius:var(--rlg);margin:12px 10px 0;
   border:none;box-shadow:var(--shadow-card);overflow:hidden}
 .cp{padding:14px 16px}
@@ -257,7 +265,7 @@ input[type=password]{letter-spacing:2px}
 
 <!-- HOME -->
 <div class="scr on" id="sh">
-  <div class="hero"><h1>Menüplan</h1><p id="hsub">v6.78 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
+  <div class="hero"><h1>Menüplan</h1><p id="hsub">v6.82 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
 
   <!-- Active plan card -->
 
@@ -269,6 +277,7 @@ input[type=password]{letter-spacing:2px}
         <button onclick="toggleUserMenu()" id="user-menu-btn" style="display:none;width:44px;height:44px;border-radius:50%;background:var(--red);color:#fff;border:none;font-size:16px;cursor:pointer;flex-shrink:0">👤</button>
       </div>
 
+      <div id="dash-fehler" onclick="openPrefs()" style="display:none;background:var(--warning-soft);color:var(--warning);border-radius:10px;padding:10px 14px;margin-bottom:12px;font-size:13px;font-weight:600;cursor:pointer;min-height:44px;line-height:24px"></div>
       <div id="dash-bring-card" style="display:none;background:#fff;border-radius:var(--rlg);border:.5px solid var(--bdr);padding:14px 16px;margin-bottom:12px">
         <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
           <div style="width:34px;height:34px;border-radius:9px;background:#f5f5f5;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0">🛒</div>
@@ -306,7 +315,7 @@ input[type=password]{letter-spacing:2px}
         </div>
         <div style="background:#fff;border-radius:var(--rlg);border:.5px solid var(--bdr);padding:14px 16px;margin-bottom:12px">
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
-            <div style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--gr3)">Diese Woche</div>
+            <div id="dash-woche-lbl" style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--gr3)">Diese Woche</div>
             <div id="dash-thema" style="font-size:12px;color:var(--gr3);font-style:italic"></div>
           </div>
           <div id="dash-week-days"></div>
@@ -447,6 +456,7 @@ input[type=password]{letter-spacing:2px}
 
   <!-- Generieren Button -->
   <div style="padding:0 10px 10px">
+    <div id="snew-err" class="st er" role="alert" tabindex="-1" style="display:none;margin:0 0 10px"></div>
     <button class="btn btn-red" onclick="goSuggest()" style="font-size:15px;padding:14px;font-weight:700">✨ Menüvorschläge generieren</button>
   </div>
 </div><!-- END #snew -->
@@ -544,7 +554,7 @@ input[type=password]{letter-spacing:2px}
     <div id="cook-timerbar" style="display:none;gap:6px;padding:8px 12px;overflow-x:auto"></div>
   </div>
   <div id="cbody" style="padding:10px 10px 90px"></div>
-  <div id="cook-footer" style="position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:.5px solid var(--bdr);padding:10px 10px calc(10px + env(safe-area-inset-bottom));display:flex;gap:8px;z-index:20">
+  <div id="cook-footer" style="position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;box-sizing:border-box;background:#fff;border-top:.5px solid var(--bdr);padding:10px 10px calc(10px + env(safe-area-inset-bottom));display:flex;gap:8px;z-index:20">
     <button onclick="doStepBack()" style="flex:0 0 auto;width:80px;background:#f5f5f5;border:none;border-radius:var(--r);padding:14px;font-size:14px;font-weight:600;color:var(--txt2);cursor:pointer;font-family:inherit">Zurück</button>
     <button onclick="doComplete(G.act)" id="cook-complete-btn" style="flex:1;background:var(--red);border:none;border-radius:var(--r);padding:14px;font-size:16px;font-weight:700;color:#fff;cursor:pointer;font-family:inherit">Erledigt &middot; Weiter</button>
   </div>
@@ -685,6 +695,21 @@ input[type=password]{letter-spacing:2px}
     </div>
   </div></div>
   <div class="card"><div class="cp">
+    <div class="clbl" style="display:flex;justify-content:space-between;align-items:center">
+      <span>Fehlerprotokoll</span>
+      <span id="fehlerlog-anzahl" style="font-size:11px;font-weight:400;color:var(--text-secondary);text-transform:none;letter-spacing:0"></span>
+    </div>
+    <div style="font-size:11px;color:var(--gr3);margin-bottom:8px">
+      Bleibt auf diesem Gerät und wird nie hochgeladen. Weggeklickte Fehlermeldungen lassen sich hier nachlesen – zum Weitergeben „Kopieren".
+    </div>
+    <div id="fehlerlog-liste"></div>
+    <button class="btn btn-red" onclick="teileFehlerlog()" style="padding:11px;font-size:13px">Teilen / Senden</button>
+    <div class="btnrow">
+      <button class="btn btn-out" id="fehlerlog-copy" onclick="kopiereFehlerlog()" style="padding:10px;font-size:13px">Kopieren</button>
+      <button class="btn btn-out" onclick="if(confirm('Fehlerprotokoll löschen?'))loescheFehlerlog()" style="padding:10px;font-size:13px">Löschen</button>
+    </div>
+  </div></div>
+  <div class="card"><div class="cp">
     <div class="clbl">Lernprofil aus Bewertungen</div>
     <div style="font-size:11px;color:var(--gr3);margin-bottom:10px">Wird automatisch aus deinen Bewertungen aufgebaut und bei der Menugenerierung berücksichtigt.</div>
     <div id="prefs-profile"><div style="font-size:12px;color:var(--gr3);font-style:italic">Wird geladen...</div></div>
@@ -822,6 +847,49 @@ function go(id) {
 
 document.addEventListener('DOMContentLoaded', function() { setTimeout(initDayPicker, 100); });
 
+// ─── BARRIEREFREIHEIT ─────────────────────────────────────
+// Klickbare div/span-Elemente bekommen eine Rolle, sind per Tab erreichbar
+// und reagieren auf Enter und Leertaste. Das laeuft auch fuer dynamisch
+// erzeugten Inhalt, deshalb ein MutationObserver statt einer Einmalpruefung.
+function machBedienbar(wurzel) {
+  var w = wurzel || document;
+  var sel = 'div[onclick]:not([role]), span[onclick]:not([role])';
+  var els = Array.prototype.slice.call(w.querySelectorAll(sel));
+  // querySelectorAll findet nur NACHKOMMEN - das uebergebene Element selbst
+  // muss eigens geprueft werden, sonst bleibt ein einzeln angehaengtes
+  // klickbares div ohne Rolle.
+  if (w.matches && w.matches(sel)) els.push(w);
+  for (var i = 0; i < els.length; i++) {
+    var el = els[i];
+    el.setAttribute('role', el.classList.contains('tab') ? 'tab' : 'button');
+    if (!el.hasAttribute('tabindex')) el.setAttribute('tabindex', '0');
+  }
+}
+document.addEventListener('keydown', function(ev) {
+  if (ev.key !== 'Enter' && ev.key !== ' ') return;
+  var t = ev.target;
+  if (!t || t.tagName === 'BUTTON' || t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.tagName === 'SELECT') return;
+  if (t.getAttribute && (t.getAttribute('role') === 'button' || t.getAttribute('role') === 'tab') && t.hasAttribute('onclick')) {
+    ev.preventDefault();
+    t.click();
+  }
+});
+// Nicht auf DOMContentLoaded warten: je nach Ladeweg ist das hier schon
+// vorbei, und der Beobachter wuerde nie angelegt. Sobald body existiert, geht es los.
+function starteBedienbarkeit() {
+  if (!document.body) { setTimeout(starteBedienbarkeit, 20); return; }
+  machBedienbar(document);
+  new MutationObserver(function(muts) {
+    for (var i = 0; i < muts.length; i++) {
+      for (var j = 0; j < muts[i].addedNodes.length; j++) {
+        var n = muts[i].addedNodes[j];
+        if (n.nodeType === 1) machBedienbar(n);
+      }
+    }
+  }).observe(document.body, { childList: true, subtree: true });
+}
+starteBedienbarkeit();
+
 // Hoehe der Kopfleiste messen und als CSS-Variable setzen. Sie war fest auf
 // 48px verdrahtet; als die Knoepfe auf 44px Trefferflaeche wuchsen, schob sich
 // die klebende Zeitachsen-Leiste unter die Kopfleiste.
@@ -913,12 +981,107 @@ document.addEventListener('visibilitychange', function() {
   if (document.visibilityState === 'visible') syncIfDue(false);
 });
 
+// ─── FEHLERPROTOKOLL ─────────────────────────────────────
+// Bleibt auf dem Geraet (localStorage), geht NIE in die Cloud. Zweck: eine
+// weggeklickte Fehlermeldung laesst sich spaeter nachlesen. Hoechstens 50
+// Eintraege, aelteste fliegen raus.
+var FEHLERLOG_MAX = 50;
+
+function logFehler(quelle, meldung, detail) {
+  try {
+    var key = 'menuplan_fehlerlog';                // bewusst NICHT pro Nutzer
+    var liste = JSON.parse(localStorage.getItem(key) || '[]');
+    var scr = document.querySelector('.scr.on');
+    liste.unshift({
+      t: new Date().toISOString(),
+      v: (document.title.match(/v[\d.]+/) || [''])[0],
+      q: String(quelle || ''),
+      m: String(meldung || '').slice(0, 300),
+      d: detail ? String(detail).slice(0, 500) : '',
+      s: scr ? scr.id : '',
+      online: navigator.onLine
+    });
+    localStorage.setItem(key, JSON.stringify(liste.slice(0, FEHLERLOG_MAX)));
+  } catch (e) {}
+}
+
+function leseFehlerlog() {
+  try { return JSON.parse(localStorage.getItem('menuplan_fehlerlog') || '[]'); }
+  catch (e) { return []; }
+}
+
+function loescheFehlerlog() {
+  localStorage.removeItem('menuplan_fehlerlog');
+  renderFehlerlog();
+}
+
+function fehlerlogAlsText() {
+  var l = leseFehlerlog();
+  if (!l.length) return 'Kein Eintrag.';
+  return l.map(function(e) {
+    return e.t.replace('T', ' ').slice(0, 19) + '  ' + e.v + '  [' + e.q + ']' +
+      (e.s ? ' @' + e.s : '') + (e.online === false ? ' OFFLINE' : '') + '\n  ' + e.m +
+      (e.d ? '\n  ' + e.d : '');
+  }).join('\n\n');
+}
+
+function kopiereFehlerlog() {
+  var txt = fehlerlogAlsText();
+  var fertig = function() {
+    var b = $('fehlerlog-copy'); if (!b) return;
+    var alt = b.textContent; b.textContent = 'Kopiert ✓';
+    setTimeout(function() { b.textContent = alt; }, 1500);
+  };
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(txt).then(fertig, function() { prompt('Protokoll:', txt); });
+  } else { prompt('Protokoll:', txt); }
+}
+
+// Auf dem Handy ist Kopieren umstaendlich - der Teilen-Dialog des Systems
+// schickt das Protokoll mit einem Tipp per WhatsApp, Mail oder in eine App.
+function teileFehlerlog() {
+  var txt = 'Menüplan Fehlerprotokoll\n' + new Date().toLocaleString('de-CH') + '\n\n' + fehlerlogAlsText();
+  if (navigator.share) {
+    navigator.share({ title: 'Menüplan Fehlerprotokoll', text: txt })
+      .catch(function(e) { if (e && e.name !== 'AbortError') kopiereFehlerlog(); });
+  } else {
+    kopiereFehlerlog();          // Desktop: Zwischenablage als Rueckfall
+  }
+}
+
+function renderFehlerlog() {
+  var el = $('fehlerlog-liste'); if (!el) return;
+  var l = leseFehlerlog();
+  if ($('fehlerlog-anzahl')) $('fehlerlog-anzahl').textContent = l.length ? l.length + ' Einträge' : 'leer';
+  if (!l.length) { el.innerHTML = '<div style="font-size:12px;color:var(--text-secondary);padding:8px 0">Bisher keine Fehler aufgezeichnet.</div>'; return; }
+  el.innerHTML = l.slice(0, 20).map(function(e) {
+    var zeit = e.t.replace('T', ' ').slice(5, 16);
+    return '<div style="padding:8px 0;border-bottom:.5px solid var(--border)">' +
+      '<div style="font-size:11px;color:var(--text-secondary)">' + esc(zeit) + ' · ' + esc(e.v) +
+      ' · ' + esc(e.q) + (e.s ? ' · ' + esc(e.s) : '') + (e.online === false ? ' · <b>offline</b>' : '') + '</div>' +
+      '<div style="font-size:12.5px;color:var(--text);margin-top:2px">' + esc(e.m) + '</div>' +
+      (e.d ? '<div style="font-size:11px;color:var(--text-secondary);margin-top:2px;font-family:ui-monospace,monospace;word-break:break-all">' + esc(e.d) + '</div>' : '') +
+      '</div>';
+  }).join('') + (l.length > 20 ? '<div style="font-size:11px;color:var(--text-secondary);padding:6px 0">… und ' + (l.length - 20) + ' weitere (im kopierten Text enthalten)</div>' : '');
+}
+
+// Alles, was der Nutzer als Fehler sieht, landet auch im Protokoll.
 function showSt(id, msg, type) {
   var el = $(id);
   el.className = 'st ' + type;
   el.textContent = msg;
   el.style.display = 'block';
+  if (type === 'er') logFehler('showSt:' + id, msg);
 }
+
+// Unbehandelte Ausnahmen ebenfalls - die sieht der Nutzer sonst gar nicht.
+window.addEventListener('error', function(ev) {
+  logFehler('window.error', ev.message || 'Fehler', (ev.filename || '') + ':' + (ev.lineno || ''));
+});
+window.addEventListener('unhandledrejection', function(ev) {
+  var r = ev.reason;
+  logFehler('unhandledrejection', (r && r.message) || String(r), r && r.stack ? String(r.stack).slice(0, 300) : '');
+});
 
 // ─── OPTION SETTERS ────────────────────────────────────────
 // ─── TAGESPLANUNG ──────────────────────────────────────────
@@ -1451,7 +1614,7 @@ function setSyncState(state, detail) {
     if (state === 'ok') return;
     el = document.createElement('div');
     el.id = 'sync-warn';
-    el.style.cssText = 'position:fixed;left:0;right:0;bottom:0;background:#B97836;color:#fff;' +
+    el.style.cssText = 'position:fixed;left:50%;transform:translateX(-50%);width:100%;max-width:480px;box-sizing:border-box;bottom:0;background:#B97836;color:#fff;' +
       'padding:8px 12px calc(8px + env(safe-area-inset-bottom));font-size:12px;font-weight:600;' +
       'text-align:center;z-index:400;cursor:pointer';
     el.title = 'Antippen zum Ausblenden';
@@ -1498,7 +1661,7 @@ function showRemoteClearedBanner(stamp) {
   var thema = (G.activePlan && G.activePlan.sug && G.activePlan.sug.thema) || 'Menüplan';
   var el = document.createElement('div');
   el.id = 'remote-cleared-banner';
-  el.style.cssText = 'position:fixed;left:0;right:0;bottom:0;background:#fff;border-top:.5px solid var(--bdr);' +
+  el.style.cssText = 'position:fixed;left:50%;transform:translateX(-50%);width:100%;max-width:480px;box-sizing:border-box;bottom:0;background:#fff;border-top:.5px solid var(--bdr);' +
     'box-shadow:0 -4px 16px rgba(0,0,0,.12);padding:14px 14px calc(14px + env(safe-area-inset-bottom));z-index:450';
   var head = document.createElement('div');
   head.style.cssText = 'font-size:13px;color:var(--txt);font-weight:600;margin-bottom:4px';
@@ -2612,9 +2775,16 @@ function goSuggest() {
   // und Claude generierte trotzdem ein Gericht fuer einen Tag, den der Nutzer
   // ausdruecklich abgewaehlt hatte.
   if (!cookingDays().length) {
-    var wEl = $('serr') || null;
-    alert('Bitte mindestens einen Kochtag auswählen.');
-    if (wEl) { wEl.className = 'st er'; wEl.textContent = 'Bitte mindestens einen Kochtag auswählen.'; wEl.style.display = 'block'; }
+    // Die Meldung gehoert auf den Bildschirm, auf dem der Nutzer gerade IST -
+    // das Planungsformular. Frueher stand sie in #serr auf dem Vorschlags-
+    // bildschirm, der noch gar nicht offen war: unsichtbar, und nur das
+    // (inzwischen entfernte) alert() hat sie ueberhaupt gemeldet.
+    var wEl = $('snew-err') || $('serr') || null;
+    if (wEl) {
+      wEl.className = 'st er'; wEl.textContent = 'Bitte mindestens einen Kochtag auswählen.';
+      wEl.style.display = 'block'; wEl.setAttribute('tabindex', '-1'); wEl.setAttribute('role', 'alert');
+      setTimeout(function() { wEl.focus(); wEl.scrollIntoView({ block: 'center', behavior: 'smooth' }); }, 30);
+    }
     return;
   }
   go('ss');
@@ -2772,8 +2942,37 @@ function goSuggest() {
     return treffer / Math.min(wa.length, wb.length);
   }
 
+  // Minuten aus "45m", "45 Min", "1h 10" - alles andere ergibt null.
+  function minutenAus(txt) {
+    var t = String(txt || '').toLowerCase();
+    var h = /(\d+)\s*h/.exec(t), m = /(\d+)\s*(m|min)/.exec(t);
+    if (!h && !m) { var n = /(\d+)/.exec(t); return n ? parseInt(n[1], 10) : null; }
+    return (h ? parseInt(h[1], 10) * 60 : 0) + (m ? parseInt(m[1], 10) : 0);
+  }
+
+  // Obergrenze pro Zeitrahmen. Bei "aufwendig" gibt es keine.
+  var ZEIT_MAX = { schnell: 25, normal: 50 };
+
+  // Verletzt ein Gericht den Zeitrahmen seines Tages? Frueher kam bei "Normal
+  // 30-45 Min." ein Vorschlag mit 60 Minuten pro Abend durch.
+  function pruefeZeit(sug) {
+    var g = (sug && sug.gerichte) || [];
+    for (var i = 0; i < g.length; i++) {
+      var modus = (G.days || {})[g[i].tag];
+      var max = ZEIT_MAX[modus];
+      if (!max) continue;
+      var min = minutenAus(g[i].zeit_total);
+      if (min && min > max) {
+        return g[i].tag + ' ' + g[i].abend + ': ' + min + ' Min bei "' + modus + '" (max. ' + max + ')';
+      }
+    }
+    return null;
+  }
+
   // Gibt null zurueck, wenn der Vorschlag taugt - sonst den Grund.
   function pruefeVielfalt(sug) {
+    var zeit = pruefeZeit(sug);
+    if (zeit) return 'Zeitrahmen: ' + zeit;
     var g = (sug && sug.gerichte) || [];
     if (g.length < 2) return null;
     var formen = g.map(formVon).filter(Boolean);
@@ -2827,8 +3026,9 @@ function goSuggest() {
       }
     }
     if (istWiederholung) {
-      _zusatz += ' Der vorherige Versuch enthielt zu aehnliche Gerichte. ' +
-        'Achte besonders darauf, dass jedes Gericht eine ANDERE Gerichtsart hat.';
+      _zusatz += ' Der vorherige Versuch enthielt zu aehnliche Gerichte oder ueberschritt den Zeitrahmen. ' +
+        'Achte besonders darauf, dass jedes Gericht eine ANDERE Gerichtsart hat und die ' +
+        'Gesamtzeit pro Abend den Zeitrahmen des Tages einhaelt (schnell: max 20 Min, normal: max 45 Min).';
     }
     return callWorker('overview', msg + _zusatz, 2000)
       .then(function(raw) {
@@ -2893,6 +3093,7 @@ function goSuggest() {
         // wird dem Nutzer am Ende angezeigt statt nur in die Konsole geloggt.
         var m = (e && e.message) ? e.message : 'unbekannter Fehler';
         console.warn('Vorschlag ' + id + ' fehlgeschlagen:', m);
+        logFehler('generierung', 'Vorschlag ' + id + ' fehlgeschlagen', m);
         sugErrors.push('Vorschlag ' + id + ': ' + m);
       })
       .then(function() {
@@ -3096,60 +3297,116 @@ function goWeek() {
 
   var p = G.personen || 2;
   var portTotal = p + (G.reste ? p : 0) + (G.freeze ? 2 : 0);
-  var dishList = sug.gerichte.map(function(g) {
-    var z = (g.zutaten||[]).map(function(z){ return z.name + ' ' + z.menge; }).join(', ');
-    return g.tag + ': ' + g.abend + ' (' + z + ')';
-  }).join(' | ');
-
   var msg = 'Erzeuge die vollständigen Kochschritte.';
 
-  var expectedTags = sug.gerichte.map(function(g) { return g.tag; });
+  // ── EIN REZEPT PRO ANFRAGE ─────────────────────────────────
+  // Frueher gingen alle Gerichte in EINER Anfrage mit 16'000 Token. Drei
+  // Rezepte mit je zwei Varianten (vegi + Fleisch) sprengten das: die Antwort
+  // brach nach zwei Rezepten am Token-Limit ab, und "Nochmals versuchen"
+  // begann wieder bei null. Jetzt: ein Gericht pro Anfrage, parallel, jedes
+  // erfolgreiche sofort gesichert - und nachgeholt werden nur die fehlenden.
+  function gerichtBeschreibung(g) {
+    var z = (g.zutaten||[]).map(function(z){ return z.name + ' ' + z.menge; }).join(', ');
+    return g.tag + ': ' + g.abend + ' (' + z + ')';
+  }
 
-  callWorker('full', msg, 16000, { dishes: dishList }, undefined, ladeFortschritt)
-  .then(function(raw) {
-    var parsed = parseJSON(raw);
-    // Vollstaendigkeit pruefen BEVOR irgendetwas uebernommen wird: exakte
-    // Anzahl UND Zuordnung ueber "tag" statt Array-Index - eine unvollstaendige
-    // oder in falscher Reihenfolge zurueckgegebene Antwort darf nicht
-    // stillschweigend als vollstaendiger Plan uebernommen werden.
-    var validationError = validateFullRecipe(parsed, expectedTags, G.modus);
-    if (validationError) throw new Error('Unvollständige Antwort: ' + validationError);
-    var fg = parsed.gerichte || [];
-    // Zuordnung ueber den eindeutigen "tag"-Schluessel, NICHT ueber den
-    // Array-Index - Claude kann die Gerichte in anderer Reihenfolge liefern.
-    var byTag = {};
-    fg.forEach(function(g) { byTag[g.tag] = g; });
-    sug.gerichte.forEach(function(originalGericht) {
-      var match = byTag[originalGericht.tag];
-      if (!match) return; // validateFullRecipe haette das bereits als Fehler abgefangen
-      if (match.schritte_vegi)    originalGericht.schritte_vegi    = match.schritte_vegi;
-      if (match.schritte_fleisch) originalGericht.schritte_fleisch = match.schritte_fleisch;
-      if (match.prep_next)        originalGericht.prep_next        = match.prep_next;
-      if (match.einfrieren)       originalGericht.einfrieren       = match.einfrieren;
-      if (match.mittag_nächster_tag) originalGericht.mittag_nächster_tag = match.mittag_nächster_tag;
-      if (match.mittag_tag)       originalGericht.mittag_tag       = match.mittag_tag;
-      if (match.zutaten && match.zutaten.length) originalGericht.zutaten = match.zutaten;
-      // Diese drei Felder liefert der Full-Prompt mit, wurden aber nie
-      // uebernommen - Tipp und Zeiten blieben deshalb auf dem groberen Stand
-      // aus der Uebersicht bzw. fehlten ganz.
-      if (match.tipp)       originalGericht.tipp       = match.tipp;
-      if (match.zeit_aktiv) originalGericht.zeit_aktiv = match.zeit_aktiv;
-      if (match.zeit_total) originalGericht.zeit_total = match.zeit_total;
-    });
-    // Validate: remove ingredients not mentioned in steps
-    validateIngredients(sug.gerichte);
-    // Erst JETZT, nachdem alle Gerichte erfolgreich ueber "tag" zugeordnet
-    // wurden, gilt der Plan als vollstaendig.
-    G.sugsPartial = false;
-    // WICHTIG: Plan mit den nachgeladenen Rezepten erneut sichern,
-    // sonst fehlen Zutaten/Schritte nach Reload und auf anderen Geraeten.
-    if (G.activePlan && G.sel !== null && G.sugs[G.sel] === sug) {
-      // persistActivePlan() schreibt active_plan UND den Verlaufseintrag.
-      persistActivePlan();
+  function uebernimm(originalGericht, match) {
+    if (match.schritte_vegi)    originalGericht.schritte_vegi    = match.schritte_vegi;
+    if (match.schritte_fleisch) originalGericht.schritte_fleisch = match.schritte_fleisch;
+    if (match.prep_next)        originalGericht.prep_next        = match.prep_next;
+    if (match.einfrieren)       originalGericht.einfrieren       = match.einfrieren;
+    if (match.mittag_nächster_tag) originalGericht.mittag_nächster_tag = match.mittag_nächster_tag;
+    if (match.mittag_tag)       originalGericht.mittag_tag       = match.mittag_tag;
+    if (match.zutaten && match.zutaten.length) originalGericht.zutaten = match.zutaten;
+    if (match.tipp)       originalGericht.tipp       = match.tipp;
+    if (match.zeit_aktiv) originalGericht.zeit_aktiv = match.zeit_aktiv;
+    if (match.zeit_total) originalGericht.zeit_total = match.zeit_total;
+  }
+
+  // Nur Gerichte OHNE vollstaendige Schritte anfordern. Beim zweiten Anlauf
+  // sind das genau die, die beim ersten scheiterten.
+  var offen = sug.gerichte.filter(function(g) { return fehlendeSchritte(g, G.modus); });
+  var fertig = sug.gerichte.length - offen.length;
+  var fehler = [];
+  gesamtGerichte = sug.gerichte.length;
+
+  function zeigeStand() {
+    var sub = $('load-sub');
+    if (sub) sub.textContent = fertig + ' von ' + gesamtGerichte + ' Rezepten · ' +
+      Math.round((Date.now() - ladeStart) / 1000) + 's';
+    var bar = $('load-bar');
+    if (bar) bar.style.width = Math.max(2, Math.round(fertig / gesamtGerichte * 100)) + '%';
+    var el = $('load-liste');
+    if (el) el.innerHTML = sug.gerichte.map(function(g) {
+      var ok = !fehlendeSchritte(g, G.modus);
+      var kaputt = fehler.some(function(f) { return f.tag === g.tag; });
+      return '<div>' + (ok ? '<span style="color:var(--success)">✓</span> '
+        : kaputt ? '<span style="color:var(--danger)">✗</span> '
+        : '<span style="color:var(--primary)">◷</span> ') + esc(g.abend) + '</div>';
+    }).join('');
+  }
+  zeigeStand();
+
+  function ladeEines(g) {
+    // 6000 Token reichen fuer ein Gericht mit zwei Varianten bequem - und
+    // liegen weit unter der Grenze, an der die Gesamtantwort frueher riss.
+    return callWorker('full', msg, 6000, { dishes: gerichtBeschreibung(g) })
+      .then(function(raw) {
+        var parsed = parseJSON(raw);
+        var validationError = validateFullRecipe(parsed, [g.tag], G.modus);
+        if (validationError) throw new Error(validationError);
+        var match = (parsed.gerichte || []).filter(function(x) { return x.tag === g.tag; })[0];
+        if (!match) throw new Error('Gericht ' + g.tag + ' fehlt in der Antwort');
+        uebernimm(g, match);
+        validateIngredients([g]);
+        fertig++;
+        // SOFORT sichern: ein spaeteres Scheitern eines anderen Gerichts darf
+        // dieses hier nicht mit in den Abgrund reissen.
+        if (G.activePlan && G.sel !== null && G.sugs[G.sel] === sug) persistActivePlan();
+        zeigeStand();
+      })
+      .catch(function(e) {
+        fehler.push({ tag: g.tag, abend: g.abend, grund: (e && e.message) || 'unbekannt' });
+        logFehler('rezepte', 'Rezept ' + g.tag + ' (' + g.abend + ') fehlgeschlagen', (e && e.message) || '');
+        zeigeStand();
+      });
+  }
+
+  G_ladeRezepte = true;
+  var laeufe = offen.map(ladeEines);
+  if (!laeufe.length) laeufe = [Promise.resolve()];
+
+  Promise.all(laeufe)
+  .then(function() {
+    if (fehler.length) {
+      var e = new Error(fehler.length + ' von ' + gesamtGerichte + ' Rezepten fehlgeschlagen: ' +
+        fehler.map(function(f) { return f.abend + ' (' + f.grund + ')'; }).join('; ') +
+        '. Die anderen sind gesichert – „Nochmals versuchen" holt nur die fehlenden nach.');
+      e.teilweise = true;
+      throw e;
     }
-    goWeekRender(sug);
+    G.sugsPartial = false;
+    // ERST festhalten, ob das ein Zukunftsplan war - danach darf befoerdert
+    // werden. persistActivePlan() ruft updateDashboard() auf, und das
+    // befoerdert, sobald die Sperre faellt; die Reihenfolge ist entscheidend.
+    var warZukunft = G.activePlan && !wocheEnthaelt(G.activePlan.weekStart, new Date());
+    if (G.activePlan && G.sel !== null && G.sugs[G.sel] === sug) persistActivePlan();   // Sperre noch aktiv
+    G_ladeRezepte = false;
+    // War das ein Plan fuer eine SPAETERE Woche, waehrend die laufende noch
+    // einen hat? Dann tritt jetzt der laufende wieder in den Vordergrund, und
+    // der neue wartet im Verlauf auf den Wochenwechsel.
+    if (warZukunft && befoerdereWochenplan()) {
+      goWeekRender(G.activePlan.sug, { keepTab: true });
+      if ($('rlist')) $('rlist').insertAdjacentHTML('afterbegin',
+        '<div class="st inf" style="margin:10px 10px 0">Plan „' + esc(sug.thema) + '" ist gespeichert – ' +
+        esc(wochenEtikett(G_zuletztAktiviert)) + '. Er wird ab Montag zur aktiven Woche; ' +
+        'bis dahin bleibt die laufende Woche im Vordergrund. In der Zeitachse ist er bereits sichtbar.</div>');
+      return;
+    }
+    goWeekRender(sug, { keepTab: true });
   })
   .catch(function(e) {
+    G_ladeRezepte = false;
     // Diagnose mitanzeigen: ob ueberhaupt gestreamt wurde, wie lange die
     // Kopfzeilen brauchten und wie viel Text ankam. Ohne das laesst sich ein
     // Verbindungsabbruch nicht von einem nicht-streamenden Worker unterscheiden.
@@ -3163,7 +3420,20 @@ function goWeek() {
         'Kopfzeilen nach: ' + Math.round(G_lastCall.kopfzeilenNachMs / 100) / 10 + 's<br>' +
         'Zeichen empfangen: ' + (G_lastCall.zeichen || 0) + '</div>';
     }
-    if ($('rlist')) $('rlist').innerHTML = '<div style="padding:14px;color:var(--danger);font-size:13px">Fehler beim Laden der Rezepte: ' + esc(e.message) + diag + '<br><button class="btn btn-red" onclick="goWeek()" style="font-size:13px;padding:10px;width:100%">Nochmals versuchen</button></div>';
+    if (!e.teilweise) logFehler('rezepte', 'Fehler beim Laden der Rezepte', e.message);
+    var hinweis = '<div style="padding:14px;color:var(--danger);font-size:13px">' +
+      (e.teilweise ? 'Unvollständig: ' : 'Fehler beim Laden der Rezepte: ') + esc(e.message) + diag +
+      '<br><button class="btn btn-red" onclick="goWeek()" style="font-size:13px;padding:10px;width:100%;margin-top:8px">' +
+      (e.teilweise ? 'Fehlende Rezepte nachholen' : 'Nochmals versuchen') + '</button></div>';
+    if (e.teilweise) {
+      // Die gelungenen Rezepte sind brauchbar und gesichert - sie werden
+      // angezeigt, der Hinweis steht darueber. Frueher blieb die ganze Seite
+      // leer, obwohl zwei von drei Rezepten laengst da waren.
+      goWeekRender(sug, { keepTab: true });
+      if ($('rlist')) $('rlist').insertAdjacentHTML('afterbegin', hinweis);
+    } else {
+      if ($('rlist')) $('rlist').innerHTML = hinweis;
+    }
     if ($('wsub')) $('wsub').textContent = sug.thema;
   });
 }
@@ -3219,13 +3489,28 @@ function clearAllCookTimers() {
 
 var G_timelineScrolled = false; // verhindert wiederholtes Auto-Scrollen bei jedem Tab-Wechsel
 
+// Scrollposition je Reiter merken: beim Zurueckwechseln landet man wieder dort,
+// wo man war, statt am aeltesten Eintrag der Zeitachse.
+var G_tabScroll = { e: 0, r: 0 };
+var G_aktiverTab = 'e';
+
 function wtab(t) {
   var tabs = document.querySelectorAll('.tabs .tab');
   if (!tabs || tabs.length < 2) return;
+  G_tabScroll[G_aktiverTab] = window.scrollY;
+  var wechsel = G_aktiverTab !== t;
+  G_aktiverTab = t;
+  tabs[0].setAttribute('aria-selected', t === 'e'); tabs[1].setAttribute('aria-selected', t === 'r');
   tabs[0].classList.toggle('on', t === 'e');
   tabs[1].classList.toggle('on', t === 'r');
   $('te').style.display = t === 'e' ? 'block' : 'none';
   $('tr').style.display = t === 'r' ? 'block' : 'none';
+  // Zurueck zum Reiter: gemerkte Position wiederherstellen - aber nur, wenn
+  // die Zeitachse ihre Erstpositionierung ("Heute") schon hinter sich hat.
+  if (wechsel && G_timelineScrolled && G_tabScroll[t] > 0) {
+    setTimeout(function() { window.scrollTo(0, G_tabScroll[t]); }, 0);
+    return;
+  }
   if (t === 'r' && !G_timelineScrolled) {
     G_timelineScrolled = true;
     // Kurzer Timeout: DOM muss erst fertig eingefuegt sein (innerHTML lief
@@ -3843,6 +4128,28 @@ function adjPort(d) {
   G_cook_port = Math.max(1, Math.min(maxPort, G_cook_port + d));
   var el = $('port-display');
   if (el) el.textContent = G_cook_port;
+  // Kopfzeile "Gesamtmenge: N Portionen / davon …" mitziehen. Sie blieb
+  // frueher auf dem Ausgangswert stehen, waehrend die Zutaten skalierten.
+  var f = G_cook_base_port ? (G_cook_port / G_cook_base_port) : 1;
+  var kg = $('port-gesamt'), kt = $('port-teile');
+  if (kg) kg.textContent = G_cook_port;
+  if (kt) {
+    // Die Aufteilung (heute / morgen Mittag / einfrieren) skaliert anteilig
+    // und wird pro Teil gerundet - Portionen sind ganze Zahlen.
+    // Mehr oder weniger Portionen betreffen das HEUTIGE Essen - die Reste fuer
+    // morgen und die Tiefkuehlportionen bleiben, was sie sind. Ein anteiliges
+    // Skalieren mit Rundung liess bei kleinen Schritten alles unveraendert.
+    var teile = String(kt.getAttribute('data-basis') || kt.textContent).split(', ');
+    if (!kt.getAttribute('data-basis')) kt.setAttribute('data-basis', kt.textContent);
+    var fest = 0;
+    teile.forEach(function(t) { var m = t.match(/^(\d+)\s(.*)$/); if (m && !/heute/.test(m[2])) fest += parseInt(m[1], 10); });
+    kt.textContent = teile.map(function(t) {
+      var m = t.match(/^(\d+)\s(.*)$/);
+      if (!m) return t;
+      if (/heute/.test(m[2])) return Math.max(1, G_cook_port - fest) + ' ' + m[2];
+      return t;
+    }).join(', ');
+  }
   // Rescale ingredient amounts in the displayed list
   rescaleZutaten();
 }
@@ -3862,7 +4169,12 @@ function skalierteMenge(basis, faktor, einheit) {
   if (/^(tl|el|kl|essloeffel|esslöffel|teeloeffel|teelöffel|kaffeeloeffel|kaffeelöffel)$/.test(e)) {
     var halb = Math.round(wert * 2) / 2;
     if (halb < 0.5) halb = 0.5;
-    return String(halb);
+    // Als Bruch schreiben, wie es in Rezepten ueblich ist: "½ TL" statt
+    // "0.5 TL", "1½ EL" statt "1.5 EL". Nach dem Rueckskalieren stand sonst
+    // die Dezimalzahl da, obwohl das Original "1/2 TL" hiess.
+    var ganz = Math.floor(halb), rest = halb - ganz;
+    if (rest === 0.5) return (ganz ? ganz : '') + '½';
+    return String(ganz);
   }
   // Gewicht und Volumen: ab 10 auf ganze Zahlen, darunter eine Nachkommastelle
   if (wert >= 10) return String(Math.round(wert));
@@ -3937,7 +4249,7 @@ function showIngOverview(g) {
   if (_mit) _parts.push(_mit + ' morgen Mittag');
   if (_tk)  _parts.push(_tk + ' einfrieren');
   var _portInfo = '<div style="background:#e3f2fd;border-radius:8px;padding:9px 12px;margin-bottom:10px;font-size:12px;color:#1565c0">' +
-    '<b>Gesamtmenge: ' + _ges + ' Portionen</b><br>davon ' + _parts.join(', ') + '</div>';
+    '<b>Gesamtmenge: <span id="port-gesamt">' + _ges + '</span> Portionen</b><br>davon <span id="port-teile">' + _parts.join(', ') + '</span></div>';
   var html = '<div id="cing">' + _portInfo + '<div class="badge bv">Vor dem Kochen</div>' +
     '<div style="font-size:16px;font-weight:700;margin-bottom:4px">' + esc(g.abend) + '</div>' +
     (g.mittag_nächster_tag ? '<div style="font-size:13px;color:var(--gr3);margin-bottom:8px">Morgen: ' + esc(g.mittag_nächster_tag) + '</div>' : '') +
@@ -4304,6 +4616,7 @@ function teileRezept(ri) {
   if (!s) { alert('Bitte zuerst anmelden.'); return; }
 
   $('qr-modal').style.display = 'flex';
+  dialogAuf('qr-modal', closeQR);
   $('qr-inhalt').innerHTML = '<div class="spin" style="width:24px;height:24px;margin:30px auto;border-width:2px"></div>';
   $('qr-hinweis').textContent = 'Link wird erzeugt...';
 
@@ -4333,7 +4646,27 @@ function teileRezept(ri) {
   });
 }
 
-function closeQR() { $('qr-modal').style.display = 'none'; }
+// Solange ein Dialog offen ist: Hintergrund nicht scrollen, Escape schliesst.
+var G_offenerDialog = null;
+function dialogAuf(id, schliessFn) {
+  G_offenerDialog = { id: id, close: schliessFn };
+  document.body.style.overflow = 'hidden';
+  var m = $(id);
+  if (m) {
+    var f = m.querySelector('button, [tabindex="0"], input');
+    if (f) setTimeout(function() { f.focus(); }, 30);
+  }
+}
+function dialogZu() {
+  G_offenerDialog = null;
+  document.body.style.overflow = '';
+}
+document.addEventListener('keydown', function(ev) {
+  if (ev.key === 'Escape' && G_offenerDialog) { G_offenerDialog.close(); }
+});
+
+function closeQR() {
+  dialogZu(); $('qr-modal').style.display = 'none'; }
 
 // Baut den Inhalt der Druckansicht und gibt ihn zurueck - so kann ihn sowohl
 // showPrint() anzeigen als auch teileRezept() an den Worker schicken.
@@ -4643,6 +4976,68 @@ function markEinkaufDone(itemCount) {
 // nachladen). Schreibt localStorage, active-plan.json UND den passenden
 // history.json-Eintrag. Frueher aktualisierten die Mutationen nur den aktiven
 // Plan - der Verlauf zeigte danach weiter den alten Stand.
+// ─── MEHRERE WOCHEN ───────────────────────────────────────
+// Der aktive Plan ist der Plan der LAUFENDEN Woche. Ein Plan fuer eine
+// spaetere Woche lebt bis zum Wochenwechsel nur im Verlauf und wird dann
+// befoerdert. Frueher ersetzte ein Zukunftsplan den laufenden sofort: die
+// Startseite zeigte ihn als "Diese Woche", und die laufende Woche verlor
+// ihre Koch- und Tausch-Aktionen, weil die am einzigen G.activePlan haengen.
+function wocheEnthaelt(weekStartIso, datum) {
+  if (!weekStartIso) return false;
+  var a = new Date(weekStartIso + 'T00:00:00');
+  var b = new Date(a); b.setDate(b.getDate() + 7);
+  return datum >= a && datum < b;
+}
+
+function planImVerlaufFuerWoche(weekStartIso) {
+  try {
+    var hist = JSON.parse(localStorage.getItem(userKey('local_history')) || '[]');
+    for (var i = 0; i < hist.length; i++) {
+      var pl = hist[i].plan;
+      if (pl && pl.weekStart === weekStartIso && pl.sug && pl.planId) return pl;
+    }
+  } catch (e) {}
+  return null;
+}
+
+// Sorgt dafuer, dass G.activePlan der Plan der laufenden Woche ist. Liegt der
+// aktive Plan in der Zukunft und gibt es im Verlauf einen fuer diese Woche,
+// wird getauscht; der Zukunftsplan bleibt im Verlauf erhalten (samt Rezepten,
+// denn updateHistoryEntryPlan() hat ihn dort mitgefuehrt).
+var G_ladeRezepte = false;   // waehrend goWeek() laeuft: nicht befoerdern
+
+function befoerdereWochenplan() {
+  if (G_ladeRezepte) return false;   // sonst wechselt der Plan unter dem Ladevorgang weg
+  var heute = new Date();
+  var montag = isoDateLocal(mondayOf(heute));
+  var aktiv = G.activePlan;
+  if (aktiv && aktiv.sug && wocheEnthaelt(aktiv.weekStart, heute)) return false;   // alles gut
+  var richtig = planImVerlaufFuerWoche(montag);
+  if (!richtig) return false;                                   // nichts zu befoerdern
+  if (aktiv && aktiv.planId === richtig.planId) return false;
+  // Den bisherigen aktiven Plan im Verlauf sichern, bevor er ersetzt wird.
+  if (aktiv && aktiv.sug) updateHistoryEntryPlan(aktiv);
+  G.activePlan = richtig;
+  G.sugs = [richtig.sug]; G.sel = 0;
+  G.sugsPartial = !!richtig.sugsPartial;
+  try { localStorage.setItem(userKey('active_plan'), JSON.stringify(G.activePlan)); } catch (e) {}
+  saveToGH(G.activePlan);
+  console.info('Wochenplan befoerdert:', richtig.sug && richtig.sug.thema, 'fuer', montag);
+  return true;
+}
+
+// Etikett fuer eine Plan-Karte, abhaengig vom Datum statt fest "Diese Woche".
+function wochenEtikett(weekStartIso) {
+  var heute = new Date();
+  if (!weekStartIso) return 'Diese Woche';
+  if (wocheEnthaelt(weekStartIso, heute)) return 'Diese Woche';
+  var d = new Date(weekStartIso + 'T00:00:00');
+  var diff = Math.round((d - mondayOf(heute)) / (7 * 86400000));
+  if (diff === 1) return 'Nächste Woche';
+  if (diff > 1) return 'In ' + diff + ' Wochen';
+  return 'Vergangene Woche';
+}
+
 function persistActivePlan() {
   if (!G.activePlan) return;
   if (G.sel !== null && G.sugs && G.sugs[G.sel]) {
@@ -4771,9 +5166,10 @@ function frageStartwoche() {
   }
   $('woche-liste').innerHTML = liste;
   $('woche-modal').style.display = 'flex';
+  dialogAuf('woche-modal', closeWochenwahl);
 }
 
-function closeWochenwahl() { $('woche-modal').style.display = 'none'; }
+function closeWochenwahl() { $('woche-modal').style.display = 'none'; dialogZu(); }
 
 function startwocheGewaehlt(iso) {
   var belegt = planFuerWoche(iso);
@@ -4791,10 +5187,17 @@ function startwocheGewaehlt(iso) {
   setActivePlanAndGo(iso);
 }
 
+var G_zuletztAktiviert = null;
+
 function setActivePlanAndGo(weekStartIso) {
   if (G.sel === null) return;
   // Ohne ausdrueckliche Woche zuerst nachfragen.
   if (!weekStartIso) { frageStartwoche(); return; }
+  G_zuletztAktiviert = weekStartIso;
+  // Beförderung bis zum Ende des Rezeptladens aussetzen: sonst tauscht
+  // updateDashboard() den gerade aktivierten Zukunftsplan sofort wieder aus,
+  // und goWeek() laedt die Rezepte fuer einen Plan, der nicht mehr aktiv ist.
+  G_ladeRezepte = true;
   var sug = G.sugs[G.sel];
   // Dedupe-Zusatz "(Variante N)" entfernen: der war nur zur Unterscheidung
   // mehrerer Vorschlaege gedacht - sobald einer ausgewaehlt und aktiviert
@@ -5799,6 +6202,7 @@ function openAdmin() {
 }
 
 function adminMsg(text, kind) {
+  if (kind === 'er') logFehler('admin', text);
   var el = $('admin-msg');
   if (!el) return;
   el.className = 'st ' + (kind || 'ok');
@@ -5989,6 +6393,19 @@ function openNewWeekScreen() {
 }
 
 function updateDashboard() {
+  // Erst befoerdern, dann anzeigen - sonst steht ein Zukunftsplan als
+  // "Diese Woche" da, waehrend der echte im Verlauf schlummert.
+  befoerdereWochenplan();
+  if ($('dash-woche-lbl') && G.activePlan) $('dash-woche-lbl').textContent = wochenEtikett(G.activePlan.weekStart);
+  // Hinweis auf neue Fehler, damit man nicht in die Praeferenzen muss, um
+  // zu merken, dass etwas schiefging.
+  setTimeout(function() {
+    var n = leseFehlerlog().length;
+    var el = $('dash-fehler');
+    if (!el) return;
+    el.style.display = n ? 'block' : 'none';
+    if (n) el.textContent = '⚠ ' + n + (n === 1 ? ' Fehler protokolliert' : ' Fehler protokolliert') + ' – antippen';
+  }, 0);
   var session = getSession();
   if (!session) return;
 
@@ -6224,6 +6641,9 @@ function showFotoRating(i) {
 // ─── STATUS BADGE ───────────────────────────────────────────
 var STATUS_CFG = {
   'geplant': {label:'Geplant', bg:'#f5f5f5', color:'#888', icon:'&#128197;'},
+  // Foto-Rezepte sind nur gespeichert, nicht eingeplant - "Geplant" war dort
+  // schlicht falsch.
+  'gespeichert': {label:'Gespeichert', bg:'#f5f5f5', color:'#888', icon:'&#128190;'},
   'einkauf': {label:'Eingekauft', bg:'#e3f2fd', color:'#1565c0', icon:'&#9989;'},
   'gekocht': {label:'Gekocht', bg:'#E8F2EC', color:'#4F8067', icon:'&#127859;'}
 };
@@ -6489,7 +6909,7 @@ function loadHistoryRecipes() {
         +'</div>'
       +'</div>'
       +'<div style="padding:8px 14px;display:flex;flex-direction:column;gap:6px">'
-        +'<div style="width:100%;margin-bottom:4px">'+statusBadge(r.status||'geplant')+'</div>'
+        +'<div style="width:100%;margin-bottom:4px">'+statusBadge(r.status||'gespeichert')+'</div>'
         +'<div style="display:flex;gap:6px"><button class="btn btn-red" onclick="openHistoryRecipe('+i+')" style="flex:1;padding:9px;font-size:12px">Öffnen</button><button class="btn btn-out" onclick="showFotoRating('+i+')" style="flex:1;padding:9px;font-size:12px">★ Bewerten</button></div>'
         +'<div style="display:flex;gap:6px"><button class="btn btn-out" onclick="importHistoryRecipeToBring('+i+')" style="flex:1;padding:9px;font-size:12px">In Bring!</button>'+(r.status!=='gekocht'?'<button class="btn btn-out" onclick="markFotoRezeptGekocht('+i+')" style="flex:1;padding:9px;font-size:11px">🍽 Gekocht</button>':'')+(r.status!=='geplant'?'<button class="btn btn-out" onclick="resetFotoRezeptStatus('+i+')" style="padding:9px;font-size:12px">✕</button>':'')+'<button onclick="deleteHistoryRecipe('+i+')" style="background:none;border:.5px solid var(--bdr);border-radius:8px;padding:9px 12px;color:var(--gr3);cursor:pointer;font-size:16px">✕</button></div>'
       +'</div>'
@@ -7003,6 +7423,7 @@ function updatePrefsBringUI() {
 }
 
 function openPrefs(){
+  setTimeout(renderFehlerlog, 0);
   updatePrefsBringUI();
   // Unbestaetigte Auswahl aus einem frueheren, abgebrochenen Besuch verwerfen -
   // sonst wurde sie beim naechsten Speichern stillschweigend uebernommen.
@@ -7060,15 +7481,15 @@ var KETTEN = [
   { n:'Pilz-Kette',                 z:'Champignons, Steinpilze, Rahm, Thymian', r:'Europäisch',  w:3, vegi:1, s:1 },
   { n:'Kürbis- und Marroni-Kette',  z:'Kürbis, Marroni, Salbei, Muskat', r:'Europäisch',        w:3, vegi:1, s:1 },
   { n:'Französische Bistro-Kette',  z:'Rotwein, Schalotten, Pilze, Rindfleisch', r:'Europäisch', w:4, vegi:0, s:1 },
-  { n:'Ganze-Huhn-Kette',           z:'Brathuhn, Bouillon, Wurzelgemüse', r:'Europäisch',        w:5, vegi:0, s:0 },
-  { n:'Hackfleisch-Allrounder',     z:'Rindshack, Tomatenmark, Zwiebeln, Kräuter', r:'Europäisch', w:5, vegi:0, s:0 },
+  { n:'Poulet-Kette',               z:'Brathuhn, Bouillon, Wurzelgemüse', r:'Europäisch',        w:5, vegi:0, s:0 },
+  { n:'Hackfleisch-Kette',          z:'Rindshack, Tomatenmark, Zwiebeln, Kräuter', r:'Europäisch', w:5, vegi:0, s:0 },
   { n:'Osteuropäische Kette',       z:'Randen, Kabis, Sauerrahm, Rindfleisch', r:'Europäisch',   w:2, vegi:0, s:1 },
   { n:'Skandinavische Kette',       z:'Lachs, Dill, Kartoffeln, Sauerrahm', r:'Europäisch',      w:2, vegi:0, s:0 },
   // ── Mediterran, zusammen ~32 ──
   { n:'Italienische Kette',         z:'Parmesan, Basilikum, Tomaten, Pinienkerne, Teigwaren', r:'Mediterran', w:8, vegi:1, s:0 },
   { n:'Tomaten-Saucen-Kette',       z:'Passata, frische Tomaten, Basilikum, Knoblauch', r:'Mediterran', w:7, vegi:1, s:0 },
   { n:'Mediterrane Hack-Kette',     z:'Hackfleisch, Tomaten, Zucchini, Auberginen, Peperoni', r:'Mediterran', w:6, vegi:0, s:0 },
-  { n:'Levantinische Kette',        z:'Kichererbsen, Feta, Fladenbrot, Grillgemüse, Joghurt', r:'Mediterran', w:5, vegi:1, s:0 },
+  { n:'Orientalische Kette',        z:'Kichererbsen, Feta, Fladenbrot, Grillgemüse, Joghurt', r:'Mediterran', w:5, vegi:1, s:0 },
   { n:'Griechische Tavernen-Kette', z:'Feta, Oliven, Gurken, Auberginen', r:'Mediterran',        w:5, vegi:1, s:0 },
   { n:'Spanische Tapas-Kette',      z:'Chorizo, Knoblauch, Peperoni, Kartoffeln', r:'Mediterran', w:3, vegi:0, s:0 },
   { n:'Herbstliche Pilz-Kette',     z:'Pilze, Maisgriess, Parmesan, Thymian', r:'Mediterran',  w:2, vegi:1, s:1 },
@@ -7400,9 +7821,9 @@ var STAR_LABELS = ['', 'Nicht so gut', 'Geht so', 'Gut', 'Sehr gut', 'Ausgezeich
 </div>
 
 <!-- REZEPT AUFS TABLET (QR) -->
-<div id="qr-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:520;align-items:center;justify-content:center;padding:20px" onclick="if(event.target===this)closeQR()">
+<div id="qr-modal" role="dialog" aria-modal="true" aria-labelledby="qr-titel" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:520;align-items:center;justify-content:center;padding:20px" onclick="if(event.target===this)closeQR()">
   <div style="background:var(--gr);border-radius:var(--rlg);padding:20px 18px;max-width:340px;width:100%;text-align:center">
-    <div style="font-size:15px;font-weight:700;color:var(--txt);margin-bottom:12px">Rezept aufs Tablet</div>
+    <div id="qr-titel" style="font-size:15px;font-weight:700;color:var(--txt);margin-bottom:12px">Rezept aufs Tablet</div>
     <div id="qr-inhalt"></div>
     <div id="qr-hinweis" style="font-size:12px;color:var(--gr3);margin-top:12px;line-height:1.5"></div>
     <button class="btn btn-out" onclick="closeQR()" style="width:100%;padding:11px;margin-top:14px">Schliessen</button>
