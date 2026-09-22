@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=yes">
-<title>Menüplan v6.83</title>
+<title>Menüplan v6.84</title>
 <meta name="theme-color" content="#5B7C78">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -265,7 +265,7 @@ input[type=password]{letter-spacing:2px}
 
 <!-- HOME -->
 <div class="scr on" id="sh">
-  <div class="hero"><h1>Menüplan</h1><p id="hsub">v6.83 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
+  <div class="hero"><h1>Menüplan</h1><p id="hsub">v6.84 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
 
   <!-- Active plan card -->
 
@@ -3812,6 +3812,28 @@ function timelineZutatenHtml(g) {
     rows + '</div>';
 }
 
+// Vom Nutzer ausgeloest: ein im Verlauf wartender Zukunftsplan soll seine
+// fehlenden Rezepte nachholen. Nutzt denselben Mechanismus wie das
+// automatische Zuruecktauschen beim ersten Laden (siehe .then()/.catch() in
+// goWeek()): kurzzeitig wird dieser Plan aktiv, goWeek() erkennt am Ende
+// "war das ein Zukunftsplan" und die laufende Woche kehrt von selbst zurueck.
+function nachholeVerlaufsplan(planId) {
+  var hist;
+  try { hist = JSON.parse(localStorage.getItem(userKey('local_history')) || '[]'); }
+  catch (e) { hist = []; }
+  var entry = hist.filter(function(h) { return h.planId === planId; })[0];
+  if (!entry || !entry.plan || !entry.plan.sug) {
+    logFehler('rezepte', 'Nachholen: Plan nicht gefunden', planId);
+    if ($('rlist')) $('rlist').insertAdjacentHTML('afterbegin',
+      '<div class="st er" style="margin:10px 10px 0">Dieser Plan wurde nicht gefunden.</div>');
+    return;
+  }
+  G_ladeRezepte = true;   // Befoerderung aussetzen, bis goWeek() fertig ist
+  G.activePlan = entry.plan;
+  openActivePlan('r');    // uebernimmt modus/personen/etc. UND rendert
+  goWeek();
+}
+
 function timelineCardDetail(entry) {
   var g = entry.gericht;
   var i = entry.gerichtIdx;
@@ -3827,9 +3849,17 @@ function timelineCardDetail(entry) {
     // Plan veraendern wuerden (Austauschen/Verschieben/Kochen etc. arbeiten
     // ausschliesslich auf G.sugs/G.sel, also dem AKTIVEN Plan). Zutaten zum
     // Nachlesen bleiben aber sinnvoll, auch fuer bereits gekochte Gerichte.
+    //
+    // AUSNAHME: ein ZUKUENFTIGER Plan mit fehlenden Rezepten (Zwischenstand
+    // nach einem teilweise fehlgeschlagenen Ladeversuch) bekommt einen echten
+    // Knopf. Der Hinweistext allein war kein tatsaechlicher Bedienweg - der
+    // Nutzer haette nie an goWeek() fuer DIESEN Plan herangekommen.
+    var nachholbar = !entry.hasFullRecipe && entry.dateObj >= mondayOf(new Date());
     return '<div class="ract">' + zeitHtml + (next ? '<div class="rnext">' + next + '</div>' : '') +
       (g._gekocht ? '<div style="font-size:12px;color:var(--grn);font-weight:600;margin-top:6px">&#10003; gekocht</div>' : '') +
       zutatenHtml +
+      (nachholbar ? '<button class="btn btn-red" onclick="nachholeVerlaufsplan(\'' + esc(entry.planId) +
+        '\')" style="margin-top:10px;font-size:13px">Fehlende Rezepte nachholen</button>' : '') +
       '</div>';
   }
   return '<div class="ract">' +
@@ -5033,6 +5063,12 @@ function migrierePlanIds() {
   });
   if (geaendert) {
     try { localStorage.setItem(userKey('local_history'), JSON.stringify(hist)); } catch (e) {}
+    // Ohne das hier bleibt die Migration rein lokal: ein zweites Geraet mit
+    // demselben unsynchronisierten Alt-Eintrag wuerde bei seiner eigenen
+    // Migration eine ANDERE zufaellige ID erzeugen (generatePlanId() ist
+    // reiner Zufall), und beide Geraete haetten fortan zwei verschiedene IDs
+    // fuer denselben Plan.
+    saveHistoryToGH(hist);
   }
 }
 
