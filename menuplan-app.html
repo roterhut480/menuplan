@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=yes">
-<title>Menüplan v6.89</title>
+<title>Menüplan v6.90</title>
 <meta name="theme-color" content="#5B7C78">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -265,7 +265,7 @@ input[type=password]{letter-spacing:2px}
 
 <!-- HOME -->
 <div class="scr on" id="sh">
-  <div class="hero"><h1>Menüplan</h1><p id="hsub">v6.89 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
+  <div class="hero"><h1>Menüplan</h1><p id="hsub">v6.90 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
 
   <!-- Active plan card -->
 
@@ -3237,6 +3237,98 @@ function selSug(i) {
   if (spb) { spb.disabled = false; spb.style.opacity = '1'; spb.style.cursor = 'pointer'; }
 }
 
+// ── EIN REZEPT PRO ANFRAGE ─────────────────────────────────
+// Frueher gingen alle Gerichte in EINER Anfrage mit 16'000 Token. Drei
+// Rezepte mit je zwei Varianten (vegi + Fleisch) sprengten das: die Antwort
+// brach nach zwei Rezepten am Token-Limit ab, und "Nochmals versuchen"
+// begann wieder bei null. Jetzt: ein Gericht pro Anfrage, parallel, jedes
+// erfolgreiche sofort gesichert - und nachgeholt werden nur die fehlenden.
+function gerichtBeschreibung(g) {
+  var z = (g.zutaten||[]).map(function(z){ return z.name + ' ' + z.menge; }).join(', ');
+  return g.tag + ': ' + g.abend + ' (' + z + ')';
+}
+
+function uebernimmVollrezept(originalGericht, match) {
+  if (match.schritte_vegi)    originalGericht.schritte_vegi    = match.schritte_vegi;
+  if (match.schritte_fleisch) originalGericht.schritte_fleisch = match.schritte_fleisch;
+  if (match.prep_next)        originalGericht.prep_next        = match.prep_next;
+  if (match.einfrieren)       originalGericht.einfrieren       = match.einfrieren;
+  if (match.mittag_nächster_tag) originalGericht.mittag_nächster_tag = match.mittag_nächster_tag;
+  if (match.mittag_tag)       originalGericht.mittag_tag       = match.mittag_tag;
+  if (match.zutaten && match.zutaten.length) originalGericht.zutaten = match.zutaten;
+  if (match.tipp)       originalGericht.tipp       = match.tipp;
+  if (match.zeit_aktiv) originalGericht.zeit_aktiv = match.zeit_aktiv;
+  if (match.zeit_total) originalGericht.zeit_total = match.zeit_total;
+}
+
+// Rein funktional: fragt die Kochschritte fuer EIN Gericht an, mutiert es bei
+// Erfolg in place und loest auf; bei Fehlschlag lehnt es mit einem
+// Klartext-Fehler ab. Ruehrt NICHTS an G.activePlan/G.sugs/G.sel - dadurch
+// von goWeek() (aktiver Plan) UND von nachholeFehlendeRezepteFuerPlan()
+// (Verlauf, nicht aktiver Plan) gleichermassen sicher nutzbar.
+function ladeVollrezeptFuerGericht(g, modus) {
+  var msg = 'Erzeuge die vollständigen Kochschritte.';
+  return callWorker('full', msg, 6000, { dishes: gerichtBeschreibung(g), tag: g.tag }, undefined, undefined)
+    .then(function(raw) {
+      var parsed = parseJSON(raw);
+      var validationError = validateFullRecipe(parsed, [g.tag], modus);
+      if (validationError) throw new Error(validationError);
+      var match = (parsed.gerichte || []).filter(function(x) { return x.tag === g.tag; })[0];
+      if (!match) throw new Error('Gericht ' + g.tag + ' fehlt in der Antwort');
+      uebernimmVollrezept(g, match);
+      validateIngredients([g]);
+    });
+}
+
+// Holt fehlende Rezepte fuer einen Plan aus dem VERLAUF nach, OHNE jemals
+// G.activePlan/G.sugs/G.sel zu beruehren oder die Navigation zu wechseln.
+// Ersetzt die fruehere Umleitung ueber goWeek() (nachholeVerlaufsplan() /
+// fehlendeRezepteNachholen()): die borgte kurzzeitig G.activePlan aus, und
+// goWeeks eigenes persistActivePlan() schrieb dabei den GEBORGTEN (falschen)
+// Plan als aktiven Plan in localStorage UND in die Cloud. Fand die
+// anschliessende Selbstkorrektur (befoerdereWochenplan()) keinen passenden
+// lauden Plan im Verlauf - z.B. weil fuer die echte aktuelle Woche noch gar
+// kein Verlaufseintrag existierte - blieb der FALSCHE Plan dauerhaft aktiv.
+// Reproduziert und bestaetigt am 23.09.2026.
+function nachholeFehlendeRezepteFuerPlan(planId, onFortschritt) {
+  var hist;
+  try { hist = JSON.parse(localStorage.getItem(userKey('local_history')) || '[]'); }
+  catch (e) { hist = []; }
+  var entry = hist.filter(function(h) { return h.planId === planId; })[0];
+  var sug = entry && entry.plan && entry.plan.sug;
+  if (!sug || !Array.isArray(sug.gerichte)) {
+    return Promise.reject(new Error('Dieser Plan wurde nicht gefunden.'));
+  }
+  var modus = entry.plan.modus || G.modus;
+  var offen = sug.gerichte.filter(function(g) { return fehlendeSchritte(g, modus); });
+  var fehler = [];
+  var fertig = 0;
+  var gesamt = offen.length;
+  if (onFortschritt) onFortschritt(fertig, gesamt);
+
+  var laeufe = offen.map(function(g) {
+    return ladeVollrezeptFuerGericht(g, modus)
+      .then(function() {
+        fertig++;
+        // Sofort sichern: ein spaeter scheiterndes Gericht darf ein bereits
+        // gelungenes nicht mit sich reissen.
+        updateHistoryEntryPlan(entry.plan);
+        if (onFortschritt) onFortschritt(fertig, gesamt);
+      })
+      .catch(function(e) {
+        var grund = (e && e.message) || 'unbekannt';
+        fehler.push({ tag: g.tag, abend: g.abend, grund: grund });
+        logFehler('verlauf', 'Nachholen: ' + g.tag + ' (' + g.abend + ') fehlgeschlagen', grund);
+        if (onFortschritt) onFortschritt(fertig, gesamt);
+      });
+  });
+  if (!laeufe.length) laeufe = [Promise.resolve()];
+
+  return Promise.all(laeufe).then(function() {
+    return { gesamt: gesamt, erfolgreich: fertig, fehlgeschlagen: fehler };
+  });
+}
+
 function goWeek() {
   if (G.sel === null) return;
   var sug = G.sugs[G.sel];
@@ -3304,31 +3396,6 @@ function goWeek() {
 
   var p = G.personen || 2;
   var portTotal = p + (G.reste ? p : 0) + (G.freeze ? 2 : 0);
-  var msg = 'Erzeuge die vollständigen Kochschritte.';
-
-  // ── EIN REZEPT PRO ANFRAGE ─────────────────────────────────
-  // Frueher gingen alle Gerichte in EINER Anfrage mit 16'000 Token. Drei
-  // Rezepte mit je zwei Varianten (vegi + Fleisch) sprengten das: die Antwort
-  // brach nach zwei Rezepten am Token-Limit ab, und "Nochmals versuchen"
-  // begann wieder bei null. Jetzt: ein Gericht pro Anfrage, parallel, jedes
-  // erfolgreiche sofort gesichert - und nachgeholt werden nur die fehlenden.
-  function gerichtBeschreibung(g) {
-    var z = (g.zutaten||[]).map(function(z){ return z.name + ' ' + z.menge; }).join(', ');
-    return g.tag + ': ' + g.abend + ' (' + z + ')';
-  }
-
-  function uebernimm(originalGericht, match) {
-    if (match.schritte_vegi)    originalGericht.schritte_vegi    = match.schritte_vegi;
-    if (match.schritte_fleisch) originalGericht.schritte_fleisch = match.schritte_fleisch;
-    if (match.prep_next)        originalGericht.prep_next        = match.prep_next;
-    if (match.einfrieren)       originalGericht.einfrieren       = match.einfrieren;
-    if (match.mittag_nächster_tag) originalGericht.mittag_nächster_tag = match.mittag_nächster_tag;
-    if (match.mittag_tag)       originalGericht.mittag_tag       = match.mittag_tag;
-    if (match.zutaten && match.zutaten.length) originalGericht.zutaten = match.zutaten;
-    if (match.tipp)       originalGericht.tipp       = match.tipp;
-    if (match.zeit_aktiv) originalGericht.zeit_aktiv = match.zeit_aktiv;
-    if (match.zeit_total) originalGericht.zeit_total = match.zeit_total;
-  }
 
   // Nur Gerichte OHNE vollstaendige Schritte anfordern. Beim zweiten Anlauf
   // sind das genau die, die beim ersten scheiterten.
@@ -3355,17 +3422,12 @@ function goWeek() {
   zeigeStand();
 
   function ladeEines(g) {
-    // 6000 Token reichen fuer ein Gericht mit zwei Varianten bequem - und
-    // liegen weit unter der Grenze, an der die Gesamtantwort frueher riss.
-    return callWorker('full', msg, 6000, { dishes: gerichtBeschreibung(g) })
-      .then(function(raw) {
-        var parsed = parseJSON(raw);
-        var validationError = validateFullRecipe(parsed, [g.tag], G.modus);
-        if (validationError) throw new Error(validationError);
-        var match = (parsed.gerichte || []).filter(function(x) { return x.tag === g.tag; })[0];
-        if (!match) throw new Error('Gericht ' + g.tag + ' fehlt in der Antwort');
-        uebernimm(g, match);
-        validateIngredients([g]);
+    // Netzwerk/Validierung: die geteilte, funktional-saubere Funktion. Alles
+    // danach (Fortschrittsanzeige, Sichern des AKTIVEN Plans) bleibt hier -
+    // das ist genau der Teil, der fuer den aktiven Plan spezifisch ist und
+    // sich NICHT fuer den sicheren Verlaufs-Pfad eignet.
+    return ladeVollrezeptFuerGericht(g, G.modus)
+      .then(function() {
         fertig++;
         // SOFORT sichern: ein spaeteres Scheitern eines anderen Gerichts darf
         // dieses hier nicht mit in den Abgrund reissen.
@@ -3822,21 +3884,25 @@ function timelineZutatenHtml(g) {
 // automatische Zuruecktauschen beim ersten Laden (siehe .then()/.catch() in
 // goWeek()): kurzzeitig wird dieser Plan aktiv, goWeek() erkennt am Ende
 // "war das ein Zukunftsplan" und die laufende Woche kehrt von selbst zurueck.
-function nachholeVerlaufsplan(planId) {
-  var hist;
-  try { hist = JSON.parse(localStorage.getItem(userKey('local_history')) || '[]'); }
-  catch (e) { hist = []; }
-  var entry = hist.filter(function(h) { return h.planId === planId; })[0];
-  if (!entry || !entry.plan || !entry.plan.sug) {
-    logFehler('rezepte', 'Nachholen: Plan nicht gefunden', planId);
-    if ($('rlist')) $('rlist').insertAdjacentHTML('afterbegin',
-      '<div class="st er" style="margin:10px 10px 0">Dieser Plan wurde nicht gefunden.</div>');
-    return;
-  }
-  G_ladeRezepte = true;   // Befoerderung aussetzen, bis goWeek() fertig ist
-  G.activePlan = entry.plan;
-  openActivePlan('r');    // uebernimmt modus/personen/etc. UND rendert
-  goWeek();
+function nachholeVerlaufsplan(btn, planId) {
+  if (btn) { btn.disabled = true; btn.textContent = '⏳ Wird geladen … 0'; }
+  nachholeFehlendeRezepteFuerPlan(planId, function(fertig, gesamt) {
+    if (btn) btn.textContent = '⏳ Wird geladen … ' + fertig + '/' + gesamt;
+  }).then(function(res) {
+    if (res.fehlgeschlagen.length) {
+      showSt('ist', res.erfolgreich + ' von ' + res.gesamt + ' nachgeholt, ' +
+        res.fehlgeschlagen.length + ' weiterhin offen.', 'er');
+    } else {
+      showSt('ist', 'Alle Rezepte nachgeholt.', 'ok');
+      setTimeout(function(){ if($('ist'))$('ist').style.display='none'; }, 3000);
+    }
+    // G.activePlan/G.sugs wurden nie angefasst - ein einfaches Neu-Rendern
+    // der Zeitachse reicht, um den jetzt vollstaendigen Tag zu zeigen.
+    if (G.sugs && G.sel !== null) { try { renderRez(G.sugs[G.sel]); } catch (e) {} }
+  }).catch(function(err) {
+    if (btn) { btn.disabled = false; btn.textContent = 'Fehlende Rezepte nachholen'; }
+    showSt('ist', (err && err.message) || 'Dieser Plan wurde nicht gefunden.', 'er');
+  });
 }
 
 function timelineCardDetail(entry) {
@@ -3872,7 +3938,7 @@ function timelineCardDetail(entry) {
     return '<div class="ract">' + zeitHtml + (next ? '<div class="rnext">' + next + '</div>' : '') +
       (g._gekocht ? '<div style="font-size:12px;color:var(--grn);font-weight:600;margin-top:6px">&#10003; gekocht</div>' : '') +
       zutatenHtml +
-      (nachholbar ? '<button class="btn btn-red" onclick="nachholeVerlaufsplan(\'' + esc(entry.planId) +
+      (nachholbar ? '<button class="btn btn-red" onclick="nachholeVerlaufsplan(this,\'' + esc(entry.planId) +
         '\')" style="margin-top:10px;font-size:13px">Fehlende Rezepte nachholen</button>' : '') +
       (bewertbar ? '<button class="btn btn-out" onclick="showPastDishRating(\'' + esc(entry.planId) + '\', ' +
         entry.gerichtIdx + ')" style="margin-top:10px;display:flex;align-items:center;justify-content:center;gap:6px">' +
@@ -6874,7 +6940,7 @@ function renderHistoryList(history) {
           var g = (e.plan && e.plan.sug && e.plan.sug.gerichte) || [];
           var unvollstaendig = g.some(function(gr) { return fehlendeSchritte(gr, e.plan.modus || G.modus); });
           return unvollstaendig
-            ? '<button class="btn btn-red" onclick="fehlendeRezepteNachholen('+i+')" style="width:100%;padding:9px;font-size:12px;margin-bottom:6px">⏳ Fehlende Rezepte nachholen</button>'
+            ? '<button class="btn btn-red" onclick="fehlendeRezepteNachholen(this,'+i+')" style="width:100%;padding:9px;font-size:12px;margin-bottom:6px">⏳ Fehlende Rezepte nachholen</button>'
             : '';
         })()
         +'<div style="display:flex;gap:6px"><button class="btn btn-out" onclick="viewHistoryEntry('+i+')" style="flex:1;padding:9px;font-size:12px">👁 Ansehen</button><button class="btn btn-out" onclick="nochmalKochen('+i+')" style="flex:1;padding:9px;font-size:12px">🔁 Erneut verwenden</button><button class="btn btn-out" onclick="showHistoryRating('+i+')" style="flex:1;padding:9px;font-size:12px">★ Bewerten</button></div>'
@@ -6974,19 +7040,35 @@ function loadHistoryEntry(i) { viewHistoryEntry(i); }
 // wird weiter ergaenzt) und keine neue Woche (der Plan bleibt auf seiner
 // eigenen weekStart). Waehrenddessen wird die laufende Woche kurz verdraengt -
 // genau wie beim ersten Laden - und tritt danach automatisch wieder hervor.
-function fehlendeRezepteNachholen(i) {
+// Holt fehlende Rezepte fuer einen VERLAUFS-Plan nach, direkt von der
+// Verlauf-Kartenliste aus - ohne Bildschirmwechsel und ohne G.activePlan
+// anzufassen. btn: das geklickte Element selbst (fuer Fortschritt/Ergebnis
+// direkt am Knopf, ohne die Liste mitten im Ladevorgang neu aufzubauen).
+function fehlendeRezepteNachholen(btn, i) {
   var e = window._history && window._history[i];
-  if (!e || !e.plan || !e.plan.sug) return;
-  var plan = e.plan;
-  var vorherigerAktiver = G.activePlan;
-  G.activePlan = plan;
-  G.sugs = [plan.sug];
-  G.sel = 0;
-  G.modus = plan.modus || G.modus;
-  goWeek();
-  // Falls der Aufruf synchron nichts zu tun findet (bereits vollstaendig),
-  // die urspruengliche laufende Woche nicht verlieren.
-  if (!G_ladeRezepte && vorherigerAktiver) { G.activePlan = vorherigerAktiver; }
+  if (!e || !e.planId) return;
+  if (btn) { btn.disabled = true; btn.textContent = '⏳ Wird geladen … 0'; }
+  nachholeFehlendeRezepteFuerPlan(e.planId, function(fertig, gesamt) {
+    if (btn) btn.textContent = '⏳ Wird geladen … ' + fertig + '/' + gesamt;
+  }).then(function(res) {
+    if (res.fehlgeschlagen.length) {
+      showSt('ist', res.erfolgreich + ' von ' + res.gesamt + ' nachgeholt, ' +
+        res.fehlgeschlagen.length + ' weiterhin offen: ' +
+        res.fehlgeschlagen.map(function(f){ return f.abend; }).join(', ') + '.', 'er');
+    } else {
+      showSt('ist', 'Alle Rezepte nachgeholt.', 'ok');
+      setTimeout(function(){ if($('ist'))$('ist').style.display='none'; }, 3000);
+    }
+    // window._history ist eine EIGENE, frueher separat aus localStorage
+    // geparste Kopie - die Mutation innerhalb von
+    // nachholeFehlendeRezepteFuerPlan() (eigenes JSON.parse) aendert daran
+    // nichts. loadHistory() liest den echten, gerade aktualisierten Stand
+    // neu ein, statt mit der veralteten Kopie weiterzurendern.
+    loadHistory();
+  }).catch(function(err) {
+    if (btn) { btn.disabled = false; btn.textContent = '⏳ Fehlende Rezepte nachholen'; }
+    showSt('ist', (err && err.message) || 'Nachholen fehlgeschlagen.', 'er');
+  });
 }
 
 function nochmalKochen(i) {
