@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=yes">
-<title>Menüplan v6.84</title>
+<title>Menüplan v6.89</title>
 <meta name="theme-color" content="#5B7C78">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -265,7 +265,7 @@ input[type=password]{letter-spacing:2px}
 
 <!-- HOME -->
 <div class="scr on" id="sh">
-  <div class="hero"><h1>Menüplan</h1><p id="hsub">v6.84 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
+  <div class="hero"><h1>Menüplan</h1><p id="hsub">v6.89 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
 
   <!-- Active plan card -->
 
@@ -274,7 +274,7 @@ input[type=password]{letter-spacing:2px}
     <div id="dashboard">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
         <div id="dash-greeting" style="font-size:20px;font-weight:800;color:var(--txt)">Guten Abend</div>
-        <button onclick="toggleUserMenu()" id="user-menu-btn" style="display:none;width:44px;height:44px;border-radius:50%;background:var(--red);color:#fff;border:none;font-size:16px;cursor:pointer;flex-shrink:0">👤</button>
+        <button onclick="toggleUserMenu()" id="user-menu-btn" aria-label="Menü öffnen" style="display:none;width:44px;height:44px;border-radius:50%;background:var(--red);color:#fff;border:none;font-size:19px;cursor:pointer;flex-shrink:0">⚙️</button>
       </div>
 
       <div id="dash-fehler" onclick="openPrefs()" style="display:none;background:var(--warning-soft);color:var(--warning);border-radius:10px;padding:10px 14px;margin-bottom:12px;font-size:13px;font-weight:600;cursor:pointer;min-height:44px;line-height:24px"></div>
@@ -332,9 +332,10 @@ input[type=password]{letter-spacing:2px}
         </div>
         <button onclick="openNewWeekScreen()" style="width:100%;background:#fff;border:.5px solid var(--bdr);border-radius:var(--rlg);padding:14px;font-size:14px;font-weight:600;color:var(--gr3);cursor:pointer;margin-bottom:8px">📅 Neue Woche planen</button>
       </div>
+      <div style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--gr3);margin:6px 2px 8px">Ausserhalb dieser Woche</div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:4px">
         <button onclick="openFotoScreen()" style="background:#fff;border:.5px solid var(--bdr);border-radius:var(--rlg);padding:14px;text-align:left;cursor:pointer;font-family:inherit"><div style="font-size:22px;margin-bottom:4px">📷</div><div style="font-size:13px;font-weight:700;color:var(--txt)">Foto-Rezept</div><div style="font-size:11px;color:var(--gr3)">Foto analysieren</div></button>
-        <button onclick="openHistory()" style="background:#fff;border:.5px solid var(--bdr);border-radius:var(--rlg);padding:14px;text-align:left;cursor:pointer;font-family:inherit"><div style="font-size:22px;margin-bottom:4px">📖</div><div style="font-size:13px;font-weight:700;color:var(--txt)">Verlauf</div><div style="font-size:11px;color:var(--gr3)">Pläne & Rezepte</div></button>
+        <button onclick="openHistory()" style="background:#fff;border:.5px solid var(--bdr);border-radius:var(--rlg);padding:14px;text-align:left;cursor:pointer;font-family:inherit"><div style="font-size:22px;margin-bottom:4px">🗂️</div><div style="font-size:13px;font-weight:700;color:var(--txt)">Verlauf</div><div style="font-size:11px;color:var(--gr3)">Frühere Wochen & Fotos</div></button>
       </div>
     </div>
     <div id="invite-btn" style="display:none"></div>
@@ -2254,6 +2255,7 @@ function doImportItems() {
           var btn2 = $('ibtn');
           if (btn2) { btn2.innerHTML = 'In Bring! importieren'; btn2.disabled = false; }
           showSt('ist', 'Bring! Session abgelaufen - bitte erneut anmelden.', 'er');
+          updateDashboard();
           throw e;
         }
         // Nicht mehr still schlucken: der Import laeuft weiter, aber der
@@ -2332,6 +2334,9 @@ function doImportItems() {
       if ($('blistwrap')) $('blistwrap').style.display = 'none';
       btn.innerHTML = 'In Bring! importieren'; btn.disabled = false;
       showSt('ist', 'Bring! Session abgelaufen - bitte erneut anmelden.', 'er');
+      // Startseite mitziehen: sonst zeigt sie weiterhin "verbunden" und bietet
+      // keinen Weg zur erneuten Anmeldung, bis irgendetwas anderes sie neu rendert.
+      updateDashboard();
     } else {
       showSt('ist', 'Import fehlgeschlagen - Status ' + (r ? r.status : '?'), 'er');
       btn.innerHTML = 'Nochmals versuchen'; btn.disabled = false;
@@ -3855,11 +3860,26 @@ function timelineCardDetail(entry) {
     // Knopf. Der Hinweistext allein war kein tatsaechlicher Bedienweg - der
     // Nutzer haette nie an goWeek() fuer DIESEN Plan herangekommen.
     var nachholbar = !entry.hasFullRecipe && entry.dateObj >= mondayOf(new Date());
+    // Bewerten bleibt moeglich, auch wenn die Woche nicht mehr aktiv ist -
+    // ein gerade gekochtes Gericht wird sonst genau dann unbewertbar, sobald
+    // die naechste Woche geplant wird. Nur ausgefallene/auswaerts-Tage haben
+    // nichts zu bewerten.
+    var bewertbar = entry.planId && !!g._gekocht && !g._cancelled;
+    // Loeschen: unabhaengig vom Gekocht-Status, genau wie beim aktiven Plan -
+    // ein Duplikat oder eine irrtuemliche Planung soll sich immer entfernen
+    // lassen, nicht nur solange die Woche noch aktiv ist.
+    var loeschbar = !!entry.planId;
     return '<div class="ract">' + zeitHtml + (next ? '<div class="rnext">' + next + '</div>' : '') +
       (g._gekocht ? '<div style="font-size:12px;color:var(--grn);font-weight:600;margin-top:6px">&#10003; gekocht</div>' : '') +
       zutatenHtml +
       (nachholbar ? '<button class="btn btn-red" onclick="nachholeVerlaufsplan(\'' + esc(entry.planId) +
         '\')" style="margin-top:10px;font-size:13px">Fehlende Rezepte nachholen</button>' : '') +
+      (bewertbar ? '<button class="btn btn-out" onclick="showPastDishRating(\'' + esc(entry.planId) + '\', ' +
+        entry.gerichtIdx + ')" style="margin-top:10px;display:flex;align-items:center;justify-content:center;gap:6px">' +
+        '<span style="color:#f59e0b;font-size:16px">&#9733;</span> Bewerten</button>' : '') +
+      (loeschbar ? '<button onclick="deletePastDish(\'' + esc(entry.planId) + '\', ' + entry.gerichtIdx +
+        ')" style="width:100%;background:none;border:none;padding:10px 0 4px;font-size:12px;color:var(--gr3);' +
+        'cursor:pointer;font-family:inherit;text-decoration:underline">Gericht endgültig entfernen</button>' : '') +
       '</div>';
   }
   return '<div class="ract">' +
@@ -3872,7 +3892,7 @@ function timelineCardDetail(entry) {
       '<button class="btn btn-out" onclick="cancelGericht(' + i + ')" style="font-size:13px">❌ Fällt aus</button>' +
       '<button class="btn btn-out" onclick="auswaartsGericht(' + i + ')" style="font-size:13px">🍽 Auswärts</button>' +
     '</div>' +
-    '<button class="btn btn-out" onclick="showRatingModal(' + i + ')" style="display:flex;align-items:center;justify-content:center;gap:6px"><span style="color:#f59e0b;font-size:16px">&#9733;</span> Bewerten</button>' +
+    (g._gekocht ? '<button class="btn btn-out" onclick="showRatingModal(' + i + ')" style="display:flex;align-items:center;justify-content:center;gap:6px"><span style="color:#f59e0b;font-size:16px">&#9733;</span> Bewerten</button>' : '') +
     // Beide Ausgabewege nebeneinander - sie gehoeren inhaltlich zusammen.
     '<div class="btnrow">' +
       '<button class="btn btn-out" onclick="showPrint(' + i + ')" style="font-size:13px">📄 Als PDF</button>' +
@@ -6214,7 +6234,12 @@ function saveRatingToGH(entry) {
     if (d && d.content) { try { ratings = JSON.parse(decodeURIComponent(escape(atob(d.content.split('\n').join(''))))); } catch(e) {} }
     ratings.unshift(entry);
     if (ratings.length > 200) ratings = ratings.slice(0, 200);
-    ghPut('ratings.json', ratings, 'Bewertung ' + entry.date);
+    // return: sonst haengt das Ergebnis von ghPut() lose neben der Kette und
+    // ein Fehlschlag (offline, Konflikt) wird zur unbehandelten Ablehnung
+    // statt vom catch() darunter aufgefangen zu werden. Die Bewertung liegt
+    // in local_ratings bereits sicher - hier soll nur der Cloud-Teil best
+    // effort bleiben, nicht laut scheitern.
+    return ghPut('ratings.json', ratings, 'Bewertung ' + entry.date);
   }).catch(function(){});
 }
 
@@ -6578,7 +6603,7 @@ function updateDashboard() {
         btn.textContent = '👨‍🍳 Jetzt kochen';
         btn.onclick = function() { openActivePlan('r'); setTimeout(function(){ startCook(gi); }, 350); };
       } else {
-        btn.textContent = '📖 Rezept ansehen';
+        btn.textContent = '👀 Rezept ansehen';
         btn.onclick = function() { openActivePlan('r'); setTimeout(function(){ openTimelineToGericht(plan, featured); }, 350); };
       }
     }
@@ -6618,7 +6643,64 @@ function updateDashboard() {
 
 }
 
+// Bewertet ein Gericht aus einer NICHT mehr aktiven Woche (Zeitachse, Abschnitt
+// "vergangene Woche" o.ae.). Loest ueber die stabile planId auf statt ueber
+// G.sel/G.sugs - sonst wuerde bei einem Verlaufs-Index versehentlich ein
+// Gericht des AKTIVEN Plans bewertet.
+// Entfernt ein Gericht aus einer NICHT mehr aktiven Woche endgueltig.
+// Analog zu deleteGerichtFromPlan(), aber ueber die stabile planId statt
+// G.sugs[G.sel] - garantiert, dass ausschliesslich dieser Verlaufseintrag
+// betroffen ist, niemals der aktive Plan.
+function deletePastDish(planId, gerichtIdx) {
+  var hist;
+  try { hist = JSON.parse(localStorage.getItem(userKey('local_history')) || '[]'); }
+  catch (e) { hist = []; }
+  var entry = hist.filter(function(h) { return h.planId === planId; })[0];
+  var sug = entry && entry.plan && entry.plan.sug;
+  var g = sug && Array.isArray(sug.gerichte) ? sug.gerichte[gerichtIdx] : null;
+  if (!g) { logFehler('verlauf', 'Zu löschendes Gericht nicht gefunden', planId + '/' + gerichtIdx); return; }
+  if (!confirm('„' + (g.abend || 'Gericht') + '" endgültig entfernen?')) return;
+  sug.gerichte.splice(gerichtIdx, 1);
+  // Rechnet "N Abende" neu und schreibt lokal + in die Cloud - dieselbe
+  // Funktion, die auch bei Aktionen am aktiven Plan den Verlaufseintrag
+  // aktuell haelt.
+  updateHistoryEntryPlan(entry.plan);
+  G_timelineOpen = null;   // die geloeschte, gerade offene Karte gibt es nicht mehr
+  try { renderRez(G.sugs && G.sel !== null ? G.sugs[G.sel] : null); } catch (e) {}
+  showSt('ist', 'Gericht entfernt.', 'ok');
+}
+
+function showPastDishRating(planId, gerichtIdx) {
+  var hist;
+  try { hist = JSON.parse(localStorage.getItem(userKey('local_history')) || '[]'); }
+  catch (e) { hist = []; }
+  var entry = hist.filter(function(h) { return h.planId === planId; })[0];
+  var sug = entry && entry.plan && entry.plan.sug;
+  var g = sug && Array.isArray(sug.gerichte) ? sug.gerichte[gerichtIdx] : null;
+  if (!g) { logFehler('bewertung', 'Vergangenes Gericht nicht gefunden', planId + '/' + gerichtIdx); return; }
+
+  G_rating.gerichtIdx = null;
+  G_rating.historyIdx = null;
+  G_rating.fotoIdx = null;
+  G_rating.pastDish = { thema: sug.thema, gericht: g };
+  G_rating.stars = 0;
+  G_rating.tags = [];
+  G_rating.returnScreen = 'sw';
+  if ($('rm-title')) $('rm-title').textContent = g.abend || 'Dein Gericht';
+  if ($('rm-feedback')) $('rm-feedback').value = '';
+  if ($('rm-tags')) $('rm-tags').querySelectorAll('.chip').forEach(function(c){ c.classList.remove('on'); });
+  if ($('rm-starlbl')) $('rm-starlbl').textContent = '';
+  if ($('rm-submit')) $('rm-submit').disabled = true;
+  var starsEl = $('rm-stars');
+  if (starsEl) {
+    var stars = starsEl.querySelectorAll('.star-btn');
+    for (var i=0;i<stars.length;i++) { stars[i].style.opacity='.3'; stars[i].style.color=''; }
+  }
+  if ($('rating-modal')) $('rating-modal').style.display = 'flex';
+}
+
 function showRatingModal(ri) {
+  G_rating.pastDish = null;
   // Robust gegen alle Zustandsabweichungen: lieber mit Fallback-Namen zeigen
   // als stumm gar nicht erscheinen (das war schwer zu diagnostizieren, weil
   // ein fruehes "return" keinerlei Spur hinterlaesst).
@@ -6660,6 +6742,22 @@ function setStar(n) {
 function submitRating() {
   if (!G_rating.stars) return;
   var feedback = $('rm-feedback').value.trim();
+  if (G_rating.pastDish) {
+    // Gericht aus einer vergangenen Woche: identisch zum normalen Pfad
+    // unten, nur dass Thema und Gericht aus dem gemerkten Verlaufs-Objekt
+    // kommen statt aus G.sugs[G.sel] - siehe showPastDishRating().
+    var pd = G_rating.pastDish;
+    var pentry = { date: isoDateLocal(new Date()), saved: new Date().toLocaleDateString('de-CH'),
+      thema: pd.thema, gericht: pd.gericht.abend, tag: pd.gericht.tag, stars: G_rating.stars,
+      label: STAR_LABELS[G_rating.stars], feedback: feedback, tags: G_rating.tags.slice(),
+      personen: G.personen || 2,
+      zutaten: (pd.gericht.zutaten || []).map(function(z){ return z.name; }).join(', ') };
+    saveRatingToGH(pentry);
+    G_rating.pastDish = null;
+    $('rating-modal').style.display='none'; go(G_rating.returnScreen || 'sw');
+    setTimeout(function(){var msg=G_rating.stars>=4?'Super! Bewertung gespeichert.':'Bewertung gespeichert.';showSt('ist',msg,'ok');setTimeout(function(){if($('ist'))$('ist').style.display='none';},3000);},300);
+    return;
+  }
   if (G_rating.historyIdx !== null && G_rating.historyIdx !== undefined) {
     var hist = window._history;
     if (hist && hist[G_rating.historyIdx]) {
@@ -6699,7 +6797,7 @@ function submitRating() {
 }
 function showHistoryRating(i) {
   var hist=window._history; if(!hist||!hist[i])return;
-  var e=hist[i]; G_rating.stars=e.stars||0; G_rating.historyIdx=i; G_rating.fotoIdx=null; G_rating.gerichtIdx=null;
+  var e=hist[i]; G_rating.stars=e.stars||0; G_rating.historyIdx=i; G_rating.fotoIdx=null; G_rating.gerichtIdx=null; G_rating.pastDish=null;
   G_rating.tags = (e.tags||[]).slice();
   G_rating.returnScreen = 'sh2';
   $('rm-title').textContent=e.thema||'Menüplan'; $('rm-feedback').value=e.ratingFeedback||''; $('rm-starlbl').textContent=''; $('rm-submit').disabled=false;
@@ -6711,7 +6809,7 @@ function showHistoryRating(i) {
 }
 function showFotoRating(i) {
   var saved=JSON.parse(localStorage.getItem(userKey('foto_rezepte'))||'[]'); if(!saved[i])return;
-  var r=saved[i]; G_rating.stars=r.stars||0; G_rating.fotoIdx=i; G_rating.historyIdx=null; G_rating.gerichtIdx=null;
+  var r=saved[i]; G_rating.stars=r.stars||0; G_rating.fotoIdx=i; G_rating.historyIdx=null; G_rating.gerichtIdx=null; G_rating.pastDish=null;
   G_rating.tags = (r.tags||[]).slice();
   G_rating.returnScreen = 'sh2';
   $('rm-title').textContent=r.name||'Foto-Rezept'; $('rm-feedback').value=r.ratingFeedback||''; $('rm-starlbl').textContent=''; $('rm-submit').disabled=false;
@@ -6772,6 +6870,13 @@ function renderHistoryList(history) {
         // "Nochmal kochen" und "Erneut verwenden" riefen beide nochmalKochen()
         // auf - dieselbe Aktion doppelt. Der verbleibende Knopf wird bei gut
         // bewerteten Plaenen nur noch hervorgehoben statt zusaetzlich angeboten.
+        +(function() {
+          var g = (e.plan && e.plan.sug && e.plan.sug.gerichte) || [];
+          var unvollstaendig = g.some(function(gr) { return fehlendeSchritte(gr, e.plan.modus || G.modus); });
+          return unvollstaendig
+            ? '<button class="btn btn-red" onclick="fehlendeRezepteNachholen('+i+')" style="width:100%;padding:9px;font-size:12px;margin-bottom:6px">⏳ Fehlende Rezepte nachholen</button>'
+            : '';
+        })()
         +'<div style="display:flex;gap:6px"><button class="btn btn-out" onclick="viewHistoryEntry('+i+')" style="flex:1;padding:9px;font-size:12px">👁 Ansehen</button><button class="btn btn-out" onclick="nochmalKochen('+i+')" style="flex:1;padding:9px;font-size:12px">🔁 Erneut verwenden</button><button class="btn btn-out" onclick="showHistoryRating('+i+')" style="flex:1;padding:9px;font-size:12px">★ Bewerten</button></div>'
         +'<div style="display:flex;gap:6px">'+(status!=='gekocht'?'<button class="btn btn-out" onclick="markHistoryKekocht('+i+')" style="flex:1;padding:9px;font-size:12px">🍽 Gekocht</button>':'')+(status!=='geplant'?'<button class="btn btn-out" onclick="resetHistoryStatus('+i+')" style="padding:9px;font-size:12px">✕ Reset</button>':'')+'<button onclick="deleteHistoryPlan('+i+')" style="background:none;border:.5px solid var(--bdr);border-radius:8px;padding:9px 12px;color:var(--gr3);cursor:pointer;font-size:16px" title="Löschen">✕</button>'+'</div>'
       +'</div>'
@@ -6863,6 +6968,26 @@ function reuseFromHistoryView() {
 
 // Alter Name bleibt als Alias erhalten, falls noch irgendwo referenziert.
 function loadHistoryEntry(i) { viewHistoryEntry(i); }
+
+// Holt die fehlenden Rezepte eines unvollstaendigen ZUKUNFTSPLANS nach.
+// Anders als nochmalKochen(): keine neue planId (derselbe Verlaufseintrag
+// wird weiter ergaenzt) und keine neue Woche (der Plan bleibt auf seiner
+// eigenen weekStart). Waehrenddessen wird die laufende Woche kurz verdraengt -
+// genau wie beim ersten Laden - und tritt danach automatisch wieder hervor.
+function fehlendeRezepteNachholen(i) {
+  var e = window._history && window._history[i];
+  if (!e || !e.plan || !e.plan.sug) return;
+  var plan = e.plan;
+  var vorherigerAktiver = G.activePlan;
+  G.activePlan = plan;
+  G.sugs = [plan.sug];
+  G.sel = 0;
+  G.modus = plan.modus || G.modus;
+  goWeek();
+  // Falls der Aufruf synchron nichts zu tun findet (bereits vollstaendig),
+  // die urspruengliche laufende Woche nicht verlieren.
+  if (!G_ladeRezepte && vorherigerAktiver) { G.activePlan = vorherigerAktiver; }
+}
 
 function nochmalKochen(i) {
   var e = window._history;
