@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=yes">
-<title>Menüplan v6.91</title>
+<title>Menüplan v6.93</title>
 <meta name="theme-color" content="#5B7C78">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -265,7 +265,7 @@ input[type=password]{letter-spacing:2px}
 
 <!-- HOME -->
 <div class="scr on" id="sh">
-  <div class="hero"><h1>Menüplan</h1><p id="hsub">v6.91 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
+  <div class="hero"><h1>Menüplan</h1><p id="hsub">v6.93 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
 
   <!-- Active plan card -->
 
@@ -334,7 +334,7 @@ input[type=password]{letter-spacing:2px}
       </div>
       <div style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--gr3);margin:6px 2px 8px">Ausserhalb dieser Woche</div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:4px">
-        <button onclick="openFotoScreen()" style="background:#fff;border:.5px solid var(--bdr);border-radius:var(--rlg);padding:14px;text-align:left;cursor:pointer;font-family:inherit"><div style="font-size:22px;margin-bottom:4px">📷</div><div style="font-size:13px;font-weight:700;color:var(--txt)">Foto-Rezept</div><div style="font-size:11px;color:var(--gr3)">Foto analysieren</div></button>
+        <button onclick="openFotoScreen()" style="background:#fff;border:.5px solid var(--bdr);border-radius:var(--rlg);padding:14px;text-align:left;cursor:pointer;font-family:inherit"><div style="font-size:22px;margin-bottom:4px">📷</div><div style="font-size:13px;font-weight:700;color:var(--txt)">Einzelrezept</div><div style="font-size:11px;color:var(--gr3)">Foto oder Text</div></button>
         <button onclick="openHistory()" style="background:#fff;border:.5px solid var(--bdr);border-radius:var(--rlg);padding:14px;text-align:left;cursor:pointer;font-family:inherit"><div style="font-size:22px;margin-bottom:4px">🗂️</div><div style="font-size:13px;font-weight:700;color:var(--txt)">Verlauf</div><div style="font-size:11px;color:var(--gr3)">Frühere Wochen & Fotos</div></button>
       </div>
     </div>
@@ -565,27 +565,41 @@ input[type=password]{letter-spacing:2px}
 <div class="scr" id="sf">
   <div class="tbar">
     <div class="tbar-bk" onclick="go('sh')">&#8592;</div>
-    <div><h1>Foto-Rezept</h1><div class="tbar-sub">Rezept aus Foto ableiten</div></div>
+    <div><h1>Einzelrezept</h1><div class="tbar-sub">Per Foto oder Text erstellen</div></div>
     <button onclick="syncFotoRezepte(this)" style="background:rgba(255,255,255,.2);border:none;border-radius:6px;padding:6px 10px;font-size:12px;color:#fff;cursor:pointer;font-family:inherit;margin-left:auto">&#x1F504;</button>
   </div>
 
   <div class="card"><div class="cp">
-    <div class="clbl">Foto hochladen</div>
-    <div id="foto-upload-area" onclick="$('foto-input').click()"
-      style="border:2px dashed var(--bdr);border-radius:var(--r);padding:32px 16px;text-align:center;cursor:pointer;transition:border-color .2s;margin-bottom:10px"
-      ondragover="event.preventDefault();this.style.borderColor='var(--red)'"
-      ondragleave="this.style.borderColor='var(--bdr)'"
-      ondrop="event.preventDefault();this.style.borderColor='var(--bdr)';handleFotoFile(event.dataTransfer.files[0])">
-      <div style="font-size:36px;margin-bottom:8px">&#128247;</div>
-      <div style="font-size:14px;font-weight:600;color:var(--txt)">Foto antippen oder reinziehen</div>
-      <div style="font-size:12px;color:var(--gr3);margin-top:4px">Rezept, Menukarte, Kochbuch-Seite...</div>
+    <div class="chips" style="margin-bottom:12px" role="tablist" aria-label="Eingabeart">
+      <button class="chip on" id="foto-modus-foto" onclick="setEinzelrezeptModus('foto')" role="tab" aria-selected="true">📷 Foto</button>
+      <button class="chip" id="foto-modus-text" onclick="setEinzelrezeptModus('text')" role="tab" aria-selected="false">✏️ Text</button>
     </div>
-    <input type="file" id="foto-input" accept="image/*" style="display:none" onchange="handleFotoFile(this.files[0])">
 
-    <div id="foto-preview" style="display:none;margin-bottom:10px;text-align:center">
-      <img id="foto-img" alt="Vorschau des gewählten Rezeptfotos" style="max-width:100%;max-height:200px;border-radius:var(--r);border:.5px solid var(--bdr)">
-      <div style="margin-top:8px">
-        <button class="btn btn-out" onclick="clearFoto()" style="width:auto;padding:8px 16px;font-size:12px">&#x2715; Anderes Foto</button>
+    <div id="foto-modus-foto-inhalt">
+      <div class="clbl">Foto hochladen</div>
+      <div id="foto-upload-area" onclick="$('foto-input').click()"
+        style="border:2px dashed var(--bdr);border-radius:var(--r);padding:32px 16px;text-align:center;cursor:pointer;transition:border-color .2s;margin-bottom:10px"
+        ondragover="event.preventDefault();this.style.borderColor='var(--red)'"
+        ondragleave="this.style.borderColor='var(--bdr)'"
+        ondrop="event.preventDefault();this.style.borderColor='var(--bdr)';handleFotoFile(event.dataTransfer.files[0])">
+        <div style="font-size:36px;margin-bottom:8px">&#128247;</div>
+        <div style="font-size:14px;font-weight:600;color:var(--txt)">Foto antippen oder reinziehen</div>
+        <div style="font-size:12px;color:var(--gr3);margin-top:4px">Rezept, Menukarte, Kochbuch-Seite...</div>
+      </div>
+      <input type="file" id="foto-input" accept="image/*" style="display:none" onchange="handleFotoFile(this.files[0])">
+
+      <div id="foto-preview" style="display:none;margin-bottom:10px;text-align:center">
+        <img id="foto-img" alt="Vorschau des gewählten Rezeptfotos" style="max-width:100%;max-height:200px;border-radius:var(--r);border:.5px solid var(--bdr)">
+        <div style="margin-top:8px">
+          <button class="btn btn-out" onclick="clearFoto()" style="width:auto;padding:8px 16px;font-size:12px">&#x2715; Anderes Foto</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="foto-modus-text-inhalt" style="display:none">
+      <div class="fld">
+        <label for="foto-text">Was möchtest du kochen?</label>
+        <textarea id="foto-text" oninput="fotoTextGeaendert()" placeholder="z.B. Kürbissuppe – oder ausführlicher: cremige Kürbissuppe mit Kokosmilch und Ingwer" aria-label="Was möchtest du kochen?" style="width:100%;min-height:70px;padding:12px;border:.5px solid var(--bdr);border-radius:var(--r);font-family:inherit;font-size:14px;resize:vertical;box-sizing:border-box"></textarea>
       </div>
     </div>
 
@@ -603,7 +617,7 @@ input[type=password]{letter-spacing:2px}
       <input id="foto-hint" placeholder="z.B. vegetarisch, ohne Nuesse, fuer 2 Personen..." aria-label="z.B. vegetarisch, ohne Nuesse, fuer 2 Personen...">
     </div>
 
-    <button class="btn btn-red" id="foto-btn" onclick="analyzeFoto()" disabled style="margin-top:4px">Rezept ableiten</button>
+    <button class="btn btn-red" id="foto-btn" onclick="analyzeEinzelrezept()" disabled style="margin-top:4px">Rezept ableiten</button>
   </div></div>
 
   <!-- Saved foto recipes -->
@@ -614,7 +628,7 @@ input[type=password]{letter-spacing:2px}
 
   <div id="foto-load" style="display:none;text-align:center;padding:32px">
     <div class="spin" style="width:26px;height:26px;margin:0 auto 12px;border-width:2.5px"></div>
-    <div style="font-size:13px;color:var(--gr3)">Claude analysiert das Foto...</div>
+    <div style="font-size:13px;color:var(--gr3)" id="foto-load-txt">Claude analysiert das Foto...</div>
   </div>
   <div id="foto-err" style="display:none" class="st er"></div>
   <div id="foto-result" style="display:none"></div>
@@ -3295,11 +3309,19 @@ function nachholeFehlendeRezepteFuerPlan(planId, onFortschritt) {
   try { hist = JSON.parse(localStorage.getItem(userKey('local_history')) || '[]'); }
   catch (e) { hist = []; }
   var entry = hist.filter(function(h) { return h.planId === planId; })[0];
-  var sug = entry && entry.plan && entry.plan.sug;
+  // WICHTIG: local_history ist eine EIGENE, unabhaengig geparste Kopie -
+  // ist dieser Plan zufaellig GENAU der gerade aktive, wuerde das Mutieren
+  // von entry.plan.sug NIE bei G.activePlan ankommen. Die Zeitachse zeigt
+  // dann weiterhin das leere Gericht, obwohl der Verlauf laengst komplett
+  // ist (reproduziert: "Ei-und-Teig" war zugleich der aktive Plan). Deshalb
+  // ERST pruefen, ob die planId dem aktiven Plan entspricht - und wenn ja,
+  // direkt an dessen SUG arbeiten, damit die Aenderung sofort sichtbar ist.
+  var istAktiv = !!(G.activePlan && G.activePlan.planId === planId);
+  var sug = istAktiv ? G.activePlan.sug : (entry && entry.plan && entry.plan.sug);
   if (!sug || !Array.isArray(sug.gerichte)) {
     return Promise.reject(new Error('Dieser Plan wurde nicht gefunden.'));
   }
-  var modus = entry.plan.modus || G.modus;
+  var modus = (istAktiv ? G.activePlan.modus : entry.plan.modus) || G.modus;
   var offen = sug.gerichte.filter(function(g) { return fehlendeSchritte(g, modus); });
   var fehler = [];
   var fertig = 0;
@@ -3312,7 +3334,20 @@ function nachholeFehlendeRezepteFuerPlan(planId, onFortschritt) {
         fertig++;
         // Sofort sichern: ein spaeter scheiterndes Gericht darf ein bereits
         // gelungenes nicht mit sich reissen.
-        updateHistoryEntryPlan(entry.plan);
+        if (istAktiv) {
+          // Direkt persistieren statt persistActivePlan() aufzurufen: dessen
+          // "G.activePlan.sug = G.sugs[G.sel]"-Zeile ist fuer den normalen
+          // Aufruf aus goWeek() gedacht und koennte hier - je nachdem, was
+          // G.sugs/G.sel gerade vom Generieren eines ANDEREN Vorschlags her
+          // noch enthalten - versehentlich einen falschen Stand einsetzen.
+          // sug IST bereits G.activePlan.sug (siehe oben) - keine Zuweisung noetig.
+          try { localStorage.setItem(userKey('active_plan'), JSON.stringify(G.activePlan)); } catch (e) {}
+          saveToGH(G.activePlan);
+          updateHistoryEntryPlan(G.activePlan);
+          updateDashboard();
+        } else {
+          updateHistoryEntryPlan(entry.plan);
+        }
         if (onFortschritt) onFortschritt(fertig, gesamt);
       })
       .catch(function(e) {
@@ -6878,7 +6913,7 @@ function showFotoRating(i) {
   var r=saved[i]; G_rating.stars=r.stars||0; G_rating.fotoIdx=i; G_rating.historyIdx=null; G_rating.gerichtIdx=null; G_rating.pastDish=null;
   G_rating.tags = (r.tags||[]).slice();
   G_rating.returnScreen = 'sh2';
-  $('rm-title').textContent=r.name||'Foto-Rezept'; $('rm-feedback').value=r.ratingFeedback||''; $('rm-starlbl').textContent=''; $('rm-submit').disabled=false;
+  $('rm-title').textContent=r.name||'Einzelrezept'; $('rm-feedback').value=r.ratingFeedback||''; $('rm-starlbl').textContent=''; $('rm-submit').disabled=false;
   var stars=$('rm-stars').querySelectorAll('.star-btn');
   for(var j=0;j<stars.length;j++){stars[j].style.opacity=j<(r.stars||0)?'1':'.25';stars[j].style.color=j<(r.stars||0)?'#f59e0b':'#888';}
   if(r.stars)$('rm-starlbl').textContent=STAR_LABELS[r.stars]||'';
@@ -7188,7 +7223,7 @@ function resetHistoryStatus(i) {
 }
 function loadHistoryRecipes() {
   var saved=JSON.parse(localStorage.getItem(userKey('foto_rezepte'))||'[]'); var el=$('hrecipes-list'); if(!el)return;
-  if(!saved.length){el.innerHTML='<div style="text-align:center;padding:40px 24px;color:var(--gr3);font-size:13px">Noch keine gespeicherten Rezepte.<br><span style="font-size:12px;opacity:.8">Hier erscheinen Rezepte, die über 📷 Foto-Rezept erstellt wurden. Menüpläne findest du im Tab "Menüpläne".</span></div>';return;}
+  if(!saved.length){el.innerHTML='<div style="text-align:center;padding:40px 24px;color:var(--gr3);font-size:13px">Noch keine gespeicherten Rezepte.<br><span style="font-size:12px;opacity:.8">Hier erscheinen Rezepte, die über 📷 Einzelrezept erstellt wurden. Menüpläne findest du im Tab "Menüpläne".</span></div>';return;}
   var html=saved.map(function(r,i){
     var zCount=(r.zutaten||[]).length; var sCount=(r.schritte||[]).length;
     return '<div style="background:#fff;border-radius:var(--rlg);border:.5px solid var(--bdr);margin-bottom:8px;overflow:hidden">'
@@ -7457,6 +7492,76 @@ function deleteSavedFotoRezept(i){
   saveFotoRezepteToGH(saved);
   loadSavedFotoRezepte();
 }
+// ─── EINZELREZEPT: Foto ODER Text ──────────────────────────
+// Beide Wege liefern dasselbe Schema (name/zutaten/schritte/tipp) und laufen
+// danach durch dieselbe Weiterverarbeitung (validateFotoRecipe,
+// renderFotoRezept, saveFotoRezeptSilent, Kochen, Bewerten, Verlauf) - der
+// Unterschied liegt nur darin, WIE das Rezept entsteht.
+var G_fotoModus = 'foto';
+
+function setEinzelrezeptModus(m) {
+  G_fotoModus = m;
+  $('foto-modus-foto').classList.toggle('on', m === 'foto');
+  $('foto-modus-foto').setAttribute('aria-selected', m === 'foto');
+  $('foto-modus-text').classList.toggle('on', m === 'text');
+  $('foto-modus-text').setAttribute('aria-selected', m === 'text');
+  $('foto-modus-foto-inhalt').style.display = m === 'foto' ? 'block' : 'none';
+  $('foto-modus-text-inhalt').style.display = m === 'text' ? 'block' : 'none';
+  if ($('foto-load-txt')) $('foto-load-txt').textContent =
+    m === 'foto' ? 'Claude analysiert das Foto…' : 'Claude erstellt das Rezept…';
+  $('foto-btn').disabled = m === 'foto' ? !G_foto.base64 : !$('foto-text').value.trim();
+  if ($('foto-err')) $('foto-err').style.display = 'none';
+}
+
+function fotoTextGeaendert() {
+  $('foto-btn').disabled = !$('foto-text').value.trim();
+}
+
+// Gemeinsame Weiterverarbeitung fuer beide Wege: parsen, validieren, anzeigen.
+function verarbeiteEinzelrezeptAntwort(raw) {
+  $('foto-load').style.display='none'; $('foto-btn').disabled=false;
+  if(!raw)throw new Error('Keine Antwort');
+  var rezept=parseJSON(raw);
+  var fotoValidationError = validateFotoRecipe(rezept);
+  if (fotoValidationError) throw new Error(fotoValidationError);
+  renderFotoRezept(rezept);
+}
+
+function zeigeEinzelrezeptFehler(e) {
+  $('foto-load').style.display='none'; $('foto-btn').disabled=false;
+  if($('foto-err')){$('foto-err').textContent='Fehler: '+e.message;$('foto-err').style.display='block';}
+}
+
+function analyzeEinzelrezept() {
+  if (G_fotoModus === 'text') return analyzeEinzelrezeptText();
+  return analyzeFoto();
+}
+
+// Text-Weg: kein Bild, dafuer ein eigener Prompt-Typ im Worker
+// ('einzelrezept'), der dasselbe Schema wie die Fotoanalyse verlangt, aber
+// von einer BESCHREIBUNG statt einem Bild ausgeht.
+function analyzeEinzelrezeptText() {
+  var beschreibung = $('foto-text').value.trim();
+  if (!beschreibung) return;
+  $('foto-load').style.display='block'; if($('foto-result'))$('foto-result').style.display='none'; if($('foto-err'))$('foto-err').style.display='none'; $('foto-btn').disabled=true;
+  var hint=$('foto-hint').value.trim(); var p=G_foto.portionen;
+  var msg = 'Erstelle ein vollständiges Rezept für "' + beschreibung + '" für ' + p + ' Personen. ' +
+    'Gib alle Zutaten mit genauen Mengen an. Schritte detailliert.' + (hint ? ' Hinweis: ' + hint + '.' : '');
+  callWorker('einzelrezept', msg, 3000, currentOpts(), 'claude-sonnet-5', function(teil) {
+    var el = $('foto-load');
+    if (el && teil) {
+      var z = el.querySelector('.foto-fortschritt');
+      if (!z) { z = document.createElement('div');
+        z.className = 'foto-fortschritt';
+        z.style.cssText = 'font-size:12px;color:var(--text-secondary);margin-top:8px';
+        el.appendChild(z); }
+      z.textContent = 'Rezept wird erstellt… ' + teil.length + ' Zeichen';
+    }
+  })
+  .then(verarbeiteEinzelrezeptAntwort)
+  .catch(zeigeEinzelrezeptFehler);
+}
+
 function analyzeFoto(){
   if(!G_foto.base64)return;
   $('foto-load').style.display='block'; if($('foto-result'))$('foto-result').style.display='none'; if($('foto-err'))$('foto-err').style.display='none'; $('foto-btn').disabled=true;
@@ -7481,14 +7586,8 @@ function analyzeFoto(){
       z.textContent = 'Rezept wird gelesen… ' + teil.length + ' Zeichen';
     }
   }, bildNachricht)
-  .then(function(raw){
-    $('foto-load').style.display='none'; $('foto-btn').disabled=false;
-    if(!raw)throw new Error('Keine Antwort');
-    var rezept=parseJSON(raw);
-    var fotoValidationError = validateFotoRecipe(rezept);
-    if (fotoValidationError) throw new Error(fotoValidationError);
-    renderFotoRezept(rezept);
-  }).catch(function(e){$('foto-load').style.display='none';$('foto-btn').disabled=false;if($('foto-err')){$('foto-err').textContent='Fehler: '+e.message;$('foto-err').style.display='block';}});
+  .then(verarbeiteEinzelrezeptAntwort)
+  .catch(zeigeEinzelrezeptFehler);
 }
 function renderFotoRezept(r){
   var zRows=(r.zutaten||[]).map(function(z){return '<div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:.5px solid #f5f5f5"><span style="font-size:14px;font-weight:500">'+esc(z.name)+'</span><span style="font-size:13px;color:var(--gr3)">'+mengeTxt(z.menge)+'</span></div>';}).join('');
@@ -7499,7 +7598,7 @@ function renderFotoRezept(r){
 function importFotoFromResult(){
   if(!window._fotoRezept)return; var r=window._fotoRezept;
   // Status NICHT hier setzen - erst nach erfolgreicher Bring!-Antwort.
-  var tmpSug={thema:r.name||'Foto-Rezept',kochabende:[],gerichte:[{tag:'Foto',abend:r.name||'Foto-Rezept',zutaten:r.zutaten||[]}]};
+  var tmpSug={thema:r.name||'Einzelrezept',kochabende:[],gerichte:[{tag:'Foto',abend:r.name||'Einzelrezept',zutaten:r.zutaten||[]}]};
   // Getrennter Kontext: G.sugs/G.sel des aktiven Wochenplans bleiben unangetastet.
   G.fotoImport = tmpSug;
   if(G.bLists&&G.bLists.length){
@@ -7507,11 +7606,11 @@ function importFotoFromResult(){
     applyBringListPref();        // erst NACH dem Fuellen - vorher gibt es nichts auszuwaehlen
     $('blistwrap').style.display='block';$('bfields').style.display='none';
   }
-  $('wtit').textContent=r.name||'Foto-Rezept';$('wsub').textContent='Foto-Rezept';
+  $('wtit').textContent=r.name||'Einzelrezept';$('wsub').textContent='Einzelrezept';
   renderEink(tmpSug); go('sw'); wtab('e');
   var oldBack=document.getElementById('foto-back-btn');if(oldBack)oldBack.remove();
   var backBtn=document.createElement('div');backBtn.id='foto-back-btn';backBtn.style.cssText='padding:10px 10px 0';
-  backBtn.innerHTML='<button class="btn btn-out" onclick="openFotoScreen()" style="font-size:13px;padding:10px">← Zurück zum Foto-Rezept</button>';
+  backBtn.innerHTML='<button class="btn btn-out" onclick="openFotoScreen()" style="font-size:13px;padding:10px">← Zurück zum Einzelrezept</button>';
   var te=$('te');if(te&&te.firstChild)te.insertBefore(backBtn,te.firstChild);
 }
 // ─── FOTO-REZEPTE: IDs, TOMBSTONES, ZUSAMMENFUEHRUNG ──────
