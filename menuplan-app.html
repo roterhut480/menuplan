@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=yes">
-<title>Menüplan v6.93</title>
+<title>Menüplan v6.94</title>
 <meta name="theme-color" content="#5B7C78">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -265,7 +265,7 @@ input[type=password]{letter-spacing:2px}
 
 <!-- HOME -->
 <div class="scr on" id="sh">
-  <div class="hero"><h1>Menüplan</h1><p id="hsub">v6.93 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
+  <div class="hero"><h1>Menüplan</h1><p id="hsub">v6.94 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
 
   <!-- Active plan card -->
 
@@ -2886,13 +2886,19 @@ function goSuggest() {
 
   // Prompt kommt aus dem Worker
 
-  // Jedem der drei parallelen Aufrufe eine EIGENE Küche zuweisen. Vorher
+  // Jedem der drei parallelen Aufrufe eine EIGENE Kette zuweisen. Vorher
   // sollte jeder Aufruf selbst "eine andere Küche" waehlen - was nicht gehen
-  // kann, weil keiner die anderen kennt. Nur wenn der Nutzer kein eigenes
-  // Thema eingetippt hat.
+  // kann, weil keiner die anderen kennt. Frueher wurde die Kette komplett
+  // abgeschaltet, sobald der Nutzer ein eigenes Thema eintippte - dann fehlte
+  // JEDE Unterscheidung zwischen den drei Aufrufen (ausser der bedeutungslosen
+  // Zahl "Vorschlag 1/2/3 von 3"), und es kamen reproduzierbar drei nahezu
+  // identische Vorschlaege zurueck (Bugreport: "1x Woche Salat gewuenscht -
+  // 3x dasselbe Menu"). Jetzt bleibt die Kette als untergeordnete
+  // Zutaten-Anregung aktiv; in loadOne() weicht sie dem Thema, sobald sie
+  // dazu im Widerspruch steht.
   // Ab hier laufen Netzaufrufe - jetzt sperren.
   G_generiertGerade = true;
-  var _ketten = theme ? [] : waehleKetten(3, letzteKuechen(2), G.modus);
+  var _ketten = waehleKetten(3, letzteKuechen(2), G.modus);
 
   // ─── VIELFALTSPRUEFUNG ──────────────────────────────────
   // Ein Prompt allein reicht nicht zuverlaessig: mehrfach kamen drei Varianten
@@ -3019,11 +3025,30 @@ function goSuggest() {
     var _kette = _ketten[id - 1];
     var _zusatz = ' Vorschlag ' + id + ' von 3.';
     if (_kette) {
-      _zusatz = ' EINKAUFSKETTE dieses Vorschlags: ' + _kette.n +
-        '. Diese Zutaten sollen ueber die Woche mehrfach vorkommen: ' + _kette.z +
-        '. Setze das Feld thema auf "' + _kette.n.replace(/-Kette$| Kette$/, '') + '".' +
+      // Mit eigenem Thema bleibt die Kette eine UNTERGEORDNETE Anregung fuer
+      // Zutatenvielfalt zwischen den drei unabhaengigen Aufrufen - sie darf
+      // dem Thema nicht widersprechen und bestimmt auch nicht mehr das
+      // Antwortfeld "thema" (das wuerde das Thema des Nutzers verdecken).
+      _zusatz = theme
+        ? ' Zur Unterscheidung von den anderen beiden (unabhaengig generierten) Vorschlaegen: ' +
+          'bevorzuge, soweit mit dem Thema "' + theme + '" vereinbar, diese Zutaten: ' + _kette.z + '. ' +
+          'Widerspricht das dem Thema, hat das Thema Vorrang und diese Zutaten werden ignoriert. ' +
+          // Ohne diese Anweisung griff das Modell bei eigenem Thema meist einfach
+          // zum wortwoertlichen Thema als Titel ("Salat") - bei allen drei
+          // Aufrufen identisch, und die Dedupe-Logik haengte dann nur noch
+          // "(Variante 2)"/"(Variante 3)" an, statt echter eigener Namen.
+          'Setze das Feld thema NICHT auf das Thema "' + theme + '" wortwoertlich, sondern auf einen ' +
+          'kurzen, konkreten Namen fuer GENAU DIESEN Vorschlag (z.B. die Kueche oder Hauptzutat dieser ' +
+          'drei Gerichte, etwa "Mediterrane Woche" oder "Herbstliche Kueche") - er muss sich erkennbar ' +
+          'von den Titeln der anderen beiden Vorschlaege unterscheiden.'
+        : ' EINKAUFSKETTE dieses Vorschlags: ' + _kette.n +
+          '. Diese Zutaten sollen ueber die Woche mehrfach vorkommen: ' + _kette.z +
+          '. Setze das Feld thema auf "' + _kette.n.replace(/-Kette$| Kette$/, '') + '".';
+      _zusatz +=
         // Der entscheidende Teil: die Kette verbindet ZUTATEN, nicht Gerichte.
-        // Ohne diese Regel wurde aus "Wähen-Kette" dreimal eine Wähe.
+        // Ohne diese Regel wurde aus "Wähen-Kette" dreimal eine Wähe. Dieser
+        // Satz bleibt auch mit eigenem Thema unveraendert - er gilt fuer die
+        // oben genannten Zutaten (Kette ODER Thema-Variante) gleichermassen.
         ' WICHTIG - die Kette gilt fuer die EINKAUFSZUTATEN, nicht fuer die Gerichtsart. ' +
         'Die Abende muessen sich deutlich unterscheiden: ' +
         'KEINE Gerichtsart doppelt (nicht zweimal Auflauf, Suppe, Pasta, Wähe, Curry, Salat, Bowl, Blech). ' +
