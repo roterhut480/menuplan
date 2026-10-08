@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=yes">
-<title>Menüplan v6.94</title>
+<title>Menüplan v6.95</title>
 <meta name="theme-color" content="#5B7C78">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -265,7 +265,7 @@ input[type=password]{letter-spacing:2px}
 
 <!-- HOME -->
 <div class="scr on" id="sh">
-  <div class="hero"><h1>Menüplan</h1><p id="hsub">v6.94 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
+  <div class="hero"><h1>Menüplan</h1><p id="hsub">v6.95 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
 
   <!-- Active plan card -->
 
@@ -2690,7 +2690,7 @@ function readAnthropicStream(response, onProgress) {
 // eigenes messages-Array. Frueher ging die Fotoanalyse an callWorker() vorbei
 // und hatte dadurch weder Streaming noch Zeitueberschreitung, Wiederholung
 // oder Diagnose.
-function callWorker(kind, message, maxTokens, opts, model, onProgress, messagesOverride) {
+function callWorker(kind, message, maxTokens, opts, model, onProgress, messagesOverride, onRetry) {
   var s = getSession();
   var h = { 'Content-Type': 'application/json' };
   if (s) { h['X-MP-User'] = s.username; h['X-MP-Pass'] = s.pw; }
@@ -2768,15 +2768,28 @@ function callWorker(kind, message, maxTokens, opts, model, onProgress, messagesO
     });
   }
 
-  // Ein Wiederholungsversuch bei Verbindungsproblemen. Inhaltliche Fehler
-  // (401, API-Fehler) werden NICHT wiederholt - die scheitern erneut.
-  return attempt().catch(function(e) {
-    var msg = (e && e.message) || '';
-    var wiederholbar = /Failed to fetch|NetworkError|Verbindung unterbrochen|network/i.test(msg);
-    if (!wiederholbar) throw e;
-    console.warn('Aufruf wird wiederholt:', msg);
-    return attempt();
-  });
+  // Mehrere Wiederholungsversuche bei Verbindungsproblemen, mit steigendem
+  // Abstand dazwischen. Frueher gab es nur EINEN Wiederholungsversuch direkt
+  // im Anschluss - ein laengerer Netzwerkausfall (z.B. Mobilfunk wechselt
+  // kurz die Zelle, waehrend Claude noch mitten im Streamen war) ueberlebte
+  // das nicht und die Generierung brach mit einer Fehlermeldung ab, obwohl
+  // die Verbindung Sekunden spaeter laengst wieder stand. Inhaltliche Fehler
+  // (401, API-Fehler, Token-Limit) werden weiterhin NICHT wiederholt - die
+  // scheitern bei jedem Versuch gleich wieder.
+  var WIEDERHOLUNG_WARTE_MS = [1000, 3000];   // Abstand VOR Versuch 2 bzw. 3
+  function mitWiederholung(versuch) {
+    return attempt().catch(function(e) {
+      var msg = (e && e.message) || '';
+      var wiederholbar = /Failed to fetch|NetworkError|Verbindung unterbrochen|network/i.test(msg);
+      if (!wiederholbar || versuch >= WIEDERHOLUNG_WARTE_MS.length) throw e;
+      var warteMs = WIEDERHOLUNG_WARTE_MS[versuch];
+      console.warn('Aufruf wird wiederholt (Versuch ' + (versuch + 2) + '):', msg);
+      if (onRetry) { try { onRetry(versuch + 2, WIEDERHOLUNG_WARTE_MS.length + 1); } catch(ex) {} }
+      return new Promise(function(resolve) { setTimeout(resolve, warteMs); })
+        .then(function() { return mitWiederholung(versuch + 1); });
+    });
+  }
+  return mitWiederholung(0);
 }
 
 
@@ -7430,9 +7443,44 @@ function aktualisierePlanKennzahlen() {
   G.n = p.n;
 }
 
+// Einzelrezept OHNE Wochenplan: "Einplanen" verlangte bisher zwingend einen
+// aktiven Wochenplan ("Plane zuerst eine Woche") - fuer spontanes Einkaufen/
+// Kochen (ein Rezept ableiten und gleich heute kochen, ohne vorher eine ganze
+// Woche zu planen) war das eine unnoetige Huerde. Stattdessen wird im
+// Hintergrund ein minimaler Plan fuer NUR HEUTE angelegt - dieselbe Datenform
+// wie ein echter Wochenplan (planId, weekStart, ein lokaler Verlaufseintrag),
+// damit Zeitachse, Kochen und Bewerten unveraendert ueber einplanenAuf()
+// laufen, nur eben mit einem einzigen Gericht statt einer ganzen Woche. Plant
+// der Nutzer spaeter tatsaechlich eine Woche, ersetzt das wie gewohnt den
+// aktiven Plan - der spontane Eintrag bleibt dabei im Verlauf erhalten.
+function einplanenSpontanHeute(r) {
+  var heuteIdx = new Date().getDay() === 0 ? 6 : new Date().getDay() - 1; // 0=Mo ... 6=So
+  var heuteTag = DAYS_ORDER[heuteIdx];
+  var planData = {
+    planId: generatePlanId(),
+    sug: { thema: r.abend || r.name || 'Spontanes Rezept', gerichte: [] },
+    sel: 0, n: 0, personen: G.personen || 2,
+    reste: G.reste, freeze: G.freeze, budget: G.budget, modus: G.modus || 'optional',
+    resteMode: G.resteMode, days: G.days,
+    weekStart: isoDateLocal(mondayOf(new Date())),
+    einkaufstag: G.einkaufstag || 'Mo',
+    saved: new Date().toLocaleDateString('de-CH'),
+    bringImportedAt: null, bringItemCount: 0
+  };
+  planData.sugsAll = [planData.sug]; planData.sugsPartial = false;
+  G.activePlan = planData; G.sugs = [planData.sug]; G.sel = 0; G.checked = {};
+  G.sugsPartial = false;
+  localStorage.setItem(userKey('active_plan'), JSON.stringify(planData));
+  localStorage.removeItem(userKey('einkauf_checked'));
+  saveToGH(planData);
+  saveToHistory(planData);     // legt den Verlaufseintrag an, den einplanenAuf() danach aktualisiert
+  window._einplanRezept = r;
+  einplanenAuf(heuteTag);
+}
+
 function openEinplanen(r) {
   if (!G.activePlan || !G.activePlan.sug) {
-    alert('Es gibt noch keinen aktiven Wochenplan. Plane zuerst eine Woche.');
+    einplanenSpontanHeute(r);
     return;
   }
   var frei = freieTageImPlan();
@@ -7557,6 +7605,22 @@ function zeigeEinzelrezeptFehler(e) {
   if($('foto-err')){$('foto-err').textContent='Fehler: '+e.message;$('foto-err').style.display='block';}
 }
 
+// Wird aufgerufen, bevor callWorker() nach einem Verbindungsabbruch einen
+// neuen Versuch startet. Ohne das blieb der Fortschrittstext auf dem letzten
+// Stand des gescheiterten Versuchs stehen (z.B. "3281 Zeichen"), waehrend im
+// Hintergrund laengst neu von vorne begonnen wurde - wirkte wie haengen
+// geblieben statt wie ein aktiver Wiederholungsversuch.
+function zeigeEinzelrezeptWiederholung(versuch, gesamt) {
+  var el = $('foto-load');
+  if (!el) return;
+  var z = el.querySelector('.foto-fortschritt');
+  if (!z) { z = document.createElement('div');
+    z.className = 'foto-fortschritt';
+    z.style.cssText = 'font-size:12px;color:var(--text-secondary);margin-top:8px';
+    el.appendChild(z); }
+  z.textContent = 'Verbindung kurz unterbrochen – versuche erneut… (' + versuch + '/' + gesamt + ')';
+}
+
 function analyzeEinzelrezept() {
   if (G_fotoModus === 'text') return analyzeEinzelrezeptText();
   return analyzeFoto();
@@ -7582,7 +7646,7 @@ function analyzeEinzelrezeptText() {
         el.appendChild(z); }
       z.textContent = 'Rezept wird erstellt… ' + teil.length + ' Zeichen';
     }
-  })
+  }, null, zeigeEinzelrezeptWiederholung)
   .then(verarbeiteEinzelrezeptAntwort)
   .catch(zeigeEinzelrezeptFehler);
 }
@@ -7597,8 +7661,8 @@ function analyzeFoto(){
     { type: 'image', source: { type: 'base64', media_type: G_foto.mime, data: G_foto.base64 } },
     { type: 'text', text: msg }
   ]}];
-  // Ueber callWorker(): damit gelten Streaming, Leerlauf-Frist, ein
-  // Wiederholungsversuch bei Verbindungsabbruch und die Diagnose in der
+  // Ueber callWorker(): damit gelten Streaming, Leerlauf-Frist, mehrere
+  // Wiederholungsversuche bei Verbindungsabbruch und die Diagnose in der
   // Fehlermeldung auch fuer die Fotoanalyse.
   callWorker('photo', msg, 3000, currentOpts(), 'claude-sonnet-5', function(teil) {
     var el = $('foto-load');
@@ -7610,7 +7674,7 @@ function analyzeFoto(){
         el.appendChild(z); }
       z.textContent = 'Rezept wird gelesen… ' + teil.length + ' Zeichen';
     }
-  }, bildNachricht)
+  }, bildNachricht, zeigeEinzelrezeptWiederholung)
   .then(verarbeiteEinzelrezeptAntwort)
   .catch(zeigeEinzelrezeptFehler);
 }
