@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=yes">
-<title>Menüplan v6.95</title>
+<title>Menüplan v6.96</title>
 <meta name="theme-color" content="#5B7C78">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -146,6 +146,18 @@ input[type=password]{letter-spacing:2px}
 .st.ok{background:var(--success-soft);border:.5px solid #B8D5C4;color:#2F5C48}
 .st.er{background:var(--danger-soft);border:.5px solid #E7A9A9;color:#8E3232}
 .st.inf{background:var(--bll);border:.5px solid #A9C4D6;color:var(--blu)}
+/* Ohne Internet: Knoepfe, die eine Verbindung brauchen, sind ausgegraut und
+   gesperrt (siehe netzUiAktualisieren()). Die Klasse sitzt auf <body>, damit
+   auch spaeter erzeugte Knoepfe (Listen, Zeitachse) sofort mitmachen. */
+body.netz-aus .braucht-netz{opacity:.45;filter:grayscale(.5);cursor:not-allowed}
+#netz-banner{display:none;position:sticky;top:0;z-index:998;background:var(--warning-soft);
+  border-bottom:.5px solid var(--warning);color:#7A4E1D;padding:9px 12px;font-size:12.5px;line-height:1.45;
+  align-items:center;gap:10px}
+body.netz-aus #netz-banner{display:flex}
+#netz-banner button{flex-shrink:0;background:#fff;border:.5px solid var(--warning);color:#7A4E1D;font-weight:700;
+  font-size:12px;padding:6px 10px;border-radius:8px;cursor:pointer;font-family:inherit}
+.netz-hint{display:none}
+body.netz-aus .netz-hint{display:block}
 /* suggestions */
 .sug{background:#fff;border-radius:var(--rlg);margin:8px 10px 0;border:1.5px solid var(--bdr);cursor:pointer;overflow:hidden}
 .sug.sel{border-color:var(--red);border-width:2px}
@@ -261,11 +273,15 @@ input[type=password]{letter-spacing:2px}
 </script>
 </head>
 <body>
+<div id="netz-banner" role="status" aria-live="polite">
+  <span id="netz-banner-text">Kein Internet – Neues generieren und Bring! sind gerade gesperrt. Gespeicherte Pläne und Rezepte kannst du weiter ansehen und kochen.</span>
+  <button onclick="netzProbe(true)">Erneut prüfen</button>
+</div>
 <div id="app-shell">
 
 <!-- HOME -->
 <div class="scr on" id="sh">
-  <div class="hero"><h1>Menüplan</h1><p id="hsub">v6.95 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
+  <div class="hero"><h1>Menüplan</h1><p id="hsub">v6.96 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
 
   <!-- Active plan card -->
 
@@ -289,7 +305,7 @@ input[type=password]{letter-spacing:2px}
         <div class="fld" style="margin-bottom:8px"><input type="email" id="dash-bemail" placeholder="Bring! E-Mail" autocomplete="email" aria-label="Bring! E-Mail"></div>
         <div class="fld" style="margin-bottom:10px"><input type="password" id="dash-bpw" placeholder="Passwort" autocomplete="current-password" onkeydown="if(event.key==='Enter')connectBringFromDashboard()" aria-label="Passwort"></div>
         <div id="dash-bring-err" style="font-size:12px;color:var(--danger);margin-bottom:8px;display:none"></div>
-        <button class="btn btn-red" id="dash-bring-btn" onclick="connectBringFromDashboard()" style="padding:10px;font-size:13px">Verbinden</button>
+        <button class="btn btn-red braucht-netz" id="dash-bring-btn" onclick="connectBringFromDashboard()" style="padding:10px;font-size:13px">Verbinden</button>
         <button onclick="skipBringForNow()" style="width:100%;background:none;border:none;font-size:12px;color:var(--gr3);cursor:pointer;font-family:inherit;text-decoration:underline;margin-top:4px;min-height:44px">Später</button>
       </div>
 
@@ -458,7 +474,8 @@ input[type=password]{letter-spacing:2px}
   <!-- Generieren Button -->
   <div style="padding:0 10px 10px">
     <div id="snew-err" class="st er" role="alert" tabindex="-1" style="display:none;margin:0 0 10px"></div>
-    <button class="btn btn-red" onclick="goSuggest()" style="font-size:15px;padding:14px;font-weight:700">✨ Menüvorschläge generieren</button>
+    <div class="netz-hint st inf" role="note" style="margin:0 0 10px">Kein Internet – zum Generieren wird eine Verbindung gebraucht. Gespeicherte Pläne und Rezepte funktionieren weiter.</div>
+    <button class="btn btn-red braucht-netz" onclick="goSuggest()" style="font-size:15px;padding:14px;font-weight:700">✨ Menüvorschläge generieren</button>
   </div>
 </div><!-- END #snew -->
 
@@ -484,7 +501,7 @@ input[type=password]{letter-spacing:2px}
     <div style="margin-top:16px;padding-top:16px;border-top:.5px solid var(--bdr)">
       <div style="font-size:12px;color:var(--gr3);margin-bottom:6px;font-weight:500">Nicht zufrieden? Sag Claude warum:</div>
       <textarea id="feedback" placeholder="z.B. zu wenig Proteine, kein Pasta-Gericht, zu aufwaendig..." style="width:100%;background:#fff;border:1px solid var(--bdr);border-radius:7px;color:var(--txt);font-size:14px;padding:10px 12px;font-family:inherit;resize:none;height:72px;outline:none;transition:border-color .2s" onfocus="this.style.borderColor='var(--red)'" onblur="this.style.borderColor='var(--bdr)'" aria-label="z.B. zu wenig Proteine, kein Pasta-Gericht, zu aufwaendig..."></textarea>
-      <button class="btn btn-out" style="margin-top:8px" onclick="goSuggest()">Neue Vorschläge generieren</button>
+      <button class="btn btn-out braucht-netz" style="margin-top:8px" onclick="goSuggest()">Neue Vorschläge generieren</button>
     </div>
   </div>
 </div>
@@ -518,7 +535,7 @@ input[type=password]{letter-spacing:2px}
         ✅ <span id="einkauf-transfer-text"></span>
       </div>
       <div id="iskip" style="display:none;font-size:11.5px;color:var(--text-secondary);margin-bottom:8px"></div>
-      <button class="btn btn-red" id="ibtn" onclick="doImport()">In Bring! importieren</button>
+      <button class="btn btn-red braucht-netz" id="ibtn" onclick="doImport()">In Bring! importieren</button>
       <div class="prog" id="iprog" style="display:none"><div class="progb" id="iprogb"></div></div>
       <div id="idbg" style="display:none" class="dbg"></div>
     </div></div>
@@ -617,7 +634,8 @@ input[type=password]{letter-spacing:2px}
       <input id="foto-hint" placeholder="z.B. vegetarisch, ohne Nuesse, fuer 2 Personen..." aria-label="z.B. vegetarisch, ohne Nuesse, fuer 2 Personen...">
     </div>
 
-    <button class="btn btn-red" id="foto-btn" onclick="analyzeEinzelrezept()" disabled style="margin-top:4px">Rezept ableiten</button>
+    <div class="netz-hint st inf" role="note" style="margin:4px 0 8px">Kein Internet – zum Ableiten eines Rezepts wird eine Verbindung gebraucht. Gespeicherte Rezepte kannst du weiter öffnen, einplanen und kochen.</div>
+    <button class="btn btn-red braucht-netz" id="foto-btn" onclick="analyzeEinzelrezept()" disabled style="margin-top:4px">Rezept ableiten</button>
   </div></div>
 
   <!-- Saved foto recipes -->
@@ -995,6 +1013,136 @@ function zeigeUpdateHinweis(reg) {
 document.addEventListener('visibilitychange', function() {
   if (document.visibilityState === 'visible') syncIfDue(false);
 });
+
+// ─── NETZSTATUS ──────────────────────────────────────────
+// Ohne Internet schlugen Generieren, Rezept ableiten und Bring! mit einer
+// technisch klingenden Fehlermeldung fehl - das sah wie ein Programmfehler aus.
+// Jetzt wird die Verbindung vorab geprueft: Knoepfe, die Netz brauchen, werden
+// gesperrt und ein Hinweis erklaert warum.
+//
+// navigator.onLine allein genuegt nicht: es meldet "online", sobald ein WLAN
+// verbunden ist - auch wenn dahinter kein Internet liegt (Gaestenetz, Captive
+// Portal, leeres Datenvolumen). Deshalb zusaetzlich eine kleine Anfrage an den
+// Worker; JEDE HTTP-Antwort (auch 401/404) beweist Erreichbarkeit, nur ein
+// Netzwerkfehler oder Zeitueberschreitung zaehlt als "offline".
+// Unbekannt (noch nicht geprueft) gilt bewusst als online: im Zweifel nichts
+// sperren.
+var G_netz = { probeOk: null, laeuft: null, zuletzt: 0, timer: null, warAus: false, hinweisAm: 0 };
+var NETZ_PROBE_TIMEOUT_MS = 6000;
+var NETZ_REPROBE_MS = 8000;       // solange offline: alle 8s erneut pruefen
+var NETZ_PROBE_MIN_ABSTAND_MS = 15000;
+
+function netzOnline() {
+  if (navigator.onLine === false) return false;
+  return G_netz.probeOk !== false;
+}
+
+function netzUiAktualisieren() {
+  var aus = !netzOnline();
+  if (document.body) document.body.classList.toggle('netz-aus', aus);
+  var knoepfe = document.querySelectorAll('.braucht-netz');
+  for (var i = 0; i < knoepfe.length; i++) {
+    if (aus) {
+      knoepfe[i].setAttribute('aria-disabled', 'true');
+      knoepfe[i].setAttribute('title', 'Kein Internet – gerade nicht möglich');
+    } else {
+      knoepfe[i].removeAttribute('aria-disabled');
+      if (knoepfe[i].getAttribute('title') === 'Kein Internet – gerade nicht möglich') knoepfe[i].removeAttribute('title');
+    }
+  }
+  if (G_netz.warAus && !aus) {
+    try { showSwapToast('Wieder online', '#4F8067'); } catch (e) {}
+  }
+  G_netz.warAus = aus;
+}
+
+function netzReprobeSetzen() {
+  if (G_netz.timer) { clearTimeout(G_netz.timer); G_netz.timer = null; }
+  if (netzOnline()) return;
+  G_netz.timer = setTimeout(function() {
+    G_netz.timer = null;
+    if (document.visibilityState === 'hidden') { netzReprobeSetzen(); return; }
+    netzProbe(true);
+  }, NETZ_REPROBE_MS);
+}
+
+function netzProbe(erzwingen) {
+  if (navigator.onLine === false) {
+    G_netz.probeOk = false;
+    netzUiAktualisieren(); netzReprobeSetzen();
+    return Promise.resolve(false);
+  }
+  // Lokal geoeffnete Datei (Entwicklung/Tests): kein Worker erreichbar, kein
+  // Grund zur Sperre - nur der Browser-Status zaehlt.
+  if (location.protocol === 'file:') {
+    G_netz.probeOk = null;
+    netzUiAktualisieren();
+    return Promise.resolve(true);
+  }
+  if (G_netz.laeuft) return G_netz.laeuft;
+  if (!erzwingen && G_netz.probeOk !== null && Date.now() - G_netz.zuletzt < NETZ_PROBE_MIN_ABSTAND_MS) {
+    return Promise.resolve(netzOnline());
+  }
+  var ctrl = (typeof AbortController === 'function') ? new AbortController() : null;
+  var t = ctrl ? setTimeout(function() { try { ctrl.abort(); } catch (e) {} }, NETZ_PROBE_TIMEOUT_MS) : null;
+  G_netz.laeuft = fetch(PROXY + '/ping', { method: 'GET', cache: 'no-store', signal: ctrl ? ctrl.signal : undefined })
+    .then(function(r) {
+            // Der Service Worker beantwortet fehlgeschlagene Anfragen selbst mit
+            // einer kuenstlichen 504-Antwort (siehe sw.js). Die ist KEIN Beweis
+            // fuer Erreichbarkeit - sonst bliebe die App offline "online". Gleiches
+            // gilt fuer 502/503 (Vorschaltserver da, Dienst dahinter nicht): auch
+            // dann scheitert das Generieren.
+            G_netz.probeOk = !(r && r.status >= 502 && r.status <= 504);
+          },
+          function() { G_netz.probeOk = false; })
+    .then(function() {
+      if (t) clearTimeout(t);
+      G_netz.laeuft = null;
+      G_netz.zuletzt = Date.now();
+      netzUiAktualisieren();
+      netzReprobeSetzen();
+      return netzOnline();
+    });
+  return G_netz.laeuft;
+}
+
+// Kurzer Hinweis statt Fehlermeldung. Entprellt, damit mehrmaliges Tippen
+// keine Toast-Kette erzeugt.
+function netzHinweis() {
+  var jetzt = Date.now();
+  if (jetzt - G_netz.hinweisAm < 2500) return;
+  G_netz.hinweisAm = jetzt;
+  try { showSwapToast('Kein Internet – gerade nicht möglich', 'var(--warning)'); } catch (e) {}
+}
+
+// Zweite Sicherung neben der Klick-Sperre: Funktionen, die Netz brauchen,
+// pruefen selbst (Aufruf per Tastatur, aus der Konsole, aus anderem Code).
+function netzGuard() {
+  if (netzOnline()) return true;
+  netzHinweis();
+  return false;
+}
+
+// Klick-Sperre: faengt Klicks auf gesperrte Knoepfe ab, bevor deren
+// onclick-Handler laufen. Greift auch fuer erst spaeter erzeugte Knoepfe.
+document.addEventListener('click', function(e) {
+  if (netzOnline()) return;
+  var el = e.target && e.target.closest ? e.target.closest('.braucht-netz') : null;
+  if (!el) return;
+  e.preventDefault(); e.stopPropagation(); e.stopImmediatePropagation();
+  netzHinweis();
+}, true);
+
+window.addEventListener('offline', function() {
+  G_netz.probeOk = false; netzUiAktualisieren(); netzReprobeSetzen();
+});
+window.addEventListener('online', function() { netzProbe(true); });
+document.addEventListener('visibilitychange', function() {
+  if (document.visibilityState === 'visible') netzProbe(false);
+});
+function netzStart() { netzUiAktualisieren(); netzProbe(true); }
+if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', netzStart);
+else netzStart();
 
 // ─── FEHLERPROTOKOLL ─────────────────────────────────────
 // Bleibt auf dem Geraet (localStorage), geht NIE in die Cloud. Zweck: eine
@@ -1945,6 +2093,7 @@ function clearBringSession(wasExpired) {
 }
 
 function doImport() {
+  if (!netzGuard()) return;
   var btn = $('ibtn');
   if ($('idbg')) $('idbg').style.display = 'none';
   if ($('ist')) $('ist').style.display = 'none';
@@ -2091,6 +2240,7 @@ function pruefeEinkaufsliste(items) {
 }
 
 function doImportItems() {
+  if (!netzGuard()) return;
   // G.fotoImport ist der getrennte Import-Kontext fuer Foto-Rezepte. Frueher
   // wurde dafuer G.sugs/G.sel ueberschrieben - danach liefen Aktionen im
   // Rezept-Tab auf dem falschen Gericht.
@@ -2781,7 +2931,13 @@ function callWorker(kind, message, maxTokens, opts, model, onProgress, messagesO
     return attempt().catch(function(e) {
       var msg = (e && e.message) || '';
       var wiederholbar = /Failed to fetch|NetworkError|Verbindung unterbrochen|network/i.test(msg);
-      if (!wiederholbar || versuch >= WIEDERHOLUNG_WARTE_MS.length) throw e;
+      if (!wiederholbar || versuch >= WIEDERHOLUNG_WARTE_MS.length) {
+        // Alle Versuche verbraucht: pruefen, ob es am Netz liegt. Dann zeigt der
+        // Hinweis oben "Kein Internet" und die Knoepfe werden gesperrt, statt
+        // dass der Nutzer es mit weiteren Versuchen immer wieder erlebt.
+        if (wiederholbar) { try { netzProbe(true); } catch (ex) {} }
+        throw e;
+      }
       var warteMs = WIEDERHOLUNG_WARTE_MS[versuch];
       console.warn('Aufruf wird wiederholt (Versuch ' + (versuch + 2) + '):', msg);
       if (onRetry) { try { onRetry(versuch + 2, WIEDERHOLUNG_WARTE_MS.length + 1); } catch(ex) {} }
@@ -2799,6 +2955,7 @@ function callWorker(kind, message, maxTokens, opts, model, onProgress, messagesO
 var G_generiertGerade = false;
 
 function goSuggest() {
+  if (!netzGuard()) return;
   if (G_generiertGerade) { console.warn('Generierung laeuft bereits'); return; }
   // Die Sperre wird ERST nach allen Vorabpruefungen gesetzt. Frueher stand sie
   // hier oben - nach "Bitte mindestens einen Kochtag auswählen" blieb sie
@@ -3416,6 +3573,11 @@ function goWeek() {
   if (alleSchritteVorhanden) {
     goWeekRender(sug); return;
   }
+  // Rezepte muessen nachgeladen werden - das geht nur mit Internet. Ohne
+  // Verbindung gar nicht erst in den Ladebildschirm wechseln. Die Sperre aus
+  // setActivePlanAndGo() wird freigegeben, sonst bliebe die Beförderung des
+  // laufenden Wochenplans dauerhaft blockiert.
+  if (!netzOnline()) { G_ladeRezepte = false; netzHinweis(); return; }
   // Need to load full recipes
   go('sw');
   if ($('wtit')) $('wtit').textContent = sug.thema;
@@ -3958,6 +4120,7 @@ function timelineZutatenHtml(g) {
 // goWeek()): kurzzeitig wird dieser Plan aktiv, goWeek() erkennt am Ende
 // "war das ein Zukunftsplan" und die laufende Woche kehrt von selbst zurueck.
 function nachholeVerlaufsplan(btn, planId) {
+  if (!netzGuard()) return;
   if (btn) { btn.disabled = true; btn.textContent = '⏳ Wird geladen … 0'; }
   nachholeFehlendeRezepteFuerPlan(planId, function(fertig, gesamt) {
     if (btn) btn.textContent = '⏳ Wird geladen … ' + fertig + '/' + gesamt;
@@ -4011,7 +4174,7 @@ function timelineCardDetail(entry) {
     return '<div class="ract">' + zeitHtml + (next ? '<div class="rnext">' + next + '</div>' : '') +
       (g._gekocht ? '<div style="font-size:12px;color:var(--grn);font-weight:600;margin-top:6px">&#10003; gekocht</div>' : '') +
       zutatenHtml +
-      (nachholbar ? '<button class="btn btn-red" onclick="nachholeVerlaufsplan(this,\'' + esc(entry.planId) +
+      (nachholbar ? '<button class="btn btn-red braucht-netz" onclick="nachholeVerlaufsplan(this,\'' + esc(entry.planId) +
         '\')" style="margin-top:10px;font-size:13px">Fehlende Rezepte nachholen</button>' : '') +
       (bewertbar ? '<button class="btn btn-out" onclick="showPastDishRating(\'' + esc(entry.planId) + '\', ' +
         entry.gerichtIdx + ')" style="margin-top:10px;display:flex;align-items:center;justify-content:center;gap:6px">' +
@@ -5434,6 +5597,11 @@ var G_zuletztAktiviert = null;
 
 function setActivePlanAndGo(weekStartIso) {
   if (G.sel === null) return;
+  // Fehlen noch Kochschritte, muss goWeek() sie online laden. Ohne Verbindung
+  // VOR allen Aenderungen abbrechen, damit kein halb aktivierter Plan entsteht.
+  var _sug0 = G.sugs && G.sugs[G.sel];
+  if (_sug0 && Array.isArray(_sug0.gerichte) &&
+      _sug0.gerichte.some(function(g) { return fehlendeSchritte(g, G.modus); }) && !netzGuard()) return;
   // Ohne ausdrueckliche Woche zuerst nachfragen.
   if (!weekStartIso) { frageStartwoche(); return; }
   G_zuletztAktiviert = weekStartIso;
@@ -6189,6 +6357,7 @@ function closeReplace() {
 }
 
 function generateReplace() {
+  if (!netzGuard()) return;
   if (G.sel === null) return;
   var sug = G.sugs[G.sel];
   var ri = G_rep.gerichtIdx;
@@ -6586,6 +6755,7 @@ function copyInviteLink() {
 
 // ─── BRING! VERBINDEN VOM DASHBOARD ─────────────────────────
 function connectBringFromDashboard() {
+  if (!netzGuard()) return;
   var email = ($('dash-bemail') || {}).value ? $('dash-bemail').value.trim() : '';
   var pw = ($('dash-bpw') || {}).value || '';
   var btn = $('dash-bring-btn');
@@ -7013,7 +7183,7 @@ function renderHistoryList(history) {
           var g = (e.plan && e.plan.sug && e.plan.sug.gerichte) || [];
           var unvollstaendig = g.some(function(gr) { return fehlendeSchritte(gr, e.plan.modus || G.modus); });
           return unvollstaendig
-            ? '<button class="btn btn-red" onclick="fehlendeRezepteNachholen(this,'+i+')" style="width:100%;padding:9px;font-size:12px;margin-bottom:6px">⏳ Fehlende Rezepte nachholen</button>'
+            ? '<button class="btn btn-red braucht-netz" onclick="fehlendeRezepteNachholen(this,'+i+')" style="width:100%;padding:9px;font-size:12px;margin-bottom:6px">⏳ Fehlende Rezepte nachholen</button>'
             : '';
         })()
         +'<div style="display:flex;gap:6px"><button class="btn btn-out" onclick="viewHistoryEntry('+i+')" style="flex:1;padding:9px;font-size:12px">👁 Ansehen</button><button class="btn btn-out" onclick="nochmalKochen('+i+')" style="flex:1;padding:9px;font-size:12px">🔁 Erneut verwenden</button><button class="btn btn-out" onclick="showHistoryRating('+i+')" style="flex:1;padding:9px;font-size:12px">★ Bewerten</button></div>'
@@ -7118,6 +7288,7 @@ function loadHistoryEntry(i) { viewHistoryEntry(i); }
 // anzufassen. btn: das geklickte Element selbst (fuer Fortschritt/Ergebnis
 // direkt am Knopf, ohne die Liste mitten im Ladevorgang neu aufzubauen).
 function fehlendeRezepteNachholen(btn, i) {
+  if (!netzGuard()) return;
   var e = window._history && window._history[i];
   if (!e || !e.planId) return;
   if (btn) { btn.disabled = true; btn.textContent = '⏳ Wird geladen … 0'; }
@@ -7275,7 +7446,7 @@ function loadHistoryRecipes() {
       +'<div style="padding:8px 14px;display:flex;flex-direction:column;gap:6px">'
         +'<div style="width:100%;margin-bottom:4px">'+statusBadge(r.status||'gespeichert')+'</div>'
         +'<div style="display:flex;gap:6px"><button class="btn btn-red" onclick="openHistoryRecipe('+i+')" style="flex:1;padding:9px;font-size:12px">Öffnen</button><button class="btn btn-out" onclick="showFotoRating('+i+')" style="flex:1;padding:9px;font-size:12px">★ Bewerten</button></div>'
-        +'<div style="display:flex;gap:6px"><button class="btn btn-out" onclick="importHistoryRecipeToBring('+i+')" style="flex:1;padding:9px;font-size:12px">In Bring!</button>'+(r.status!=='gekocht'?'<button class="btn btn-out" onclick="markFotoRezeptGekocht('+i+')" style="flex:1;padding:9px;font-size:11px">🍽 Gekocht</button>':'')+((r.status==='einkauf'||r.status==='gekocht')?'<button class="btn btn-out" onclick="resetFotoRezeptStatus('+i+')" style="padding:9px;font-size:12px" title="Status zurücksetzen">✕</button>':'')+'<button onclick="deleteHistoryRecipe('+i+')" style="background:none;border:.5px solid var(--bdr);border-radius:8px;padding:9px 12px;color:var(--gr3);cursor:pointer;font-size:16px">✕</button></div>'
+        +'<div style="display:flex;gap:6px"><button class="btn btn-out braucht-netz" onclick="importHistoryRecipeToBring('+i+')" style="flex:1;padding:9px;font-size:12px">In Bring!</button>'+(r.status!=='gekocht'?'<button class="btn btn-out" onclick="markFotoRezeptGekocht('+i+')" style="flex:1;padding:9px;font-size:11px">🍽 Gekocht</button>':'')+((r.status==='einkauf'||r.status==='gekocht')?'<button class="btn btn-out" onclick="resetFotoRezeptStatus('+i+')" style="padding:9px;font-size:12px" title="Status zurücksetzen">✕</button>':'')+'<button onclick="deleteHistoryRecipe('+i+')" style="background:none;border:.5px solid var(--bdr);border-radius:8px;padding:9px 12px;color:var(--gr3);cursor:pointer;font-size:16px">✕</button></div>'
       +'</div>'
     +'</div>';
   }).join('');
@@ -7622,6 +7793,7 @@ function zeigeEinzelrezeptWiederholung(versuch, gesamt) {
 }
 
 function analyzeEinzelrezept() {
+  if (!netzGuard()) return;
   if (G_fotoModus === 'text') return analyzeEinzelrezeptText();
   return analyzeFoto();
 }
@@ -8193,7 +8365,7 @@ var STAR_LABELS = ['', 'Nicht so gut', 'Geht so', 'Gut', 'Sehr gut', 'Ausgezeich
     </div>
     <div style="display:flex;gap:8px">
       <button class="btn btn-out" onclick="closeReplace()" id="rep-cancel" style="flex:1;padding:11px;font-size:13px">Abbrechen</button>
-      <button class="btn btn-out" onclick="generateReplace()" id="rep-gen-btn" style="flex:1;padding:11px;font-size:13px">&#8634; Neu generieren</button>
+      <button class="btn btn-out braucht-netz" onclick="generateReplace()" id="rep-gen-btn" style="flex:1;padding:11px;font-size:13px">&#8634; Neu generieren</button>
       <button class="btn btn-red" onclick="applyReplace()" id="rep-apply" style="display:none;flex:1;padding:11px;font-size:13px">Übernehmen</button>
     </div>
   </div>

@@ -11,12 +11,12 @@
 // API-Aufrufe werden NIE zwischengespeichert - eine gecachte Menügenerierung
 // oder ein gecachter Bring!-Import wären schlimmer als ein Fehler.
 
-const CACHE = 'menuplan-v6.93';
+const CACHE = 'menuplan-v6.96';
 const DOKUMENT = './menuplan-app.html';
 
 // Pfade, die immer ans Netz gehen müssen.
 const NUR_NETZ = [/\/generate\b/, /\/gh\//, /\/bring/, /\/auth\b/,
-                  /\/share\b/, /\/r\//, /\/users\b/, /api\.anthropic\.com/];
+                  /\/share\b/, /\/r\//, /\/users\b/, /\/ping\b/, /api\.anthropic\.com/];
 
 self.addEventListener('install', (e) => {
   // NUR das App-Dokument vorab ablegen. Frueher stand hier auch './' - auf
