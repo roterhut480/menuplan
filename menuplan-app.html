@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=yes">
-<title>Menüplan v6.96</title>
+<title>Menüplan v6.97</title>
 <meta name="theme-color" content="#5B7C78">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -281,7 +281,7 @@ body.netz-aus .netz-hint{display:block}
 
 <!-- HOME -->
 <div class="scr on" id="sh">
-  <div class="hero"><h1>Menüplan</h1><p id="hsub">v6.96 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
+  <div class="hero"><h1>Menüplan</h1><p id="hsub">v6.97 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
 
   <!-- Active plan card -->
 
@@ -409,7 +409,7 @@ body.netz-aus .netz-hint{display:block}
       <!-- Tagesplanung -->
       <div class="fld" style="margin-top:4px">
         <label>🍳 Welche Tage kochen?</label>
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px"><span style="font-size:11px;color:var(--gr3)">Zeitrahmen pro Tag</span><span style="font-size:11px;color:var(--gr3)"><b id="n-display" style="color:var(--red);font-size:14px">3</b> <span id="n-label">Kochabende</span></span></div><div id="day-picker" style="display:flex;flex-direction:column;gap:6px;margin-top:2px"></div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px"><span style="font-size:11px;color:var(--gr3)">Zeitrahmen pro Tag</span><span style="font-size:11px;color:var(--gr3)"><b id="n-display" style="color:var(--red);font-size:14px">3</b> <span id="n-label">Kochabende</span></span></div><div id="day-picker" style="display:flex;flex-direction:column;gap:2px;margin-top:2px"></div><div id="day-picker-hint" style="font-size:11px;color:var(--gr3);margin-top:6px;line-height:1.4"></div>
       </div>
 
       <!-- Fleisch Modus -->
@@ -1265,36 +1265,157 @@ function dayPickerOrder() {
   return DAYS_ORDER.slice(i).concat(DAYS_ORDER.slice(0, i));
 }
 
+// ─── DATUMSBASIERTE TAGESWAHL ──────────────────────────────
+// Senkrecht scrollbare Liste mit echten Daten (4 Kalenderwochen ab der
+// laufenden). Ein Plan gilt weiterhin fuer genau EINE Kalenderwoche (weekStart
+// = Montag, Gerichte tragen nur ein Tageskuerzel). Deshalb ist immer genau
+// eine Woche "aktiv" (G.planWoche); tippt man einen freien Tag einer anderen
+// Woche an, wechselt die Auswahl dorthin. G.days bleibt tag-basiert, damit
+// cookingDays(), die Prompts und setN() unveraendert funktionieren.
+var PICKER_WOCHEN = 4;
+
+// ISO-Datum -> Titel des bereits verplanten Gerichts (Zeitachse ist die Wahrheit).
+// Ausgefallene Abende gelten als frei, "Auswaerts" bleibt belegt.
+function belegteTageMap() {
+  var out = {};
+  var tl = {};
+  try { tl = buildTimelineDays() || {}; } catch (e) { tl = {}; }
+  Object.keys(tl).forEach(function(iso) {
+    var g = tl[iso] && tl[iso].gericht;
+    if (!g) return;
+    var auswaerts = (g.abend || '').indexOf('Auswärts') >= 0;
+    if (g._cancelled && !auswaerts) return;
+    out[iso] = auswaerts ? '🍽 Auswärts' : (g.abend || g.name || 'Geplant');
+  });
+  return out;
+}
+
+function pickerWochen() {
+  var belegt = belegteTageMap();
+  var heute = new Date(); heute.setHours(0, 0, 0, 0);
+  var wochen = [];
+  for (var n = 0; n < PICKER_WOCHEN; n++) {
+    var wiso = wochenStartVersetzt(n);
+    var tage = DAYS_ORDER.map(function(tag) {
+      var d = dateFromTag(wiso, tag);
+      var iso = isoDateLocal(d);
+      return { tag: tag, iso: iso, date: d, vergangen: d < heute,
+               titel: belegt[iso] || null, frei: d >= heute && !belegt[iso] };
+    });
+    wochen.push({ iso: wiso, tage: tage, hatFrei: tage.some(function(t) { return t.frei; }) });
+  }
+  return wochen;
+}
+
+// Bringt G.days in Einklang mit der aktiven Woche: verplante und vergangene
+// Tage koennen nicht gekocht werden. Fehlende Tage werden bis zur bisherigen
+// Anzahl aus den freien Tagen aufgefuellt (Bevorzugung: N_DAY_PREFERENCE).
+function pickerWocheAbgleichen(wochen) {
+  var aktiv = null;
+  wochen.forEach(function(w) { if (w.iso === G.planWoche) aktiv = w; });
+  if (!aktiv) {
+    // Standard: erste Woche, in der noch genug freie Tage fuer die gewuenschte
+    // Anzahl uebrig sind (sonntags also die naechste Woche); sonst die erste
+    // Woche mit irgendeinem freien Tag.
+    var soll0 = Math.max(1, cookingDays().length || G.n || 1);
+    var zaehle = function(w) { return w.tage.filter(function(t) { return t.frei; }).length; };
+    aktiv = wochen.filter(function(w) { return zaehle(w) >= soll0; })[0] ||
+            wochen.filter(function(w) { return w.hatFrei; })[0] || wochen[0];
+    G.planWoche = aktiv.iso;
+  }
+  var soll = cookingDays().length;
+  var frei = {};
+  aktiv.tage.forEach(function(t) { frei[t.tag] = t.frei; });
+  DAYS_ORDER.forEach(function(d) {
+    if (G.days[d] && G.days[d] !== 'auswaerts' && !frei[d]) G.days[d] = null;
+  });
+  var hat = cookingDays().length;
+  if (hat < soll) {
+    var fehlt = soll - hat;
+    var reihe = N_DAY_PREFERENCE.filter(function(d) { return frei[d] && !G.days[d]; });
+    // Rest der freien Tage ebenfalls zulassen
+    DAYS_ORDER.forEach(function(d) { if (frei[d] && !G.days[d] && reihe.indexOf(d) < 0) reihe.push(d); });
+    reihe.slice(0, fehlt).forEach(function(d) { G.days[d] = 'normal'; });
+  }
+  return aktiv;
+}
+
 function initDayPicker() {
   var dp = $('day-picker');
   if (!dp) return;
-  dp.innerHTML = dayPickerOrder().map(function(d) {
-    var isOn = G.days[d] !== null && G.days[d] !== undefined && G.days[d] !== 'auswaerts';
-    return '<div class="day-row" id="dr-' + d + '" style="display:flex;align-items:center;gap:8px;padding:4px 0">' +
-      '<label style="display:flex;align-items:center;gap:8px;flex:1;cursor:pointer">' +
-        '<input type="checkbox" id="dc-' + d + '" onchange="toggleDay(\'' + d + '\')" ' + (isOn?'checked':'') + ' style="width:18px;height:18px;accent-color:var(--red);cursor:pointer">' +
-        '<span style="font-size:14px;font-weight:700;min-width:24px">' + d + '</span>' +
-      '</label>' +
-      '<select id="dm-' + d + '" onchange="setDayMode(\'' + d + '\',this.value)" ' + (!isOn?'disabled style="opacity:.3"':'') + ' style="font-size:12px;padding:4px 8px;border-radius:6px;border:.5px solid var(--bdr);background:#fff;font-family:inherit;color:var(--txt)">' +
-        DAY_MODES.filter(function(m){ return m.key !== 'auswaerts'; }).map(function(m) {
-          return '<option value="' + m.key + '" ' + (G.days[d]===m.key?'selected':'') + '>' + m.label + ' – ' + m.hint + '</option>';
-        }).join('') +
-      '</select>' +
-    '</div>';
-  }).join('');
+  var wochen = pickerWochen();
+  pickerWocheAbgleichen(wochen);
+  var kurz = { day: 'numeric', month: 'numeric' };
+  var modi = DAY_MODES.filter(function(m) { return m.key !== 'auswaerts'; });
+  var html = '';
+  wochen.forEach(function(w) {
+    var istAktiv = w.iso === G.planWoche;
+    var ende = new Date(w.tage[6].date.getTime());
+    var spanne = w.tage[0].date.toLocaleDateString('de-CH', { day: 'numeric', month: 'short' }) + ' – ' +
+                 ende.toLocaleDateString('de-CH', { day: 'numeric', month: 'short' });
+    html += '<div class="dp-woche" id="dw-' + w.iso + '" style="position:sticky;top:0;z-index:1;background:var(--surface,#fff);' +
+      'padding:6px 2px 4px;font-size:11px;font-weight:700;letter-spacing:.3px;color:' + (istAktiv ? 'var(--red)' : 'var(--gr3)') +
+      ';border-bottom:.5px solid var(--bdr);display:flex;justify-content:space-between">' +
+      '<span>' + esc(wochenEtikett(w.iso).toUpperCase()) + (istAktiv ? ' ✓' : '') + '</span><span>' + spanne + '</span></div>';
+    w.tage.forEach(function(t) {
+      var inAktiv = istAktiv;
+      var an = inAktiv && G.days[t.tag] && G.days[t.tag] !== 'auswaerts';
+      var gesperrt = !t.frei;
+      var datum = t.date.toLocaleDateString('de-CH', { day: 'numeric', month: 'numeric' });
+      var einkauf = (G.einkaufstag || 'Mo') === t.tag ? ' <span title="Einkaufstag" style="font-size:11px">🛒</span>' : '';
+      html += '<div class="day-row' + (gesperrt ? ' day-gesperrt' : '') + '" id="dr-' + t.iso + '" data-tag="' + t.tag + '" data-woche="' + w.iso +
+        '" style="display:flex;align-items:center;gap:8px;padding:5px 2px;' + (t.vergangen ? 'opacity:.4' : '') + '">' +
+        '<label style="display:flex;align-items:center;gap:8px;flex:1;min-width:0;' + (gesperrt ? 'cursor:default' : 'cursor:pointer') + '">' +
+          '<input type="checkbox" id="dc-' + t.iso + '" onchange="toggleDay(\'' + t.iso + '\')" ' + (an ? 'checked ' : '') + (gesperrt ? 'disabled ' : '') +
+            'style="width:18px;height:18px;accent-color:var(--red);flex:none;' + (gesperrt ? '' : 'cursor:pointer') + '">' +
+          '<span style="font-size:14px;font-weight:700;min-width:62px;white-space:nowrap">' + t.tag + ' ' + datum + einkauf + '</span>' +
+          (t.titel ? '<span class="dp-titel" style="font-size:12.5px;color:var(--gr3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + esc(t.titel) + '</span>'
+                   : (t.vergangen ? '<span style="font-size:12px;color:var(--gr3)">vergangen</span>' : '')) +
+        '</label>' +
+        (t.frei ? '<select id="dm-' + t.iso + '" onchange="setDayMode(\'' + t.tag + '\',this.value)" ' + (!an ? 'disabled ' : '') +
+          'style="font-size:12px;padding:4px 8px;border-radius:6px;border:.5px solid var(--bdr);background:#fff;font-family:inherit;color:var(--txt);max-width:150px;' + (!an ? 'opacity:.3' : '') + '">' +
+          modi.map(function(m) {
+            return '<option value="' + m.key + '" ' + (inAktiv && G.days[t.tag] === m.key ? 'selected' : '') + '>' + m.label + ' – ' + m.hint + '</option>';
+          }).join('') + '</select>' : '') +
+      '</div>';
+    });
+  });
+  dp.innerHTML = html;
+  dp.style.maxHeight = '300px';
+  dp.style.overflowY = 'auto';
+  dp.style.webkitOverflowScrolling = 'touch';
+  var hint = $('day-picker-hint');
+  if (hint) hint.textContent = 'Ein Plan gilt für eine Kalenderwoche (Mo–So). Tippst du einen freien Tag einer anderen Woche an, wechselt die Auswahl dorthin.';
   updateNFromDays();
+  // zur aktiven Woche scrollen (nur wenn sie nicht die erste ist)
+  var kopf = $('dw-' + G.planWoche);
+  if (kopf && kopf.offsetTop > 0) dp.scrollTop = Math.max(0, kopf.offsetTop - dp.offsetTop);
 }
 
-function toggleDay(d) {
-  var cb = $('dc-' + d);
-  var sel = $('dm-' + d);
-  if (!cb) return;
+// iso = ISO-Datum der angetippten Zeile. Wechselt die aktive Woche bei Bedarf.
+function toggleDay(iso) {
+  var cb = $('dc-' + iso);
+  var row = $('dr-' + iso);
+  if (!cb || !row) return;
+  var tag = row.getAttribute('data-tag');
+  var woche = row.getAttribute('data-woche');
+  if (woche !== G.planWoche) {
+    // Wechsel der Woche: Auswahl der bisherigen Woche verwerfen (G.days ist
+    // nur tag-basiert und kann nicht zwei Wochen zugleich halten).
+    DAYS_ORDER.forEach(function(d) { if (G.days[d] !== 'auswaerts') G.days[d] = null; });
+    G.planWoche = woche;
+    if (cb.checked) G.days[tag] = 'normal';
+    initDayPicker();
+    return;
+  }
   if (cb.checked) {
-    G.days[d] = 'normal';
-    if (sel) { sel.disabled = false; sel.style.opacity = '1'; }
+    G.days[tag] = 'normal';
+    var sel = $('dm-' + iso);
+    if (sel) { sel.disabled = false; sel.style.opacity = '1'; sel.value = 'normal'; }
   } else {
-    G.days[d] = null;
-    if (sel) { sel.disabled = true; sel.style.opacity = '.3'; }
+    G.days[tag] = null;
+    var sel2 = $('dm-' + iso);
+    if (sel2) { sel2.disabled = true; sel2.style.opacity = '.3'; }
   }
   updateNFromDays();
 }
@@ -1355,7 +1476,7 @@ function setN(n) {
   picks.slice(0, n).forEach(function(d) { G.days[d] = 'normal'; });
   G.n = cookingDays().length;
   renderNCount();
-  if ($('dc-Mo')) initDayPicker();
+  if (($('day-picker') && $('day-picker').children && $('day-picker').children.length)) initDayPicker();
 }
 
 function setP(n) {
@@ -2986,6 +3107,8 @@ function goSuggest() {
   G.fixedSnapshot = getFixedDishes();
   G.sel = null;
   G.sugs = [];
+  // Woche, fuer die diese Vorschlaege erzeugt wurden (gebunden an das Array).
+  G.sugWoche = { arr: G.sugs, woche: G.planWoche || null };
   G.sugsPartial = true;
 
   var loadEl = $('sload').querySelector('div:last-child');
@@ -3021,7 +3144,7 @@ function goSuggest() {
   // Ultra-simple message
   var theme = ($('theme') ? $('theme').value.trim() : '');
   // Init day picker if not done
-  if (!$('dc-Mo')) initDayPicker();
+  if (!($('day-picker') && $('day-picker').children && $('day-picker').children.length)) initDayPicker();
   var exist = ($('exist') ? $('exist').value.trim() : '');
   var feedback = ($('feedback') ? $('feedback').value.trim() : '');
   // Load user preferences for generation
@@ -5595,6 +5718,17 @@ function startwocheGewaehlt(iso) {
 
 var G_zuletztAktiviert = null;
 
+// Belegt ein Vorschlag in der Woche weekIso einen Tag, der schon verplant ist?
+// (Ausgefallene Abende zaehlen als frei, siehe belegteTageMap.)
+function sugKollidiert(sug, weekIso) {
+  if (!sug || !Array.isArray(sug.gerichte)) return false;
+  var belegt = belegteTageMap();
+  return sug.gerichte.some(function(g) {
+    var d = dateFromTag(weekIso, g.tag);
+    return !!d && !!belegt[isoDateLocal(d)];
+  });
+}
+
 function setActivePlanAndGo(weekStartIso) {
   if (G.sel === null) return;
   // Fehlen noch Kochschritte, muss goWeek() sie online laden. Ohne Verbindung
@@ -5602,7 +5736,12 @@ function setActivePlanAndGo(weekStartIso) {
   var _sug0 = G.sugs && G.sugs[G.sel];
   if (_sug0 && Array.isArray(_sug0.gerichte) &&
       _sug0.gerichte.some(function(g) { return fehlendeSchritte(g, G.modus); }) && !netzGuard()) return;
-  // Ohne ausdrueckliche Woche zuerst nachfragen.
+  // Ohne ausdrueckliche Woche: Wurde sie schon in der Tageswahl bestimmt und
+  // kollidiert kein Tag mit einem bereits verplanten, entfaellt die Nachfrage.
+  if (!weekStartIso) {
+    var _w = (G.sugWoche && G.sugWoche.arr === G.sugs) ? G.sugWoche.woche : null;
+    if (_w && !sugKollidiert(_sug0, _w)) weekStartIso = _w;
+  }
   if (!weekStartIso) { frageStartwoche(); return; }
   G_zuletztAktiviert = weekStartIso;
   // Beförderung bis zum Ende des Rezeptladens aussetzen: sonst tauscht
@@ -5658,6 +5797,7 @@ function openActivePlan(tab) {
   if (G.activePlan.einkaufstag) G.einkaufstag = G.activePlan.einkaufstag;
   if (G.activePlan.resteMode) G.resteMode = G.activePlan.resteMode;
   if (G.activePlan.days) G.days = G.activePlan.days;
+  G.sugWoche = null;
   G.sugsPartial = G.activePlan.sugsPartial || false;
   goWeekRender(G.sugs[G.sel]);
   setTimeout(function() { wtab(tab); }, 50);
