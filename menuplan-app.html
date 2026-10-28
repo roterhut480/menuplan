@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=yes">
-<title>Menüplan v6.99</title>
+<title>Menüplan v7.00</title>
 <meta name="theme-color" content="#5B7C78">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -299,7 +299,7 @@ body.netz-aus .netz-hint{display:block}
 
 <!-- HOME -->
 <div class="scr on" id="sh">
-  <div class="hero"><h1>Menüplan</h1><p id="hsub">v6.99 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
+  <div class="hero"><h1>Menüplan</h1><p id="hsub">v7.00 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
 
   <!-- Active plan card -->
 
@@ -1464,19 +1464,27 @@ function initDayPicker() {
   var tl = {};
   try { tl = buildTimelineDays() || {}; } catch (e) { tl = {}; }
   var modi = DAY_MODES.filter(function(m) { return m.key !== 'auswaerts'; });
-  // Farbe je Menue-Lauf, in Reihenfolge des ersten Auftretens vergeben.
-  var farbe = {}, farbeN = 0, legende = [];
+  // Farbe je Menue-Lauf. Farbig (und in der Legende) sind nur Laeufe, die heute
+  // oder spaeter noch Tage haben - das sind in der Praxis 1 bis 3. Reine
+  // Vergangenheits-Laeufe bekommen einen neutralen Ton ohne Legende, damit die
+  // Legende nicht mit den Monaten waechst und sich keine Farbe wiederholt.
+  var VERGANGEN_FARBE = { bg: '#F1EFEA', bd: '#C3C9C7' };
+  var laeufe = {}, reihenfolge = [];
   wochen.forEach(function(w) { w.tage.forEach(function(t) {
     if (!t.titel) return;
     var k = t.planId || ('?' + t.thema);
-    if (!farbe[k]) {
-      farbe[k] = PLAN_FARBEN[farbeN % PLAN_FARBEN.length]; farbeN++;
-      legende.push({ k: k, thema: t.thema, eingekauft: t.eingekauft, von: t.date, bis: t.date });
-    } else {
-      var l = legende.filter(function(x) { return x.k === k; })[0];
-      if (l) { if (t.date < l.von) l.von = t.date; if (t.date > l.bis) l.bis = t.date; }
-    }
-    t.farbe = farbe[k];
+    var l = laeufe[k];
+    if (!l) { l = laeufe[k] = { k: k, thema: t.thema, eingekauft: t.eingekauft, von: t.date, bis: t.date, aktuell: false }; reihenfolge.push(l); }
+    if (t.date < l.von) l.von = t.date;
+    if (t.date > l.bis) l.bis = t.date;
+    if (!t.vergangen) l.aktuell = true;
+  }); });
+  var farbe = {}, legende = [];
+  reihenfolge.filter(function(l) { return l.aktuell; }).slice(0, PLAN_FARBEN.length).forEach(function(l, i) {
+    farbe[l.k] = PLAN_FARBEN[i]; legende.push(l);
+  });
+  wochen.forEach(function(w) { w.tage.forEach(function(t) {
+    if (t.titel) t.farbe = farbe[t.planId || ('?' + t.thema)] || VERGANGEN_FARBE;
   }); });
   var gewaehlt = cookingDays().length > 0;
   var html = '';
