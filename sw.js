@@ -11,7 +11,7 @@
 // API-Aufrufe werden NIE zwischengespeichert - eine gecachte Menügenerierung
 // oder ein gecachter Bring!-Import wären schlimmer als ein Fehler.
 
-const CACHE = 'menuplan-v7.01';
+const CACHE = 'menuplan-v7.03';
 const DOKUMENT = './menuplan-app.html';
 
 // Pfade, die immer ans Netz gehen müssen.

@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=yes">
-<title>Menüplan v7.01</title>
+<title>Menüplan v7.03</title>
 <meta name="theme-color" content="#5B7C78">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -149,6 +149,16 @@ button:focus:not(:focus-visible),[role=button]:focus:not(:focus-visible){outline
 .chips{display:flex;gap:8px;flex-wrap:wrap}
 .chip{padding:11px 14px;min-height:44px;border-radius:100px;font-size:13px;font-weight:600;cursor:pointer;border:1.5px solid var(--border);background:var(--surface);color:var(--gr3);font-family:inherit;outline:none;transition:all .15s}
 .chip.on{background:var(--rl);border-color:var(--red);color:var(--red)}
+/* Planungsart: Radiogruppe aus drei Karten (genau eine aktiv) */
+.pa-karte{display:block;width:100%;text-align:left;padding:10px 14px;min-height:44px;border-radius:10px;background:#fff;border:1.5px solid var(--bdr);cursor:pointer;font-family:inherit;color:var(--txt)}
+.pa-karte.on{border:2px solid var(--red);background:var(--rl)}
+.pa-karte .pa-t{font-size:13px;font-weight:700;color:var(--txt)}
+.pa-karte.on .pa-t{color:var(--red)}
+.pa-karte .pa-b{font-size:11px;color:var(--gr3);margin-top:2px}
+.pa-karte .pa-g{display:none;font-size:11px;margin-top:4px;color:var(--danger);font-weight:600}
+.pa-karte[aria-disabled="true"]{opacity:.65;cursor:not-allowed}
+.pa-karte[aria-disabled="true"] .pa-g{display:block}
+.pa-karte:focus-visible{outline:2px solid var(--red);outline-offset:2px}
 /* inputs */
 input,select{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:10px;color:var(--txt);font-size:14px;padding:10px 12px;outline:none;font-family:inherit;transition:border-color .2s}
 input:focus,select:focus{border-color:var(--red)}
@@ -299,7 +309,7 @@ body.netz-aus .netz-hint{display:block}
 
 <!-- HOME -->
 <div class="scr on" id="sh">
-  <div class="hero"><h1>Menüplan</h1><p id="hsub">v7.01 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
+  <div class="hero"><h1>Menüplan</h1><p id="hsub">v7.03 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
 
   <!-- Active plan card -->
 
@@ -477,6 +487,27 @@ body.netz-aus .netz-hint{display:block}
         </div>
       </div>
 
+      <!-- Planungsart -->
+      <div class="fld" style="margin-top:10px" id="pa-fld">
+        <label id="pa-lbl">🍽 Wie möchtest du diese Woche kochen?</label>
+        <div id="pa-gruppe" role="radiogroup" aria-labelledby="pa-lbl" onkeydown="planungsartTaste(event)" style="display:flex;flex-direction:column;gap:6px">
+          <button type="button" class="pa-karte" id="pa-frei" role="radio" aria-checked="false" tabindex="-1" data-art="frei" onclick="setPlanungsart('frei')">
+            <div class="pa-t">Frei kochen</div>
+            <div class="pa-b">Eigenständige Gerichte, maximale Abwechslung.</div>
+          </button>
+          <button type="button" class="pa-karte on" id="pa-clever" role="radio" aria-checked="true" tabindex="0" data-art="clever" onclick="setPlanungsart('clever')">
+            <div class="pa-t">Clever einkaufen <span style="font-weight:600;font-size:11px;color:var(--gr3)">· Standard</span></div>
+            <div class="pa-b">Gemeinsame Zutaten, aber jedes Gericht funktioniert für sich.</div>
+          </button>
+          <button type="button" class="pa-karte" id="pa-aufbauend" role="radio" aria-checked="false" tabindex="-1" data-art="aufbauend" onclick="setPlanungsart('aufbauend')">
+            <div class="pa-t">Aufbauend kochen</div>
+            <div class="pa-b">Einmal etwas vorbereiten und später in einem neuen Gericht verwenden.</div>
+            <div class="pa-g" id="pa-grund-aufbauend">Braucht mindestens 2 Kochabende.</div>
+          </button>
+        </div>
+        <div id="pa-hinweis" role="alert" style="display:none;margin-top:6px;font-size:12px;line-height:1.4;color:var(--danger);font-weight:600"></div>
+      </div>
+
       <!-- Resteverwertung -->
       <div class="fld" style="margin-top:10px">
         <label>♻️ Resteverwertung</label>
@@ -484,10 +515,6 @@ body.netz-aus .netz-hint{display:block}
           <button class="chip-card on" id="rc-mikro" onclick="setR(1,'mikro')" style="text-align:left;padding:10px 14px;border-radius:10px;background:#fff;border:2px solid var(--red);cursor:pointer;font-family:inherit">
             <div style="font-size:13px;font-weight:700;color:var(--red)">✅ Ja – Mittag aus Resten</div>
             <div style="font-size:11px;color:var(--gr3);margin-top:2px">Nur Mikrowelle, kein Herd. Reste für nächsten Tag einplanen.</div>
-          </button>
-          <button class="chip-card" id="rc-kette" onclick="setR(1,'kette')" style="text-align:left;padding:10px 14px;border-radius:10px;background:#fff;border:1.5px solid var(--bdr);cursor:pointer;font-family:inherit">
-            <div style="font-size:13px;font-weight:700;color:var(--txt)">🔗 Ja – Reste am nächsten Kochabend verkochen</div>
-            <div style="font-size:11px;color:var(--gr3);margin-top:2px">Erster Abend kocht auf Vorrat, daraus entsteht am nächsten Kochabend ein neues Gericht.</div>
           </button>
           <button class="chip-card" id="rc-nein" onclick="setR(0,'nein')" style="text-align:left;padding:10px 14px;border-radius:10px;background:#fff;border:1.5px solid var(--bdr);cursor:pointer;font-family:inherit">
             <div style="font-size:13px;font-weight:700;color:var(--txt)">❌ Nein – nur Abendessen</div>
@@ -846,7 +873,7 @@ body.netz-aus .netz-hint{display:block}
 <!-- PRINT -->
 <div class="scr" id="sp">
   <div class="tbar noprint">
-    <div class="tbar-bk" onclick="go(G_zurueck || 'sw')">&#8592;</div><div class="tbar-bk" onclick="go('sh')" style="margin-left:4px" title="Startseite">&#8962;</div>
+    <div class="tbar-bk" onclick="go(ruecksprungZiel())">&#8592;</div><div class="tbar-bk" onclick="go('sh')" style="margin-left:4px" title="Startseite">&#8962;</div>
     <div><h1 id="ptit" style="font-size:15px">Rezept</h1><div class="tbar-sub">Druckansicht</div></div>
   </div>
   <div style="padding:10px" class="noprint">
@@ -907,7 +934,7 @@ function withMpAuth(headers) {
 
 // ─── STATE ─────────────────────────────────────────────────
 var G = {
-  n: 3, personen: 2, modus: 'optional', reste: 1, freeze: 1, budget: 0, resteMode: 'mikro', sugsPartial: false, fixedDishes: {},
+  n: 3, personen: 2, modus: 'optional', reste: 1, freeze: 1, budget: 0, resteMode: 'mikro', planungsart: 'clever', sugsPartial: false, fixedDishes: {},
   days: { Mo: 'normal', Di: null, Mi: 'normal', Do: null, Fr: 'normal', Sa: null, So: null },
   // null=kein Kochen, 'schnell'=<20min, 'normal'=normal, 'aufwendig'=darf länger dauern
 
@@ -931,20 +958,92 @@ function go(id) {
   var shell = document.getElementById('app-shell');
   if (shell) shell.classList.toggle('breit', id === 'sp');
   window.scrollTo(0, 0);
-  // Woher kommen Kochmodus, Druckansicht und Bewertung? Von dort kehren sie zurueck.
-  if (id === 'skal' || id === 'sw') G_zurueck = id;
+  // Bildschirme, die den ENTWURF einer Planung zeigen oder aendern: Entwurf zurueck
+  if (id === 'snew' || id === 'ss' || id === 'sprefs') wechselZuEntwurf();
   if (id === 'snew') setTimeout(initDayPicker, 50);
   if (id === 'skal') setTimeout(function() { initDayPicker(); kalenderZuHeute(true); }, 0);
+  navPush(id);
 }
+
+// ─── ZURUECK-TASTE (Browser/Android) ───────────────────────
+// Jeder Bildschirmwechsel legt einen Verlaufseintrag an. Die Zurueck-Taste geht dadurch zum
+// vorherigen Bildschirm der App statt aus der App hinaus; erst vom Startbildschirm aus
+// verlaesst sie die App wie ueblich. Offene Fenster (Austauschen, Bewerten, ...) werden
+// zuerst geschlossen, im Kochmodus gilt dieselbe Logik wie beim Pfeil oben links.
+var G_navStill = false;
+function navPush(id) {
+  if (G_navStill) return;
+  try {
+    var st = history.state;
+    if (st && st.mp && st.id === id) return;
+    history.pushState({ mp: 1, id: id }, '');
+  } catch (e) {}
+}
+var NAV_FENSTER = ['replace-modal', 'reschedule-modal', 'dep-modal', 'rating-modal', 'woche-modal', 'qr-modal', 'einplan-modal', 'pw-modal'];
+function navOffenesFensterSchliessen() {
+  for (var i = 0; i < NAV_FENSTER.length; i++) {
+    var el = document.getElementById(NAV_FENSTER[i]);
+    if (el && el.style.display && el.style.display !== 'none') {
+      if (NAV_FENSTER[i] === 'replace-modal' && typeof closeReplace === 'function') closeReplace();
+      else if (NAV_FENSTER[i] === 'einplan-modal' && typeof closeEinplanen === 'function') closeEinplanen();
+      else el.style.display = 'none';
+      return true;
+    }
+  }
+  return false;
+}
+function navPopstate(ev) {
+  var st = ev && ev.state;
+  var aktuell = aktuellerScreenId();
+  if (!st || !st.mp) return;                              // ausserhalb der App-Eintraege: Browser entscheidet
+  if (navOffenesFensterSchliessen()) {                    // zuerst das Fenster, nicht den Bildschirm
+    try { history.pushState({ mp: 1, id: aktuell }, ''); } catch (e) {}
+    return;
+  }
+  if (aktuell === 'sc') {                                 // Kochmodus: wie der Pfeil oben links
+    cookBackOrOverview();
+    if (aktuellerScreenId() === 'sc') { try { history.pushState({ mp: 1, id: 'sc' }, ''); } catch (e) {} }
+    return;
+  }
+  if (!st.id || st.id === aktuell) return;
+  G_navStill = true;
+  try { go(st.id); } finally { G_navStill = false; }
+}
+window.addEventListener('popstate', navPopstate);
+document.addEventListener('DOMContentLoaded', function() {
+  try { history.replaceState({ mp: 1, id: aktuellerScreenId() }, ''); } catch (e) {}
+});
+// Ruecksprung aus Kochmodus / Druckansicht: der Bildschirm, von dem aus tatsaechlich
+// gestartet wurde (nicht der zuletzt besuchte Kalender oder Wochenplan).
 var G_zurueck = 'sw';
+function aktuellerScreenId() {
+  var e = document.querySelector('.scr.on');
+  return e ? e.id : 'sh';
+}
+function merkeRuecksprung() {
+  var id = aktuellerScreenId();
+  if (id !== 'sc' && id !== 'sp') G_zurueck = id;   // Kochmodus/Druck nie als Herkunft merken
+}
+function ruecksprungZiel() { return G_zurueck || 'sw'; }
 
 document.addEventListener('DOMContentLoaded', function() { setTimeout(initDayPicker, 100); });
 
-// aria-pressed fuer Auswahlknoepfe (.chip, ausser Reitern): wird aus der Klasse "on"
-// abgeleitet, damit die vielen Stellen, die "on" umschalten, nicht einzeln angepasst
-// werden muessen. Ein Beobachter haelt es bei Aenderungen und neuen Chips aktuell.
+// aria-pressed fuer Auswahlknoepfe (.chip und .chip-card, ausser Reitern): wird aus der
+// Klasse "on" abgeleitet, damit die vielen Stellen, die "on" umschalten, nicht einzeln
+// angepasst werden muessen. Ein Beobachter haelt es bei Aenderungen und neuen Elementen
+// aktuell. Die Setter setR/setF/setB setzen "on" selbst zuverlaessig und rufen
+// ariaAuswahl() direkt auf, damit der Zustand nicht erst nach dem Beobachter stimmt.
+var ARIA_AUSWAHL_SEL = '.chip, .chip-card';
+function ariaAuswahl(el, an) {
+  if (!el) return;
+  el.classList.toggle('on', !!an);
+  el.setAttribute('aria-pressed', an ? 'true' : 'false');
+}
 function syncAriaPressed(wurzel) {
-  var chips = (wurzel || document).querySelectorAll('.chip');
+  var w = wurzel || document;
+  var chips = Array.prototype.slice.call(w.querySelectorAll(ARIA_AUSWAHL_SEL));
+  // querySelectorAll liefert nur Nachkommen - das uebergebene Element selbst mitpruefen
+  if (w.matches && w.matches(ARIA_AUSWAHL_SEL)) chips.push(w);
   for (var i = 0; i < chips.length; i++) {
     var c = chips[i];
     if (c.getAttribute('role') === 'tab') continue;
@@ -958,7 +1057,7 @@ document.addEventListener('DOMContentLoaded', function() {
   new MutationObserver(function(muts) {
     for (var i = 0; i < muts.length; i++) {
       var m = muts[i];
-      if (m.type === 'attributes') { if (m.target.classList && m.target.classList.contains('chip')) syncAriaPressed(m.target.parentNode); }
+      if (m.type === 'attributes') { if (m.target.matches && m.target.matches(ARIA_AUSWAHL_SEL)) syncAriaPressed(m.target.parentNode || m.target); }
       else if (m.addedNodes && m.addedNodes.length) { syncAriaPressed(m.target); }
     }
   }).observe(document.body, { subtree: true, childList: true, attributes: true, attributeFilter: ['class'] });
@@ -1549,8 +1648,6 @@ function initDayPicker() {
           '</button></div>';
         if (offen && tl[t.iso]) {
           var det = '';
-          // Die Aktionen im Detail arbeiten auf G.sugs/G.sel (= aktiver Plan)
-          if (tl[t.iso].isActivePlan) ensureActivePlanContext();
           try { det = timelineCardDetail(tl[t.iso]); } catch (ex) { det = ''; }
           html += '<div class="kl-detail">' + det + '</div>';
         }
@@ -1560,7 +1657,7 @@ function initDayPicker() {
           '<label style="display:flex;align-items:center;gap:10px;flex:1;min-width:0;min-height:44px;cursor:pointer">' +
             '<input type="checkbox" id="dc-' + t.iso + '" onchange="toggleDay(\'' + t.iso + '\')" ' + (an ? 'checked ' : '') +
               'style="width:18px;height:18px;accent-color:var(--red);flex:none;cursor:pointer">' +
-            '<span class="kl-datum">' + datum + (( G.einkaufstag || 'Mo') === t.tag ? ' <span title="Einkaufstag" aria-label="Einkaufstag" style="font-size:11px">🛒</span>' : '') + '</span>' +
+            '<span class="kl-datum">' + datum + (( entwurfWert('einkaufstag') || 'Mo') === t.tag ? ' <span title="Einkaufstag" aria-label="Einkaufstag" style="font-size:11px">🛒</span>' : '') + '</span>' +
           '</label>' +
           '<select id="dm-' + t.iso + '" aria-label="Zeitrahmen ' + datum + '" onchange="setDayMode(\'' + t.tag + '\',this.value)" ' + (!an ? 'disabled ' : '') +
             'style="' + (an ? '' : 'display:none;') + 'font-size:12px;padding:6px 8px;border-radius:6px;border:.5px solid var(--bdr);background:#fff;font-family:inherit;color:var(--txt);max-width:150px">' +
@@ -1648,6 +1745,7 @@ function updateNFromDays() {
 
 // "1 Kochabende" war schlicht falsch - der Zaehler stand fest im Plural.
 function renderNCount() {
+  if (typeof renderPlanungsart === 'function') renderPlanungsart();
   if ($('n-display')) $('n-display').textContent = G.n;
   if ($('n-label')) $('n-label').textContent = (G.n === 1 ? 'Kochabend' : 'Kochabende');
   // Leiste im Kalender und Zusammenfassung im Planungsformular
@@ -1728,13 +1826,16 @@ function setM(m) {
 }
 function setR(v, mode) {
   G.reste = v;
-  G.resteMode = mode || (v ? 'mikro' : 'nein');
-  // Drei sich ausschliessende Zustaende statt zwei.
-  ['mikro','kette','nein'].forEach(function(mm) {
+  // Mittagsreste und Planungsart sind getrennte Entscheidungen: es gibt nur noch
+  // "mit Mittagsresten" (mikro) und "ohne". Der frueher hier gefuehrte Modus "kette"
+  // ist in der Planungsart "aufbauend" aufgegangen und loest keine Mittagsportionen mehr aus.
+  G.resteMode = v ? 'mikro' : 'nein';
+  // Zwei sich ausschliessende Zustaende.
+  ['mikro','nein'].forEach(function(mm) {
     var b = $('rc-' + mm);
     if (!b) return;
     var an = (G.resteMode === mm);
-    b.classList.toggle('on', an);
+    ariaAuswahl(b, an);
     b.style.borderColor = an ? 'var(--red)' : 'var(--bdr)';
     b.style.borderWidth = an ? '2px' : '1.5px';
     var t = b.querySelector('div');
@@ -1749,6 +1850,7 @@ function setR(v, mode) {
 function setB(v) {
   G.budget = v ? 1 : 0;
   var btn = $('bc-toggle'), box = $('bc-box'), lbl = $('bc-lbl');
+  ariaAuswahl(btn, G.budget);
   if (btn) { btn.style.borderColor = v ? 'var(--red)' : 'var(--bdr)'; btn.style.borderWidth = v ? '2px' : '1.5px'; }
   if (box) { box.style.background = v ? 'var(--red)' : '#fff'; box.style.borderColor = v ? 'var(--red)' : 'var(--bdr)'; box.textContent = v ? '✓' : ''; }
   if (lbl) lbl.style.color = v ? 'var(--red)' : 'var(--txt)';
@@ -1761,13 +1863,86 @@ function setB(v) {
   } catch(e) {}
 }
 
+// ─── PLANUNGSART ───────────────────────────────────────────
+// frei: eigenstaendige Gerichte | clever: gemeinsame Einkaufszutaten, jedes Gericht
+// kocht fuer sich | aufbauend: Komponenten werden vorbereitet und spaeter verwendet.
+// Die Anzahl der Kochabende und die Art ihrer Verbindung sind getrennte
+// Entscheidungen; Mittagsreste und Einfrieren sind von beidem unabhaengig.
+var PLANUNGSARTEN = ['frei', 'clever', 'aufbauend'];
+var PLANUNGSART_NAMEN = { frei: 'Frei kochen', clever: 'Clever einkaufen', aufbauend: 'Aufbauend kochen' };
+var PLANUNGSART_TEXT = {
+  frei: 'frei kochen (jedes Gericht eigenstaendig, keine Einkaufskette, keine Vorbereitung fuer andere Abende)',
+  clever: 'clever einkaufen (einige gemeinsame Einkaufszutaten, aber jedes Gericht funktioniert fuer sich)',
+  aufbauend: 'aufbauend kochen (eine Komponente wird vorbereitet und spaeter in einem anderen Gericht verwendet)'
+};
+function planungsartGueltig(a) { return PLANUNGSARTEN.indexOf(a) >= 0; }
+// Liest die Planungsart eines gespeicherten Plans. Aeltere Plaene kennen das Feld nicht:
+// resteMode "kette" gilt als aufbauend, alles andere als clever. SCHREIBT NICHTS.
+function planungsartVonPlan(p) {
+  if (p && planungsartGueltig(p.planungsart)) return p.planungsart;
+  return (p && p.resteMode === 'kette') ? 'aufbauend' : 'clever';
+}
+// Alter Kettenplan: aufbauend ohne strukturierten Komponentenplan. Bleibt unveraendert nutzbar.
+function planIstAltKette(p) { return !!p && !planungsartGueltig(p.planungsart) && p.resteMode === 'kette'; }
+function aufbauendMoeglich() { return (G.n || 0) >= 2; }
+
+function renderPlanungsart() {
+  var gruppe = $('pa-gruppe'); if (!gruppe) return;
+  var art = planungsartGueltig(G.planungsart) ? G.planungsart : 'clever';
+  var geht = aufbauendMoeglich();
+  PLANUNGSARTEN.forEach(function(a) {
+    var k = $('pa-' + a); if (!k) return;
+    var an = (a === art);
+    k.classList.toggle('on', an);
+    k.setAttribute('aria-checked', an ? 'true' : 'false');
+    k.setAttribute('tabindex', an ? '0' : '-1');
+    if (a === 'aufbauend') {
+      if (!geht) { k.setAttribute('aria-disabled', 'true'); k.setAttribute('aria-describedby', 'pa-grund-aufbauend'); }
+      else { k.removeAttribute('aria-disabled'); k.removeAttribute('aria-describedby'); }
+    }
+  });
+  var grund = $('pa-grund-aufbauend');
+  if (grund) grund.textContent = 'Braucht mindestens 2 Kochabende (aktuell: ' + (G.n || 0) + ').';
+  // Eine bereits gewaehlte Art wird NICHT still geaendert - der Konflikt wird erklaert.
+  var h = $('pa-hinweis');
+  if (h) {
+    var konflikt = (art === 'aufbauend' && !geht);
+    h.textContent = konflikt
+      ? 'Aufbauend kochen braucht mindestens zwei Kochabende. Wähle über «Ändern» weitere Kochtage oder eine andere Planungsart – deine Auswahl wurde nicht verändert.'
+      : '';
+    h.style.display = konflikt ? 'block' : 'none';
+  }
+}
+function setPlanungsart(a) {
+  if (!planungsartGueltig(a)) return;
+  if (a === 'aufbauend' && !aufbauendMoeglich()) { renderPlanungsart(); return; }   // gesperrt, Grund steht an der Karte
+  G.planungsart = a;
+  renderPlanungsart();
+}
+// Pfeiltasten wie bei einer Radiogruppe: bewegen UND waehlen; gesperrte Karte wird uebersprungen.
+function planungsartTaste(ev) {
+  var delta = (ev.key === 'ArrowRight' || ev.key === 'ArrowDown') ? 1 : (ev.key === 'ArrowLeft' || ev.key === 'ArrowUp') ? -1 : 0;
+  if (!delta) return;
+  ev.preventDefault();
+  var cur = PLANUNGSARTEN.indexOf(document.activeElement && document.activeElement.getAttribute ? document.activeElement.getAttribute('data-art') : null);
+  if (cur < 0) cur = PLANUNGSARTEN.indexOf(G.planungsart);
+  for (var i = 1; i <= PLANUNGSARTEN.length; i++) {
+    var nxt = PLANUNGSARTEN[(cur + delta * i + PLANUNGSARTEN.length * 9) % PLANUNGSARTEN.length];
+    if (nxt === 'aufbauend' && !aufbauendMoeglich()) continue;
+    setPlanungsart(nxt);
+    var el = $('pa-' + nxt); if (el) el.focus();
+    return;
+  }
+}
+
 function setF(v) {
-  G.freeze = v;
+  G.freeze = v ? 1 : 0;
   var cards = ['fc-ja', 'fc-nein'];
   var active = v ? 'fc-ja' : 'fc-nein';
   cards.forEach(function(id) {
     var el = $(id); if (!el) return;
     var isActive = id === active;
+    ariaAuswahl(el, isActive);
     el.style.borderColor = isActive ? 'var(--red)' : 'var(--bdr)';
     el.style.borderWidth = isActive ? '2px' : '1.5px';
     el.querySelector('div').style.color = isActive ? 'var(--red)' : 'var(--txt)';
@@ -2282,6 +2457,7 @@ function syncGH(btn) {
 
 function loadSaved() {
   if (!G.savedWeek || !G.savedWeek.sugs) return;
+  wechselZuEntwurf();
   G.sugs = G.savedWeek.sugs;
   G.n = G.savedWeek.n || 3;
   G.personen = G.savedWeek.personen || 2;
@@ -3070,11 +3246,38 @@ function currentOpts(extra) {
     n: G.n || 3,
     modus: G.modus || 'optional',
     reste: !!G.reste,
-    resteMode: G.resteMode || 'mikro',
+    resteMode: (G.resteMode === 'kette') ? (G.reste ? 'mikro' : 'nein') : (G.resteMode || 'mikro'),
     freeze: !!G.freeze,
     budget: !!G.budget,
-    einkaufstag: EINKAUFSTAG_LANGNAME[G.einkaufstag || 'Mo']
+    einkaufstag: EINKAUFSTAG_LANGNAME[G.einkaufstag || 'Mo'],
+    planungsart: planungsartGueltig(G.planungsart) ? G.planungsart : 'clever'
   };
+  if (extra) for (var k in extra) o[k] = extra[k];
+  return o;
+}
+
+// Optionen fuer eine Anfrage, die zu einem GESPEICHERTEN PLAN gehoert (Vollrezept,
+// Nachladen, Ersatzgericht). Sie stammen aus dem Plan, nie aus dem gerade offenen
+// Entwurf: ein neuer Entwurf darf Modus, Portionsbasis und Planungsart bestehender
+// Rezepte nicht veraendern. Fehlende Felder aelterer Plaene behalten ihre bisherigen Vorgaben.
+function planOpts(plan, g, extra) {
+  var sug = (plan && plan.sug) || {};
+  var o = {
+    personen: plan.personen || 2,
+    n: (sug.gerichte || []).filter(function(x) { return !x._cancelled; }).length || plan.n || 1,
+    modus: plan.modus || 'optional',
+    reste: plan.reste !== undefined ? !!plan.reste : true,
+    resteMode: plan.resteMode || (plan.reste === 0 ? 'nein' : 'mikro'),
+    freeze: plan.freeze !== undefined ? !!plan.freeze : true,
+    budget: !!plan.budget,
+    einkaufstag: EINKAUFSTAG_LANGNAME[plan.einkaufstag || 'Mo'],
+    planungsart: planungsartVonPlan(plan)
+  };
+  if (o.planungsart === 'aufbauend' && !planIstAltKette(plan)) {
+    // Verbindlicher Mengenplan dieses Gerichts (leer, wenn es keine Rolle hat).
+    var ans = g ? komponentenAnsicht(sug, g) : { herstellt: [], verwendet: [] };
+    o.komponenten = ans;
+  }
   if (extra) for (var k in extra) o[k] = extra[k];
   return o;
 }
@@ -3311,6 +3514,7 @@ function callWorker(kind, message, maxTokens, opts, model, onProgress, messagesO
 var G_generiertGerade = false;
 
 function goSuggest() {
+  if (typeof wechselZuEntwurf === 'function') wechselZuEntwurf();   // Planung arbeitet immer auf dem Entwurf
   if (!netzGuard()) return;
   if (G_generiertGerade) { console.warn('Generierung laeuft bereits'); return; }
   // Die Sperre wird ERST nach allen Vorabpruefungen gesetzt. Frueher stand sie
@@ -3329,6 +3533,18 @@ function goSuggest() {
       wEl.className = 'st er'; wEl.textContent = 'Bitte mindestens einen Kochtag auswählen.';
       wEl.style.display = 'block'; wEl.setAttribute('tabindex', '-1'); wEl.setAttribute('role', 'alert');
       setTimeout(function() { wEl.focus(); wEl.scrollIntoView({ block: 'center', behavior: 'smooth' }); }, 30);
+    }
+    return;
+  }
+  // Aufbauend kochen braucht mindestens zwei Kochabende. Die gewaehlte Planungsart wird
+  // NICHT still geaendert - die Planung bricht mit einer klaren Meldung ab.
+  if (G.planungsart === 'aufbauend' && cookingDays().length < 2) {
+    var aEl = $('snew-err') || $('serr') || null;
+    if (aEl) {
+      aEl.className = 'st er';
+      aEl.textContent = 'Aufbauend kochen braucht mindestens zwei Kochabende. Wähle weitere Kochtage oder eine andere Planungsart.';
+      aEl.style.display = 'block'; aEl.setAttribute('tabindex', '-1'); aEl.setAttribute('role', 'alert');
+      setTimeout(function() { aEl.focus(); aEl.scrollIntoView({ block: 'center', behavior: 'smooth' }); }, 30);
     }
     return;
   }
@@ -3392,6 +3608,7 @@ function goSuggest() {
   var msg = G.n + (G.n === 1 ? ' Kochabend, ' : ' Kochabende, ') + p + ' Personen, ' + modusText +
     (G.reste ? ', mit Resten' : '') +
     (G.freeze ? ', mit Einfrieren' : '') +
+    '. Planungsart: ' + PLANUNGSART_TEXT[planungsartGueltig(G.planungsart) ? G.planungsart : 'clever'] +
     (theme ? '. Thema: ' + theme : '') +
     (exist ? '. Vorhandene Zutaten unbedingt verwenden: ' + exist : '') +
     (feedback ? '. Vorherige Vorschläge abgelehnt weil: ' + feedback + '. Deutlich andere Gerichte.' : '') +
@@ -3427,6 +3644,11 @@ function goSuggest() {
   // Ab hier laufen Netzaufrufe - jetzt sperren.
   G_generiertGerade = true;
   var _ketten = waehleKetten(3, letzteKuechen(2), G.modus);
+  // Die Einkaufskette gehoert NUR zur Planungsart "clever". Frei und aufbauend bekommen
+  // stattdessen je Aufruf eine andere, unverbindliche Anregung, damit die drei parallelen
+  // Vorschlaege nicht identisch werden - ohne gemeinsame Zutaten oder ein Thema vorzugeben.
+  var planArt = planungsartGueltig(G.planungsart) ? G.planungsart : 'clever';
+  var _impulse = (planArt === 'clever') ? [] : waehleImpulse(3, planArt, G.modus);
 
   // ─── VIELFALTSPRUEFUNG ──────────────────────────────────
   // Ein Prompt allein reicht nicht zuverlaessig: mehrfach kamen drei Varianten
@@ -3516,6 +3738,7 @@ function goSuggest() {
       var modus = (G.days || {})[g[i].tag];
       var max = ZEIT_MAX[modus];
       if (!max) continue;
+      if (planArt === 'aufbauend' && i === 0) max = Math.max(max, 60);   // bereitet vor, darf laenger dauern
       var min = minutenAus(g[i].zeit_total);
       if (min && min > max) {
         return g[i].tag + ' ' + g[i].abend + ': ' + min + ' Min bei "' + modus + '" (max. ' + max + ')';
@@ -3550,7 +3773,8 @@ function goSuggest() {
     // sporadisch nur 1 von 3 Vorschlaegen. Ausgabe-Tokens werden nur nach
     // tatsaechlichem Verbrauch berechnet, ein hoeheres Limit kostet also
     // nichts, solange die Antwort kurz bleibt.
-    var _kette = _ketten[id - 1];
+    var _kette = (planArt === 'clever') ? _ketten[id - 1] : null;
+    var _impuls = (planArt !== 'clever') ? _impulse[id - 1] : null;
     var _zusatz = ' Vorschlag ' + id + ' von 3.';
     if (_kette) {
       // Mit eigenem Thema bleibt die Kette eine UNTERGEORDNETE Anregung fuer
@@ -3577,27 +3801,21 @@ function goSuggest() {
         // Ohne diese Regel wurde aus "Wähen-Kette" dreimal eine Wähe. Dieser
         // Satz bleibt auch mit eigenem Thema unveraendert - er gilt fuer die
         // oben genannten Zutaten (Kette ODER Thema-Variante) gleichermassen.
-        ' WICHTIG - die Kette gilt fuer die EINKAUFSZUTATEN, nicht fuer die Gerichtsart. ' +
-        'Die Abende muessen sich deutlich unterscheiden: ' +
-        'KEINE Gerichtsart doppelt (nicht zweimal Auflauf, Suppe, Pasta, Wähe, Curry, Salat, Bowl, Blech). ' +
-        'Die Hauptbeilage (Reis, Teigwaren, Kartoffeln, Brot/Teig, Polenta) moeglichst nicht wiederholen. ' +
-        'Mindestens zwei verschiedene Zubereitungsarten (Ofen, Pfanne, Topf, kalt). ' +
-        'Mindestens zwei verschiedene Proteinquellen. ' +
-        'Kein Gericht darf eine blosse Variante eines anderen sein - ' +
-        '"Hoernli-Auflauf mit Spinat" und "Hoernli-Auflauf mit Pilzen" waeren unzulaessig, ' +
-        '"Spinat-Hoernli-Auflauf" und "Pilzrisotto" dagegen richtig.';
-      if (G.resteMode === 'kette') {
-        // Der erste Kochabend kocht auf Vorrat und darf deshalb laenger dauern -
-        // die spaeteren Abende bestehen groesstenteils aus Zusammensetzen.
-        _zusatz += ' KOCHKETTE: Der ERSTE Kochabend bereitet eine Grundmenge auf Vorrat zu ' +
-          '(etwa doppelte Menge einer Komponente) und darf dafür deutlich länger dauern ' +
-          'als der angegebene Zeitrahmen - plane dort bis zu 60 Minuten. ' +
-          'Die folgenden Kochabende verwenden diese Grundmenge weiter und ergeben ein ' +
-          'NEUES Gericht, nicht dasselbe nochmals; sie brauchen dadurch deutlich weniger Zeit ' +
-          'als der Zeitrahmen. Schreibe in die Kochschritte des ersten Abends ausdrücklich, ' +
-          'welche Menge zurückgestellt wird und wofür, und in die späteren Abende, was davon ' +
-          'verwendet wird. Der letzte Kochabend verbraucht möglichst alle Reste.';
-      }
+        ' WICHTIG - die Kette gilt fuer die EINKAUFSZUTATEN, nicht fuer die Gerichtsart.' + vielfaltsText(G.n) +
+        ' Kein Gericht setzt eine Vorbereitung eines anderen voraus; die Kochreihenfolge ist austauschbar.';
+    } else if (planArt === 'frei') {
+      // FREI: keine Kette, kein gemeinsames Thema - ein eigenes Thema des Nutzers gilt trotzdem.
+      _zusatz += (_impuls ? ' Unverbindliche Anregung zur Unterscheidung von den anderen Vorschlaegen: lass dich bei einem der Gerichte von der ' +
+          _impuls.a + (_impuls.b ? ' und bei einem anderen von der ' + _impuls.b : '') + ' Kueche inspirieren; alle anderen Gerichte sind voellig frei.' : '') +
+        ' Jedes Gericht ist vollstaendig eigenstaendig, es gibt KEINE gemeinsamen Pflichtzutaten und keine Einkaufskette.' +
+        themaAnweisung(theme) + vielfaltsText(G.n);
+    } else if (planArt === 'aufbauend') {
+      _zusatz += (_impuls ? ' Unverbindliche Anregung fuer die vorbereitete Komponente (nur wenn sie zur Ernaehrungsform und zu einem eventuellen Thema passt): ' + _impuls.a + '.' : '') +
+        // Der erste Kochabend bereitet vor und darf deshalb laenger dauern - die spaeteren
+        // Abende bestehen groesstenteils aus Zusammensetzen.
+        ' AUFBAUEND: Der ERSTE Kochabend bereitet eine Komponente auf Vorrat zu und darf dafuer laenger dauern als der angegebene Zeitrahmen ' +
+        '(bis zu 60 Minuten); die folgenden Abende verwenden sie und ergeben jeweils ein NEUES Gericht, nicht dasselbe nochmals, und brauchen dadurch weniger Zeit.' +
+        themaAnweisung(theme) + vielfaltsText(G.n, 'aufbauend');
     }
     if (istWiederholung) {
       _zusatz += ' Der vorherige Versuch enthielt zu aehnliche Gerichte oder ueberschritt den Zeitrahmen. ' +
@@ -3828,20 +4046,409 @@ function uebernimmVollrezept(originalGericht, match) {
   if (match.zeit_total) originalGericht.zeit_total = match.zeit_total;
 }
 
+// ─── KOMPONENTENPLAN (Planungsart "aufbauend") ─────────────
+// Bei aufbauendem Kochen bereitet ein Gericht eine Komponente vor (z.B. Tomatensauce),
+// spaetere Gerichte verwenden sie. Die Uebergabemengen werden EINMAL gemeinsam festgelegt,
+// bevor die Einzelrezepte entstehen - die Rezepte erfinden sie nicht unabhaengig voneinander.
+//   sug.komponentenplan = { version:1, komponenten:[ { id, name, einheit:'g'|'ml', gesamt,
+//       hergestellt_in:<gid>, sofort, verbrauch:[ { gid, menge } ] } ] }
+// Zugeordnet wird ueber die stabile Gericht-ID (g.gid), nicht ueber Array-Position oder Tag:
+// Tauschen und Verschieben aendern den Tag, nicht die Rolle.
+function neueGerichtId() {
+  return 'g' + Math.random().toString(36).slice(2, 8) + Date.now().toString(36).slice(-3);
+}
+function sichereGerichtIds(sug) {
+  if (!sug || !Array.isArray(sug.gerichte)) return sug;
+  var belegt = {};
+  sug.gerichte.forEach(function(g) { if (g && g.gid) belegt[g.gid] = true; });
+  sug.gerichte.forEach(function(g) {
+    if (!g) return;
+    if (!g.gid) { var id; do { id = neueGerichtId(); } while (belegt[id]); g.gid = id; belegt[id] = true; }
+  });
+  return sug;
+}
+function tagPos(tag) { return DAYS_ORDER.indexOf(tag); }
+function gerichtMitGid(sug, gid) {
+  var l = (sug && sug.gerichte) || [];
+  for (var i = 0; i < l.length; i++) if (l[i] && l[i].gid === gid) return l[i];
+  return null;
+}
+// Nicht ausgefallene Gerichte in Kochreihenfolge (nach Wochentag).
+function aktiveGerichteChrono(sug) {
+  return ((sug && sug.gerichte) || []).map(function(g, i) { return { g: g, i: i }; })
+    .filter(function(x) { return x.g && !x.g._cancelled; })
+    .sort(function(a, b) { return tagPos(a.g.tag) - tagPos(b.g.tag) || a.i - b.i; });
+}
+function rund1(x) { return Math.round(Number(x) * 10) / 10; }
+function mengeMitEinheit(w, e) { return String(rund1(w)).replace('.', ',') + ' ' + e; }
+function zahlAus(x) {
+  var n = (typeof x === 'number') ? x : parseFloat(String(x == null ? '' : x).replace(',', '.'));
+  return isFinite(n) ? rund1(n) : NaN;
+}
+
+// Antwort des Modells in die gespeicherte Form bringen (noch ungeprueft).
+function normalisiereKomponentenplan(raw) {
+  var arr = raw && Array.isArray(raw.komponenten) ? raw.komponenten : null;
+  if (!arr) return null;
+  return {
+    version: 1,
+    komponenten: arr.map(function(k, i) {
+      k = k || {};
+      return {
+        id: String(k.id || ('k' + (i + 1))),
+        name: String(k.name || '').trim(),
+        einheit: String(k.einheit || '').trim(),
+        gesamt: zahlAus(k.gesamt),
+        hergestellt_in: String(k.hergestellt_in || ''),
+        sofort: zahlAus(k.sofort === undefined ? 0 : k.sofort),
+        verbrauch: (Array.isArray(k.verbrauch) ? k.verbrauch : []).map(function(v) {
+          v = v || {};
+          return { gid: String(v.gid || ''), menge: zahlAus(v.menge) };
+        })
+      };
+    })
+  };
+}
+
+// null = der Plan ist in sich stimmig, sonst der Grund.
+function pruefeKomponentenplan(kp, sug) {
+  if (!kp || !Array.isArray(kp.komponenten) || !kp.komponenten.length) return 'Der Komponentenplan ist leer.';
+  var chrono = aktiveGerichteChrono(sug), pos = {}, kurz = {};
+  chrono.forEach(function(x) { pos[x.g.gid] = tagPos(x.g.tag); kurz[x.g.gid] = x.g.tag + ' ' + x.g.abend; });
+  var ids = {}, mehrfach = false;
+  for (var a = 0; a < kp.komponenten.length; a++) {
+    var k = kp.komponenten[a];
+    if (!k.name) return 'Eine Komponente hat keinen Namen.';
+    var n = '«' + k.name + '»';
+    if (k.einheit !== 'g' && k.einheit !== 'ml') return n + ': Die Einheit muss g oder ml sein.';
+    if (!(k.gesamt > 0) || !isFinite(k.sofort) || k.sofort < 0) return n + ': ungültige Mengen.';
+    if (ids[k.id]) return 'Die Komponenten-ID ' + k.id + ' kommt doppelt vor.';
+    ids[k.id] = true;
+    if (pos[k.hergestellt_in] === undefined) return n + ': Das herstellende Gericht ist unbekannt.';
+    if (!k.verbrauch.length) return n + ' wird in keinem Gericht verwendet.';
+    var summe = k.sofort, gesehen = {};
+    for (var b = 0; b < k.verbrauch.length; b++) {
+      var v = k.verbrauch[b];
+      if (pos[v.gid] === undefined) return n + ': Ein verwendendes Gericht ist unbekannt.';
+      if (v.gid === k.hergestellt_in) return n + ' wird im selben Gericht vorbereitet und als Übergabe verwendet.';
+      if (gesehen[v.gid]) return n + ': Dasselbe Gericht ist mehrfach als Verbraucher eingetragen.';
+      gesehen[v.gid] = true;
+      if (!(v.menge > 0)) return n + ': ungültige Verbrauchsmenge.';
+      if (pos[v.gid] <= pos[k.hergestellt_in]) {
+        return n + ' wird erst bei «' + kurz[k.hergestellt_in] + '» vorbereitet, aber schon bei «' + kurz[v.gid] + '» gebraucht.';
+      }
+      summe += v.menge;
+    }
+    if (Math.abs(summe - k.gesamt) > 0.5) {
+      return n + ': Die Gesamtmenge (' + rund1(k.gesamt) + ' ' + k.einheit + ') stimmt nicht mit sofort + Verbrauch (' + rund1(summe) + ' ' + k.einheit + ') überein.';
+    }
+    if (k.verbrauch.length >= 2) mehrfach = true;
+  }
+  // Aus derselben Komponente sollen unterschiedliche Gerichte entstehen - sobald es mehr als zwei Abende gibt.
+  if (chrono.length >= 3 && !mehrfach) return 'Keine Komponente wird in zwei verschiedenen Gerichten verwendet.';
+  return null;
+}
+
+// Rolle EINES Gerichts im Komponentenplan, mit den Mengen, die heute noch gelten:
+// ausgefallene oder entfernte Verbraucher zaehlen nicht, ein fehlender Erzeuger
+// macht aus dem Verbraucher wieder ein eigenstaendiges Gericht.
+function komponentenAnsicht(sug, g) {
+  var res = { herstellt: [], verwendet: [] };
+  var kp = sug && sug.komponentenplan;
+  if (!kp || !Array.isArray(kp.komponenten) || !g || !g.gid) return res;
+  kp.komponenten.forEach(function(k) {
+    if (k.hergestellt_in === g.gid) {
+      var fuer = [], summe = 0;
+      k.verbrauch.forEach(function(v) {
+        var c = gerichtMitGid(sug, v.gid);
+        if (c && !c._cancelled) { fuer.push({ gid: v.gid, tag: c.tag, abend: c.abend, menge: v.menge }); summe += v.menge; }
+      });
+      if (fuer.length) res.herstellt.push({ id: k.id, name: k.name, einheit: k.einheit, gesamt: rund1(k.sofort + summe),
+        sofort: k.sofort, zurueck: rund1(summe), fuer: fuer });
+    } else {
+      var prod = gerichtMitGid(sug, k.hergestellt_in);
+      k.verbrauch.forEach(function(v) {
+        if (v.gid === g.gid && prod && !prod._cancelled) {
+          res.verwendet.push({ id: k.id, name: k.name, einheit: k.einheit, menge: v.menge,
+            von: { gid: prod.gid, tag: prod.tag, abend: prod.abend } });
+        }
+      });
+    }
+  });
+  return res;
+}
+
+// Inkonsistenzen, die durch Absagen, Entfernen, Verschieben oder Tauschen entstehen.
+// Wird aus dem Zustand berechnet (nicht aus Ereignissen) - der Hinweis bleibt also sichtbar.
+function komponentenProbleme(sug) {
+  var out = [];
+  var kp = sug && sug.komponentenplan;
+  if (!kp || !Array.isArray(kp.komponenten)) return out;
+  kp.komponenten.forEach(function(k) {
+    var prod = gerichtMitGid(sug, k.hergestellt_in);
+    var prodWeg = !prod || prod._cancelled;
+    var aktiv = [], weg = [];
+    k.verbrauch.forEach(function(v) {
+      var c = gerichtMitGid(sug, v.gid);
+      if (c && !c._cancelled && !c._gekocht) aktiv.push({ c: c, v: v });
+      else if (!c || c._cancelled) weg.push({ c: c, v: v });
+    });
+    var erz = prod ? { gid: prod.gid, tag: prod.tag, abend: prod._origAbend || prod.abend } : null;
+    function liste(l) { return l.map(function(x) { return x.c.tag + ' «' + x.c.abend + '» (' + mengeMitEinheit(x.v.menge, k.einheit) + ')'; }).join(', '); }
+    if (prodWeg) {
+      if (aktiv.length) out.push({ art: 'erzeuger_fehlt', kid: k.id, komponente: k.name, erzeuger: erz,
+        betroffen: aktiv.map(function(x) { return x.c.gid; }),
+        text: '«' + k.name + '» sollte ' + (erz ? 'am ' + erz.tag + ' im Gericht «' + erz.abend + '» ' : '') + 'vorbereitet werden, aber dieses Gericht ' +
+          (prod ? 'ist ausgefallen' : 'wurde entfernt') + '. Davon abhängig: ' + liste(aktiv) + '.' });
+    } else if (!prod._gekocht) {
+      var falsch = aktiv.filter(function(x) { return tagPos(x.c.tag) <= tagPos(prod.tag); });
+      if (falsch.length) out.push({ art: 'reihenfolge', kid: k.id, komponente: k.name, erzeuger: erz,
+        betroffen: falsch.map(function(x) { return x.c.gid; }),
+        text: '«' + k.name + '» wird erst am ' + prod.tag + ' im Gericht «' + prod.abend + '» vorbereitet, wird aber schon früher gebraucht: ' + liste(falsch) + '.' });
+      if (weg.length) {
+        var menge = weg.reduce(function(a, x) { return a + x.v.menge; }, 0);
+        out.push({ art: 'ueberschuss', kid: k.id, komponente: k.name, erzeuger: erz, betroffen: [],
+          menge: rund1(menge), einheit: k.einheit,
+          text: 'Für ' + weg.map(function(x) { return x.c ? x.c.tag + ' «' + (x.c._origAbend || x.c.abend) + '»' : 'ein entferntes Gericht'; }).join(', ') +
+            ' waren ' + mengeMitEinheit(menge, k.einheit) + ' «' + k.name + '» eingeplant. Diese Menge würde im Gericht «' + prod.abend + '» umsonst vorbereitet.' });
+      }
+    }
+  });
+  return out;
+}
+
+// Setzt ein noch nicht gekochtes Rezept auf "Kochschritte fehlen" zurueck, damit es neu erzeugt wird.
+// Name, Tag, Zeitangaben und die Gericht-ID bleiben; gekochte Gerichte werden nie angefasst.
+function resetRezept(g) {
+  if (!g || g._gekocht) return false;
+  ['schritte_vegi', 'schritte_fleisch', 'zutaten', 'prep_next', 'einfrieren', 'tipp'].forEach(function(f) { delete g[f]; });
+  return true;
+}
+
+// Loest betroffene Verbindungen auf, ohne unbetroffene Rezepte oder gekochte Gerichte anzufassen.
+// Gibt die Gericht-IDs zurueck, deren Rezept neu erzeugt werden muss.
+function komponentenNeuPlanen(sug, probleme) {
+  var kp = sug && sug.komponentenplan, zurueck = {};
+  if (!kp) return [];
+  probleme.forEach(function(pr) {
+    var k = kp.komponenten.filter(function(x) { return x.id === pr.kid; })[0];
+    if (!k) return;
+    var prod = gerichtMitGid(sug, k.hergestellt_in);
+    if (pr.art === 'ueberschuss') {
+      k.verbrauch = k.verbrauch.filter(function(v) { var c = gerichtMitGid(sug, v.gid); return c && !c._cancelled; });
+      if (k.verbrauch.length) k.gesamt = rund1(k.sofort + k.verbrauch.reduce(function(a, v) { return a + v.menge; }, 0));
+      else kp.komponenten = kp.komponenten.filter(function(x) { return x.id !== k.id; });
+      if (prod && resetRezept(prod)) zurueck[prod.gid] = true;
+    } else {
+      kp.komponenten = kp.komponenten.filter(function(x) { return x.id !== k.id; });
+      pr.betroffen.forEach(function(gid) { var c = gerichtMitGid(sug, gid); if (c && resetRezept(c)) zurueck[gid] = true; });
+      if (pr.art === 'reihenfolge' && prod && resetRezept(prod)) zurueck[prod.gid] = true;
+    }
+  });
+  return Object.keys(zurueck);
+}
+
+// Fragt den gemeinsamen Plan ab. Ungueltige Antworten werden EINMAL neu angefordert.
+function ladeKomponentenplan(plan, versuch) {
+  var sug = plan && plan.sug;
+  sichereGerichtIds(sug);
+  var aktiv = aktiveGerichteChrono(sug);
+  if (aktiv.length < 2) return Promise.reject(new Error('Aufbauend kochen braucht mindestens zwei Kochabende.'));
+  var opts = {
+    personen: plan.personen || 2,
+    modus: plan.modus || 'optional',
+    reste: plan.reste !== undefined ? !!plan.reste : true,
+    freeze: plan.freeze !== undefined ? !!plan.freeze : true,
+    planungsart: 'aufbauend',
+    gerichteListe: aktiv.map(function(x) {
+      var o = { gid: x.g.gid, tag: x.g.tag, abend: x.g.abend };
+      if (x.g.komponente) o.komponente = String(x.g.komponente);
+      if (x.g.nutzt) o.nutzt = String(x.g.nutzt);
+      return o;
+    })
+  };
+  return callWorker('komponenten', 'Lege den Komponentenplan fest.', 1500, opts)
+    .then(function(raw) {
+      var kp = null, fehler = null;
+      try { kp = normalisiereKomponentenplan(parseJSON(raw)); } catch (pe) { fehler = 'Die Antwort war kein gültiges JSON.'; }
+      if (!fehler) fehler = kp ? pruefeKomponentenplan(kp, sug) : 'Antwort enthielt keinen Komponentenplan.';
+      if (fehler) { var e = new Error('Komponentenplan ungültig: ' + fehler); e.validierung = true; throw e; }
+      return kp;
+    })
+    .catch(function(e) {
+      if (e && e.validierung && !versuch) return ladeKomponentenplan(plan, 1);
+      throw e;
+    });
+}
+// Stellt sicher, dass ein aufbauender Plan seinen Komponentenplan hat (true = neu erzeugt).
+// Alte Kettenplaene und andere Planungsarten bleiben unberuehrt.
+function sichereKomponentenplan(plan) {
+  var sug = plan && plan.sug;
+  if (!sug || planungsartVonPlan(plan) !== 'aufbauend' || planIstAltKette(plan) || sug.komponentenplan) return Promise.resolve(false);
+  return ladeKomponentenplan(plan).then(function(kp) { sug.komponentenplan = kp; return true; });
+}
+
+// Prueft ein neu erzeugtes Rezept gegen seine Rolle: eine vorbereitete Komponente wird nicht nochmals
+// eingekauft, und die Schritte nennen sie. null = in Ordnung.
+function komponentenWoerter(name) {
+  var stop = ['gekochte', 'gekochter', 'gekochtes', 'vorgekochte', 'vorgekochter', 'gebackene', 'gebackener', 'frische', 'frischer',
+    'selbstgemachte', 'mit', 'und', 'aus', 'vom', 'von', 'der', 'die', 'das'];
+  return String(name || '').toLowerCase().replace(/[^a-zäöüß ]+/g, ' ').split(/\s+/)
+    .filter(function(w) { return w.length >= 4 && stop.indexOf(w) < 0; });
+}
+function pruefeKomponentenRezept(rez, ans) {
+  if (!ans || (!ans.herstellt.length && !ans.verwendet.length)) return null;
+  var text = '';
+  rezeptSchritte(rez).concat(rez.schritte_fleisch || []).forEach(function(st) { text += ' ' + (st.titel || '') + ' ' + (st.text || ''); });
+  text = text.toLowerCase();
+  function erwaehnt(name) {
+    return komponentenWoerter(name).some(function(w) { return text.indexOf(w) >= 0 || (w.length >= 7 && text.indexOf(w.slice(-5)) >= 0); });
+  }
+  var zNamen = [];
+  (rez.zutaten || []).forEach(function(z) { String((z && z.name) || '').toLowerCase().replace(/[^a-zäöüß ]+/g, ' ').split(/\s+/).forEach(function(w) { if (w) zNamen.push(w); }); });
+  for (var i = 0; i < ans.verwendet.length; i++) {
+    var v = ans.verwendet[i];
+    var doppelt = komponentenWoerter(v.name).filter(function(w) { return zNamen.indexOf(w) >= 0; });
+    if (doppelt.length) return 'Das Rezept kauft die bereits vorbereitete Komponente «' + v.name + '» nochmals ein.';
+    if (!erwaehnt(v.name)) return 'Die Schritte verwenden die vorbereitete Komponente «' + v.name + '» nicht.';
+  }
+  for (var j = 0; j < ans.herstellt.length; j++) {
+    if (!erwaehnt(ans.herstellt[j].name)) return 'Die Schritte bereiten die Komponente «' + ans.herstellt[j].name + '» nicht vor.';
+  }
+  return null;
+}
+
+// ─── Anzeige und Hinweise ───────────────────────────────────
+function komponentenBadgeHtml(sug, g, aktiv) {
+  if (!sug || !sug.komponentenplan || !g || !g.gid || g._cancelled) return '';
+  var a = komponentenAnsicht(sug, g), t = '';
+  a.herstellt.forEach(function(h) {
+    t += '<div>🧩 Bereitet «' + esc(h.name) + '» vor: ' + esc(mengeMitEinheit(h.gesamt, h.einheit)) + ' insgesamt, ' +
+      esc(mengeMitEinheit(h.zurueck, h.einheit)) + ' für ' + h.fuer.map(function(f) { return esc(f.tag); }).join(', ') + ' zurückgestellt</div>';
+  });
+  a.verwendet.forEach(function(v) {
+    t += '<div>🧩 Baut auf «' + esc(v.name) + '» (' + esc(mengeMitEinheit(v.menge, v.einheit)) + ') vom ' + esc(v.von.tag) + ' auf</div>';
+  });
+  var warn = komponentenProbleme(sug).filter(function(pr) {
+    return pr.betroffen.indexOf(g.gid) >= 0 || (pr.erzeuger && pr.erzeuger.gid === g.gid);
+  });
+  var w = '';
+  if (warn.length) {
+    w = '<div style="margin-top:6px;color:#8a4b00;background:#fff3e0;border-radius:6px;padding:6px 8px">⚠ ' +
+      warn.map(function(pr) { return esc(pr.text); }).join(' ') +
+      (aktiv ? ' <button class="btn btn-out" onclick="komponentenNeuPlanenAusfuehren()" style="margin-top:6px;font-size:12px;min-height:36px">Neu planen</button>' : '') + '</div>';
+  }
+  if (!t && !w) return '';
+  return '<div class="komp-info" style="font-size:12px;color:var(--txt2);background:#f4f8f7;border:.5px solid #cfdcda;border-radius:8px;padding:7px 9px;margin:8px 0">' + t + w + '</div>';
+}
+// Kochmodus: Komponenten getrennt von den einzukaufenden Zutaten.
+function komponentenKarteHtml(ans) {
+  if (!ans || (!ans.herstellt.length && !ans.verwendet.length)) return '';
+  var t = '';
+  ans.verwendet.forEach(function(v) {
+    t += '<div><b>Bereits vorbereitet – nicht einkaufen:</b> ' + esc(v.name) + ' – ' + esc(mengeMitEinheit(v.menge, v.einheit)) +
+      ' (am ' + esc(v.von.tag) + ' im Gericht «' + esc(v.von.abend) + '» zubereitet)</div>';
+  });
+  ans.herstellt.forEach(function(h) {
+    t += '<div><b>Wird vorbereitet:</b> ' + esc(h.name) + ' – ' + esc(mengeMitEinheit(h.gesamt, h.einheit)) + ' insgesamt' +
+      (h.sofort > 0 ? ', ' + esc(mengeMitEinheit(h.sofort, h.einheit)) + ' sofort verwenden' : ', nichts sofort verwenden') +
+      ', ' + esc(mengeMitEinheit(h.zurueck, h.einheit)) + ' zurückstellen für ' +
+      h.fuer.map(function(f) { return esc(f.tag) + ' «' + esc(f.abend) + '» ' + esc(mengeMitEinheit(f.menge, h.einheit)); }).join(', ') + '</div>';
+  });
+  t += '<div style="margin-top:4px;font-size:11px;color:var(--gr3)">Die Mengen der Komponenten gelten für die geplanten Portionen und werden beim Anpassen der Portionen nicht umgerechnet.</div>';
+  return '<div id="ckomp" style="background:#f4f8f7;border:.5px solid #cfdcda;border-radius:8px;padding:9px 12px;margin-bottom:10px;font-size:12px;color:var(--txt2);line-height:1.5">' + t + '</div>';
+}
+function komponentenDruckHtml(ans) {
+  if (!ans || (!ans.herstellt.length && !ans.verwendet.length)) return '';
+  var t = '';
+  ans.verwendet.forEach(function(v) {
+    t += '<div style="font-size:12px;padding:3px 0"><b>Bereits vorbereitet (nicht einkaufen):</b> ' + esc(v.name) + ' – ' + esc(mengeMitEinheit(v.menge, v.einheit)) + ' (vom ' + esc(v.von.tag) + ')</div>';
+  });
+  ans.herstellt.forEach(function(h) {
+    t += '<div style="font-size:12px;padding:3px 0"><b>Wird vorbereitet:</b> ' + esc(h.name) + ' – ' + esc(mengeMitEinheit(h.gesamt, h.einheit)) +
+      ', davon ' + esc(mengeMitEinheit(h.zurueck, h.einheit)) + ' zurückstellen für ' + h.fuer.map(function(f) { return esc(f.tag) + ' ' + esc(mengeMitEinheit(f.menge, h.einheit)); }).join(', ') + '</div>';
+  });
+  return '<div style="margin-top:12px;background:#f4f8f7;border-left:3px solid #5B7C78;padding:10px 12px;border-radius:0 6px 6px 0"><div style="font-size:11px;font-weight:700;color:#5B7C78;margin-bottom:4px">KOMPONENTEN</div>' + t + '</div>';
+}
+
+// Erklaert nach einer Aktion (Absagen, Entfernen, Verschieben, Tauschen, Ersetzen), was dadurch andere Gerichte betrifft.
+function pruefeAbhaengigkeitenNachAktion(sug, titel) {
+  var probleme = komponentenProbleme(sug);
+  if (!probleme.length) return false;
+  if ($('dep-titel')) $('dep-titel').textContent = titel || 'Diese Änderung betrifft andere Gerichte';
+  var folgen = {
+    erzeuger_fehlt: 'Neu planen löst die Verbindung: die abhängigen Gerichte werden als eigenständige Rezepte neu erstellt.',
+    reihenfolge: 'Neu planen löst die Verbindung: die betroffenen Gerichte und das vorbereitende Gericht werden als eigenständige Rezepte neu erstellt.',
+    ueberschuss: 'Neu planen verringert die vorbereitete Menge; das vorbereitende Gericht wird dafür neu erstellt.'
+  };
+  var h = probleme.map(function(pr) {
+    return '<p style="margin:0 0 8px">' + esc(pr.text) + '<br><i style="color:var(--gr3)">' + esc(folgen[pr.art]) + '</i></p>';
+  }).join('');
+  h += '<p style="margin:0;color:var(--gr3)">Bereits gekochte Gerichte und alle nicht betroffenen Rezepte bleiben unverändert.</p>';
+  $('dep-text').innerHTML = h;
+  $('dep-knoepfe').innerHTML =
+    '<button class="btn btn-red braucht-netz" id="dep-neu" onclick="komponentenNeuPlanenAusfuehren()">Neu planen</button>' +
+    '<button class="btn btn-out" id="dep-undo" onclick="depSchliessen(); undoPlanChange()">Rückgängig</button>' +
+    '<button class="btn btn-out" id="dep-lassen" onclick="depSchliessen()">So lassen</button>';
+  $('dep-modal').style.display = 'flex';
+  return true;
+}
+// Nach einer Planaenderung: gibt es verbundene Gerichte, erklaert ein Dialog die Folgen
+// (mit Neu planen / Rueckgaengig / So lassen); sonst erscheint wie bisher der Rueckgaengig-Hinweis.
+function toastOderAbhaengigkeit(sug, snap, msg, color, titel) {
+  var ap = G.activePlan;
+  if (snap && ap && ap.sug === sug && planungsartVonPlan(ap) === 'aufbauend' && komponentenProbleme(sug).length) {
+    var alt = document.getElementById('undo-toast'); if (alt) alt.remove();
+    G_undo = snap;
+    pruefeAbhaengigkeitenNachAktion(sug, titel || msg);
+    return;
+  }
+  toastMitUndo(msg, snap, color);
+}
+function depSchliessen() { if ($('dep-modal')) $('dep-modal').style.display = 'none'; }
+function komponentenNeuPlanenAusfuehren() {
+  depSchliessen();
+  if (!G.activePlan || !wechselZuPlan()) return;
+  var sug = G.sugs[G.sel];
+  var probleme = komponentenProbleme(sug);
+  if (!probleme.length) return;
+  var neuErzeugen = komponentenNeuPlanen(sug, probleme);
+  markPlanChangedSinceTransfer();
+  persistActivePlan();
+  updateDashboard();
+  if (neuErzeugen.length && !netzOnline()) {
+    try { goWeekRender(sug, { keepTab: true }); } catch (e) {}
+    showSwapToast('Neu geplant. Die ' + neuErzeugen.length + ' Rezepte werden mit Internet neu erstellt.', '#B97836');
+    return;
+  }
+  if (neuErzeugen.length) { showSwapToast(neuErzeugen.length + (neuErzeugen.length === 1 ? ' Rezept wird' : ' Rezepte werden') + ' neu erstellt …', '#B97836'); goWeek(); }
+  else { try { goWeekRender(sug, { keepTab: true }); } catch (e) {} showSwapToast('Neu geplant.'); }
+}
+
 // Rein funktional: fragt die Kochschritte fuer EIN Gericht an, mutiert es bei
 // Erfolg in place und loest auf; bei Fehlschlag lehnt es mit einem
 // Klartext-Fehler ab. Ruehrt NICHTS an G.activePlan/G.sugs/G.sel - dadurch
 // von goWeek() (aktiver Plan) UND von nachholeFehlendeRezepteFuerPlan()
 // (Verlauf, nicht aktiver Plan) gleichermassen sicher nutzbar.
-function ladeVollrezeptFuerGericht(g, modus) {
+// plan: der Plan, zu dem das Gericht gehoert. Planungsart, Portionsbasis, Ernaehrung und
+// Komponentenrolle stammen aus DIESEM Plan - nie aus dem gerade offenen Entwurf.
+function ladeVollrezeptFuerGericht(g, modus, plan, versuch) {
   var msg = 'Erzeuge die vollständigen Kochschritte.';
-  return callWorker('full', msg, 6000, { dishes: gerichtBeschreibung(g), tag: g.tag }, undefined, undefined)
+  var extra = { dishes: gerichtBeschreibung(g), tag: g.tag };
+  var opts = plan ? planOpts(plan, g, extra) : extra;
+  return callWorker('full', msg, 6000, opts, undefined, undefined)
     .then(function(raw) {
       var parsed = parseJSON(raw);
       var validationError = validateFullRecipe(parsed, [g.tag], modus);
       if (validationError) throw new Error(validationError);
       var match = (parsed.gerichte || []).filter(function(x) { return x.tag === g.tag; })[0];
       if (!match) throw new Error('Gericht ' + g.tag + ' fehlt in der Antwort');
+      // Rolle im Komponentenplan pruefen, BEVOR das Rezept uebernommen wird.
+      var rollenFehler = pruefeKomponentenRezept(match, opts.komponenten);
+      if (rollenFehler) {
+        if (!versuch) return ladeVollrezeptFuerGericht(g, modus, plan, 1);
+        throw new Error(rollenFehler);
+      }
       uebernimmVollrezept(g, match);
       validateIngredients([g]);
     });
@@ -3874,15 +4481,23 @@ function nachholeFehlendeRezepteFuerPlan(planId, onFortschritt) {
   if (!sug || !Array.isArray(sug.gerichte)) {
     return Promise.reject(new Error('Dieser Plan wurde nicht gefunden.'));
   }
-  var modus = (istAktiv ? G.activePlan.modus : entry.plan.modus) || G.modus;
+  var planObj = istAktiv ? G.activePlan : entry.plan;
+  var modus = planObj.modus || G.modus;
   var offen = sug.gerichte.filter(function(g) { return fehlendeSchritte(g, modus); });
   var fehler = [];
   var fertig = 0;
   var gesamt = offen.length;
   if (onFortschritt) onFortschritt(fertig, gesamt);
 
+  // Aufbauende Plaene brauchen zuerst den gemeinsamen Komponentenplan (nur wenn noch keiner existiert).
+  var vorlauf = offen.length ? sichereKomponentenplan(planObj) : Promise.resolve(false);
+  return vorlauf.then(function(neuerPlan) {
+  if (neuerPlan) {
+    if (istAktiv) { try { localStorage.setItem(userKey('active_plan'), JSON.stringify(G.activePlan)); } catch (e) {} saveToGH(G.activePlan); updateHistoryEntryPlan(G.activePlan); }
+    else updateHistoryEntryPlan(entry.plan);
+  }
   var laeufe = offen.map(function(g) {
-    return ladeVollrezeptFuerGericht(g, modus)
+    return ladeVollrezeptFuerGericht(g, modus, planObj)
       .then(function() {
         fertig++;
         // Sofort sichern: ein spaeter scheiterndes Gericht darf ein bereits
@@ -3915,18 +4530,22 @@ function nachholeFehlendeRezepteFuerPlan(planId, onFortschritt) {
   return Promise.all(laeufe).then(function() {
     return { gesamt: gesamt, erfolgreich: fertig, fehlgeschlagen: fehler };
   });
+  });
 }
 
 function goWeek() {
   if (G.sel === null) return;
   var sug = G.sugs[G.sel];
+  // Modus des PLANS, wenn es der aktive Plan ist - nicht der des Entwurfs
+  var planObj = (G.activePlan && G.activePlan.sug === sug) ? G.activePlan : null;
+  var planModus = (planObj && planObj.modus) || G.modus;
   // Steps already loaded - go directly. ALLE Gerichte pruefen (nicht nur das
   // erste) - sonst wuerde z.B. ein spaeter ausgetauschtes Gericht mit noch
   // fehlenden Kochschritten uebersehen, waehrend Gericht 1 bereits vollstaendig ist.
   var alleSchritteVorhanden = sug.gerichte.every(function(g) {
     // Modusabhaengig pruefen: im optionalen Modus reicht EINE Variante nicht,
     // dort muessen schritte_vegi UND schritte_fleisch vorliegen.
-    return !fehlendeSchritte(g, G.modus);
+    return !fehlendeSchritte(g, planModus);
   });
   if (alleSchritteVorhanden) {
     goWeekRender(sug); return;
@@ -3992,7 +4611,7 @@ function goWeek() {
 
   // Nur Gerichte OHNE vollstaendige Schritte anfordern. Beim zweiten Anlauf
   // sind das genau die, die beim ersten scheiterten.
-  var offen = sug.gerichte.filter(function(g) { return fehlendeSchritte(g, G.modus); });
+  var offen = sug.gerichte.filter(function(g) { return fehlendeSchritte(g, planModus); });
   var fertig = sug.gerichte.length - offen.length;
   var fehler = [];
   gesamtGerichte = sug.gerichte.length;
@@ -4005,7 +4624,7 @@ function goWeek() {
     if (bar) bar.style.width = Math.max(2, Math.round(fertig / gesamtGerichte * 100)) + '%';
     var el = $('load-liste');
     if (el) el.innerHTML = sug.gerichte.map(function(g) {
-      var ok = !fehlendeSchritte(g, G.modus);
+      var ok = !fehlendeSchritte(g, planModus);
       var kaputt = fehler.some(function(f) { return f.tag === g.tag; });
       return '<div>' + (ok ? '<span style="color:var(--success)">✓</span> '
         : kaputt ? '<span style="color:var(--danger)">✗</span> '
@@ -4019,7 +4638,7 @@ function goWeek() {
     // danach (Fortschrittsanzeige, Sichern des AKTIVEN Plans) bleibt hier -
     // das ist genau der Teil, der fuer den aktiven Plan spezifisch ist und
     // sich NICHT fuer den sicheren Verlaufs-Pfad eignet.
-    return ladeVollrezeptFuerGericht(g, G.modus)
+    return ladeVollrezeptFuerGericht(g, planModus, planObj)
       .then(function() {
         fertig++;
         // SOFORT sichern: ein spaeteres Scheitern eines anderen Gerichts darf
@@ -4035,10 +4654,20 @@ function goWeek() {
   }
 
   G_ladeRezepte = true;
-  var laeufe = offen.map(ladeEines);
-  if (!laeufe.length) laeufe = [Promise.resolve()];
+  // Aufbauend kochen: ZUERST der gemeinsame Komponentenplan, dann die Einzelrezepte.
+  var brauchtPlan = !!(planObj && offen.length && planungsartVonPlan(planObj) === 'aufbauend' && !planIstAltKette(planObj) && !sug.komponentenplan);
+  if (brauchtPlan && $('load-titel')) $('load-titel').textContent = 'Komponentenplan wird erstellt...';
+  var vorlauf = planObj ? sichereKomponentenplan(planObj) : Promise.resolve(false);
 
-  Promise.all(laeufe)
+  vorlauf.then(function(neuerPlan) {
+    if (neuerPlan) {
+      if ($('load-titel')) $('load-titel').textContent = 'Kochschritte werden erstellt...';
+      persistActivePlan();           // Komponentenplan sofort sichern
+    }
+    var laeufe = offen.map(ladeEines);
+    if (!laeufe.length) laeufe = [Promise.resolve()];
+    return Promise.all(laeufe);
+  })
   .then(function() {
     if (fehler.length) {
       var e = new Error(fehler.length + ' von ' + gesamtGerichte + ' Rezepten fehlgeschlagen: ' +
@@ -4513,6 +5142,7 @@ function timelineCardDetail(entry) {
     (g.zeit_total ? '<span style="font-size:11px;color:var(--gr3)">&#9200; Total: <b style="color:var(--txt2)">' + esc(g.zeit_total) + '</b></span>' : '') +
     '</div>' : '';
   var zutatenHtml = timelineZutatenHtml(g);
+  var kompHtml = komponentenBadgeHtml(entry.sugRef, g, !!entry.isActivePlan);
   if (!entry.isActivePlan) {
     // Vergangene Plaene (aus dem Verlauf): keine Aktionen die den aktiven
     // Plan veraendern wuerden (Austauschen/Verschieben/Kochen etc. arbeiten
@@ -4536,6 +5166,7 @@ function timelineCardDetail(entry) {
     return '<div class="ract">' + zeitHtml + (next ? '<div class="rnext">' + next + '</div>' : '') +
       (g._gekocht ? '<div style="font-size:12px;color:var(--grn);font-weight:600;margin-top:6px">&#10003; gekocht</div>' : '') +
       timelineFotoHtml(entry) +
+      kompHtml +
       zutatenHtml +
       (nachholbar ? '<button class="btn btn-red braucht-netz" onclick="nachholeVerlaufsplan(this,\'' + esc(entry.planId) +
         '\')" style="margin-top:10px;font-size:13px">Fehlende Rezepte nachholen</button>' : '') +
@@ -4550,6 +5181,7 @@ function timelineCardDetail(entry) {
   return '<div class="ract">' +
     zeitHtml + (next ? '<div class="rnext" style="margin-bottom:8px">' + next + '</div>' : '') +
     timelineFotoHtml(entry) +
+    kompHtml +
     zutatenHtml +
     '<button class="btn btn-red" onclick="startCook(' + i + ')" style="margin-top:10px">👨‍🍳 Jetzt kochen</button>' +
     '<div class="btnrow">' +
@@ -4944,8 +5576,19 @@ function rescaleZutaten() {
   }
 }
 
+// Aktionen an einem Gericht des AKTIVEN Plans (Kochen, Druck, Teilen, Ersetzen)
+// brauchen dessen Einstellungen. Zeigt G.sugs[G.sel] auf den aktiven Plan, wird in
+// den Plan-Kontext gewechselt (der Entwurf bleibt beiseite). Nur aus Handlern
+// aufrufen, nie aus Renderfunktionen.
+function planAktionKontext() {
+  var ap = G.activePlan;
+  if (ap && ap.sug && G.sugs && G.sel !== null && G.sel !== undefined && G.sugs[G.sel] === ap.sug) wechselZuPlan();
+}
+
 function startCook(ri) {
+  planAktionKontext();
   var g = G.sugs[G.sel].gerichte[ri];
+  merkeRuecksprung();
   clearAllCookTimers(); // Timer eines evtl. zuvor gestarteten Gerichts sauber beenden
   releaseWakeLock();    // wird direkt danach per requestWakeLock() neu angefordert - verhindert doppelte Locks
   G.steps = buildSteps(g);
@@ -4996,6 +5639,9 @@ function showIngOverview(g) {
   if (_tk)  _parts.push(_tk + ' einfrieren');
   var _portInfo = '<div style="background:#e3f2fd;border-radius:8px;padding:9px 12px;margin-bottom:10px;font-size:12px;color:#1565c0">' +
     '<b>Gesamtmenge: <span id="port-gesamt">' + _ges + '</span> Portionen</b><br>davon <span id="port-teile">' + _parts.join(', ') + '</span></div>';
+  // Aufbauend kochen: vorbereitete Komponenten getrennt von dem, was eingekauft wird.
+  var kompAns = (!isFotoRezept && G.sugs && G.sel !== null && G.sugs[G.sel]) ? komponentenAnsicht(G.sugs[G.sel], g) : null;
+  var kompBox = komponentenKarteHtml(kompAns);
   var html = '<div id="cing">' + _portInfo + '<div class="badge bv">Vor dem Kochen</div>' +
     '<div style="font-size:16px;font-weight:700;margin-bottom:4px">' + esc(g.abend) + '</div>' +
     (g.mittag_nächster_tag ? '<div style="font-size:13px;color:var(--gr3);margin-bottom:8px">Morgen: ' + esc(g.mittag_nächster_tag) + '</div>' : '') +
@@ -5003,8 +5649,9 @@ function showIngOverview(g) {
       (g.zeit_aktiv ? '<span style="font-size:12px;color:var(--gr3)">&#9998; Aktiv: <b style="color:var(--txt2)">' + esc(g.zeit_aktiv) + '</b></span>' : '') +
       (g.zeit_total ? '<span style="font-size:12px;color:var(--gr3)">&#9200; Total: <b style="color:var(--txt2)">' + esc(g.zeit_total) + '</b></span>' : '') +
       '</div>' : '<div style="margin-bottom:16px"></div>') +
+    kompBox +
     '<div style="background:#f9f9f9;border-radius:var(--r);padding:0 12px;margin-bottom:16px;border:.5px solid var(--bdr)">' +
-    '<div style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--gr3);padding:10px 0 6px">Zutaten</div>' +
+    '<div style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--gr3);padding:10px 0 6px">' + (kompBox ? 'Zusätzlich einzukaufende Zutaten' : 'Zutaten') + '</div>' +
     rows + '</div>' +
     '<div style="font-size:12px;color:var(--blu);background:var(--bll);border-radius:8px;padding:10px 12px;margin-bottom:16px;border:.5px solid #90caf9">Alle Zutaten bereitstellen und abmessen bevor du anfängst.</div>' +
     '<div style="background:#f9f9f9;border-radius:var(--r);padding:12px;margin-bottom:16px;border:.5px solid var(--bdr)">' +
@@ -5190,7 +5837,7 @@ function leaveCookMode(targetScreen) {
 
 function cookBackOrOverview() {
   if (G.cookViewMode === 'overview') { renderCookStep(); return; }
-  leaveCookMode(G_zurueck || 'sw');
+  leaveCookMode(ruecksprungZiel());
 }
 
 function doComplete(i) {
@@ -5215,7 +5862,7 @@ function doComplete(i) {
         window._fotoRezept.status = 'gekocht';
         saveFotoRezeptSilent(window._fotoRezept, 'gekocht');
       }
-      go('sf');
+      go(G_zurueck && G_zurueck !== 'sw' ? G_zurueck : 'sf');
     }
     return;
   }
@@ -5356,6 +6003,7 @@ function exportPDFToGH(ri) {
 // Schluessel ab; der QR-Code zeigt auf diesen Link. Kein Login noetig, und
 // die Ablage laeuft nach 24 Stunden von selbst ab.
 function teileRezept(ri) {
+  planAktionKontext();
   var html = baueDruckHTML(ri);
   if (!html) return;
   var s = getSession();
@@ -5459,6 +6107,7 @@ function baueDruckInhalt(ri) {
     '</tr>';
   }
 
+  var kompDruck = komponentenDruckHtml(komponentenAnsicht(sug, g));
   var _mitPdf = (G.reste && !g._cancelled) ? (G.personen || 2) : 0;
   var _tkPdf  = G.freeze ? 2 : 0;
   var _pdfGesamtPort = (G.personen || 2) + _mitPdf + _tkPdf;
@@ -5479,8 +6128,9 @@ function baueDruckInhalt(ri) {
     metaHtml +
     '<div class="druck-spalten" style="display:grid;grid-template-columns:1fr 1.3fr;gap:28px">' +
       '<div>' +
-        '<h2 style="font-size:14px;font-weight:700;color:#1a1a1a;border-bottom:2px solid #5B7C78;padding-bottom:6px;margin-bottom:12px">Zutaten</h2>' +
+        '<h2 style="font-size:14px;font-weight:700;color:#1a1a1a;border-bottom:2px solid #5B7C78;padding-bottom:6px;margin-bottom:12px">' + (kompDruck ? 'Zusätzliche Einkaufszutaten' : 'Zutaten') + '</h2>' +
         '<table style="width:100%;border-collapse:collapse">' + zRows + '</table>' +
+        kompDruck +
         (prepSteps ? '<div style="margin-top:16px;background:#e8f0fe;border-left:3px solid #1565c0;padding:10px 12px;border-radius:0 6px 6px 0"><div style="font-size:11px;font-weight:700;color:#1565c0;margin-bottom:4px">FÜR MORGEN</div>' + prepSteps + '</div>' : '') +
         (frzSteps ? '<div style="margin-top:10px;background:#e3f2fd;border-left:3px solid #0277bd;padding:10px 12px;border-radius:0 6px 6px 0"><div style="font-size:11px;font-weight:700;color:#0277bd;margin-bottom:4px">EINFRIEREN</div>' + frzSteps + '</div>' : '') +
       '</div>' +
@@ -5496,8 +6146,10 @@ function baueDruckInhalt(ri) {
 }
 
 function showPrint(ri) {
+  planAktionKontext();
   var inhalt = baueDruckInhalt(ri);
   if (!inhalt) return;
+  merkeRuecksprung();
   $('pcon').innerHTML = inhalt;
   var sug = G.sugs[G.sel], g = sug && sug.gerichte[ri];
   if ($('ptit')) $('ptit').textContent = (g && g.abend) || 'Rezept';
@@ -5539,6 +6191,7 @@ function saveToHistory(planData) {
     reste: planData.reste,
     freeze: planData.freeze,
     budget: planData.budget,
+    planungsart: planungsartVonPlan(planData),
     gerichte: sug ? sug.gerichte.map(function(g){ return {tag:g.tag, abend:g.abend}; }) : [],
     status: 'geplant',
     plan: planData
@@ -5914,6 +6567,14 @@ function kalenderAktualisieren() {
 
 function kalenderTag(iso) {
   G_kal.tag = (G_kal.tag === iso) ? null : iso;
+  // Die Aktionen im aufgeklappten Detail eines aktiven Gerichts arbeiten im
+  // Plan-Kontext (Einstellungen des Plans, Entwurf liegt beiseite). Umgeschaltet
+  // wird hier, im Ereignis - nicht beim Zeichnen der Liste.
+  if (G_kal.tag) {
+    var tl = {};
+    try { tl = buildTimelineDays() || {}; } catch (e) {}
+    if (tl[G_kal.tag] && tl[G_kal.tag].isActivePlan) wechselZuPlan();
+  }
   kalenderNeuZeichnen();
 }
 
@@ -5937,6 +6598,7 @@ function kalenderZuHeute(sofort) {
 }
 
 function openKalender() {
+  G_kal.tag = null;    // frisch geoeffnet: nichts aufgeklappt, also auch kein Plan-Kontext noetig
   go('skal');          // zeichnet nachtraeglich neu und springt zu heute
   initDayPicker();     // sofort, damit die Liste ohne Verzoegerung steht
 }
@@ -6167,6 +6829,8 @@ function persistActivePlan() {
     G.activePlan.sug = G.sugs[G.sel];
     G.activePlan.sel = G.sel;
   }
+  // Nachtraeglich eingeplante Gerichte eines aufbauenden Plans brauchen eine stabile ID.
+  if (G.activePlan.sug && planungsartVonPlan(G.activePlan) === 'aufbauend' && !planIstAltKette(G.activePlan)) sichereGerichtIds(G.activePlan.sug);
   G.activePlan.sugsPartial = G.sugsPartial;
   try { localStorage.setItem(userKey('active_plan'), JSON.stringify(G.activePlan)); } catch(e) {}
   saveToGH(G.activePlan);
@@ -6348,11 +7012,15 @@ function setActivePlanAndGo(weekStartIso) {
   // wird, faellt der Kontext (die anderen Varianten) weg und der Zusatz
   // bleibt sonst dauerhaft und bedeutungslos im Titel stehen.
   sug.thema = (sug.thema || '').replace(/\s*\(Variante \d+\)\s*$/, '');
+  // Stabile Gericht-IDs: Verbindungen zwischen Gerichten (Komponentenplan) haengen
+  // an ihnen, nicht an Array-Positionen oder Wochentagen.
+  sichereGerichtIds(sug);
   var planData = {
     planId: generatePlanId(),
     sug: sug, sel: G.sel, n: G.n, personen: G.personen,
     reste: G.reste, freeze: G.freeze, budget: G.budget, modus: G.modus,
     resteMode: G.resteMode, days: G.days,
+    planungsart: planungsartGueltig(G.planungsart) ? G.planungsart : 'clever',
     weekStart: weekStartIso,             // gewaehlte Woche, immer ein Montag
     einkaufstag: G.einkaufstag || 'Mo',   // separat: nur Frische-/Promptlogik
     saved: new Date().toLocaleDateString('de-CH'),
@@ -6371,14 +7039,35 @@ function setActivePlanAndGo(weekStartIso) {
   goWeek();
 }
 
-// Uebernimmt den aktiven Plan in den Arbeitszustand (G.sugs/G.sel und die
-// Plan-Einstellungen), auf dem alle Gericht-Aktionen (Kochen, Austauschen,
-// Verschieben, Ausfallen, Auswaerts, PDF, Tablet, Entfernen) arbeiten. Navigiert
-// und rendert NICHT. opts.mitTagen: auch Kochabend-Anzahl und Tageswahl
-// uebernehmen (nur beim Oeffnen des Wochenplans - im Kalender gehoeren die Tage
-// der Auswahl dort und duerfen nicht ueberschrieben werden).
-// Gibt true zurueck, wenn ein aktiver Plan uebernommen wurde.
-function prepareActivePlanContext(opts) {
+// ─── ENTWURF UND PLAN-KONTEXT ───────────────────────────────
+// In G liegen zwei Dinge uebereinander: der ENTWURF einer neuen Planung (Personen,
+// Reste, Einfrieren, Modus, Budget ... samt Vorschlaegen G.sugs) und - sobald ein
+// bestehendes Gericht gekocht, gedruckt oder ersetzt wird - die Einstellungen des
+// AKTIVEN PLANS, denn nur mit denen stimmen Portionsbasis und Zutatenmengen.
+// Beides darf sich nicht vermischen:
+//   wechselZuPlan()    legt den Entwurf beiseite (G_entwurfStash) und uebernimmt den Plan
+//   wechselZuEntwurf() gibt den Entwurf unveraendert zurueck
+// Umgeschaltet wird nur in Ereignisbehandlern (Antippen, Navigation), nie beim
+// Rendern. Tageswahl (G.days, G.n, G.planWoche) gehoert immer dem Entwurf und
+// wird von keinem der beiden angefasst.
+var G_ctx = 'entwurf';          // 'entwurf' | 'plan'
+var G_ctxPlanId = null;
+var G_entwurfStash = null;
+var KONTEXT_FELDER = ['sugs', 'sel', 'personen', 'reste', 'freeze', 'modus', 'budget', 'einkaufstag', 'resteMode', 'planungsart', 'sugWoche', 'sugsPartial'];
+
+function kontextLesen() {
+  var o = {};
+  KONTEXT_FELDER.forEach(function(f) { o[f] = G[f]; });
+  return o;
+}
+function kontextSchreiben(o) {
+  KONTEXT_FELDER.forEach(function(f) { G[f] = o[f]; });
+}
+
+// Uebernimmt den aktiven Plan in G (Gericht-Aktionen arbeiten auf G.sugs/G.sel und
+// den Plan-Einstellungen). Navigiert und rendert NICHT. Rohfunktion - Aufrufer
+// ausserhalb von wechselZuPlan() sichern vorher den Entwurf selbst.
+function prepareActivePlanContext() {
   var ap = G.activePlan;
   if (!ap || !ap.sug) return false;
   // sug ist massgeblich; sugsAll nur zur Anzeige der Alternativen. Die Liste wird
@@ -6397,28 +7086,45 @@ function prepareActivePlanContext(opts) {
   if (ap.modus) G.modus = ap.modus;
   if (ap.budget !== undefined) G.budget = ap.budget;
   if (ap.einkaufstag) G.einkaufstag = ap.einkaufstag;
-  if (ap.resteMode) G.resteMode = ap.resteMode;
-  if (opts && opts.mitTagen) {
-    G.n = ap.n || 3;
-    if (ap.days) G.days = ap.days;
-  }
+  // Alte Plaene fuehren "kette" als Reste-Modus; heute ist das die Planungsart aufbauend.
+  // Die Mittagsportionen des Plans (ap.reste) bleiben davon unberuehrt.
+  if (ap.resteMode) G.resteMode = (ap.resteMode === 'kette') ? (G.reste ? 'mikro' : 'nein') : ap.resteMode;
+  G.planungsart = planungsartVonPlan(ap);
   G.sugWoche = null;
   G.sugsPartial = ap.sugsPartial || false;
   return true;
 }
 
-// Stellt sicher, dass die Gericht-Aktionen auf dem aktiven Plan arbeiten. Greift
-// nur ein, wenn G.sugs/G.sel noch nicht darauf zeigen (frischer Start, oder es
-// liegen Vorschlaege einer anderen Planung im Arbeitszustand).
-function ensureActivePlanContext() {
+function kontextIstPlan() {
+  var ap = G.activePlan;
+  return !!(ap && ap.sug && G_ctx === 'plan' && G_ctxPlanId === ap.planId &&
+            G.sugs && G.sel !== null && G.sel !== undefined && G.sugs[G.sel] === ap.sug);
+}
+
+function wechselZuPlan() {
   var ap = G.activePlan;
   if (!ap || !ap.sug) return false;
-  if (G.sel !== null && G.sel !== undefined && G.sugs && G.sugs[G.sel] === ap.sug) return true;
-  return prepareActivePlanContext();
+  if (kontextIstPlan()) return true;
+  // Entwurf nur sichern, wenn er gerade in G steckt (nicht beim Plan-Wechsel
+  // von Plan A zu Plan B - dort liegt er schon im Stash).
+  if (!(G_ctx === 'plan' && G_entwurfStash)) G_entwurfStash = kontextLesen();
+  prepareActivePlanContext();
+  G_ctx = 'plan'; G_ctxPlanId = ap.planId;
+  return true;
+}
+
+function wechselZuEntwurf() {
+  if (G_ctx === 'plan' && G_entwurfStash) kontextSchreiben(G_entwurfStash);
+  G_entwurfStash = null; G_ctx = 'entwurf'; G_ctxPlanId = null;
+}
+
+// Wert des ENTWURFS, auch wenn gerade der Plan-Kontext aktiv ist (reine Anzeige).
+function entwurfWert(feld) {
+  return (G_ctx === 'plan' && G_entwurfStash) ? G_entwurfStash[feld] : G[feld];
 }
 
 function openActivePlan(tab) {
-  if (!prepareActivePlanContext({ mitTagen: true })) return;
+  if (!wechselZuPlan()) return;
   goWeekRender(G.sugs[G.sel]);
   setTimeout(function() { wtab(tab); }, 50);
 }
@@ -6572,7 +7278,7 @@ function deleteGerichtFromPlan(ri) {
   try { goWeekRender(sug, {keepTab:true}); } catch(e) { console.warn("render:", e.message); }
   persistActivePlan();
   updateDashboard();
-  toastMitUndo('Gericht entfernt.', snap, '#555');
+  toastOderAbhaengigkeit(sug, snap, 'Gericht entfernt.', '#555', 'Gericht entfernt');
 }
 
 function cancelGericht(ri) {
@@ -6590,7 +7296,7 @@ function cancelGericht(ri) {
   try { goWeekRender(sug, {keepTab:true}); } catch(e) { console.warn("render:", e.message); }
   persistActivePlan();
   updateDashboard();
-  toastMitUndo('Kochabend ausgefallen – kein Einkauf nötig.', snap, '#555');
+  toastOderAbhaengigkeit(sug, snap, 'Kochabend ausgefallen – kein Einkauf nötig.', '#555', 'Kochabend ausgefallen');
 }
 
 function auswaartsGericht(ri) {
@@ -6608,7 +7314,7 @@ function auswaartsGericht(ri) {
   try { goWeekRender(sug, {keepTab:true}); } catch(e) { console.warn("render:", e.message); }
   persistActivePlan();
   updateDashboard();
-  toastMitUndo('Auswärts markiert', snap, '#555');
+  toastOderAbhaengigkeit(sug, snap, 'Auswärts markiert', '#555', 'Auswärts markiert');
 }
 
 
@@ -6754,7 +7460,9 @@ function swapGerichte(sugIdx, fromGi, toGi) {
     renderSugs();
   }
 
-  if (warnings && onActiveWeek) {
+  if (onActiveWeek && snapSwap && G.activePlan && planungsartVonPlan(G.activePlan) === 'aufbauend' && komponentenProbleme(sug).length) {
+    toastOderAbhaengigkeit(sug, snapSwap, 'Gerichte getauscht', '#B97836', 'Gerichte getauscht');
+  } else if (warnings && onActiveWeek) {
     // Gerade BEI einer Warnung will man den Tausch am ehesten zuruecknehmen.
     toastMitUndo('⚠️ ' + warnings, snapSwap, '#B97836');
   } else if (warnings) {
@@ -7026,7 +7734,9 @@ function snapshotPlan() {
     bringImportedAt: p ? p.bringImportedAt : undefined,
     bringItemCount: p ? p.bringItemCount : undefined,
     n: p ? p.n : undefined,
-    kochabende: p && p.sug ? (p.sug.kochabende || []).slice() : undefined
+    kochabende: p && p.sug ? (p.sug.kochabende || []).slice() : undefined,
+    // Die Abhaengigkeiten der Gerichte gehoeren zum Zustand, den "Rueckgaengig" wiederherstellt.
+    komponentenplan: G.sugs[G.sel].komponentenplan ? JSON.parse(JSON.stringify(G.sugs[G.sel].komponentenplan)) : null
   };
 }
 
@@ -7064,6 +7774,8 @@ function undoPlanChange() {
   if (!snap || !G.sugs || G.sel === null || !G.sugs[G.sel]) return;
 
   G.sugs[G.sel].gerichte = snap.gerichte;
+  if (snap.komponentenplan) G.sugs[G.sel].komponentenplan = snap.komponentenplan;
+  else if (snap.komponentenplan === null) delete G.sugs[G.sel].komponentenplan;
   G.fixedDishes = snap.fixedDishes;
   var p = G.activePlan;
   if (p) {
@@ -7088,9 +7800,29 @@ function undoPlanChange() {
 // ─── GERICHT AUSTAUSCHEN ───────────────────────────────────
 var G_rep = { gerichtIdx: null, newGericht: null, tags: [] };
 
+// Plan, zu dem ein Gericht gehoert: der aktive Plan, wenn die Wochenplan-Ansicht ihn zeigt,
+// sonst ein Entwurf (dann gelten die Einstellungen des Entwurfs).
+function planFuerSug(sug) {
+  var ap = G.activePlan;
+  if (ap && ap.sug === sug) return ap;
+  return { sug: sug, personen: G.personen, modus: G.modus, reste: G.reste, resteMode: G.resteMode, freeze: G.freeze,
+    budget: G.budget, einkaufstag: G.einkaufstag, planungsart: G.planungsart, n: G.n };
+}
+
 function showReplaceGericht(ri) {
   if (!G.sugs || G.sel === null) return;
+  planAktionKontext();
   var g = G.sugs[G.sel].gerichte[ri];
+  // Hat das Gericht eine Rolle im Komponentenplan, bekommt das Ersatzgericht dieselbe Rolle.
+  var rolle = $('rep-rolle');
+  if (rolle) {
+    var ans = komponentenAnsicht(G.sugs[G.sel], g);
+    var t = '';
+    ans.herstellt.forEach(function(h) { t += 'Dieses Gericht bereitet «' + h.name + '» vor (' + mengeMitEinheit(h.zurueck, h.einheit) + ' für ' + h.fuer.map(function(f) { return f.tag; }).join(', ') + '). '; });
+    ans.verwendet.forEach(function(v) { t += 'Dieses Gericht baut auf «' + v.name + '» vom ' + v.von.tag + ' auf (' + mengeMitEinheit(v.menge, v.einheit) + '). '; });
+    rolle.textContent = t ? t + 'Das Ersatzgericht übernimmt diese Rolle.' : '';
+    rolle.style.display = t ? 'block' : 'none';
+  }
   G_rep.gerichtIdx = ri;
   G_rep.newGericht = null;
   G_rep.tags = [];
@@ -7122,6 +7854,7 @@ function closeReplace() {
 function generateReplace() {
   if (!netzGuard()) return;
   if (G.sel === null) return;
+  planAktionKontext();
   var sug = G.sugs[G.sel];
   var ri = G_rep.gerichtIdx;
   var g = sug.gerichte[ri];
@@ -7133,36 +7866,41 @@ function generateReplace() {
   $('rep-gen-btn').disabled = true;
 
   var existing = sug.gerichte.map(function(gx){ return gx.abend; }).join(', ');
-  var otherZutaten = sug.gerichte
-    .filter(function(_, i){ return i !== ri; })
-    .flatMap ? sug.gerichte.filter(function(_, i){ return i !== ri; }).map(function(gx){ return (gx.zutaten||[]).map(function(z){ return z.name; }).join(', '); }).join(', ')
-    : sug.gerichte.filter(function(_, i){ return i !== ri; }).map(function(gx){ return (gx.zutaten||[]).map(function(z){ return z.name; }).join(', '); }).join(', ');
+  var otherZutaten = sug.gerichte.filter(function(_, i){ return i !== ri; })
+    .map(function(gx){ return (gx.zutaten||[]).map(function(z){ return z.name; }).join(', '); }).join(', ');
+  // Einstellungen und Planungsart stammen aus dem Plan des Gerichts, nicht aus einem offenen Entwurf.
+  var planR = planFuerSug(sug);
+  var artR = planungsartVonPlan(planR);
+  sichereGerichtIds(sug);
   var reason = G_rep.tags.length ? 'Grund fuer Austausch: ' + G_rep.tags.join(', ') + '.' : '';
 
   var msg = 'Ersetze "' + g.abend + '" am ' + g.tag + '. ' + reason +
     (hint ? ' Wunsch: ' + hint + '.' : '') +
     ' Andere Gerichte diese Woche nicht wiederholen: ' + existing + '.' +
-    ' Verfuegbare Zutaten der Woche mitnutzen: ' + otherZutaten + '.' +
-    ' Fuer ' + (G.personen||2) + ' Personen.' +
-    (G.reste ? ' Mit Resteverwertung am naechsten Tag.' : '') +
+    // Nur beim cleveren Einkaufen sind gemeinsame Zutaten erwuenscht; frei und aufbauend nicht.
+    (artR === 'clever' ? ' Verfuegbare Zutaten der Woche duerfen mitgenutzt werden: ' + otherZutaten + '.' : '') +
+    ' Planungsart: ' + PLANUNGSART_TEXT[artR] + '.' +
+    ' Fuer ' + (planR.personen||2) + ' Personen.' +
+    (planR.reste ? ' Mit Resteverwertung am naechsten Tag.' : '') +
     // Schrittfeld passend zum Modus - sonst verlangt das Beispiel eine Variante,
     // die der Worker im gewaehlten Modus gar nicht liefern soll.
     ' NUR valides JSON. Format: {"gerichte":[{"tag":"' + g.tag + '","abend":"Gerichtsname","mittag_nächster_tag":"Restname","zeit_aktiv":"20m","zeit_total":"40m","zutaten":[{"name":"X","menge":"Y"}],' +
-    (G.modus === 'fleisch'
+    (planR.modus === 'fleisch'
       ? '"schritte_fleisch":[SCHRITT]'
-      : G.modus === 'vegi'
+      : planR.modus === 'vegi'
         ? '"schritte_vegi":[SCHRITT]'
         : '"schritte_vegi":[SCHRITT],"schritte_fleisch":[SCHRITT]')
       .split('SCHRITT').join('{"titel":"Schritt","text":"Detail","timer_min":0,"zutaten_schritt":[{"name":"X","menge":"Y"}],"zubehoer":[],"kontrolle":"","parallel_hinweis":""}') +
     ',"tipp":"Tipp"}]}';
 
-  callWorker('replace', msg, 5000, { dishes: existing, tag: g.tag })
+  var repOpts = planOpts(planR, g, { dishes: existing, tag: g.tag });
+  callWorker('replace', msg, 5000, repOpts)
     .then(function(raw) {
       $('rep-load').style.display = 'none';
       $('rep-gen-btn').disabled = false;
       try {
         var parsed = parseJSON(raw);
-        var repValidationError = validateFullRecipe(parsed, null, G.modus);
+        var repValidationError = validateFullRecipe(parsed, null, planR.modus || G.modus);
         if (repValidationError) throw new Error(repValidationError);
         var gerichte = parsed.gerichte || [];
         // Exakt EIN Ersatzgericht erwartet - mehrere wuerden stillschweigend
@@ -7171,6 +7909,9 @@ function generateReplace() {
           throw new Error('Erwartet genau 1 Ersatzgericht, erhalten ' + gerichte.length);
         }
         var ng = gerichte[0];
+        // Uebergabemengen des Komponentenplans muessen im Ersatzgericht vorkommen.
+        var rollenFehler = pruefeKomponentenRezept(ng, repOpts.komponenten);
+        if (rollenFehler) throw new Error(rollenFehler + ' Bitte nochmals generieren.');
         G_rep.newGericht = ng;
         $('rep-name').textContent = ng.abend;
         $('rep-meta').textContent =
@@ -7201,6 +7942,11 @@ function applyReplace() {
 
   // Keep scheduling info from original
   ng.tag = oldG.tag;
+  // Die Gericht-ID bleibt: der Komponentenplan verweist ueber sie auf dieses Gericht.
+  if (oldG.gid) ng.gid = oldG.gid;
+  // Hat der Plan eine Rolle fuer dieses Gericht, tragen Name und Rolle weiter.
+  if (oldG.komponente) ng.komponente = oldG.komponente;
+  if (oldG.nutzt) ng.nutzt = oldG.nutzt;
   if (oldG.mittag_tag) ng.mittag_tag = oldG.mittag_tag;
   if (!ng.mittag_nächster_tag && oldG.mittag_nächster_tag) {
     ng.mittag_nächster_tag = ng.abend + ' Reste';
@@ -7219,11 +7965,13 @@ function applyReplace() {
   goWeekRender(sug, imKal ? { keepTab: true } : undefined);   // aus dem Kalender: dort bleiben
   if (!imKal) wtab('r');
 
+  if (!(G.activePlan && G.activePlan.sug === sug && planungsartVonPlan(G.activePlan) === 'aufbauend' && komponentenProbleme(sug).length && pruefeAbhaengigkeitenNachAktion(sug, 'Gericht ersetzt'))) {
   var ind = document.createElement('div');
   ind.textContent = '"' + ng.abend + '" uebernommen';
   ind.style.cssText = 'position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--grn);color:#fff;padding:10px 16px;border-radius:8px;font-size:13px;font-weight:600;z-index:999;white-space:nowrap';
   document.body.appendChild(ind);
   setTimeout(function(){ ind.remove(); }, 2500);
+  }
 }
 
 
@@ -7744,6 +8492,12 @@ function deletePastDish(planId, gerichtIdx) {
   showSt('ist', 'Gericht entfernt.', 'ok');
 }
 
+// Wohin nach der Bewertung? Kommt man aus dem Kochmodus, dorthin wo gekocht wurde;
+// sonst zurueck auf den Bildschirm, von dem aus bewertet wurde (Kalender, Wochenplan ...).
+function bewertungRuecksprung() {
+  var cur = aktuellerScreenId();
+  return (cur === 'sc' || cur === 'sp') ? ruecksprungZiel() : cur;
+}
 function showPastDishRating(planId, gerichtIdx) {
   var hist;
   try { hist = JSON.parse(localStorage.getItem(userKey('local_history')) || '[]'); }
@@ -7759,7 +8513,7 @@ function showPastDishRating(planId, gerichtIdx) {
   G_rating.pastDish = { thema: sug.thema, gericht: g };
   G_rating.stars = 0;
   G_rating.tags = [];
-  G_rating.returnScreen = G_zurueck || 'sw';
+  G_rating.returnScreen = bewertungRuecksprung();
   if ($('rm-title')) $('rm-title').textContent = g.abend || 'Dein Gericht';
   if ($('rm-feedback')) $('rm-feedback').value = '';
   if ($('rm-tags')) $('rm-tags').querySelectorAll('.chip').forEach(function(c){ c.classList.remove('on'); });
@@ -7792,7 +8546,7 @@ function showRatingModal(ri) {
   G_rating.fotoIdx = null;
   G_rating.stars = 0;
   G_rating.tags = [];
-  G_rating.returnScreen = G_zurueck || 'sw'; // nach dem Kochen dorthin zurueck, wo man gestartet ist (Wochenplan oder Kalender)
+  G_rating.returnScreen = bewertungRuecksprung();
   if ($('rm-title')) $('rm-title').textContent = gerichtName;
   if ($('rm-feedback')) $('rm-feedback').value = '';
   if ($('rm-tags')) $('rm-tags').querySelectorAll('.chip').forEach(function(c){ c.classList.remove('on'); });
@@ -8394,7 +9148,6 @@ function aktualisierePlanKennzahlen() {
   var aktive = (p.sug.gerichte || []).filter(function(g) { return !g._cancelled; });
   p.n = aktive.length;
   p.sug.kochabende = aktive.map(function(g) { return (g.tag || '').slice(0, 2); });
-  G.n = p.n;
 }
 
 // Einzelrezept OHNE Wochenplan: "Einplanen" verlangte bisher zwingend einen
@@ -8415,7 +9168,7 @@ function einplanenSpontanHeute(r) {
     sug: { thema: r.abend || r.name || 'Spontanes Rezept', gerichte: [] },
     sel: 0, n: 0, personen: G.personen || 2,
     reste: G.reste, freeze: G.freeze, budget: G.budget, modus: G.modus || 'optional',
-    resteMode: G.resteMode, days: G.days,
+    resteMode: G.resteMode, days: G.days, planungsart: 'frei',
     weekStart: isoDateLocal(mondayOf(new Date())),
     einkaufstag: G.einkaufstag || 'Mo',
     saved: new Date().toLocaleDateString('de-CH'),
@@ -8814,6 +9567,7 @@ function saveFotoRezepteToGH(saved){
 }
 function showFotoPrint(){
   if(!window._fotoRezept)return; var r=window._fotoRezept;
+  merkeRuecksprung();
   var zRows=(r.zutaten||[]).map(function(z){return '<tr><td style="padding:5px 0;border-bottom:1px solid #eee;font-weight:500">☐ '+esc(z.name)+'</td><td style="padding:5px 0;border-bottom:1px solid #eee;color:#888;text-align:right">'+mengeTxt(z.menge)+'</td></tr>';}).join('');
   var sRows=(r.schritte||[]).map(function(s,i){return '<div style="margin-bottom:10px;font-size:13px"><strong style="color:#5B7C78">'+(i+1)+'.</strong> '+esc(s.text)+(s.timer_min>0?' ['+s.timer_min+' Min.]':'')+'</div>';}).join('');
   $('pcon').innerHTML='<h1 style="font-size:20px;font-weight:800;margin-bottom:4px">'+esc(r.name||'Rezept')+'</h1>'+(r.beschreibung?'<p style="color:#888;margin-bottom:12px;font-size:13px">'+esc(r.beschreibung)+'</p>':'')+(r.zeit_total?'<p style="font-size:12px;color:#888;margin-bottom:16px">Aktiv: '+esc(r.zeit_aktiv||'?')+' · Total: '+esc(r.zeit_total)+' · '+G_foto.portionen+' Personen</p>':'')+'<h2 style="font-size:14px;font-weight:700;margin-bottom:8px;color:#5B7C78">Zutaten</h2><table style="width:100%;border-collapse:collapse;margin-bottom:16px">'+zRows+'</table><h2 style="font-size:14px;font-weight:700;margin-bottom:8px;color:#4F8067">Zubereitung</h2>'+sRows+(r.tipp?'<div style="background:#fff9c4;border-left:3px solid #f9a825;padding:10px;margin-top:12px;border-radius:4px;font-size:13px"><strong>Tipp:</strong> '+esc(r.tipp)+'</div>':'');
@@ -8827,6 +9581,7 @@ function startFotoCook(){
     zubehoer: s.zubehoer || [], kontrolle: s.kontrolle || '', parallel: s.parallel_hinweis || ''
   };});
   if(!steps.length){alert('Keine Kochschritte vorhanden.');return;}
+  merkeRuecksprung();
   clearAllCookTimers();
   releaseWakeLock();
   G.steps=steps;G.cur=-1;G.act=0;G.done={};G.cookingGerichtIdx=null;
@@ -8844,6 +9599,7 @@ function startFotoCook(){
 // ─── PRÄFERENZEN & USER MENU ────────────────────────────────
 function getPrefKey(){var s=getSession();return s?'prefs_'+s.username:'prefs_default';}
 function loadPrefs(){
+  wechselZuEntwurf();   // Praeferenzen betreffen den Entwurf
   try{var prefs=JSON.parse(localStorage.getItem(getPrefKey())||'{}');
   if(prefs.personen!==undefined){G.personen=prefs.personen;setP(prefs.personen);}
   if(prefs.modus!==undefined){G.modus=prefs.modus;setM(prefs.modus);}
@@ -8891,6 +9647,7 @@ function setPref(key,val){
   if(!window._tempPrefs)window._tempPrefs={};window._tempPrefs[key]=val;
 }
 function savePrefs(){
+  wechselZuEntwurf();
   var prefs=JSON.parse(localStorage.getItem(getPrefKey())||'{}');
   if(window._tempPrefs){Object.keys(window._tempPrefs).forEach(function(k){prefs[k]=window._tempPrefs[k];});window._tempPrefs={};}
   prefs.kuechen=$('pref-kuechen')?$('pref-kuechen').value.trim():'';
@@ -8991,6 +9748,55 @@ function waehleKetten(n, ausschluss, modus, monat) {
     if (ausRegion >= 2) rest = rest.filter(function(k) { return k.r !== treffer.r; });
   }
   return gewaehlt;
+}
+
+// Anregungen fuer die Planungsarten "frei" und "aufbauend". Anders als die Ketten legen sie
+// KEINE gemeinsamen Zutaten fest: sie sorgen nur dafuer, dass die drei parallelen Aufrufe
+// nicht dasselbe liefern. Das Modell darf sie ignorieren, wenn Thema oder Ernaehrungsform dagegen sprechen.
+var KOMPONENTEN_IDEEN = [
+  { n: 'Tomatensauce', vegi: 1 }, { n: 'gekochter Reis', vegi: 1 }, { n: 'Ofengemüse', vegi: 1 },
+  { n: 'gekochte Linsen oder Kichererbsen', vegi: 1 }, { n: 'vorgekochte Kartoffeln', vegi: 1 },
+  { n: 'Béchamelsauce', vegi: 1 }, { n: 'Grundteig für Fladenbrot oder Pizza', vegi: 1 },
+  { n: 'Gemüse-Hackfleisch-Basis', vegi: 0 }, { n: 'gegartes Poulet', vegi: 0 }
+];
+function mischen(arr) {
+  var a = arr.slice();
+  for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)); var t = a[i]; a[i] = a[j]; a[j] = t; }
+  return a;
+}
+function waehleImpulse(n, art, modus) {
+  var out = [], i;
+  if (art === 'aufbauend') {
+    var pool = mischen(KOMPONENTEN_IDEEN.filter(function(k) { return !(modus === 'vegi' && !k.vegi); }));
+    for (i = 0; i < n; i++) out.push({ a: pool.length ? pool[i % pool.length].n : '' });
+    return out;
+  }
+  var regionen = [];
+  KETTEN.forEach(function(k) { if (k.r && regionen.indexOf(k.r) < 0) regionen.push(k.r); });
+  regionen = mischen(regionen);
+  for (i = 0; i < n; i++) out.push({ a: regionen[(2 * i) % regionen.length], b: regionen[(2 * i + 1) % regionen.length] });
+  return out;
+}
+// Titel des Vorschlags (Antwortfeld "thema") fuer Arten ohne Einkaufskette.
+function themaAnweisung(theme) {
+  return theme
+    ? ' Setze das Feld thema NICHT auf das Thema "' + theme + '" wortwoertlich, sondern auf einen kurzen, konkreten Namen fuer GENAU DIESEN Vorschlag - er muss sich erkennbar von den Titeln der anderen beiden Vorschlaege unterscheiden.'
+    : ' Setze das Feld thema auf einen kurzen, konkreten Titel, der GENAU DIESE Gerichte beschreibt (kein erzwungenes gemeinsames Kuechenthema) und sich erkennbar von den Titeln der anderen beiden Vorschlaege unterscheidet.';
+}
+// Vielfaltsvorgaben - nur soweit sie zur Zahl der Gerichte passen (bei einem Gericht gibt es nichts zu unterscheiden).
+function vielfaltsText(n, art) {
+  if (!(n >= 2)) return '';
+  return ' Die Abende muessen sich deutlich unterscheiden: ' +
+    'KEINE Gerichtsart doppelt (nicht zweimal Auflauf, Suppe, Pasta, Wähe, Curry, Salat, Bowl, Blech). ' +
+    // Aufbauend: die vorbereitete Komponente (z.B. Reis) DARF mehrfach vorkommen - sonst widerspraechen sich die Vorgaben.
+    (art === 'aufbauend'
+      ? 'Die vorbereitete Komponente darf in mehreren Gerichten vorkommen; alle anderen Hauptzutaten, Beilagen und Gerichtsarten sollen sich unterscheiden. '
+      : 'Die Hauptbeilage (Reis, Teigwaren, Kartoffeln, Brot/Teig, Polenta) moeglichst nicht wiederholen. ') +
+    'Mindestens zwei verschiedene Zubereitungsarten (Ofen, Pfanne, Topf, kalt). ' +
+    'Mindestens zwei verschiedene Proteinquellen. ' +
+    'Kein Gericht darf eine blosse Variante eines anderen sein - ' +
+    '"Hoernli-Auflauf mit Spinat" und "Hoernli-Auflauf mit Pilzen" waeren unzulaessig, ' +
+    '"Spinat-Hoernli-Auflauf" und "Pilzrisotto" dagegen richtig.';
 }
 
 // Ketten der zuletzt geplanten Wochen, damit sie nicht gleich wiederkommen.
@@ -9137,6 +9943,7 @@ var STAR_LABELS = ['', 'Nicht so gut', 'Geht so', 'Gut', 'Sehr gut', 'Ausgezeich
       </div>
       <input id="rep-hint" placeholder="Oder eigener Wunsch: z.B. etwas Asiatisches, schnell..." aria-label="Oder eigener Wunsch: z.B. etwas Asiatisches, schnell...">
     </div>
+    <div id="rep-rolle" role="note" style="display:none;font-size:12px;line-height:1.5;color:var(--txt2);background:#f4f8f7;border:.5px solid #cfdcda;border-radius:8px;padding:8px 10px;margin-bottom:12px"></div>
     <div id="rep-load" style="display:none;text-align:center;padding:20px 0">
       <div class="spin" style="width:22px;height:22px;margin:0 auto 8px;border-width:2px"></div>
       <div style="font-size:13px;color:var(--gr3)">Neues Gericht wird generiert...</div>
@@ -9161,6 +9968,16 @@ var STAR_LABELS = ['', 'Nicht so gut', 'Geht so', 'Gut', 'Sehr gut', 'Ausgezeich
     <div id="rsch-title" style="font-size:17px;font-weight:700;color:var(--txt);margin-bottom:16px"></div>
     <div id="rsch-days" style="display:flex;flex-direction:column;gap:8px;margin-bottom:16px"></div>
     <button class="btn btn-out" onclick="$('reschedule-modal').style.display='none'" style="padding:11px;font-size:13px">Abbrechen</button>
+  </div>
+</div>
+
+<!-- ABHAENGIGKEITEN (Aufbauend kochen) -->
+<div id="dep-modal" role="dialog" aria-modal="true" aria-labelledby="dep-titel" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);z-index:110;align-items:flex-end;justify-content:center">
+  <div style="background:#fff;border-radius:20px 20px 0 0;padding:24px 20px 28px;width:100%;max-width:480px;max-height:88vh;overflow-y:auto">
+    <div style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--gr3);margin-bottom:4px">Aufbauend kochen</div>
+    <div id="dep-titel" style="font-size:17px;font-weight:700;color:var(--txt);margin-bottom:10px">Diese Änderung betrifft andere Gerichte</div>
+    <div id="dep-text" style="font-size:13px;line-height:1.5;color:var(--txt2);margin-bottom:14px"></div>
+    <div id="dep-knoepfe" style="display:flex;flex-direction:column;gap:8px"></div>
   </div>
 </div>
 
