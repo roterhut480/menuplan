@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=yes">
-<title>Menüplan v7.00</title>
+<title>Menüplan v7.01</title>
 <meta name="theme-color" content="#5B7C78">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -299,7 +299,7 @@ body.netz-aus .netz-hint{display:block}
 
 <!-- HOME -->
 <div class="scr on" id="sh">
-  <div class="hero"><h1>Menüplan</h1><p id="hsub">v7.00 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
+  <div class="hero"><h1>Menüplan</h1><p id="hsub">v7.01 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
 
   <!-- Active plan card -->
 
@@ -447,12 +447,12 @@ body.netz-aus .netz-hint{display:block}
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
           <label style="margin:0">👤 Personen</label>
           <div style="display:flex;align-items:center;gap:12px">
-            <button onclick="setP(G.personen-1)" style="width:44px;height:44px;border-radius:50%;background:#f5f5f5;border:1.5px solid var(--bdr);font-size:18px;cursor:pointer;font-family:inherit;line-height:1;display:flex;align-items:center;justify-content:center">−</button>
+            <button aria-label="Weniger Personen" onclick="setP(G.personen-1)" style="width:44px;height:44px;border-radius:50%;background:#f5f5f5;border:1.5px solid var(--bdr);font-size:18px;cursor:pointer;font-family:inherit;line-height:1;display:flex;align-items:center;justify-content:center">−</button>
             <div style="min-width:80px;text-align:center">
               <div id="p-display" style="font-size:24px;font-weight:800;color:var(--red)">2</div>
               <div style="font-size:11px;color:var(--gr3)">Personen (1–6)</div>
             </div>
-            <button onclick="setP(G.personen+1)" style="width:44px;height:44px;border-radius:50%;background:#f5f5f5;border:1.5px solid var(--bdr);font-size:18px;cursor:pointer;font-family:inherit;line-height:1;display:flex;align-items:center;justify-content:center">+</button>
+            <button aria-label="Mehr Personen" onclick="setP(G.personen+1)" style="width:44px;height:44px;border-radius:50%;background:#f5f5f5;border:1.5px solid var(--bdr);font-size:18px;cursor:pointer;font-family:inherit;line-height:1;display:flex;align-items:center;justify-content:center">+</button>
           </div>
         </div>
       </div>
@@ -638,7 +638,7 @@ body.netz-aus .netz-hint{display:block}
   <div class="tbar">
     <div class="tbar-bk" onclick="go('sh')">&#8592;</div>
     <div><h1>Einzelrezept</h1><div class="tbar-sub">Per Foto oder Text erstellen</div></div>
-    <button onclick="syncFotoRezepte(this)" style="background:rgba(255,255,255,.2);border:none;border-radius:6px;padding:6px 10px;font-size:12px;color:#fff;cursor:pointer;font-family:inherit;margin-left:auto">&#x1F504;</button>
+    <button aria-label="Einzelrezepte aktualisieren" onclick="syncFotoRezepte(this)" style="background:rgba(255,255,255,.2);border:none;border-radius:6px;padding:6px 10px;font-size:12px;color:#fff;cursor:pointer;font-family:inherit;margin-left:auto">&#x1F504;</button>
   </div>
 
   <div class="card"><div class="cp">
@@ -760,7 +760,7 @@ body.netz-aus .netz-hint{display:block}
         <option value="Sa">Samstag</option>
         <option value="So">Sonntag</option>
       </select>
-      <div style="font-size:11px;color:var(--gr3);margin-top:4px">Der Wochenplan beginnt an diesem Tag - er gilt als "frisch eingekauft".</div>
+      <div style="font-size:11px;color:var(--gr3);margin-top:4px">Dieser Tag gilt für Einkaufs- und Frischelogik. Der Kalenderplan bleibt Montag bis Sonntag.</div>
     </div>
     <div class="fld" style="margin-top:10px"><label for="pref-kuechen">Lieblingsküchen (optional)</label>
       <input id="pref-kuechen" placeholder="z.B. asiatisch, mediterran, mexikanisch..." aria-label="z.B. asiatisch, mediterran, mexikanisch..."></div>
@@ -814,11 +814,11 @@ body.netz-aus .netz-hint{display:block}
   <div class="tbar">
     <div class="tbar-bk" onclick="go('sh')">&#8592;</div>
     <div><h1>Verlauf</h1><div class="tbar-sub">Menüpläne &amp; Rezepte</div></div>
-    <button onclick="syncHistory()" style="background:rgba(255,255,255,.2);border:none;border-radius:6px;padding:6px 10px;font-size:12px;color:#fff;cursor:pointer;font-family:inherit;margin-left:auto">&#x1F504;</button>
+    <button aria-label="Verlauf aktualisieren" onclick="syncHistory()" style="background:rgba(255,255,255,.2);border:none;border-radius:6px;padding:6px 10px;font-size:12px;color:#fff;cursor:pointer;font-family:inherit;margin-left:auto">&#x1F504;</button>
   </div>
-  <div class="tabs" style="margin:10px 10px 0">
-    <div class="tab on" id="htab-plans" onclick="hwtab('plans')">&#128197; Menüpläne</div>
-    <div class="tab" id="htab-recipes" onclick="hwtab('recipes')">&#127859; Rezepte</div>
+  <div class="tabs" role="tablist" aria-label="Verlauf" style="margin:10px 10px 0">
+    <div class="tab on" id="htab-plans" role="tab" aria-selected="true" onclick="hwtab('plans')">&#128197; Menüpläne</div>
+    <div class="tab" id="htab-recipes" role="tab" aria-selected="false" onclick="hwtab('recipes')">&#127859; Rezepte</div>
   </div>
   <div id="htab-plans-content">
     <div id="hload" style="display:none;text-align:center;padding:32px">
@@ -846,7 +846,7 @@ body.netz-aus .netz-hint{display:block}
 <!-- PRINT -->
 <div class="scr" id="sp">
   <div class="tbar noprint">
-    <div class="tbar-bk" onclick="go('sw')">&#8592;</div><div class="tbar-bk" onclick="go('sh')" style="margin-left:4px" title="Startseite">&#8962;</div>
+    <div class="tbar-bk" onclick="go(G_zurueck || 'sw')">&#8592;</div><div class="tbar-bk" onclick="go('sh')" style="margin-left:4px" title="Startseite">&#8962;</div>
     <div><h1 id="ptit" style="font-size:15px">Rezept</h1><div class="tbar-sub">Druckansicht</div></div>
   </div>
   <div style="padding:10px" class="noprint">
@@ -931,10 +931,38 @@ function go(id) {
   var shell = document.getElementById('app-shell');
   if (shell) shell.classList.toggle('breit', id === 'sp');
   window.scrollTo(0, 0);
+  // Woher kommen Kochmodus, Druckansicht und Bewertung? Von dort kehren sie zurueck.
+  if (id === 'skal' || id === 'sw') G_zurueck = id;
   if (id === 'snew') setTimeout(initDayPicker, 50);
+  if (id === 'skal') setTimeout(function() { initDayPicker(); kalenderZuHeute(true); }, 0);
 }
+var G_zurueck = 'sw';
 
 document.addEventListener('DOMContentLoaded', function() { setTimeout(initDayPicker, 100); });
+
+// aria-pressed fuer Auswahlknoepfe (.chip, ausser Reitern): wird aus der Klasse "on"
+// abgeleitet, damit die vielen Stellen, die "on" umschalten, nicht einzeln angepasst
+// werden muessen. Ein Beobachter haelt es bei Aenderungen und neuen Chips aktuell.
+function syncAriaPressed(wurzel) {
+  var chips = (wurzel || document).querySelectorAll('.chip');
+  for (var i = 0; i < chips.length; i++) {
+    var c = chips[i];
+    if (c.getAttribute('role') === 'tab') continue;
+    var an = c.classList.contains('on') ? 'true' : 'false';
+    if (c.getAttribute('aria-pressed') !== an) c.setAttribute('aria-pressed', an);
+  }
+}
+document.addEventListener('DOMContentLoaded', function() {
+  syncAriaPressed();
+  if (!window.MutationObserver) return;
+  new MutationObserver(function(muts) {
+    for (var i = 0; i < muts.length; i++) {
+      var m = muts[i];
+      if (m.type === 'attributes') { if (m.target.classList && m.target.classList.contains('chip')) syncAriaPressed(m.target.parentNode); }
+      else if (m.addedNodes && m.addedNodes.length) { syncAriaPressed(m.target); }
+    }
+  }).observe(document.body, { subtree: true, childList: true, attributes: true, attributeFilter: ['class'] });
+});
 
 // ─── BARRIEREFREIHEIT ─────────────────────────────────────
 // Klickbare div/span-Elemente bekommen eine Rolle, sind per Tab erreichbar
@@ -952,6 +980,12 @@ function machBedienbar(wurzel) {
     var el = els[i];
     el.setAttribute('role', el.classList.contains('tab') ? 'tab' : 'button');
     if (!el.hasAttribute('tabindex')) el.setAttribute('tabindex', '0');
+    // Reine Symbol-Knoepfe der Kopfleiste (Pfeil, Haus) brauchen einen Namen
+    if (!el.hasAttribute('aria-label') && (el.classList.contains('tbar-bk') || el.classList.contains('cback'))) {
+      var sym = (el.textContent || '').trim();
+      var name = el.getAttribute('title') || (sym === '←' ? 'Zurück' : sym === '⌂' ? 'Startseite' : '');
+      if (name) el.setAttribute('aria-label', name);
+    }
   }
 }
 document.addEventListener('keydown', function(ev) {
@@ -1271,7 +1305,7 @@ function teileFehlerlog() {
 function renderFehlerlog() {
   var el = $('fehlerlog-liste'); if (!el) return;
   var l = leseFehlerlog();
-  if ($('fehlerlog-anzahl')) $('fehlerlog-anzahl').textContent = l.length ? l.length + ' Einträge' : 'leer';
+  if ($('fehlerlog-anzahl')) $('fehlerlog-anzahl').textContent = l.length ? l.length + (l.length === 1 ? ' Eintrag' : ' Einträge') : 'leer';
   if (!l.length) { el.innerHTML = '<div style="font-size:12px;color:var(--text-secondary);padding:8px 0">Bisher keine Fehler aufgezeichnet.</div>'; return; }
   el.innerHTML = l.slice(0, 20).map(function(e) {
     var zeit = e.t.replace('T', ' ').slice(5, 16);
@@ -1515,6 +1549,8 @@ function initDayPicker() {
           '</button></div>';
         if (offen && tl[t.iso]) {
           var det = '';
+          // Die Aktionen im Detail arbeiten auf G.sugs/G.sel (= aktiver Plan)
+          if (tl[t.iso].isActivePlan) ensureActivePlanContext();
           try { det = timelineCardDetail(tl[t.iso]); } catch (ex) { det = ''; }
           html += '<div class="kl-detail">' + det + '</div>';
         }
@@ -4103,6 +4139,7 @@ function goWeekRender(sug, opts) {
   clearAllCookTimers();
   clearFotoImportContext();
   var swOn = $('sw') && $('sw').classList.contains('on');
+  var imKalender = $('skal') && $('skal').classList.contains('on');
   var keepTab = opts && opts.keepTab;
   var targetTab = (keepTab && swOn) ? currentWeekTab() : 'e';
   if ($('wtit')) $('wtit').textContent = sug.thema;
@@ -4111,6 +4148,9 @@ function goWeekRender(sug, opts) {
   renderEink(sug);
   G_timelineOpen = null; G_timelineInitialized = false; G_timelineScrolled = false; // frischer Zustand bei jedem Betreten
   renderRez(sug);
+  // Aktion aus dem Kalender (Faellt aus, Auswaerts, Entfernen ...): im Kalender
+  // bleiben statt in den Wochenplan zu springen; die Liste zieht sich nach.
+  if (keepTab && imKalender) { try { kalenderAktualisieren(); } catch (e) {} return; }
   wtab(targetTab);
   go('sw');
 }
@@ -4970,9 +5010,9 @@ function showIngOverview(g) {
     '<div style="background:#f9f9f9;border-radius:var(--r);padding:12px;margin-bottom:16px;border:.5px solid var(--bdr)">' +
       '<div style="font-size:12px;font-weight:600;color:var(--txt2);margin-bottom:8px">Portionen anpassen</div>' +
       '<div style="display:flex;align-items:center;gap:12px">' +
-        '<button onclick="adjPort(-1)" style="width:44px;height:44px;border-radius:50%;background:#fff;border:1.5px solid var(--bdr);font-size:20px;cursor:pointer;font-family:inherit;line-height:1">-</button>' +
+        '<button aria-label="Eine Portion weniger" onclick="adjPort(-1)" style="width:44px;height:44px;border-radius:50%;background:#fff;border:1.5px solid var(--bdr);font-size:20px;cursor:pointer;font-family:inherit;line-height:1">-</button>' +
         '<div style="flex:1;text-align:center"><div id="port-display" style="font-size:22px;font-weight:700;color:var(--red)">' + G_cook_port + '</div><div style="font-size:11px;color:var(--gr3)">Portionen</div></div>' +
-        '<button onclick="adjPort(1)" style="width:44px;height:44px;border-radius:50%;background:#fff;border:1.5px solid var(--bdr);font-size:20px;cursor:pointer;font-family:inherit;line-height:1">+</button>' +
+        '<button aria-label="Eine Portion mehr" onclick="adjPort(1)" style="width:44px;height:44px;border-radius:50%;background:#fff;border:1.5px solid var(--bdr);font-size:20px;cursor:pointer;font-family:inherit;line-height:1">+</button>' +
       '</div></div>' +
     '<button class="btn btn-red" onclick="beginCook()">Los geht\'s</button>';
 
@@ -5150,7 +5190,7 @@ function leaveCookMode(targetScreen) {
 
 function cookBackOrOverview() {
   if (G.cookViewMode === 'overview') { renderCookStep(); return; }
-  leaveCookMode('sw');
+  leaveCookMode(G_zurueck || 'sw');
 }
 
 function doComplete(i) {
@@ -5877,17 +5917,28 @@ function kalenderTag(iso) {
   kalenderNeuZeichnen();
 }
 
-// Springt zur Kopfzeile der laufenden Woche (oder, falls es sie nicht gibt, zum Anfang).
+// Springt zur Zeile von HEUTE. Die Wochenkoepfe kleben (sticky): scrollIntoView
+// auf einen klebenden Kopf bewegt nichts, sobald er schon klebt - deshalb wird die
+// Zielposition aus der Tageszeile selbst berechnet, abzueglich Kopfleiste und
+// Wochenkopf. Fallback: erste Zeile der laufenden Woche, sonst ganz nach oben.
 function kalenderZuHeute(sofort) {
-  var el = $('dw-' + isoDateLocal(mondayOf(new Date())));
-  if (el && el.scrollIntoView) el.scrollIntoView({ block: 'start', behavior: sofort ? 'auto' : 'smooth' });
-  else window.scrollTo(0, 0);
+  var heute = new Date();
+  var row = $('dr-' + isoDateLocal(heute));
+  if (!row) {
+    var k = $('dw-' + isoDateLocal(mondayOf(heute)));
+    row = k && k.nextElementSibling && k.nextElementSibling.firstElementChild;
+  }
+  if (!row) { window.scrollTo(0, 0); return; }
+  var tbar = document.querySelector('#skal .tbar');
+  var wk = document.querySelector('#day-picker .kl-wk');
+  var oben = (tbar ? tbar.getBoundingClientRect().height : 0) + (wk ? wk.getBoundingClientRect().height : 0) + 6;
+  var ziel = Math.max(0, Math.round(row.getBoundingClientRect().top + (window.scrollY || 0) - oben));
+  window.scrollTo({ top: ziel, behavior: sofort ? 'auto' : 'smooth' });
 }
 
 function openKalender() {
-  go('skal');
-  initDayPicker();
-  setTimeout(function() { kalenderZuHeute(true); }, 0);
+  go('skal');          // zeichnet nachtraeglich neu und springt zu heute
+  initDayPicker();     // sofort, damit die Liste ohne Verzoegerung steht
 }
 
 function kalenderPlanen() {
@@ -6320,28 +6371,54 @@ function setActivePlanAndGo(weekStartIso) {
   goWeek();
 }
 
-function openActivePlan(tab) {
-  if (!G.activePlan || !G.activePlan.sug) return;
-  // sug ist massgeblich; sugsAll nur zur Anzeige der Alternativen
-  var all = G.activePlan.sugsAll || [];
-  var sel = G.activePlan.sel || 0;
-  if (all.length && sel < all.length) { all[sel] = G.activePlan.sug; G.sugs = all; }
-  else { G.sugs = [G.activePlan.sug]; sel = 0; }
+// Uebernimmt den aktiven Plan in den Arbeitszustand (G.sugs/G.sel und die
+// Plan-Einstellungen), auf dem alle Gericht-Aktionen (Kochen, Austauschen,
+// Verschieben, Ausfallen, Auswaerts, PDF, Tablet, Entfernen) arbeiten. Navigiert
+// und rendert NICHT. opts.mitTagen: auch Kochabend-Anzahl und Tageswahl
+// uebernehmen (nur beim Oeffnen des Wochenplans - im Kalender gehoeren die Tage
+// der Auswahl dort und duerfen nicht ueberschrieben werden).
+// Gibt true zurueck, wenn ein aktiver Plan uebernommen wurde.
+function prepareActivePlanContext(opts) {
+  var ap = G.activePlan;
+  if (!ap || !ap.sug) return false;
+  // sug ist massgeblich; sugsAll nur zur Anzeige der Alternativen. Die Liste wird
+  // kopiert, damit das gespeicherte Plan-Objekt nicht durch das Einsetzen veraendert wird.
+  var all = (ap.sugsAll || []).slice();
+  var sel = ap.sel || 0;
+  if (all.length && sel < all.length) { all[sel] = ap.sug; G.sugs = all; }
+  else { G.sugs = [ap.sug]; sel = 0; }
   G.sel = sel;
-  G.n = G.activePlan.n || 3;
-  G.personen = G.activePlan.personen || 2;
-  G.reste = G.activePlan.reste !== undefined ? G.activePlan.reste : 1;
-  G.freeze = G.activePlan.freeze !== undefined ? G.activePlan.freeze : 1;
+  G.personen = ap.personen || 2;
+  G.reste = ap.reste !== undefined ? ap.reste : 1;
+  G.freeze = ap.freeze !== undefined ? ap.freeze : 1;
   // Auch diese vier gehoeren zum Plan. Fehlten sie, wurde ein Ersatzgericht
   // mit anderen Einstellungen erzeugt als der urspruengliche Plan - etwa
   // vegetarisch statt mit Fleisch oder ohne den gewaehlten Budget-Modus.
-  if (G.activePlan.modus) G.modus = G.activePlan.modus;
-  if (G.activePlan.budget !== undefined) G.budget = G.activePlan.budget;
-  if (G.activePlan.einkaufstag) G.einkaufstag = G.activePlan.einkaufstag;
-  if (G.activePlan.resteMode) G.resteMode = G.activePlan.resteMode;
-  if (G.activePlan.days) G.days = G.activePlan.days;
+  if (ap.modus) G.modus = ap.modus;
+  if (ap.budget !== undefined) G.budget = ap.budget;
+  if (ap.einkaufstag) G.einkaufstag = ap.einkaufstag;
+  if (ap.resteMode) G.resteMode = ap.resteMode;
+  if (opts && opts.mitTagen) {
+    G.n = ap.n || 3;
+    if (ap.days) G.days = ap.days;
+  }
   G.sugWoche = null;
-  G.sugsPartial = G.activePlan.sugsPartial || false;
+  G.sugsPartial = ap.sugsPartial || false;
+  return true;
+}
+
+// Stellt sicher, dass die Gericht-Aktionen auf dem aktiven Plan arbeiten. Greift
+// nur ein, wenn G.sugs/G.sel noch nicht darauf zeigen (frischer Start, oder es
+// liegen Vorschlaege einer anderen Planung im Arbeitszustand).
+function ensureActivePlanContext() {
+  var ap = G.activePlan;
+  if (!ap || !ap.sug) return false;
+  if (G.sel !== null && G.sel !== undefined && G.sugs && G.sugs[G.sel] === ap.sug) return true;
+  return prepareActivePlanContext();
+}
+
+function openActivePlan(tab) {
+  if (!prepareActivePlanContext({ mitTagen: true })) return;
   goWeekRender(G.sugs[G.sel]);
   setTimeout(function() { wtab(tab); }, 50);
 }
@@ -6665,8 +6742,11 @@ function swapGerichte(sugIdx, fromGi, toGi) {
 
   // Passenden Screen neu rendern UND persistieren, je nachdem ob wir gerade
   // in der Vorschlagsauswahl (ss) oder im aktiven Wochenplan (sw) sind.
-  var onActiveWeek = G.activePlan && G.sel === sugIdx &&
-    document.getElementById('sw') && document.getElementById('sw').classList.contains('on');
+  // Auch der Kalender zaehlt als "aktive Woche": dort arbeiten die Aktionen
+  // ebenfalls auf dem aktiven Plan und muessen gespeichert werden.
+  var onActiveWeek = G.activePlan && G.sel === sugIdx && G.sugs[sugIdx] === G.activePlan.sug &&
+    ((document.getElementById('sw') && document.getElementById('sw').classList.contains('on')) ||
+     (document.getElementById('skal') && document.getElementById('skal').classList.contains('on')));
   if (onActiveWeek) {
     goWeekRender(sug, {keepTab:true});
     persistActivePlan();
@@ -7095,7 +7175,7 @@ function generateReplace() {
         $('rep-name').textContent = ng.abend;
         $('rep-meta').textContent =
           (ng.zeit_aktiv||'') + (ng.zeit_total ? ' · Total ' + ng.zeit_total : '') +
-          ((ng.zutaten||[]).length ? ' · ' + ng.zutaten.length + ' Zutaten' : '');
+          ((ng.zutaten||[]).length ? ' · ' + ng.zutaten.length + (ng.zutaten.length === 1 ? ' Zutat' : ' Zutaten') : '');
         $('rep-result').style.display = 'block';
         $('rep-apply').style.display = '';
         $('rep-gen-btn').textContent = '↺ Nochmals';
@@ -7135,8 +7215,9 @@ function applyReplace() {
   persistActivePlan();
 
   closeReplace();
-  goWeekRender(sug);
-  wtab('r');
+  var imKal = $('skal') && $('skal').classList.contains('on');
+  goWeekRender(sug, imKal ? { keepTab: true } : undefined);   // aus dem Kalender: dort bleiben
+  if (!imKal) wtab('r');
 
   var ind = document.createElement('div');
   ind.textContent = '"' + ng.abend + '" uebernommen';
@@ -7678,7 +7759,7 @@ function showPastDishRating(planId, gerichtIdx) {
   G_rating.pastDish = { thema: sug.thema, gericht: g };
   G_rating.stars = 0;
   G_rating.tags = [];
-  G_rating.returnScreen = 'sw';
+  G_rating.returnScreen = G_zurueck || 'sw';
   if ($('rm-title')) $('rm-title').textContent = g.abend || 'Dein Gericht';
   if ($('rm-feedback')) $('rm-feedback').value = '';
   if ($('rm-tags')) $('rm-tags').querySelectorAll('.chip').forEach(function(c){ c.classList.remove('on'); });
@@ -7711,7 +7792,7 @@ function showRatingModal(ri) {
   G_rating.fotoIdx = null;
   G_rating.stars = 0;
   G_rating.tags = [];
-  G_rating.returnScreen = 'sw'; // nach dem Kochen zurueck zum Wochenplan, wie bisher
+  G_rating.returnScreen = G_zurueck || 'sw'; // nach dem Kochen dorthin zurueck, wo man gestartet ist (Wochenplan oder Kalender)
   if ($('rm-title')) $('rm-title').textContent = gerichtName;
   if ($('rm-feedback')) $('rm-feedback').value = '';
   if ($('rm-tags')) $('rm-tags').querySelectorAll('.chip').forEach(function(c){ c.classList.remove('on'); });
@@ -7788,8 +7869,22 @@ function submitRating() {
   $('rating-modal').style.display='none'; go(G_rating.returnScreen || 'sw');
   setTimeout(function(){var msg=G_rating.stars>=4?'Super! Bewertung gespeichert.':'Bewertung gespeichert.';showSt('ist',msg,'ok');setTimeout(function(){if($('ist'))$('ist').style.display='none';},3000);},300);
 }
+// Kurzer Hinweis ohne Rueckgaengig, fuer abgelehnte Aktionen.
+function kurzHinweis(msg) {
+  var ind = document.createElement('div');
+  ind.setAttribute('role', 'status');
+  ind.textContent = msg;
+  ind.style.cssText = 'position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#555;color:#fff;padding:10px 16px;border-radius:10px;font-size:13px;z-index:9999;max-width:90%;text-align:center';
+  document.body.appendChild(ind);
+  setTimeout(function() { ind.remove(); }, 2800);
+}
+
+// Bewertungsregel: bewertet wird nur, was gekocht ist - Einzelgericht, Einzelrezept
+// und ganzer Menueplan gleichermassen. Der Knopf wird dann gar nicht erst angeboten;
+// diese Pruefung faengt veraltete Ansichten und direkte Aufrufe ab.
 function showHistoryRating(i) {
   var hist=window._history; if(!hist||!hist[i])return;
+  if ((hist[i].status || 'geplant') !== 'gekocht') { kurzHinweis('Bewerten ist erst möglich, wenn der Plan gekocht ist.'); return; }
   var e=hist[i]; G_rating.stars=e.stars||0; G_rating.historyIdx=i; G_rating.fotoIdx=null; G_rating.gerichtIdx=null; G_rating.pastDish=null;
   G_rating.tags = (e.tags||[]).slice();
   G_rating.returnScreen = 'sh2';
@@ -7802,6 +7897,7 @@ function showHistoryRating(i) {
 }
 function showFotoRating(i) {
   var saved=JSON.parse(localStorage.getItem(userKey('foto_rezepte'))||'[]'); if(!saved[i])return;
+  if (saved[i].status !== 'gekocht') { kurzHinweis('Bewerten ist erst möglich, wenn das Rezept gekocht ist.'); return; }
   var r=saved[i]; G_rating.stars=r.stars||0; G_rating.fotoIdx=i; G_rating.historyIdx=null; G_rating.gerichtIdx=null; G_rating.pastDish=null;
   G_rating.tags = (r.tags||[]).slice();
   G_rating.returnScreen = 'sh2';
@@ -7828,10 +7924,11 @@ function statusBadge(status) {
 }
 
 // ─── HISTORY ───────────────────────────────────────────────
-function openHistory() { go('sh2'); loadHistory(); if($('htab-plans'))$('htab-plans').classList.add('on'); if($('htab-recipes'))$('htab-recipes').classList.remove('on'); if($('htab-plans-content'))$('htab-plans-content').style.display='block'; if($('htab-recipes-content'))$('htab-recipes-content').style.display='none'; }
+function openHistory() { go('sh2'); loadHistory(); hwtab('plans'); }
 function syncHistory() { loadHistory(); loadHistoryRecipes(); }
 function hwtab(t) {
   $('htab-plans').classList.toggle('on',t==='plans'); $('htab-recipes').classList.toggle('on',t==='recipes');
+  $('htab-plans').setAttribute('aria-selected', t==='plans'); $('htab-recipes').setAttribute('aria-selected', t==='recipes');
   $('htab-plans-content').style.display=t==='plans'?'block':'none'; $('htab-recipes-content').style.display=t==='recipes'?'block':'none';
   if(t==='recipes')loadHistoryRecipes();
 }
@@ -7856,7 +7953,7 @@ function renderHistoryList(history) {
       +'<div style="padding:10px 14px;border-bottom:.5px solid var(--gr)">'
         +'<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:6px"><div style="font-size:15px;font-weight:700;color:var(--txt);flex:1">'+esc(e.thema||'Menüplan')+stars+'</div>'+statusBadge(status)+'</div>'
         +(isLoved && e.tags && e.tags.includes && e.tags.includes('unbedingt wieder') ? '<div style="font-size:11px;color:var(--red);font-weight:600;margin-bottom:4px">♥ unbedingt wieder</div>' : '')
-        +'<div style="font-size:11px;color:var(--gr3)">'+esc(e.saved||e.date||'')+' · '+(e.personen||2)+' Pers. · '+(e.kochabende != null ? e.kochabende : 3)+' Abende</div>'
+        +'<div style="font-size:11px;color:var(--gr3)">'+esc(e.saved||e.date||'')+' · '+(e.personen||2)+' Pers. · '+(e.kochabende != null ? e.kochabende : 3)+((e.kochabende != null ? e.kochabende : 3) === 1 ? ' Abend' : ' Abende')+'</div>'
       +'</div>'
       +'<div style="padding:8px 14px">'+dishes+'</div>'
       +'<div style="padding:0 14px 10px;display:flex;flex-direction:column;gap:6px">'
@@ -7870,8 +7967,8 @@ function renderHistoryList(history) {
             ? '<button class="btn btn-red braucht-netz" onclick="fehlendeRezepteNachholen(this,'+i+')" style="width:100%;padding:9px;font-size:12px;margin-bottom:6px">⏳ Fehlende Rezepte nachholen</button>'
             : '';
         })()
-        +'<div style="display:flex;gap:6px"><button class="btn btn-out" onclick="viewHistoryEntry('+i+')" style="flex:1;padding:9px;font-size:12px">👁 Ansehen</button><button class="btn btn-out" onclick="nochmalKochen('+i+')" style="flex:1;padding:9px;font-size:12px">🔁 Erneut verwenden</button><button class="btn btn-out" onclick="showHistoryRating('+i+')" style="flex:1;padding:9px;font-size:12px">★ Bewerten</button></div>'
-        +'<div style="display:flex;gap:6px">'+(status!=='gekocht'?'<button class="btn btn-out" onclick="markHistoryKekocht('+i+')" style="flex:1;padding:9px;font-size:12px">🍽 Gekocht</button>':'')+(status!=='geplant'?'<button class="btn btn-out" onclick="resetHistoryStatus('+i+')" style="padding:9px;font-size:12px">✕ Reset</button>':'')+'<button onclick="deleteHistoryPlan('+i+')" style="background:none;border:.5px solid var(--bdr);border-radius:8px;padding:9px 12px;color:var(--gr3);cursor:pointer;font-size:16px" title="Löschen">✕</button>'+'</div>'
+        +'<div style="display:flex;gap:6px"><button class="btn btn-out" onclick="viewHistoryEntry('+i+')" style="flex:1;padding:9px;font-size:12px">👁 Ansehen</button><button class="btn btn-out" onclick="nochmalKochen('+i+')" style="flex:1;padding:9px;font-size:12px">🔁 Erneut verwenden</button>'+(status==='gekocht'?'<button class="btn btn-out" onclick="showHistoryRating('+i+')" style="flex:1;padding:9px;font-size:12px">★ Bewerten</button>':'')+'</div>'
+        +'<div style="display:flex;gap:6px">'+(status!=='gekocht'?'<button class="btn btn-out" onclick="markHistoryKekocht('+i+')" style="flex:1;padding:9px;font-size:12px">🍽 Gekocht</button>':'')+(status!=='geplant'?'<button class="btn btn-out" onclick="resetHistoryStatus('+i+')" style="padding:9px;font-size:12px">✕ Reset</button>':'')+'<button aria-label="Menüplan löschen" onclick="deleteHistoryPlan('+i+')" style="background:none;border:.5px solid var(--bdr);border-radius:8px;padding:9px 12px;color:var(--gr3);cursor:pointer;font-size:16px" title="Löschen">✕</button>'+'</div>'
       +'</div>'
     +'</div>';
   }
@@ -8126,13 +8223,13 @@ function loadHistoryRecipes() {
         +'<div style="width:36px;height:36px;border-radius:8px;background:var(--rl);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0">🍽</div>'
         +'<div style="flex:1;min-width:0">'
           +'<div style="display:flex;align-items:center;gap:6px"><div style="font-size:15px;font-weight:700;color:var(--txt);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+esc(r.name||'Rezept')+'</div>'+(r.stars?'<span style="color:#f59e0b;font-size:13px">'+('&#9733;'.repeat(r.stars))+'</span>':'')+'</div>'
-          +'<div style="font-size:11px;color:var(--gr3);margin-top:2px">'+esc(r.saved||r.date||'')+' · '+personenLabel(r.portionen||2)+(r.zeit_total?' · '+esc(r.zeit_total):'')+' · '+zCount+' Zutaten</div>'
+          +'<div style="font-size:11px;color:var(--gr3);margin-top:2px">'+esc(r.saved||r.date||'')+' · '+personenLabel(r.portionen||2)+(r.zeit_total?' · '+esc(r.zeit_total):'')+' · '+zCount+(zCount === 1 ? ' Zutat' : ' Zutaten')+'</div>'
         +'</div>'
       +'</div>'
       +'<div style="padding:8px 14px;display:flex;flex-direction:column;gap:6px">'
         +'<div style="width:100%;margin-bottom:4px">'+statusBadge(r.status||'gespeichert')+'</div>'
-        +'<div style="display:flex;gap:6px"><button class="btn btn-red" onclick="openHistoryRecipe('+i+')" style="flex:1;padding:9px;font-size:12px">Öffnen</button><button class="btn btn-out" onclick="showFotoRating('+i+')" style="flex:1;padding:9px;font-size:12px">★ Bewerten</button></div>'
-        +'<div style="display:flex;gap:6px"><button class="btn btn-out braucht-netz" onclick="importHistoryRecipeToBring('+i+')" style="flex:1;padding:9px;font-size:12px">In Bring!</button>'+(r.status!=='gekocht'?'<button class="btn btn-out" onclick="markFotoRezeptGekocht('+i+')" style="flex:1;padding:9px;font-size:11px">🍽 Gekocht</button>':'')+((r.status==='einkauf'||r.status==='gekocht')?'<button class="btn btn-out" onclick="resetFotoRezeptStatus('+i+')" style="padding:9px;font-size:12px" title="Status zurücksetzen">✕</button>':'')+'<button onclick="deleteHistoryRecipe('+i+')" style="background:none;border:.5px solid var(--bdr);border-radius:8px;padding:9px 12px;color:var(--gr3);cursor:pointer;font-size:16px">✕</button></div>'
+        +'<div style="display:flex;gap:6px"><button class="btn btn-red" onclick="openHistoryRecipe('+i+')" style="flex:1;padding:9px;font-size:12px">Öffnen</button>'+(r.status==='gekocht'?'<button class="btn btn-out" onclick="showFotoRating('+i+')" style="flex:1;padding:9px;font-size:12px">★ Bewerten</button>':'')+'</div>'
+        +'<div style="display:flex;gap:6px"><button class="btn btn-out braucht-netz" onclick="importHistoryRecipeToBring('+i+')" style="flex:1;padding:9px;font-size:12px">In Bring!</button>'+(r.status!=='gekocht'?'<button class="btn btn-out" onclick="markFotoRezeptGekocht('+i+')" style="flex:1;padding:9px;font-size:11px">🍽 Gekocht</button>':'')+((r.status==='einkauf'||r.status==='gekocht')?'<button class="btn btn-out" aria-label="Status zurücksetzen" onclick="resetFotoRezeptStatus('+i+')" style="padding:9px;font-size:12px" title="Status zurücksetzen">✕</button>':'')+'<button aria-label="Rezept löschen" onclick="deleteHistoryRecipe('+i+')" style="background:none;border:.5px solid var(--bdr);border-radius:8px;padding:9px 12px;color:var(--gr3);cursor:pointer;font-size:16px">✕</button></div>'
       +'</div>'
     +'</div>';
   }).join('');
@@ -8401,7 +8498,7 @@ function loadSavedFotoRezepte(){
   var saved=migriereFotoStatus(JSON.parse(localStorage.getItem(userKey('foto_rezepte'))||'[]'));var sec=$('foto-saved-section');
   if(!saved.length){if(sec)sec.style.display='none';return;}
   if(sec)sec.style.display='block';
-  var html=saved.map(function(r,i){return '<div style="background:#fff;border-radius:var(--r);border:.5px solid var(--bdr);padding:10px 14px;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between;gap:8px"><div style="flex:1;min-width:0"><div style="font-size:14px;font-weight:600;color:var(--txt);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+esc(r.name||'Rezept')+'</div><div style="font-size:11px;color:var(--gr3);margin-top:2px">'+esc(r.saved||r.date||'')+' · '+personenLabel(r.portionen||2)+(r.zeit_total?' · '+esc(r.zeit_total):'')+'</div></div><div style="display:flex;gap:6px;flex-shrink:0"><button onclick="openEinplanen(window._savedFotoRezepte['+i+'])" class="btn btn-out" style="width:auto;padding:7px 10px;font-size:12px" title="Einplanen">📅</button><button onclick="loadSavedFotoRezeptDetail('+i+')" class="btn btn-out" style="width:auto;padding:7px 12px;font-size:12px">Öffnen</button><button onclick="deleteSavedFotoRezept('+i+')" style="background:none;border:none;color:var(--gr3);font-size:18px;cursor:pointer;padding:0 4px">✕</button></div></div>';}).join('');
+  var html=saved.map(function(r,i){return '<div style="background:#fff;border-radius:var(--r);border:.5px solid var(--bdr);padding:10px 14px;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between;gap:8px"><div style="flex:1;min-width:0"><div style="font-size:14px;font-weight:600;color:var(--txt);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+esc(r.name||'Rezept')+'</div><div style="font-size:11px;color:var(--gr3);margin-top:2px">'+esc(r.saved||r.date||'')+' · '+personenLabel(r.portionen||2)+(r.zeit_total?' · '+esc(r.zeit_total):'')+'</div></div><div style="display:flex;gap:6px;flex-shrink:0"><button aria-label="Rezept einplanen" onclick="openEinplanen(window._savedFotoRezepte['+i+'])" class="btn btn-out" style="width:auto;padding:7px 10px;font-size:12px" title="Einplanen">📅</button><button onclick="loadSavedFotoRezeptDetail('+i+')" class="btn btn-out" style="width:auto;padding:7px 12px;font-size:12px">Öffnen</button><button aria-label="Gespeichertes Rezept löschen" onclick="deleteSavedFotoRezept('+i+')" style="background:none;border:none;color:var(--gr3);font-size:18px;cursor:pointer;padding:0 4px">✕</button></div></div>';}).join('');
   if($('foto-saved-list'))$('foto-saved-list').innerHTML=html; window._savedFotoRezepte=saved;
 }
 function loadSavedFotoRezeptDetail(i){
@@ -9073,11 +9170,11 @@ var STAR_LABELS = ['', 'Nicht so gut', 'Geht so', 'Gut', 'Sehr gut', 'Ausgezeich
     <div style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--gr3);margin-bottom:6px">Gericht bewerten</div>
     <div id="rm-title" style="font-size:18px;font-weight:700;color:var(--txt);margin-bottom:16px"></div>
     <div style="display:flex;gap:8px;margin-bottom:8px" id="rm-stars">
-      <button onclick="setStar(1)" class="star-btn" style="font-size:32px;background:none;border:none;cursor:pointer;padding:4px;opacity:.3">&#9733;</button>
-      <button onclick="setStar(2)" class="star-btn" style="font-size:32px;background:none;border:none;cursor:pointer;padding:4px;opacity:.3">&#9733;</button>
-      <button onclick="setStar(3)" class="star-btn" style="font-size:32px;background:none;border:none;cursor:pointer;padding:4px;opacity:.3">&#9733;</button>
-      <button onclick="setStar(4)" class="star-btn" style="font-size:32px;background:none;border:none;cursor:pointer;padding:4px;opacity:.3">&#9733;</button>
-      <button onclick="setStar(5)" class="star-btn" style="font-size:32px;background:none;border:none;cursor:pointer;padding:4px;opacity:.3">&#9733;</button>
+      <button aria-label="1 Stern" onclick="setStar(1)" class="star-btn" style="font-size:32px;background:none;border:none;cursor:pointer;padding:4px;opacity:.3">&#9733;</button>
+      <button aria-label="2 Sterne" onclick="setStar(2)" class="star-btn" style="font-size:32px;background:none;border:none;cursor:pointer;padding:4px;opacity:.3">&#9733;</button>
+      <button aria-label="3 Sterne" onclick="setStar(3)" class="star-btn" style="font-size:32px;background:none;border:none;cursor:pointer;padding:4px;opacity:.3">&#9733;</button>
+      <button aria-label="4 Sterne" onclick="setStar(4)" class="star-btn" style="font-size:32px;background:none;border:none;cursor:pointer;padding:4px;opacity:.3">&#9733;</button>
+      <button aria-label="5 Sterne" onclick="setStar(5)" class="star-btn" style="font-size:32px;background:none;border:none;cursor:pointer;padding:4px;opacity:.3">&#9733;</button>
     </div>
     <div id="rm-starlbl" style="font-size:13px;color:var(--gr3);margin-bottom:14px;min-height:18px"></div>
     <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px" id="rm-tags">
@@ -9104,7 +9201,7 @@ var STAR_LABELS = ['', 'Nicht so gut', 'Geht so', 'Gut', 'Sehr gut', 'Ausgezeich
 <!-- VERLAUF: NUR-ANSICHT (read-only, komplett getrennt vom aktiven Plan) -->
 <div class="scr" id="shview">
   <div class="hero" style="display:flex;align-items:center;gap:12px">
-    <button onclick="closeHistoryView()" style="background:none;border:none;color:#fff;font-size:20px;cursor:pointer;min-width:44px;min-height:44px;margin-left:-10px;padding:0">&#8592;</button>
+    <button aria-label="Zurück" onclick="closeHistoryView()" style="background:none;border:none;color:#fff;font-size:20px;cursor:pointer;min-width:44px;min-height:44px;margin-left:-10px;padding:0">&#8592;</button>
     <div style="min-width:0"><h1 style="font-size:18px;margin:0" id="hv-title"></h1>
       <p style="margin:2px 0 0" id="hv-sub"></p></div>
   </div>
@@ -9121,7 +9218,7 @@ var STAR_LABELS = ['', 'Nicht so gut', 'Geht so', 'Gut', 'Sehr gut', 'Ausgezeich
 <!-- ADMIN: BENUTZERVERWALTUNG -->
 <div class="scr" id="sadmin">
   <div class="hero" style="display:flex;align-items:center;gap:12px">
-    <button onclick="go('sh')" style="background:none;border:none;color:#fff;font-size:20px;cursor:pointer;min-width:44px;min-height:44px;margin-left:-10px;padding:0">&#8592;</button>
+    <button aria-label="Zurück zur Startseite" onclick="go('sh')" style="background:none;border:none;color:#fff;font-size:20px;cursor:pointer;min-width:44px;min-height:44px;margin-left:-10px;padding:0">&#8592;</button>
     <div><h1 style="font-size:18px;margin:0">Benutzer verwalten</h1>
       <p style="margin:2px 0 0" id="admin-count"></p></div>
   </div>
