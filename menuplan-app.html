@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=yes">
-<title>Menüplan v6.97</title>
+<title>Menüplan v6.98</title>
 <meta name="theme-color" content="#5B7C78">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -122,6 +122,27 @@ button:focus:not(:focus-visible),[role=button]:focus:not(:focus-visible){outline
 /* Knopfreihe: .btn+.btn ist fuer GESTAPELTE Knoepfe gedacht und schiebt im
    Raster die zweite Spalte um 8px nach unten. Innerhalb einer Reihe daher
    zuruecknehmen, sonst stehen nebeneinanderliegende Knoepfe versetzt. */
+.kal-nav{min-width:44px;min-height:44px;border:none;background:none;font-family:inherit;font-size:20px;color:var(--txt);cursor:pointer;border-radius:8px}
+.kal-g{display:grid;grid-template-columns:repeat(7,1fr);gap:2px}
+.kal-k{font-size:10px;font-weight:700;color:var(--gr3);text-align:center;padding:4px 0}
+.kal-d{position:relative;height:44px;border:none;background:none;border-radius:8px;font-family:inherit;font-size:13px;color:var(--txt);cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:0}
+.kal-d.aus{opacity:.35}
+.kal-d.heute{box-shadow:inset 0 0 0 1.5px var(--red);font-weight:800}
+.kal-d.sel{background:var(--rl)}
+.kal-p{display:inline-block;width:7px;height:7px;border-radius:50%;box-sizing:border-box;flex:none}
+.kal-p.g{background:var(--grn)}
+.kal-p.p{border:1.5px solid var(--gr3)}
+.kal-p.x{background:var(--gr2)}
+.kal-f{position:absolute;top:2px;right:3px;font-size:9px;line-height:1}
+.kal-zeile{display:flex;align-items:center;gap:8px;width:100%;text-align:left;border:none;background:none;font-family:inherit;padding:9px 6px;border-radius:8px;cursor:pointer;min-height:40px;color:var(--txt)}
+.kal-zeile.sel{background:var(--rl)}
+.foto-box{margin-top:10px}
+.foto-img{display:block;width:100%;max-height:260px;object-fit:cover;border-radius:var(--r);border:.5px solid var(--bdr);background:var(--gr);cursor:zoom-in;min-height:60px}
+.foto-img.foto-thumb{width:40px;height:40px;min-height:40px;max-height:40px;flex:none;border-radius:8px;cursor:pointer}
+.foto-img[data-fotofehlt]{display:none}
+.foto-img.foto-thumb[data-fotofehlt]{display:none}
+.foto-leer{display:none;font-size:12px;color:var(--gr3);padding:10px;background:var(--gr);border-radius:var(--r);text-align:center}
+.foto-img[data-fotofehlt]+.foto-leer{display:block}
 .btnrow{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:8px}
 .btnrow>.btn+.btn{margin-top:0}
 /* .btn+.btn greift nicht ueber ein dazwischenliegendes div - der Abstand zum
@@ -281,7 +302,7 @@ body.netz-aus .netz-hint{display:block}
 
 <!-- HOME -->
 <div class="scr on" id="sh">
-  <div class="hero"><h1>Menüplan</h1><p id="hsub">v6.97 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
+  <div class="hero"><h1>Menüplan</h1><p id="hsub">v6.98 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
 
   <!-- Active plan card -->
 
@@ -348,6 +369,23 @@ body.netz-aus .netz-hint{display:block}
         </div>
         <button onclick="openNewWeekScreen()" style="width:100%;background:#fff;border:.5px solid var(--bdr);border-radius:var(--rlg);padding:14px;font-size:14px;font-weight:600;color:var(--gr3);cursor:pointer;margin-bottom:8px">📅 Neue Woche planen</button>
       </div>
+      <div id="kal-card" style="background:#fff;border-radius:var(--rlg);border:.5px solid var(--bdr);padding:12px 12px 10px;margin-bottom:12px">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;padding:0 4px">
+          <div style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--gr3)">📆 Kalender</div>
+          <div style="display:flex;align-items:center">
+            <button onclick="kalenderMonat(-1)" aria-label="Voriger Monat" class="kal-nav">‹</button>
+            <button id="kal-titel" onclick="kalenderHeute()" aria-label="Zum heutigen Tag" class="kal-nav" style="min-width:120px;font-size:13px;font-weight:700">Monat</button>
+            <button onclick="kalenderMonat(1)" aria-label="Nächster Monat" class="kal-nav">›</button>
+          </div>
+        </div>
+        <div id="kal-grid"></div>
+        <div style="display:flex;gap:12px;align-items:center;justify-content:center;font-size:11px;color:var(--gr3);margin:6px 0 2px">
+          <span style="display:inline-flex;align-items:center;gap:4px"><i class="kal-p g"></i>gekocht</span>
+          <span style="display:inline-flex;align-items:center;gap:4px"><i class="kal-p p"></i>geplant</span>
+          <span style="display:inline-flex;align-items:center;gap:4px"><i class="kal-p x"></i>ausgefallen/auswärts</span>
+        </div>
+        <div id="kal-woche"></div>
+      </div>
       <div style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--gr3);margin:6px 2px 8px">Ausserhalb dieser Woche</div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:4px">
         <button onclick="openFotoScreen()" style="background:#fff;border:.5px solid var(--bdr);border-radius:var(--rlg);padding:14px;text-align:left;cursor:pointer;font-family:inherit"><div style="font-size:22px;margin-bottom:4px">📷</div><div style="font-size:13px;font-weight:700;color:var(--txt)">Einzelrezept</div><div style="font-size:11px;color:var(--gr3)">Foto oder Text</div></button>
@@ -409,7 +447,7 @@ body.netz-aus .netz-hint{display:block}
       <!-- Tagesplanung -->
       <div class="fld" style="margin-top:4px">
         <label>🍳 Welche Tage kochen?</label>
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px"><span style="font-size:11px;color:var(--gr3)">Zeitrahmen pro Tag</span><span style="font-size:11px;color:var(--gr3)"><b id="n-display" style="color:var(--red);font-size:14px">3</b> <span id="n-label">Kochabende</span></span></div><div id="day-picker" style="display:flex;flex-direction:column;gap:2px;margin-top:2px"></div><div id="day-picker-hint" style="font-size:11px;color:var(--gr3);margin-top:6px;line-height:1.4"></div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px"><span style="font-size:11px;color:var(--gr3)">Zeitrahmen pro Tag</span><span style="font-size:11px;color:var(--gr3)"><b id="n-display" style="color:var(--red);font-size:14px">3</b> <span id="n-label">Kochabende</span></span></div><div id="day-picker" style="display:flex;flex-direction:column;gap:2px;margin-top:2px"></div><div id="day-picker-legend" style="margin-top:8px;line-height:1.5"></div><div id="day-picker-hint" style="font-size:11px;color:var(--gr3);margin-top:6px;line-height:1.4"></div>
       </div>
 
       <!-- Fleisch Modus -->
@@ -604,6 +642,7 @@ body.netz-aus .netz-hint{display:block}
         <div style="font-size:12px;color:var(--gr3);margin-top:4px">Rezept, Menukarte, Kochbuch-Seite...</div>
       </div>
       <input type="file" id="foto-input" accept="image/*" style="display:none" onchange="handleFotoFile(this.files[0])">
+      <input type="file" id="dish-foto-input" accept="image/*" style="display:none" onchange="dishFotoGewaehlt(this.files[0])">
 
       <div id="foto-preview" style="display:none;margin-bottom:10px;text-align:center">
         <img id="foto-img" alt="Vorschau des gewählten Rezeptfotos" style="max-width:100%;max-height:200px;border-radius:var(--r);border:.5px solid var(--bdr)">
@@ -1274,24 +1313,55 @@ function dayPickerOrder() {
 // cookingDays(), die Prompts und setN() unveraendert funktionieren.
 var PICKER_WOCHEN = 4;
 
-// ISO-Datum -> Titel des bereits verplanten Gerichts (Zeitachse ist die Wahrheit).
-// Ausgefallene Abende gelten als frei, "Auswaerts" bleibt belegt.
-function belegteTageMap() {
+// ISO-Datum -> { titel, planId, thema, eingekauft } des bereits verplanten
+// Gerichts (die Zeitachse ist die Wahrheit). Ausgefallene Abende gelten als
+// frei, "Auswaerts" bleibt belegt. "eingekauft" = Einkaufsliste dieses
+// Menue-Laufs wurde nach Bring! uebertragen.
+function belegteTageInfo() {
   var out = {};
   var tl = {};
   try { tl = buildTimelineDays() || {}; } catch (e) { tl = {}; }
+  var plaene = {};
+  try {
+    collectHistoryPlans().forEach(function(e) {
+      if (!e || !e.planId) return;
+      var pl = e.plan || {};
+      plaene[e.planId] = { thema: e.thema || (pl.sug && pl.sug.thema) || '', eingekauft: !!pl.bringImportedAt };
+    });
+  } catch (e) {}
+  if (G.activePlan && G.activePlan.planId) {
+    plaene[G.activePlan.planId] = { thema: (G.activePlan.sug && G.activePlan.sug.thema) || '',
+                                    eingekauft: !!G.activePlan.bringImportedAt };
+  }
   Object.keys(tl).forEach(function(iso) {
     var g = tl[iso] && tl[iso].gericht;
     if (!g) return;
     var auswaerts = (g.abend || '').indexOf('Auswärts') >= 0;
     if (g._cancelled && !auswaerts) return;
-    out[iso] = auswaerts ? '🍽 Auswärts' : (g.abend || g.name || 'Geplant');
+    var pi = plaene[tl[iso].planId] || {};
+    out[iso] = { titel: auswaerts ? '🍽 Auswärts' : (g.abend || g.name || 'Geplant'),
+                 planId: tl[iso].planId || '', thema: pi.thema || '', eingekauft: !!pi.eingekauft };
   });
   return out;
 }
 
+function belegteTageMap() {
+  var info = belegteTageInfo(), out = {};
+  Object.keys(info).forEach(function(k) { out[k] = info[k].titel; });
+  return out;
+}
+
+// Farben pro Menue-Lauf (Plan). Reihenfolge so gewaehlt, dass benachbarte
+// Laeufe gut unterscheidbar sind; Teal kommt zuletzt, weil es der Farbton der
+// Auswahl (Haken) ist.
+var PLAN_FARBEN = [
+  { bg: '#FFF3E3', bd: '#B97836' }, { bg: '#EAF1F5', bd: '#3E6B8A' },
+  { bg: '#F1ECF7', bd: '#7A5FA3' }, { bg: '#FCEBEC', bd: '#C65353' },
+  { bg: '#E8F2EC', bd: '#4F8067' }, { bg: '#E7EFED', bd: '#5B7C78' }
+];
+
 function pickerWochen() {
-  var belegt = belegteTageMap();
+  var belegt = belegteTageInfo();
   var heute = new Date(); heute.setHours(0, 0, 0, 0);
   var wochen = [];
   for (var n = 0; n < PICKER_WOCHEN; n++) {
@@ -1299,8 +1369,10 @@ function pickerWochen() {
     var tage = DAYS_ORDER.map(function(tag) {
       var d = dateFromTag(wiso, tag);
       var iso = isoDateLocal(d);
+      var bi = belegt[iso] || null;
       return { tag: tag, iso: iso, date: d, vergangen: d < heute,
-               titel: belegt[iso] || null, frei: d >= heute && !belegt[iso] };
+               titel: bi ? bi.titel : null, planId: bi ? bi.planId : '', thema: bi ? bi.thema : '',
+               eingekauft: bi ? bi.eingekauft : false, frei: d >= heute && !bi };
     });
     wochen.push({ iso: wiso, tage: tage, hatFrei: tage.some(function(t) { return t.frei; }) });
   }
@@ -1347,6 +1419,20 @@ function initDayPicker() {
   pickerWocheAbgleichen(wochen);
   var kurz = { day: 'numeric', month: 'numeric' };
   var modi = DAY_MODES.filter(function(m) { return m.key !== 'auswaerts'; });
+  // Farbe je Menue-Lauf, in Reihenfolge des ersten Auftretens vergeben.
+  var farbe = {}, farbeN = 0, legende = [];
+  wochen.forEach(function(w) { w.tage.forEach(function(t) {
+    if (!t.titel) return;
+    var k = t.planId || ('?' + t.thema);
+    if (!farbe[k]) {
+      farbe[k] = PLAN_FARBEN[farbeN % PLAN_FARBEN.length]; farbeN++;
+      legende.push({ k: k, thema: t.thema, eingekauft: t.eingekauft, von: t.date, bis: t.date });
+    } else {
+      var l = legende.filter(function(x) { return x.k === k; })[0];
+      if (l) { if (t.date < l.von) l.von = t.date; if (t.date > l.bis) l.bis = t.date; }
+    }
+    t.farbe = farbe[k];
+  }); });
   var html = '';
   wochen.forEach(function(w) {
     var istAktiv = w.iso === G.planWoche;
@@ -1364,7 +1450,7 @@ function initDayPicker() {
       var datum = t.date.toLocaleDateString('de-CH', { day: 'numeric', month: 'numeric' });
       var einkauf = (G.einkaufstag || 'Mo') === t.tag ? ' <span title="Einkaufstag" style="font-size:11px">🛒</span>' : '';
       html += '<div class="day-row' + (gesperrt ? ' day-gesperrt' : '') + '" id="dr-' + t.iso + '" data-tag="' + t.tag + '" data-woche="' + w.iso +
-        '" style="display:flex;align-items:center;gap:8px;padding:5px 2px;' + (t.vergangen ? 'opacity:.4' : '') + '">' +
+        '" style="display:flex;align-items:center;gap:8px;padding:5px 2px;' + (t.farbe ? 'background:' + t.farbe.bg + ';border-left:3px solid ' + t.farbe.bd + ';border-radius:6px;padding-left:6px;' : '') + (t.vergangen ? 'opacity:' + (t.farbe ? '.6' : '.4') : '') + '">' +
         '<label style="display:flex;align-items:center;gap:8px;flex:1;min-width:0;' + (gesperrt ? 'cursor:default' : 'cursor:pointer') + '">' +
           '<input type="checkbox" id="dc-' + t.iso + '" onchange="toggleDay(\'' + t.iso + '\')" ' + (an ? 'checked ' : '') + (gesperrt ? 'disabled ' : '') +
             'style="width:18px;height:18px;accent-color:var(--red);flex:none;' + (gesperrt ? '' : 'cursor:pointer') + '">' +
@@ -1381,6 +1467,17 @@ function initDayPicker() {
     });
   });
   dp.innerHTML = html;
+  var lg = $('day-picker-legend');
+  if (lg) {
+    var kurzf = { day: 'numeric', month: 'numeric' };
+    lg.innerHTML = legende.map(function(l) {
+      var c = farbe[l.k];
+      return '<span class="dp-leg" style="display:inline-flex;align-items:center;gap:5px;margin:0 10px 4px 0;font-size:11px;color:var(--gr3)">' +
+        '<i style="width:10px;height:10px;border-radius:3px;background:' + c.bg + ';border:2px solid ' + c.bd + ';display:inline-block"></i>' +
+        '<span>' + esc(l.thema || 'Menü') + ' · ' + l.von.toLocaleDateString('de-CH', kurzf) +
+        (+l.bis !== +l.von ? '–' + l.bis.toLocaleDateString('de-CH', kurzf) : '') + (l.eingekauft ? ' 🛒 Einkauf übertragen' : '') + '</span></span>';
+    }).join('');
+  }
   dp.style.maxHeight = '300px';
   dp.style.overflowY = 'auto';
   dp.style.webkitOverflowScrolling = 'touch';
@@ -1992,6 +2089,7 @@ function syncAllFromGH() {
   var sess = getSession();
   var user = sess ? sess.username : null;
   if (!user) return;
+  try { fotoSyncPending(); } catch (e) {}
   fetch(PROXY + '/gh/' + ghFile('active-plan.json'), { headers: h })
     .then(function(r) { return r.ok ? r.json() : null; })
     .then(function(d) {
@@ -4296,6 +4394,7 @@ function timelineCardDetail(entry) {
     var loeschbar = !!entry.planId;
     return '<div class="ract">' + zeitHtml + (next ? '<div class="rnext">' + next + '</div>' : '') +
       (g._gekocht ? '<div style="font-size:12px;color:var(--grn);font-weight:600;margin-top:6px">&#10003; gekocht</div>' : '') +
+      timelineFotoHtml(entry) +
       zutatenHtml +
       (nachholbar ? '<button class="btn btn-red braucht-netz" onclick="nachholeVerlaufsplan(this,\'' + esc(entry.planId) +
         '\')" style="margin-top:10px;font-size:13px">Fehlende Rezepte nachholen</button>' : '') +
@@ -4309,6 +4408,7 @@ function timelineCardDetail(entry) {
   }
   return '<div class="ract">' +
     zeitHtml + (next ? '<div class="rnext" style="margin-bottom:8px">' + next + '</div>' : '') +
+    timelineFotoHtml(entry) +
     zutatenHtml +
     '<button class="btn btn-red" onclick="startCook(' + i + ')" style="margin-top:10px">👨‍🍳 Jetzt kochen</button>' +
     '<div class="btnrow">' +
@@ -4355,6 +4455,7 @@ function renderTimelineDayCard(entry, isToday, key) {
           (entry.hasFullRecipe && g.zeit_total ? '<span style="font-size:11px;color:var(--gr3)">&#9200; ' + esc(g.zeit_total) + '</span>' : '') +
         '</div>' +
       '</div>' +
+      (g._fotoId ? '<img class="foto-img foto-thumb" data-fotoid="' + esc(g._fotoId) + '" src="' + FOTO_LEER + '" alt="">' : '') +
       '<span style="font-size:16px;color:var(--gr3)">' + (isOpen ? '&#9660;' : '&#9654;') + '</span>' +
     '</div>' +
     (isOpen ? timelineCardDetail(entry) : '') +
@@ -4473,6 +4574,9 @@ function renderRez(sug) {
   }
 
   $('rlist').innerHTML = html;
+  try { fotosHydrate($('rlist')); } catch (e) {}
+  // Kalender auf der Startseite zeigt dieselben Daten - nach jeder Aenderung nachziehen.
+  try { if (G_kal && G_kal.tag) kalenderRender(); } catch (e) {}
   G_timelineInitialized = true;
   initTimelineLabelObserver();
 }
@@ -5350,6 +5454,402 @@ function updateHistoryEntryPlan(planData) {
     localStorage.setItem(userKey('local_history'), JSON.stringify(hist));
     saveHistoryToGH(hist);
   } catch (e) { /* Verlauf-Update ist best-effort, active_plan bleibt in jedem Fall aktuell */ }
+}
+
+// ─── GERICHT-FOTOS ─────────────────────────────────────────
+// Foto zu einem gekochten Gericht. Das Bild liegt NICHT im Plan (der wird bei
+// jeder Aenderung komplett nach GitHub geschrieben und waere sofort riesig),
+// sondern lokal in IndexedDB und als eigene Datei dish-<id>.json im
+// Benutzerordner. Am Gericht haengt nur die kurze ID (g._fotoId).
+var DISH_FOTO_MAX_KANTE = 1280;      // laengste Seite in Pixel
+var DISH_FOTO_QUALITAET = 0.8;       // JPEG-Qualitaet, wird bei Bedarf gesenkt
+var FOTO_MAX_ZEICHEN = 450000;  // Obergrenze der Data-URL (GitHub liefert Dateien < 1 MB)
+var FOTO_LEER = 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==';
+var G_fotoCache = {};           // id -> Data-URL (nur diese Sitzung)
+var G_fotoDb = null;
+var G_fotoZiel = null;          // { plan, idx } fuer den Dateidialog
+
+function neueFotoId() {
+  return 'f' + Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+}
+function fotoKey(id) { var se = getSession(); return (se ? se.username : '_') + '|' + id; }
+
+function fotoDb() {
+  if (G_fotoDb) return G_fotoDb;
+  G_fotoDb = new Promise(function(res) {
+    try {
+      var rq = indexedDB.open('menuplan-fotos', 1);
+      rq.onupgradeneeded = function() { rq.result.createObjectStore('f'); };
+      rq.onsuccess = function() { res(rq.result); };
+      rq.onerror = function() { res(null); };
+      rq.onblocked = function() { res(null); };
+    } catch (e) { res(null); }
+  });
+  return G_fotoDb;
+}
+
+function fotoLokalLesen(id) {
+  if (G_fotoCache[id]) return Promise.resolve(G_fotoCache[id]);
+  return fotoDb().then(function(db) {
+    if (!db) return null;
+    return new Promise(function(res) {
+      try {
+        var rq = db.transaction('f').objectStore('f').get(fotoKey(id));
+        rq.onsuccess = function() { var v = rq.result || null; if (v) G_fotoCache[id] = v; res(v); };
+        rq.onerror = function() { res(null); };
+      } catch (e) { res(null); }
+    });
+  });
+}
+
+function fotoLokalSchreiben(id, data) {
+  G_fotoCache[id] = data;
+  return fotoDb().then(function(db) {
+    if (!db) return false;
+    return new Promise(function(res) {
+      try {
+        var tx = db.transaction('f', 'readwrite');
+        tx.objectStore('f').put(data, fotoKey(id));
+        tx.oncomplete = function() { res(true); };
+        tx.onerror = tx.onabort = function() { res(false); };
+      } catch (e) { res(false); }
+    });
+  });
+}
+
+function fotoLokalLoeschen(id) {
+  delete G_fotoCache[id];
+  return fotoDb().then(function(db) {
+    if (!db) return false;
+    return new Promise(function(res) {
+      try {
+        var tx = db.transaction('f', 'readwrite');
+        tx.objectStore('f').delete(fotoKey(id));
+        tx.oncomplete = function() { res(true); };
+        tx.onerror = tx.onabort = function() { res(false); };
+      } catch (e) { res(false); }
+    });
+  });
+}
+
+// Noch nicht hochgeladene Fotos (offline, alter Worker, ...). Das Foto selbst
+// bleibt lokal; hier steht nur, was beim naechsten Sync nachgereicht wird.
+function fotoPendingLesen() {
+  try { return JSON.parse(localStorage.getItem(userKey('foto_pending')) || '[]'); } catch (e) { return []; }
+}
+function fotoPendingSchreiben(liste) {
+  try { localStorage.setItem(userKey('foto_pending'), JSON.stringify(liste)); } catch (e) {}
+}
+function fotoPendingMerken(id) {
+  var l = fotoPendingLesen(); if (l.indexOf(id) < 0) { l.push(id); fotoPendingSchreiben(l); }
+}
+function fotoPendingEntfernen(id) {
+  fotoPendingSchreiben(fotoPendingLesen().filter(function(x) { return x !== id; }));
+}
+
+function fotoCloudDatei(id) { return 'dish-' + id + '.json'; }
+
+function fotoCloudHochladen(id, data) {
+  if (!getAuthHeaders()) return Promise.resolve(false);
+  return ghPut(fotoCloudDatei(id), { id: id, data: data, ts: Date.now() }, 'Foto ' + id)
+    .then(function() { fotoPendingEntfernen(id); return true; })
+    .catch(function() { fotoPendingMerken(id); return false; });
+}
+
+function fotoCloudLaden(id) {
+  return ghGet(ghFile(fotoCloudDatei(id))).then(function(d) {
+    var o = ghDecode(d);
+    return (o && o.data && !o.geloescht) ? o.data : null;
+  });
+}
+
+// Entfernt ein Foto lokal und markiert es in der Cloud als geloescht (die Datei
+// selbst bleibt, wird aber winzig - der Worker kennt kein DELETE).
+function fotoEntsorgen(id) {
+  if (!id) return;
+  fotoPendingEntfernen(id);
+  fotoLokalLoeschen(id);
+  if (getAuthHeaders()) ghPut(fotoCloudDatei(id), { id: id, geloescht: true, ts: Date.now() }, 'Foto entfernt').catch(function() {});
+}
+
+function fotoSyncPending() {
+  fotoPendingLesen().forEach(function(id) {
+    fotoLokalLesen(id).then(function(data) {
+      if (!data) { fotoPendingEntfernen(id); return; }
+      fotoCloudHochladen(id, data);
+    });
+  });
+}
+
+// Lokal, sonst aus der Cloud (und dann lokal merken).
+function fotoLaden(id) {
+  return fotoLokalLesen(id).then(function(data) {
+    if (data) return data;
+    return fotoCloudLaden(id).then(function(d) {
+      if (d) fotoLokalSchreiben(id, d);
+      return d;
+    });
+  });
+}
+
+// Fuellt alle <img data-fotoid> unterhalb von root. Wird nach jedem Rendern
+// aufgerufen; schon geladene Bilder werden uebersprungen.
+function fotosHydrate(root) {
+  var r = root || document;
+  var els = r.querySelectorAll ? r.querySelectorAll('img[data-fotoid]') : [];
+  Array.prototype.forEach.call(els, function(el) {
+    var id = el.getAttribute('data-fotoid');
+    if (!id || el.getAttribute('data-fotogeladen') === id) return;
+    fotoLaden(id).then(function(data) {
+      if (!el.isConnected) return;
+      if (data) {
+        el.src = data;
+        el.setAttribute('data-fotogeladen', id);
+        el.removeAttribute('data-fotofehlt');
+      } else {
+        el.setAttribute('data-fotofehlt', '1');
+      }
+    }).catch(function() { el.setAttribute('data-fotofehlt', '1'); });
+  });
+}
+
+// Bild verkleinern und als JPEG-Data-URL liefern (Handyfotos haben 3-8 MB).
+function fotoVerkleinern(file) {
+  return new Promise(function(resolve, reject) {
+    function zeichne(src, w, h, fertig) {
+      try {
+        var f = Math.min(1, DISH_FOTO_MAX_KANTE / Math.max(w, h));
+        var cw = Math.max(1, Math.round(w * f)), ch = Math.max(1, Math.round(h * f));
+        var c = document.createElement('canvas'); c.width = cw; c.height = ch;
+        var cx = c.getContext('2d');
+        cx.fillStyle = '#fff'; cx.fillRect(0, 0, cw, ch);   // PNG-Transparenz nicht schwarz
+        cx.drawImage(src, 0, 0, cw, ch);
+        var q = DISH_FOTO_QUALITAET, out = c.toDataURL('image/jpeg', q);
+        while (out.length > FOTO_MAX_ZEICHEN && q > 0.4) { q -= 0.1; out = c.toDataURL('image/jpeg', q); }
+        if (fertig) fertig();
+        if (out.indexOf('data:image/jpeg') !== 0) return reject(new Error('Bild konnte nicht umgewandelt werden'));
+        if (out.length > FOTO_MAX_ZEICHEN * 1.5) return reject(new Error('Bild ist trotz Verkleinerung zu gross'));
+        resolve(out);
+      } catch (e) { reject(e); }
+    }
+    function ueberImg() {
+      var url = URL.createObjectURL(file);
+      var im = new Image();
+      im.onload = function() { zeichne(im, im.naturalWidth, im.naturalHeight, function() { URL.revokeObjectURL(url); }); };
+      im.onerror = function() { URL.revokeObjectURL(url); reject(new Error('Bild konnte nicht gelesen werden')); };
+      im.src = url;
+    }
+    if (window.createImageBitmap) {
+      // EXIF-Drehung beruecksichtigen, sonst stehen Hochformatfotos auf der Seite.
+      createImageBitmap(file, { imageOrientation: 'from-image' }).then(function(bm) {
+        zeichne(bm, bm.width, bm.height, function() { try { bm.close(); } catch (e) {} });
+      }).catch(ueberImg);
+    } else { ueberImg(); }
+  });
+}
+
+// Traegt die Foto-ID am Gericht ein (neueId = null entfernt sie). planToken ist
+// die planId oder '@aktiv' fuer den aktiven Plan. Liefert { ok, alt }.
+function gerichtFotoZuordnen(planToken, idx, neueId) {
+  var alt = null;
+  function setze(g) {
+    if (!g) return false;
+    if (!alt && g._fotoId) alt = g._fotoId;
+    if (neueId) g._fotoId = neueId; else delete g._fotoId;
+    return true;
+  }
+  var ap = G.activePlan;
+  if (ap && (planToken === '@aktiv' || ap.planId === planToken)) {
+    var okA = setze(ap.sug && ap.sug.gerichte && ap.sug.gerichte[idx]);
+    // wie bei _gekocht: auch in G.sugs[G.sel] spiegeln (persistActivePlan uebernimmt es von dort)
+    var gs = G.sugs && G.sel !== null && G.sugs[G.sel];
+    if (gs && gs !== ap.sug && gs.gerichte && gs.gerichte[idx] && ap.sug.gerichte[idx] &&
+        gs.gerichte[idx].abend === ap.sug.gerichte[idx].abend) setze(gs.gerichte[idx]);
+    if (!okA) return { ok: false };
+    persistActivePlan();
+    return { ok: true, alt: alt };
+  }
+  var hist;
+  try { hist = JSON.parse(localStorage.getItem(userKey('local_history')) || '[]'); } catch (e) { hist = []; }
+  var entry = hist.filter(function(h) { return h.planId === planToken; })[0];
+  var sug = entry && entry.plan && entry.plan.sug;
+  if (!sug || !setze(sug.gerichte && sug.gerichte[idx])) return { ok: false };
+  updateHistoryEntryPlan(entry.plan);
+  return { ok: true, alt: alt };
+}
+
+function fotoWaehlen(planToken, idx) {
+  G_fotoZiel = { plan: planToken, idx: idx };
+  var inp = $('dish-foto-input');
+  if (!inp) return;
+  inp.value = '';
+  inp.click();
+}
+
+function dishFotoGewaehlt(file) {
+  var ziel = G_fotoZiel;
+  if (!file || !ziel) return;
+  if (!/^image\//.test(file.type || '') && !/\.(jpe?g|png|webp|heic|heif|gif)$/i.test(file.name || '')) {
+    showSt('ist', 'Das ist kein Bild.', 'er'); return;
+  }
+  showSt('ist', 'Foto wird verarbeitet …', 'ok');
+  fotoVerkleinern(file).then(function(data) {
+    var id = neueFotoId();
+    return fotoLokalSchreiben(id, data).then(function() {
+      var r = gerichtFotoZuordnen(ziel.plan, ziel.idx, id);
+      if (!r.ok) { fotoLokalLoeschen(id); throw new Error('Gericht nicht gefunden'); }
+      if (r.alt) fotoEntsorgen(r.alt);
+      fotoCloudHochladen(id, data);
+      try { renderRez(G.sugs && G.sel !== null ? G.sugs[G.sel] : null); } catch (e) {}
+      showSt('ist', 'Foto gespeichert.', 'ok');
+      setTimeout(function() { if ($('ist')) $('ist').style.display = 'none'; }, 2500);
+    });
+  }).catch(function(e) {
+    showSt('ist', 'Foto konnte nicht gespeichert werden: ' + (e && e.message ? e.message : 'unbekannter Fehler'), 'er');
+  });
+}
+
+function fotoEntfernen(planToken, idx) {
+  if (!confirm('Foto zu diesem Gericht entfernen?')) return;
+  var r = gerichtFotoZuordnen(planToken, idx, null);
+  if (!r.ok) return;
+  if (r.alt) fotoEntsorgen(r.alt);
+  try { renderRez(G.sugs && G.sel !== null ? G.sugs[G.sel] : null); } catch (e) {}
+}
+
+// Vollbildansicht: Antippen schliesst wieder.
+function fotoGross(img) {
+  if (!img || !img.src || img.src === FOTO_LEER) return;
+  var ov = document.createElement('div');
+  ov.id = 'foto-gross';
+  ov.style.cssText = 'position:fixed;inset:0;z-index:900;background:rgba(0,0,0,.88);display:flex;align-items:center;justify-content:center;padding:12px;cursor:zoom-out';
+  ov.onclick = function() { ov.remove(); };
+  var im = document.createElement('img');
+  im.src = img.src; im.alt = img.alt || '';
+  im.style.cssText = 'max-width:100%;max-height:100%;border-radius:8px;object-fit:contain';
+  ov.appendChild(im);
+  document.body.appendChild(ov);
+}
+
+// Foto-Bereich in der aufgeklappten Zeitachsenkarte - nur bei gekochten Gerichten.
+function timelineFotoHtml(entry) {
+  var g = entry.gericht;
+  // Nur bei Gekochtem - oder wenn schon ein Foto haengt (etwa nach "zurueck auf geplant"),
+  // damit es sich weiterhin ansehen und entfernen laesst.
+  if (!g || g._cancelled || (!g._gekocht && !g._fotoId)) return '';
+  if (!entry.planId && !entry.isActivePlan) return '';
+  var tok = entry.isActivePlan ? '@aktiv' : entry.planId;
+  var args = "'" + esc(tok) + "'," + entry.gerichtIdx;
+  if (g._fotoId) {
+    return '<div class="foto-box">' +
+      '<img class="foto-img" data-fotoid="' + esc(g._fotoId) + '" src="' + FOTO_LEER + '" alt="Foto von ' + esc(g.abend || 'dem Gericht') + '" onclick="fotoGross(this)">' +
+      '<div class="foto-leer">Das Foto ist auf diesem Gerät noch nicht verfügbar.</div>' +
+      '<div class="btnrow">' +
+        '<button class="btn btn-out" onclick="fotoWaehlen(' + args + ')" style="font-size:13px">📷 Foto ersetzen</button>' +
+        '<button class="btn btn-out" onclick="fotoEntfernen(' + args + ')" style="font-size:13px">Foto entfernen</button>' +
+      '</div></div>';
+  }
+  return '<button class="btn btn-out" onclick="fotoWaehlen(' + args + ')" style="margin-top:10px;display:flex;align-items:center;justify-content:center;gap:6px">📷 Foto hinzufügen</button>';
+}
+
+// ─── KALENDER (Startseite) ─────────────────────────────────
+// Monatsansicht ueber Verlauf + aktiven Plan (buildTimelineDays: je Datum ein
+// Gericht, der aktive Plan gewinnt). Antippen eines Tages zeigt die ganze Woche
+// darunter, der gewaehlte Tag ist aufgeklappt - mit denselben Details und
+// Aktionen (Zutaten, Bewerten, Foto) wie in der Zeitachse.
+var G_kal = { monat: null, tag: null };
+
+function kalenderMonatsanfang(d) { return new Date(d.getFullYear(), d.getMonth(), 1); }
+function kalenderStart() { if (!G_kal.monat) G_kal.monat = kalenderMonatsanfang(new Date()); }
+
+function kalenderMonat(delta) {
+  kalenderStart();
+  G_kal.monat = new Date(G_kal.monat.getFullYear(), G_kal.monat.getMonth() + delta, 1);
+  kalenderRender();
+}
+
+function kalenderHeute() {
+  G_kal.monat = kalenderMonatsanfang(new Date());
+  G_kal.tag = isoDateLocal(new Date());
+  kalenderRender();
+}
+
+function kalenderTag(iso) {
+  G_kal.tag = (G_kal.tag === iso) ? null : iso;
+  kalenderRender();
+}
+
+function kalenderStatus(entry) {
+  if (!entry || !entry.gericht) return '';
+  var g = entry.gericht;
+  if (g._gekocht || entry.entryStatus === 'gekocht') return 'g';
+  if (g._cancelled) return 'x';
+  return 'p';
+}
+
+function kalenderRender() {
+  var grid = $('kal-grid');
+  if (!grid) return;
+  kalenderStart();
+  var days = {};
+  try { days = buildTimelineDays() || {}; } catch (e) { days = {}; }
+  var m = G_kal.monat;
+  var heuteIso = isoDateLocal(new Date());
+  if ($('kal-titel')) $('kal-titel').textContent = m.toLocaleDateString('de-CH', { month: 'long', year: 'numeric' });
+  var offset = (m.getDay() + 6) % 7;                       // Montag = 0
+  var tageImMonat = new Date(m.getFullYear(), m.getMonth() + 1, 0).getDate();
+  var zeilen = Math.ceil((offset + tageImMonat) / 7);
+  var html = '<div class="kal-g" role="grid">' +
+    DAYS_ORDER.map(function(t) { return '<div class="kal-k">' + t + '</div>'; }).join('');
+  for (var i = 0; i < zeilen * 7; i++) {
+    var d = new Date(m.getFullYear(), m.getMonth(), 1 - offset + i);
+    var iso = isoDateLocal(d);
+    var e = days[iso];
+    var st = kalenderStatus(e);
+    var cls = 'kal-d' + (d.getMonth() !== m.getMonth() ? ' aus' : '') + (iso === heuteIso ? ' heute' : '') +
+              (iso === G_kal.tag ? ' sel' : '');
+    var label = d.toLocaleDateString('de-CH', { day: 'numeric', month: 'long' }) +
+      (e && e.gericht ? ': ' + (e.gericht.abend || '') + (st === 'g' ? ', gekocht' : '') : '');
+    html += '<button class="' + cls + '" data-iso="' + iso + '" onclick="kalenderTag(\'' + iso + '\')" aria-label="' + esc(label) + '">' +
+      d.getDate() + (st ? '<i class="kal-p ' + st + '"></i>' : '<i class="kal-p" style="visibility:hidden"></i>') +
+      (e && e.gericht && e.gericht._fotoId ? '<span class="kal-f">📷</span>' : '') + '</button>';
+  }
+  grid.innerHTML = html + '</div>';
+
+  // Wochenansicht zum gewaehlten Tag
+  var w = $('kal-woche');
+  if (!w) return;
+  if (!G_kal.tag) { w.innerHTML = ''; return; }
+  var sel = new Date(G_kal.tag + 'T12:00:00');
+  var mo = mondayOf(sel);
+  var so = new Date(mo); so.setDate(so.getDate() + 6);
+  var kurz = { day: 'numeric', month: 'short' };
+  var wh = '<div style="border-top:.5px solid var(--bdr);margin-top:8px;padding-top:8px">' +
+    '<div style="font-size:11px;font-weight:700;letter-spacing:.5px;color:var(--gr3);text-transform:uppercase;padding:0 6px 4px">' +
+    esc(wochenEtikett(isoDateLocal(mo))) + ' · ' + mo.toLocaleDateString('de-CH', kurz) + ' – ' + so.toLocaleDateString('de-CH', kurz) + '</div>';
+  for (var k = 0; k < 7; k++) {
+    var dd = new Date(mo); dd.setDate(mo.getDate() + k);
+    var di = isoDateLocal(dd);
+    var en = days[di];
+    var s2 = kalenderStatus(en);
+    var istSel = di === G_kal.tag;
+    var datum = DAYS_ORDER[k] + ' ' + dd.toLocaleDateString('de-CH', { day: 'numeric', month: 'numeric' });
+    wh += '<button class="kal-zeile' + (istSel ? ' sel' : '') + '" onclick="kalenderTag(\'' + di + '\')">' +
+      '<span style="font-size:13px;font-weight:700;min-width:62px;white-space:nowrap">' + datum + '</span>' +
+      (en && en.gericht
+        ? '<span style="flex:1;min-width:0;font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap' + (en.gericht._cancelled ? ';text-decoration:line-through;opacity:.6' : '') + '">' + esc(en.gericht.abend || '') + '</span>' +
+          (en.gericht._fotoId ? '<img class="foto-img foto-thumb" data-fotoid="' + esc(en.gericht._fotoId) + '" src="' + FOTO_LEER + '" alt="" style="width:30px;height:30px;min-height:30px;max-height:30px">' : '') +
+          '<i class="kal-p ' + s2 + '"></i>'
+        : '<span style="flex:1;font-size:12px;color:var(--gr3);font-style:italic">nichts geplant</span>') +
+      '</button>';
+    if (istSel && en && en.gericht) {
+      var det = '';
+      try { det = timelineCardDetail(en); } catch (ex) { det = ''; }
+      wh += '<div style="padding:0 6px 6px">' + det + '</div>';
+    }
+  }
+  w.innerHTML = wh + '</div>';
+  try { fotosHydrate(w); } catch (e2) {}
 }
 
 // ─── ZEITACHSE (Wochenplan-Ansicht) ─────────────────────────
@@ -6954,6 +7454,7 @@ function updateDashboard() {
   // Erst befoerdern, dann anzeigen - sonst steht ein Zukunftsplan als
   // "Diese Woche" da, waehrend der echte im Verlauf schlummert.
   befoerdereWochenplan();
+  try { if (typeof kalenderRender === 'function') kalenderRender(); } catch (e) {}
   if ($('dash-woche-lbl') && G.activePlan) $('dash-woche-lbl').textContent = wochenEtikett(G.activePlan.weekStart);
   // Hinweis auf neue Fehler, damit man nicht in die Praeferenzen muss, um
   // zu merken, dass etwas schiefging.
@@ -7377,6 +7878,7 @@ function renderHistoryView() {
       '<div class="chead">' + esc(datum) + '</div>' +
       '<div class="cbody">' +
         '<div style="font-size:15px;font-weight:700;color:var(--txt)">' + esc(g.abend || '') + '</div>' +
+        (g._fotoId ? '<div class="foto-box"><img class="foto-img" data-fotoid="' + esc(g._fotoId) + '" src="' + FOTO_LEER + '" alt="Foto von ' + esc(g.abend || 'dem Gericht') + '" onclick="fotoGross(this)"><div class="foto-leer">Das Foto ist auf diesem Gerät noch nicht verfügbar.</div></div>' : '') +
         (g.mittag_nächster_tag ? '<div style="font-size:12px;color:var(--gr3);margin-top:2px">&#8594; ' +
            esc(g.mittag_tag || '') + ': ' + esc(g.mittag_nächster_tag) + '</div>' : '') +
         (zut ? '<div style="margin-top:10px;border-top:.5px solid var(--bdr);padding-top:8px">' + zut + '</div>' : '') +
@@ -7386,6 +7888,7 @@ function renderHistoryView() {
   }).join('');
   if ($('hv-list')) $('hv-list').innerHTML = html ||
     '<div style="padding:16px;color:var(--gr3);font-size:13px">Keine Gerichte gespeichert.</div>';
+  try { fotosHydrate($('hv-list')); } catch (e) {}
 }
 
 // Aus der Nur-Ansicht heraus einplanen. Das historische Gericht wird kopiert,
@@ -7480,7 +7983,7 @@ function nochmalKochen(i) {
     newPlan.bringStale = false;
     // Gekocht-Markierungen der einzelnen Gerichte ebenfalls zuruecksetzen
     if (newPlan.sug && newPlan.sug.gerichte) {
-      newPlan.sug.gerichte.forEach(function(g) { delete g._gekocht; });
+      newPlan.sug.gerichte.forEach(function(g) { delete g._gekocht; delete g._fotoId; });
     }
     G.activePlan = newPlan;
     G.checked = {};
