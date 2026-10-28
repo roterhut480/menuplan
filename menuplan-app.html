@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=yes">
-<title>Menüplan v6.98</title>
+<title>Menüplan v6.99</title>
 <meta name="theme-color" content="#5B7C78">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -122,20 +122,17 @@ button:focus:not(:focus-visible),[role=button]:focus:not(:focus-visible){outline
 /* Knopfreihe: .btn+.btn ist fuer GESTAPELTE Knoepfe gedacht und schiebt im
    Raster die zweite Spalte um 8px nach unten. Innerhalb einer Reihe daher
    zuruecknehmen, sonst stehen nebeneinanderliegende Knoepfe versetzt. */
-.kal-nav{min-width:44px;min-height:44px;border:none;background:none;font-family:inherit;font-size:20px;color:var(--txt);cursor:pointer;border-radius:8px}
-.kal-g{display:grid;grid-template-columns:repeat(7,1fr);gap:2px}
-.kal-k{font-size:10px;font-weight:700;color:var(--gr3);text-align:center;padding:4px 0}
-.kal-d{position:relative;height:44px;border:none;background:none;border-radius:8px;font-family:inherit;font-size:13px;color:var(--txt);cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:0}
-.kal-d.aus{opacity:.35}
-.kal-d.heute{box-shadow:inset 0 0 0 1.5px var(--red);font-weight:800}
-.kal-d.sel{background:var(--rl)}
-.kal-p{display:inline-block;width:7px;height:7px;border-radius:50%;box-sizing:border-box;flex:none}
-.kal-p.g{background:var(--grn)}
-.kal-p.p{border:1.5px solid var(--gr3)}
-.kal-p.x{background:var(--gr2)}
-.kal-f{position:absolute;top:2px;right:3px;font-size:9px;line-height:1}
-.kal-zeile{display:flex;align-items:center;gap:8px;width:100%;text-align:left;border:none;background:none;font-family:inherit;padding:9px 6px;border-radius:8px;cursor:pointer;min-height:40px;color:var(--txt)}
-.kal-zeile.sel{background:var(--rl)}
+.kl-wk{position:sticky;top:var(--tbar-h);z-index:5;background:var(--background);display:flex;justify-content:space-between;padding:12px 4px 6px;font-size:11px;font-weight:700;letter-spacing:.5px;color:var(--gr3);text-transform:uppercase}
+.kl-wk.aktiv{color:var(--red)}
+.day-row{display:flex;align-items:center;gap:10px;min-height:46px;padding:0 10px;margin-bottom:2px;border-radius:6px;background:#fff;border:.5px solid var(--bdr);box-sizing:border-box}
+.day-row.belegt{border-top:none;border-right:none;border-bottom:none}
+.day-row.heute{box-shadow:inset 0 0 0 1.5px var(--red)}
+.day-row.vergangen{opacity:.7}
+.kl-tap{display:flex;align-items:center;gap:10px;width:100%;min-height:46px;border:none;background:none;font-family:inherit;text-align:left;padding:0;color:var(--txt);cursor:pointer}
+.kl-datum{font-size:14px;font-weight:700;min-width:70px;white-space:nowrap}
+.kl-titel{flex:1;min-width:0;font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.kl-detail{margin:0 0 6px;padding:0 4px}
+.kl-gedaempft{opacity:.55}
 .foto-box{margin-top:10px}
 .foto-img{display:block;width:100%;max-height:260px;object-fit:cover;border-radius:var(--r);border:.5px solid var(--bdr);background:var(--gr);cursor:zoom-in;min-height:60px}
 .foto-img.foto-thumb{width:40px;height:40px;min-height:40px;max-height:40px;flex:none;border-radius:8px;cursor:pointer}
@@ -302,7 +299,7 @@ body.netz-aus .netz-hint{display:block}
 
 <!-- HOME -->
 <div class="scr on" id="sh">
-  <div class="hero"><h1>Menüplan</h1><p id="hsub">v6.98 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
+  <div class="hero"><h1>Menüplan</h1><p id="hsub">v6.99 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
 
   <!-- Active plan card -->
 
@@ -338,7 +335,7 @@ body.netz-aus .netz-hint{display:block}
         <div style="font-size:40px;margin-bottom:10px">📅</div>
         <div style="font-size:16px;font-weight:700;color:var(--txt);margin-bottom:6px">Noch kein Menüplan</div>
         <div style="font-size:13px;color:var(--gr3);margin-bottom:16px">Generiere deinen ersten Wochenplan</div>
-        <button onclick="openNewWeekScreen()" style="background:var(--red);color:#fff;border:none;border-radius:10px;padding:13px;font-size:15px;font-weight:700;cursor:pointer;width:100%">✨ Menüplan erstellen</button>
+        <button onclick="openKalender()" style="background:var(--red);color:#fff;border:none;border-radius:10px;padding:13px;font-size:15px;font-weight:700;cursor:pointer;width:100%">✨ Menüplan erstellen</button>
       </div>
       <div id="dash-stale" style="display:none;background:#FFF3E3;border:.5px solid #EBC9A0;border-radius:var(--rlg);padding:11px 14px;margin-bottom:10px;font-size:12px;color:#B97836">
             &#9888; Dieser Plan ist aus einer früheren Woche. <b>Neue Woche planen</b> für aktuelle Vorschläge.
@@ -367,25 +364,17 @@ body.netz-aus .netz-hint{display:block}
           <div id="dash-einkauf-sub" style="font-size:11px;color:var(--gr3);margin-bottom:12px;padding-left:17px"></div>
           <button id="dash-einkauf-btn" onclick="openActivePlan('e')" style="width:100%;background:#f5f5f5;border:none;border-radius:8px;padding:10px;font-size:13px;font-weight:600;color:var(--txt);cursor:pointer">Einkaufsliste öffnen →</button>
         </div>
-        <button onclick="openNewWeekScreen()" style="width:100%;background:#fff;border:.5px solid var(--bdr);border-radius:var(--rlg);padding:14px;font-size:14px;font-weight:600;color:var(--gr3);cursor:pointer;margin-bottom:8px">📅 Neue Woche planen</button>
       </div>
-      <div id="kal-card" style="background:#fff;border-radius:var(--rlg);border:.5px solid var(--bdr);padding:12px 12px 10px;margin-bottom:12px">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;padding:0 4px">
-          <div style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--gr3)">📆 Kalender</div>
-          <div style="display:flex;align-items:center">
-            <button onclick="kalenderMonat(-1)" aria-label="Voriger Monat" class="kal-nav">‹</button>
-            <button id="kal-titel" onclick="kalenderHeute()" aria-label="Zum heutigen Tag" class="kal-nav" style="min-width:120px;font-size:13px;font-weight:700">Monat</button>
-            <button onclick="kalenderMonat(1)" aria-label="Nächster Monat" class="kal-nav">›</button>
-          </div>
-        </div>
-        <div id="kal-grid"></div>
-        <div style="display:flex;gap:12px;align-items:center;justify-content:center;font-size:11px;color:var(--gr3);margin:6px 0 2px">
-          <span style="display:inline-flex;align-items:center;gap:4px"><i class="kal-p g"></i>gekocht</span>
-          <span style="display:inline-flex;align-items:center;gap:4px"><i class="kal-p p"></i>geplant</span>
-          <span style="display:inline-flex;align-items:center;gap:4px"><i class="kal-p x"></i>ausgefallen/auswärts</span>
-        </div>
-        <div id="kal-woche"></div>
-      </div>
+      <button id="dash-kalender-btn" onclick="openKalender()" style="display:flex;align-items:center;gap:12px;width:100%;text-align:left;background:#fff;border:2px solid var(--primary);border-radius:var(--rlg);padding:14px 16px;margin-bottom:12px;font-family:inherit;color:var(--txt);cursor:pointer;min-height:64px">
+        <span style="width:40px;height:40px;border-radius:10px;background:var(--primary-soft);display:flex;align-items:center;justify-content:center;flex:none">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--primary-dark)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15" rx="2.5"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg>
+        </span>
+        <span style="flex:1;min-width:0">
+          <span style="display:block;font-size:15px;font-weight:700">Kalender &amp; Planung</span>
+          <span style="display:block;font-size:12px;color:var(--gr3);margin-top:2px">Nachschauen, Fotos, neue Woche planen</span>
+        </span>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--gr3)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg>
+      </button>
       <div style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--gr3);margin:6px 2px 8px">Ausserhalb dieser Woche</div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:4px">
         <button onclick="openFotoScreen()" style="background:#fff;border:.5px solid var(--bdr);border-radius:var(--rlg);padding:14px;text-align:left;cursor:pointer;font-family:inherit"><div style="font-size:22px;margin-bottom:4px">📷</div><div style="font-size:13px;font-weight:700;color:var(--txt)">Einzelrezept</div><div style="font-size:11px;color:var(--gr3)">Foto oder Text</div></button>
@@ -419,9 +408,33 @@ body.netz-aus .netz-hint{display:block}
 </div><!-- END #sh -->
 
 <!-- NEUE WOCHE PLANEN -->
+<!-- KALENDER & PLANUNG -->
+<div class="scr" id="skal">
+  <div class="tbar">
+    <div class="tbar-bk" onclick="go('sh')" aria-label="Zurück zur Startseite">&#8592;</div>
+    <div><h1>Kalender</h1><div class="tbar-sub">Nachschauen &amp; Planen</div></div>
+    <button onclick="kalenderZuHeute()" style="margin-left:auto;min-height:36px;padding:0 14px;border-radius:18px;border:1px solid rgba(255,255,255,.7);background:none;color:#fff;font-size:13px;font-weight:600;font-family:inherit;cursor:pointer">Heute</button>
+  </div>
+  <div id="day-picker" style="padding:0 10px"></div>
+  <div id="day-picker-hint" style="font-size:11px;color:var(--gr3);margin:8px 14px 0;line-height:1.4"></div>
+  <div style="height:150px"></div>
+  <div id="kl-leiste" style="position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;box-sizing:border-box;background:#fff;border-top:.5px solid var(--bdr);padding:8px 14px calc(12px + env(safe-area-inset-bottom));z-index:70">
+    <div id="day-picker-legend" style="line-height:1.5"></div>
+    <div style="display:flex;align-items:center;gap:12px">
+      <div style="flex:1;min-width:0">
+        <div id="kl-n" style="font-size:14px;font-weight:700">0 Kochabende</div>
+        <div id="kl-tage" style="font-size:12px;color:var(--gr3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis"></div>
+      </div>
+      <button id="kl-planen" class="btn btn-red" onclick="kalenderPlanen()" style="width:auto;min-height:48px;padding:0 22px;font-size:15px;font-weight:700;display:inline-flex;align-items:center;gap:8px">Planen
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      </button>
+    </div>
+  </div>
+</div><!-- END #skal -->
+
 <div class="scr" id="snew">
   <div class="tbar">
-    <div class="tbar-bk" onclick="go('sh')">&#8592;</div>
+    <div class="tbar-bk" onclick="openKalender()" aria-label="Zurück zum Kalender">&#8592;</div>
     <div><h1>Neue Woche planen</h1><div class="tbar-sub">Einstellungen &amp; Generierung</div></div>
   </div>
   <!-- Cook options -->
@@ -444,10 +457,14 @@ body.netz-aus .netz-hint{display:block}
         </div>
       </div>
 
-      <!-- Tagesplanung -->
+      <!-- Gewaehlte Tage (die Auswahl selbst passiert im Kalender) -->
       <div class="fld" style="margin-top:4px">
-        <label>🍳 Welche Tage kochen?</label>
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px"><span style="font-size:11px;color:var(--gr3)">Zeitrahmen pro Tag</span><span style="font-size:11px;color:var(--gr3)"><b id="n-display" style="color:var(--red);font-size:14px">3</b> <span id="n-label">Kochabende</span></span></div><div id="day-picker" style="display:flex;flex-direction:column;gap:2px;margin-top:2px"></div><div id="day-picker-legend" style="margin-top:8px;line-height:1.5"></div><div id="day-picker-hint" style="font-size:11px;color:var(--gr3);margin-top:6px;line-height:1.4"></div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+          <label style="margin:0">🍳 Gewählte Tage</label>
+          <button class="btn btn-out" onclick="openKalender()" style="width:auto;min-height:36px;padding:0 14px;font-size:13px">Ändern</button>
+        </div>
+        <div style="font-size:12px;color:var(--gr3);margin-bottom:6px"><b id="n-display" style="color:var(--red);font-size:14px">3</b> <span id="n-label">Kochabende</span></div>
+        <div id="snew-tage"></div>
       </div>
 
       <!-- Fleisch Modus -->
@@ -1339,8 +1356,10 @@ function belegteTageInfo() {
     var auswaerts = (g.abend || '').indexOf('Auswärts') >= 0;
     if (g._cancelled && !auswaerts) return;
     var pi = plaene[tl[iso].planId] || {};
+    var status = auswaerts ? 'x' : ((g._gekocht || tl[iso].entryStatus === 'gekocht') ? 'g' : 'p');
     out[iso] = { titel: auswaerts ? '🍽 Auswärts' : (g.abend || g.name || 'Geplant'),
-                 planId: tl[iso].planId || '', thema: pi.thema || '', eingekauft: !!pi.eingekauft };
+                 planId: tl[iso].planId || '', thema: pi.thema || '', eingekauft: !!pi.eingekauft,
+                 status: status, fotoId: g._fotoId || '' };
   });
   return out;
 }
@@ -1360,19 +1379,31 @@ var PLAN_FARBEN = [
   { bg: '#E8F2EC', bd: '#4F8067' }, { bg: '#E7EFED', bd: '#5B7C78' }
 ];
 
+var KL_MAX_RUECK = 26;   // hoechstens so viele vergangene Wochen anzeigen
+
+// Wochen von der aeltesten verplanten Woche (max. KL_MAX_RUECK zurueck) bis
+// PICKER_WOCHEN Wochen ab der laufenden.
 function pickerWochen() {
   var belegt = belegteTageInfo();
   var heute = new Date(); heute.setHours(0, 0, 0, 0);
+  var thisMo = mondayOf(heute);
+  var rueck = 0;
+  Object.keys(belegt).forEach(function(iso) {
+    var w = Math.round((thisMo - mondayOf(new Date(iso + 'T12:00:00'))) / (7 * 86400000));
+    if (w > rueck) rueck = w;
+  });
+  rueck = Math.min(rueck, KL_MAX_RUECK);
   var wochen = [];
-  for (var n = 0; n < PICKER_WOCHEN; n++) {
+  for (var n = -rueck; n < PICKER_WOCHEN; n++) {
     var wiso = wochenStartVersetzt(n);
     var tage = DAYS_ORDER.map(function(tag) {
       var d = dateFromTag(wiso, tag);
       var iso = isoDateLocal(d);
       var bi = belegt[iso] || null;
-      return { tag: tag, iso: iso, date: d, vergangen: d < heute,
+      return { tag: tag, iso: iso, date: d, vergangen: d < heute, heute: +d === +heute,
                titel: bi ? bi.titel : null, planId: bi ? bi.planId : '', thema: bi ? bi.thema : '',
-               eingekauft: bi ? bi.eingekauft : false, frei: d >= heute && !bi };
+               eingekauft: bi ? bi.eingekauft : false, status: bi ? bi.status : '', fotoId: bi ? bi.fotoId : '',
+               frei: d >= heute && !bi };
     });
     wochen.push({ iso: wiso, tage: tage, hatFrei: tage.some(function(t) { return t.frei; }) });
   }
@@ -1392,7 +1423,7 @@ function pickerWocheAbgleichen(wochen) {
     var soll0 = Math.max(1, cookingDays().length || G.n || 1);
     var zaehle = function(w) { return w.tage.filter(function(t) { return t.frei; }).length; };
     aktiv = wochen.filter(function(w) { return zaehle(w) >= soll0; })[0] ||
-            wochen.filter(function(w) { return w.hatFrei; })[0] || wochen[0];
+            wochen.filter(function(w) { return w.hatFrei; })[0] || wochen[wochen.length - 1];
     G.planWoche = aktiv.iso;
   }
   var soll = cookingDays().length;
@@ -1412,12 +1443,26 @@ function pickerWocheAbgleichen(wochen) {
   return aktiv;
 }
 
+var KL_SVG = {
+  haken: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#4F8067" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-label="gekocht" role="img" style="flex:none"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>',
+  offen: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-label="geplant" role="img" style="flex:none"><circle cx="12" cy="12" r="6" stroke="#68726F" stroke-width="2"/></svg>',
+  aus: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-label="auswärts" role="img" style="flex:none"><circle cx="12" cy="12" r="6" stroke="#B0B8B6" stroke-width="2"/><path d="M9 12h6" stroke="#B0B8B6" stroke-width="2" stroke-linecap="round"/></svg>',
+  korb: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#68726F" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-label="Einkauf übertragen" role="img" style="flex:none"><path d="M3 4h2.5l2 11h10l2-8H7"/><circle cx="9" cy="19" r="1.3"/><circle cx="17" cy="19" r="1.3"/></svg>'
+};
+
+function kalenderTagKurz(date) {
+  return DAYS_ORDER[(date.getDay() + 6) % 7] + ' ' + date.getDate() + '.' + (date.getMonth() + 1) + '.';
+}
+
+// Die Liste im Kalender-Bildschirm UND die Zusammenfassung im Planungsformular.
+// Vergangene Tage erscheinen nur, wenn dort gekocht/geplant wurde; heute und
+// alle kommenden Tage immer (frei = waehlbar).
 function initDayPicker() {
   var dp = $('day-picker');
-  if (!dp) return;
   var wochen = pickerWochen();
   pickerWocheAbgleichen(wochen);
-  var kurz = { day: 'numeric', month: 'numeric' };
+  var tl = {};
+  try { tl = buildTimelineDays() || {}; } catch (e) { tl = {}; }
   var modi = DAY_MODES.filter(function(m) { return m.key !== 'auswaerts'; });
   // Farbe je Menue-Lauf, in Reihenfolge des ersten Auftretens vergeben.
   var farbe = {}, farbeN = 0, legende = [];
@@ -1433,60 +1478,71 @@ function initDayPicker() {
     }
     t.farbe = farbe[k];
   }); });
+  var gewaehlt = cookingDays().length > 0;
   var html = '';
   wochen.forEach(function(w) {
+    var zeilen = w.tage.filter(function(t) { return !t.vergangen || t.titel; });
+    if (!zeilen.length) return;
     var istAktiv = w.iso === G.planWoche;
-    var ende = new Date(w.tage[6].date.getTime());
+    var ende = w.tage[6].date;
     var spanne = w.tage[0].date.toLocaleDateString('de-CH', { day: 'numeric', month: 'short' }) + ' – ' +
                  ende.toLocaleDateString('de-CH', { day: 'numeric', month: 'short' });
-    html += '<div class="dp-woche" id="dw-' + w.iso + '" style="position:sticky;top:0;z-index:1;background:var(--surface,#fff);' +
-      'padding:6px 2px 4px;font-size:11px;font-weight:700;letter-spacing:.3px;color:' + (istAktiv ? 'var(--red)' : 'var(--gr3)') +
-      ';border-bottom:.5px solid var(--bdr);display:flex;justify-content:space-between">' +
-      '<span>' + esc(wochenEtikett(w.iso).toUpperCase()) + (istAktiv ? ' ✓' : '') + '</span><span>' + spanne + '</span></div>';
-    w.tage.forEach(function(t) {
-      var inAktiv = istAktiv;
-      var an = inAktiv && G.days[t.tag] && G.days[t.tag] !== 'auswaerts';
-      var gesperrt = !t.frei;
-      var datum = t.date.toLocaleDateString('de-CH', { day: 'numeric', month: 'numeric' });
-      var einkauf = (G.einkaufstag || 'Mo') === t.tag ? ' <span title="Einkaufstag" style="font-size:11px">🛒</span>' : '';
-      html += '<div class="day-row' + (gesperrt ? ' day-gesperrt' : '') + '" id="dr-' + t.iso + '" data-tag="' + t.tag + '" data-woche="' + w.iso +
-        '" style="display:flex;align-items:center;gap:8px;padding:5px 2px;' + (t.farbe ? 'background:' + t.farbe.bg + ';border-left:3px solid ' + t.farbe.bd + ';border-radius:6px;padding-left:6px;' : '') + (t.vergangen ? 'opacity:' + (t.farbe ? '.6' : '.4') : '') + '">' +
-        '<label style="display:flex;align-items:center;gap:8px;flex:1;min-width:0;' + (gesperrt ? 'cursor:default' : 'cursor:pointer') + '">' +
-          '<input type="checkbox" id="dc-' + t.iso + '" onchange="toggleDay(\'' + t.iso + '\')" ' + (an ? 'checked ' : '') + (gesperrt ? 'disabled ' : '') +
-            'style="width:18px;height:18px;accent-color:var(--red);flex:none;' + (gesperrt ? '' : 'cursor:pointer') + '">' +
-          '<span style="font-size:14px;font-weight:700;min-width:62px;white-space:nowrap">' + t.tag + ' ' + datum + einkauf + '</span>' +
-          (t.titel ? '<span class="dp-titel" style="font-size:12.5px;color:var(--gr3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + esc(t.titel) + '</span>'
-                   : (t.vergangen ? '<span style="font-size:12px;color:var(--gr3)">vergangen</span>' : '')) +
-        '</label>' +
-        (t.frei ? '<select id="dm-' + t.iso + '" onchange="setDayMode(\'' + t.tag + '\',this.value)" ' + (!an ? 'disabled ' : '') +
-          'style="font-size:12px;padding:4px 8px;border-radius:6px;border:.5px solid var(--bdr);background:#fff;font-family:inherit;color:var(--txt);max-width:150px;' + (!an ? 'opacity:.3' : '') + '">' +
-          modi.map(function(m) {
-            return '<option value="' + m.key + '" ' + (inAktiv && G.days[t.tag] === m.key ? 'selected' : '') + '>' + m.label + ' – ' + m.hint + '</option>';
-          }).join('') + '</select>' : '') +
-      '</div>';
+    html += '<div class="kl-wk' + (istAktiv && gewaehlt ? ' aktiv' : '') + ' dp-woche" id="dw-' + w.iso + '" style="scroll-margin-top:calc(var(--tbar-h) + 4px)">' +
+      '<span>' + esc(wochenEtikett(w.iso)) + (istAktiv && gewaehlt ? ' ✓' : '') + '</span><span>' + spanne + '</span></div>';
+    var gedaempft = gewaehlt && !istAktiv && w.tage.every(function(t) { return !t.vergangen; });
+    html += '<div data-wk="' + w.iso + '"' + (gedaempft ? ' class="kl-gedaempft"' : '') + (w.tage.every(function(t) { return !t.vergangen; }) ? ' data-kuenftig="1"' : '') + '>';
+    zeilen.forEach(function(t) {
+      var datum = kalenderTagKurz(t.date);
+      var kl = 'day-row' + (t.heute ? ' heute' : '') + (t.vergangen ? ' vergangen' : '');
+      var tint = t.farbe ? 'background:' + t.farbe.bg + ';border-left:3px solid ' + t.farbe.bd + ';' : '';
+      var attr = ' id="dr-' + t.iso + '" data-tag="' + t.tag + '" data-woche="' + w.iso + '"';
+      if (t.titel) {
+        var offen = G_kal.tag === t.iso;
+        var icon = t.status === 'g' ? KL_SVG.haken : t.status === 'x' ? KL_SVG.aus : KL_SVG.offen;
+        html += '<div class="' + kl + ' day-gesperrt belegt"' + attr + ' style="' + tint + '">' +
+          '<button class="kl-tap" onclick="kalenderTag(\'' + t.iso + '\')" aria-expanded="' + (offen ? 'true' : 'false') + '">' +
+            icon + '<span class="kl-datum">' + datum + '</span><span class="kl-titel dp-titel">' + esc(t.titel) + '</span>' +
+            (t.status === 'p' && t.eingekauft ? KL_SVG.korb : '') +
+            (t.fotoId ? '<img class="foto-img foto-thumb" data-fotoid="' + esc(t.fotoId) + '" src="' + FOTO_LEER + '" alt="" style="width:30px;height:30px;min-height:30px;max-height:30px;border-radius:6px">' : '') +
+          '</button></div>';
+        if (offen && tl[t.iso]) {
+          var det = '';
+          try { det = timelineCardDetail(tl[t.iso]); } catch (ex) { det = ''; }
+          html += '<div class="kl-detail">' + det + '</div>';
+        }
+      } else {
+        var an = istAktiv && G.days[t.tag] && G.days[t.tag] !== 'auswaerts';
+        html += '<div class="' + kl + '"' + attr + '>' +
+          '<label style="display:flex;align-items:center;gap:10px;flex:1;min-width:0;min-height:44px;cursor:pointer">' +
+            '<input type="checkbox" id="dc-' + t.iso + '" onchange="toggleDay(\'' + t.iso + '\')" ' + (an ? 'checked ' : '') +
+              'style="width:18px;height:18px;accent-color:var(--red);flex:none;cursor:pointer">' +
+            '<span class="kl-datum">' + datum + (( G.einkaufstag || 'Mo') === t.tag ? ' <span title="Einkaufstag" aria-label="Einkaufstag" style="font-size:11px">🛒</span>' : '') + '</span>' +
+          '</label>' +
+          '<select id="dm-' + t.iso + '" aria-label="Zeitrahmen ' + datum + '" onchange="setDayMode(\'' + t.tag + '\',this.value)" ' + (!an ? 'disabled ' : '') +
+            'style="' + (an ? '' : 'display:none;') + 'font-size:12px;padding:6px 8px;border-radius:6px;border:.5px solid var(--bdr);background:#fff;font-family:inherit;color:var(--txt);max-width:150px">' +
+            modi.map(function(m) {
+              return '<option value="' + m.key + '" ' + (istAktiv && G.days[t.tag] === m.key ? 'selected' : '') + '>' + m.label + '</option>';
+            }).join('') + '</select></div>';
+      }
     });
+    html += '</div>';
   });
-  dp.innerHTML = html;
+  if (dp) dp.innerHTML = html || '<div style="padding:24px 8px;color:var(--gr3);font-size:13px;text-align:center">Noch nichts geplant.</div>';
   var lg = $('day-picker-legend');
   if (lg) {
     var kurzf = { day: 'numeric', month: 'numeric' };
     lg.innerHTML = legende.map(function(l) {
       var c = farbe[l.k];
-      return '<span class="dp-leg" style="display:inline-flex;align-items:center;gap:5px;margin:0 10px 4px 0;font-size:11px;color:var(--gr3)">' +
+      return '<span class="dp-leg" style="display:inline-flex;align-items:center;gap:5px;margin:0 10px 2px 0;font-size:11px;color:var(--gr3)">' +
         '<i style="width:10px;height:10px;border-radius:3px;background:' + c.bg + ';border:2px solid ' + c.bd + ';display:inline-block"></i>' +
         '<span>' + esc(l.thema || 'Menü') + ' · ' + l.von.toLocaleDateString('de-CH', kurzf) +
-        (+l.bis !== +l.von ? '–' + l.bis.toLocaleDateString('de-CH', kurzf) : '') + (l.eingekauft ? ' 🛒 Einkauf übertragen' : '') + '</span></span>';
+        (+l.bis !== +l.von ? '–' + l.bis.toLocaleDateString('de-CH', kurzf) : '') + (l.eingekauft ? ' · Einkauf übertragen' : '') + '</span></span>';
     }).join('');
   }
-  dp.style.maxHeight = '300px';
-  dp.style.overflowY = 'auto';
-  dp.style.webkitOverflowScrolling = 'touch';
   var hint = $('day-picker-hint');
   if (hint) hint.textContent = 'Ein Plan gilt für eine Kalenderwoche (Mo–So). Tippst du einen freien Tag einer anderen Woche an, wechselt die Auswahl dorthin.';
   updateNFromDays();
-  // zur aktiven Woche scrollen (nur wenn sie nicht die erste ist)
-  var kopf = $('dw-' + G.planWoche);
-  if (kopf && kopf.offsetTop > 0) dp.scrollTop = Math.max(0, kopf.offsetTop - dp.offsetTop);
+  try { fotosHydrate(dp); } catch (e) {}
 }
 
 // iso = ISO-Datum der angetippten Zeile. Wechselt die aktive Woche bei Bedarf.
@@ -1502,19 +1558,32 @@ function toggleDay(iso) {
     DAYS_ORDER.forEach(function(d) { if (G.days[d] !== 'auswaerts') G.days[d] = null; });
     G.planWoche = woche;
     if (cb.checked) G.days[tag] = 'normal';
-    initDayPicker();
+    kalenderNeuZeichnen();
     return;
   }
+  var sel = $('dm-' + iso);
   if (cb.checked) {
     G.days[tag] = 'normal';
-    var sel = $('dm-' + iso);
-    if (sel) { sel.disabled = false; sel.style.opacity = '1'; sel.value = 'normal'; }
+    if (sel) { sel.disabled = false; sel.style.display = ''; sel.value = 'normal'; }
   } else {
     G.days[tag] = null;
-    var sel2 = $('dm-' + iso);
-    if (sel2) { sel2.disabled = true; sel2.style.opacity = '.3'; }
+    if (sel) { sel.disabled = true; sel.style.display = 'none'; }
   }
   updateNFromDays();
+  // Folgewochen daempfen, solange in der aktiven Woche etwas gewaehlt ist
+  var anGewaehlt = cookingDays().length > 0;
+  var blk = document.querySelectorAll('#day-picker [data-wk]');
+  for (var bi = 0; bi < blk.length; bi++) {
+    blk[bi].classList.toggle('kl-gedaempft', anGewaehlt && blk[bi].getAttribute('data-wk') !== G.planWoche && !!blk[bi].getAttribute('data-kuenftig'));
+  }
+  // Wochenkopf: "✓" nur solange etwas gewaehlt ist
+  var k = $('dw-' + G.planWoche);
+  if (k) {
+    var an = cookingDays().length > 0;
+    k.classList.toggle('aktiv', an);
+    var lbl = k.firstChild;
+    if (lbl) lbl.textContent = lbl.textContent.replace(/ ✓$/, '') + (an ? ' ✓' : '');
+  }
 }
 
 function setDayMode(d, mode) {
@@ -1537,6 +1606,30 @@ function updateNFromDays() {
 function renderNCount() {
   if ($('n-display')) $('n-display').textContent = G.n;
   if ($('n-label')) $('n-label').textContent = (G.n === 1 ? 'Kochabend' : 'Kochabende');
+  // Leiste im Kalender und Zusammenfassung im Planungsformular
+  if ($('kl-n')) $('kl-n').textContent = G.n + ' ' + (G.n === 1 ? 'Kochabend' : 'Kochabende');
+  if ($('kl-tage')) $('kl-tage').textContent = tageZusammenfassung().map(function(t) { return t.datum; }).join(' · ') ||
+    'Wähle freie Tage in der Liste';
+  if ($('kl-planen')) { $('kl-planen').disabled = !G.n; $('kl-planen').style.opacity = G.n ? '1' : '.4'; }
+  if ($('snew-tage')) {
+    var z = tageZusammenfassung();
+    $('snew-tage').innerHTML = z.length ? z.map(function(t) {
+      return '<div style="display:flex;align-items:center;gap:10px;padding:3px 0"><span style="font-size:14px;font-weight:700;min-width:80px">' +
+        esc(t.datum) + '</span><span style="font-size:13px;color:var(--gr3)">' + esc(t.modus) + '</span></div>';
+    }).join('') : '<div style="font-size:13px;color:var(--gr3)">Noch keine Tage gewählt – tippe auf «Ändern».</div>';
+  }
+}
+
+// Gewaehlte Kochtage der aktiven Woche als [{ datum: 'Do 29.10.', modus: 'Normal – 30–45 Min.' }].
+function tageZusammenfassung() {
+  var out = [];
+  cookingDays().forEach(function(tag) {
+    var d = G.planWoche ? dateFromTag(G.planWoche, tag) : null;
+    var m = DAY_MODES.filter(function(x) { return x.key === G.days[tag]; })[0];
+    out.push({ tag: tag, datum: d ? kalenderTagKurz(d) : tag,
+               modus: m ? m.label.replace(/^\S+\s/, '') + ' – ' + m.hint : '' });
+  });
+  return out;
 }
 
 function getDayPlanText() {
@@ -4477,7 +4570,7 @@ function renderTimelineNoPlanWeek() {
   return '<div style="margin:10px 10px 0;padding:20px 16px;text-align:center;background:#fafafa;border:.5px dashed var(--bdr);border-radius:var(--rlg)">' +
     '<div style="font-size:13px;font-weight:600;color:var(--txt2);margin-bottom:4px">Noch kein Menüplan</div>' +
     '<div style="font-size:12px;color:var(--gr3);margin-bottom:12px">Plane schon jetzt die nächste Woche.</div>' +
-    '<button class="btn btn-red" onclick="openNewWeekScreen()" style="width:auto;padding:9px 18px;font-size:13px;display:inline-flex">Woche planen</button>' +
+    '<button class="btn btn-red" onclick="openKalender()" style="width:auto;padding:9px 18px;font-size:13px;display:inline-flex">Woche planen</button>' +
   '</div>';
 }
 
@@ -4576,7 +4669,7 @@ function renderRez(sug) {
   $('rlist').innerHTML = html;
   try { fotosHydrate($('rlist')); } catch (e) {}
   // Kalender auf der Startseite zeigt dieselben Daten - nach jeder Aenderung nachziehen.
-  try { if (G_kal && G_kal.tag) kalenderRender(); } catch (e) {}
+  try { kalenderAktualisieren(); } catch (e) {}
   G_timelineInitialized = true;
   initTimelineLabelObserver();
 }
@@ -5752,104 +5845,46 @@ function timelineFotoHtml(entry) {
   return '<button class="btn btn-out" onclick="fotoWaehlen(' + args + ')" style="margin-top:10px;display:flex;align-items:center;justify-content:center;gap:6px">📷 Foto hinzufügen</button>';
 }
 
-// ─── KALENDER (Startseite) ─────────────────────────────────
-// Monatsansicht ueber Verlauf + aktiven Plan (buildTimelineDays: je Datum ein
-// Gericht, der aktive Plan gewinnt). Antippen eines Tages zeigt die ganze Woche
-// darunter, der gewaehlte Tag ist aufgeklappt - mit denselben Details und
-// Aktionen (Zutaten, Bewerten, Foto) wie in der Zeitachse.
-var G_kal = { monat: null, tag: null };
+// ─── KALENDER & PLANUNG ────────────────────────────────────
+// Ein Bildschirm fuer Nachschauen UND Planen: dieselbe Liste (siehe
+// initDayPicker). Verplante Tage klappen beim Antippen ihre Details auf (Zutaten,
+// Bewerten, Foto), freie Tage sind waehlbar; "Planen" fuehrt zu den Einstellungen.
+var G_kal = { tag: null };
 
-function kalenderMonatsanfang(d) { return new Date(d.getFullYear(), d.getMonth(), 1); }
-function kalenderStart() { if (!G_kal.monat) G_kal.monat = kalenderMonatsanfang(new Date()); }
-
-function kalenderMonat(delta) {
-  kalenderStart();
-  G_kal.monat = new Date(G_kal.monat.getFullYear(), G_kal.monat.getMonth() + delta, 1);
-  kalenderRender();
+function kalenderNeuZeichnen() {
+  var y = window.scrollY || 0;
+  initDayPicker();
+  window.scrollTo(0, y);
 }
 
-function kalenderHeute() {
-  G_kal.monat = kalenderMonatsanfang(new Date());
-  G_kal.tag = isoDateLocal(new Date());
-  kalenderRender();
+// Nach Aenderungen anderswo (Bewerten, Foto, Plan geaendert): Liste nachziehen,
+// aber nur wenn der Kalender gerade offen ist.
+function kalenderAktualisieren() {
+  var sk = $('skal');
+  if (sk && sk.classList && sk.classList.contains('on')) kalenderNeuZeichnen();
 }
 
 function kalenderTag(iso) {
   G_kal.tag = (G_kal.tag === iso) ? null : iso;
-  kalenderRender();
+  kalenderNeuZeichnen();
 }
 
-function kalenderStatus(entry) {
-  if (!entry || !entry.gericht) return '';
-  var g = entry.gericht;
-  if (g._gekocht || entry.entryStatus === 'gekocht') return 'g';
-  if (g._cancelled) return 'x';
-  return 'p';
+// Springt zur Kopfzeile der laufenden Woche (oder, falls es sie nicht gibt, zum Anfang).
+function kalenderZuHeute(sofort) {
+  var el = $('dw-' + isoDateLocal(mondayOf(new Date())));
+  if (el && el.scrollIntoView) el.scrollIntoView({ block: 'start', behavior: sofort ? 'auto' : 'smooth' });
+  else window.scrollTo(0, 0);
 }
 
-function kalenderRender() {
-  var grid = $('kal-grid');
-  if (!grid) return;
-  kalenderStart();
-  var days = {};
-  try { days = buildTimelineDays() || {}; } catch (e) { days = {}; }
-  var m = G_kal.monat;
-  var heuteIso = isoDateLocal(new Date());
-  if ($('kal-titel')) $('kal-titel').textContent = m.toLocaleDateString('de-CH', { month: 'long', year: 'numeric' });
-  var offset = (m.getDay() + 6) % 7;                       // Montag = 0
-  var tageImMonat = new Date(m.getFullYear(), m.getMonth() + 1, 0).getDate();
-  var zeilen = Math.ceil((offset + tageImMonat) / 7);
-  var html = '<div class="kal-g" role="grid">' +
-    DAYS_ORDER.map(function(t) { return '<div class="kal-k">' + t + '</div>'; }).join('');
-  for (var i = 0; i < zeilen * 7; i++) {
-    var d = new Date(m.getFullYear(), m.getMonth(), 1 - offset + i);
-    var iso = isoDateLocal(d);
-    var e = days[iso];
-    var st = kalenderStatus(e);
-    var cls = 'kal-d' + (d.getMonth() !== m.getMonth() ? ' aus' : '') + (iso === heuteIso ? ' heute' : '') +
-              (iso === G_kal.tag ? ' sel' : '');
-    var label = d.toLocaleDateString('de-CH', { day: 'numeric', month: 'long' }) +
-      (e && e.gericht ? ': ' + (e.gericht.abend || '') + (st === 'g' ? ', gekocht' : '') : '');
-    html += '<button class="' + cls + '" data-iso="' + iso + '" onclick="kalenderTag(\'' + iso + '\')" aria-label="' + esc(label) + '">' +
-      d.getDate() + (st ? '<i class="kal-p ' + st + '"></i>' : '<i class="kal-p" style="visibility:hidden"></i>') +
-      (e && e.gericht && e.gericht._fotoId ? '<span class="kal-f">📷</span>' : '') + '</button>';
-  }
-  grid.innerHTML = html + '</div>';
+function openKalender() {
+  go('skal');
+  initDayPicker();
+  setTimeout(function() { kalenderZuHeute(true); }, 0);
+}
 
-  // Wochenansicht zum gewaehlten Tag
-  var w = $('kal-woche');
-  if (!w) return;
-  if (!G_kal.tag) { w.innerHTML = ''; return; }
-  var sel = new Date(G_kal.tag + 'T12:00:00');
-  var mo = mondayOf(sel);
-  var so = new Date(mo); so.setDate(so.getDate() + 6);
-  var kurz = { day: 'numeric', month: 'short' };
-  var wh = '<div style="border-top:.5px solid var(--bdr);margin-top:8px;padding-top:8px">' +
-    '<div style="font-size:11px;font-weight:700;letter-spacing:.5px;color:var(--gr3);text-transform:uppercase;padding:0 6px 4px">' +
-    esc(wochenEtikett(isoDateLocal(mo))) + ' · ' + mo.toLocaleDateString('de-CH', kurz) + ' – ' + so.toLocaleDateString('de-CH', kurz) + '</div>';
-  for (var k = 0; k < 7; k++) {
-    var dd = new Date(mo); dd.setDate(mo.getDate() + k);
-    var di = isoDateLocal(dd);
-    var en = days[di];
-    var s2 = kalenderStatus(en);
-    var istSel = di === G_kal.tag;
-    var datum = DAYS_ORDER[k] + ' ' + dd.toLocaleDateString('de-CH', { day: 'numeric', month: 'numeric' });
-    wh += '<button class="kal-zeile' + (istSel ? ' sel' : '') + '" onclick="kalenderTag(\'' + di + '\')">' +
-      '<span style="font-size:13px;font-weight:700;min-width:62px;white-space:nowrap">' + datum + '</span>' +
-      (en && en.gericht
-        ? '<span style="flex:1;min-width:0;font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap' + (en.gericht._cancelled ? ';text-decoration:line-through;opacity:.6' : '') + '">' + esc(en.gericht.abend || '') + '</span>' +
-          (en.gericht._fotoId ? '<img class="foto-img foto-thumb" data-fotoid="' + esc(en.gericht._fotoId) + '" src="' + FOTO_LEER + '" alt="" style="width:30px;height:30px;min-height:30px;max-height:30px">' : '') +
-          '<i class="kal-p ' + s2 + '"></i>'
-        : '<span style="flex:1;font-size:12px;color:var(--gr3);font-style:italic">nichts geplant</span>') +
-      '</button>';
-    if (istSel && en && en.gericht) {
-      var det = '';
-      try { det = timelineCardDetail(en); } catch (ex) { det = ''; }
-      wh += '<div style="padding:0 6px 6px">' + det + '</div>';
-    }
-  }
-  w.innerHTML = wh + '</div>';
-  try { fotosHydrate(w); } catch (e2) {}
+function kalenderPlanen() {
+  if (!cookingDays().length) return;
+  go('snew');
 }
 
 // ─── ZEITACHSE (Wochenplan-Ansicht) ─────────────────────────
@@ -7445,16 +7480,16 @@ function skipBringForNow() {
 }
 
 // ─── DASHBOARD ─────────────────────────────────────────────
+// Alter Name bleibt erhalten: Planen beginnt jetzt immer im Kalender.
 function openNewWeekScreen() {
-  go('snew');
-  setTimeout(initDayPicker, 50);
+  openKalender();
 }
 
 function updateDashboard() {
   // Erst befoerdern, dann anzeigen - sonst steht ein Zukunftsplan als
   // "Diese Woche" da, waehrend der echte im Verlauf schlummert.
   befoerdereWochenplan();
-  try { if (typeof kalenderRender === 'function') kalenderRender(); } catch (e) {}
+  try { if (typeof kalenderAktualisieren === 'function') kalenderAktualisieren(); } catch (e) {}
   if ($('dash-woche-lbl') && G.activePlan) $('dash-woche-lbl').textContent = wochenEtikett(G.activePlan.weekStart);
   // Hinweis auf neue Fehler, damit man nicht in die Praeferenzen muss, um
   // zu merken, dass etwas schiefging.
