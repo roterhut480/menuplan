@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=yes">
-<title>Menüplan v7.05</title>
+<title>Menüplan v7.06</title>
 <meta name="theme-color" content="#5B7C78">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -309,7 +309,7 @@ body.netz-aus .netz-hint{display:block}
 
 <!-- HOME -->
 <div class="scr on" id="sh">
-  <div class="hero"><h1>Menüplan</h1><p id="hsub">v7.05 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
+  <div class="hero"><h1>Menüplan</h1><p id="hsub">v7.06 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
 
   <!-- Active plan card -->
 
@@ -5173,6 +5173,8 @@ function timelineCardDetail(entry) {
       (bewertbar ? '<button class="btn btn-out" onclick="showPastDishRating(\'' + esc(entry.planId) + '\', ' +
         entry.gerichtIdx + ')" style="margin-top:10px;display:flex;align-items:center;justify-content:center;gap:6px">' +
         '<span style="color:#f59e0b;font-size:16px">&#9733;</span> Bewerten</button>' : '') +
+      ((g._gekocht || entry.entryStatus === 'gekocht') && entry.planId ? '<button class="btn btn-out" onclick="gerichtNichtGekocht(\'' + esc(entry.planId) + '\', ' +
+        entry.gerichtIdx + ')" style="margin-top:10px;font-size:13px">↩ Nicht gekocht</button>' : '') +
       (loeschbar ? '<button onclick="deletePastDish(\'' + esc(entry.planId) + '\', ' + entry.gerichtIdx +
         ')" style="width:100%;background:none;border:none;padding:10px 0 4px;font-size:12px;color:var(--gr3);' +
         'cursor:pointer;font-family:inherit;text-decoration:underline">Gericht endgültig entfernen</button>' : '') +
@@ -5186,7 +5188,8 @@ function timelineCardDetail(entry) {
     '<button class="btn btn-red" onclick="startCook(' + i + ')" style="margin-top:10px">👨‍🍳 Jetzt kochen</button>' +
     '<div class="btnrow">' +
       '<button class="btn btn-out" onclick="showReplaceGericht(' + i + ')" style="font-size:13px">↺ Austauschen</button>' +
-      (g._gekocht ? '' : '<button class="btn btn-out" onclick="showRescheduleGericht(' + i + ')" style="font-size:13px">📅 Verschieben</button>') +
+      ((g._gekocht || entry.entryStatus === 'gekocht') ? '<button class="btn btn-out" onclick="gerichtNichtGekocht(\'@aktiv\',' + i + ')" style="font-size:13px">↩ Nicht gekocht</button>'
+                  : '<button class="btn btn-out" onclick="showRescheduleGericht(' + i + ')" style="font-size:13px">📅 Verschieben</button>') +
       '<button class="btn btn-out" onclick="cancelGericht(' + i + ')" style="font-size:13px">❌ Fällt aus</button>' +
       '<button class="btn btn-out" onclick="auswaartsGericht(' + i + ')" style="font-size:13px">🍽 Auswärts</button>' +
     '</div>' +
@@ -7181,6 +7184,60 @@ function markEinkaufDoneGekocht() {
     // landet - frueher wurde dort nur der Status, nie der Plan selbst aktualisiert.
     persistActivePlan();
   }
+}
+
+
+// Nimmt die Markierung "gekocht" von einem Gericht zurueck (z.B. nur vorgefuehrt oder
+// versehentlich durchgeklickt). planToken: planId oder '@aktiv' fuer den aktiven Plan.
+// Bewertungen bleiben unberuehrt. Steht der ganze Verlaufseintrag auf "gekocht", geht er
+// zurueck auf "geplant"; die uebrigen Gerichte behalten ihren Gekocht-Stand.
+function gerichtNichtGekocht(planToken, idx) {
+  var ap = G.activePlan;
+  var aktiv = !!(ap && ap.sug && (planToken === '@aktiv' || ap.planId === planToken));
+  if (aktiv) wechselZuPlan();      // der Plan, nicht ein offener Entwurf, wird bearbeitet
+  var hist;
+  try { hist = JSON.parse(localStorage.getItem(userKey('local_history')) || '[]'); } catch (e) { hist = []; }
+  var entry = null, sug = null;
+  if (aktiv) {
+    sug = ap.sug;
+    var hi = findHistoryEntryIndex(hist, ap);
+    entry = hi >= 0 ? hist[hi] : null;
+  } else {
+    entry = hist.filter(function(h) { return h.planId === planToken; })[0] || null;
+    sug = entry && entry.plan && entry.plan.sug;
+  }
+  var g = sug && Array.isArray(sug.gerichte) ? sug.gerichte[idx] : null;
+  if (!g) { logFehler('gekocht', 'Gericht zum Zuruecksetzen nicht gefunden', planToken + '/' + idx); return; }
+  if (!confirm('„' + (g._origAbend || g.abend || 'Gericht') + '" wieder als nicht gekocht markieren?')) return;
+  var verlaufGekocht = !!entry && entry.status === 'gekocht';
+  if (verlaufGekocht) {
+    var zeit = new Date().toISOString();
+    sug.gerichte.forEach(function(x) { if (x !== g && !x._cancelled && !x._gekocht) x._gekocht = zeit; });
+  }
+  delete g._gekocht;
+  if (aktiv) {
+    var gs = G.sugs && G.sel !== null && G.sugs[G.sel];
+    if (gs && gs !== sug && gs.gerichte && gs.gerichte[idx] && gs.gerichte[idx].abend === g.abend) delete gs.gerichte[idx]._gekocht;
+    if (verlaufGekocht) {
+      entry.status = 'geplant';
+      try { localStorage.setItem(userKey('local_history'), JSON.stringify(hist)); } catch (e) {}
+      saveHistoryToGH(hist);
+    }
+    persistActivePlan();           // schreibt Plan und Verlaufseintrag
+    updateDashboard();
+  } else {
+    if (verlaufGekocht) entry.status = 'geplant';
+    updateHistoryEntryPlan(entry.plan);   // Plan im Verlauf (lokal + Cloud)
+    if (verlaufGekocht) {
+      try {
+        var h2 = JSON.parse(localStorage.getItem(userKey('local_history')) || '[]');
+        var i2 = h2.findIndex(function(h) { return h.planId === planToken; });
+        if (i2 >= 0) { h2[i2].status = 'geplant'; localStorage.setItem(userKey('local_history'), JSON.stringify(h2)); saveHistoryToGH(h2); }
+      } catch (e) {}
+    }
+  }
+  try { renderRez(G.sugs && G.sel !== null ? G.sugs[G.sel] : null); } catch (e) { console.warn('render:', e.message); }
+  showSwapToast('Als nicht gekocht markiert.', '#4F8067');
 }
 
 
