@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=yes">
-<title>Menüplan v7.06</title>
+<title>Menüplan v7.08</title>
 <meta name="theme-color" content="#5B7C78">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -287,6 +287,18 @@ body.netz-aus .netz-hint{display:block}
 // ─── PWA: Manifest zur Laufzeit als Blob einhaengen ─────────
 // So bleibt alles in dieser einen HTML-Datei, ohne separate manifest.json
 // hochladen zu muessen. Funktioniert in Chrome/Edge/Samsung Internet fuer
+// Schoene Adresse: Der Dateiname gehoert nicht in die Adresszeile. Die index.html im
+// selben Ordner leitet auf diese Datei weiter; hier wird der Name wieder ausgeblendet
+// (Suchteil und #-Teil bleiben, z.B. ?invite=1). Ein Neuladen geht ueber die index.html erneut hierher.
+(function() {
+  try {
+    var l = window.location;
+    if (/^https?:$/.test(l.protocol) && /\/menuplan-app\.html$/.test(l.pathname)) {
+      history.replaceState(history.state, '', l.pathname.replace(/menuplan-app\.html$/, '') + l.search + l.hash);
+    }
+  } catch (e) { /* Adresse bleibt, wie sie ist */ }
+})();
+
 // "Zum Startbildschirm hinzufuegen" mit korrektem Icon/Namen/Standalone-Modus.
 (function() {
   try {
@@ -309,7 +321,7 @@ body.netz-aus .netz-hint{display:block}
 
 <!-- HOME -->
 <div class="scr on" id="sh">
-  <div class="hero"><h1>Menüplan</h1><p id="hsub">v7.06 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
+  <div class="hero"><h1>Menüplan</h1><p id="hsub">v7.08 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
 
   <!-- Active plan card -->
 
@@ -979,13 +991,14 @@ function navPush(id) {
     history.pushState({ mp: 1, id: id }, '');
   } catch (e) {}
 }
-var NAV_FENSTER = ['replace-modal', 'reschedule-modal', 'dep-modal', 'rating-modal', 'woche-modal', 'qr-modal', 'einplan-modal', 'pw-modal'];
+var NAV_FENSTER = ['replace-modal', 'reschedule-modal', 'dep-modal', 'rating-modal', 'woche-modal', 'qr-modal', 'einplan-modal', 'pw-modal', 'tour-modal'];
 function navOffenesFensterSchliessen() {
   for (var i = 0; i < NAV_FENSTER.length; i++) {
     var el = document.getElementById(NAV_FENSTER[i]);
     if (el && el.style.display && el.style.display !== 'none') {
       if (NAV_FENSTER[i] === 'replace-modal' && typeof closeReplace === 'function') closeReplace();
       else if (NAV_FENSTER[i] === 'einplan-modal' && typeof closeEinplanen === 'function') closeEinplanen();
+      else if (NAV_FENSTER[i] === 'tour-modal' && typeof tourSchliessen === 'function') tourSchliessen();
       else el.style.display = 'none';
       return true;
     }
@@ -8155,7 +8168,12 @@ function showLoggedIn() {
     updateDashboard();
   });
   updateDashboard();
+  // Einfuehrung nur bei neuem Konto; Verzoegerung, damit der Cloud-Abgleich Vorhandenes zuerst holt.
+  if (!tourBereitsGezeigt() && !G_tourPlan) {
+    G_tourPlan = setTimeout(function() { G_tourPlan = null; try { tourAutoStart(); } catch (e) { console.warn('Tour:', e.message); } }, 2500);
+  }
 }
+var G_tourPlan = null;
 
 
 function saveRatingToGH(entry) {
@@ -8430,6 +8448,143 @@ function skipBringForNow() {
   if (session) localStorage.setItem('bring_skip_' + session.username, '1');
   updateDashboard();
 }
+
+// ─── EINFUEHRUNGSTOUR ──────────────────────────────────────
+// Kurze Tour fuer Erstbenutzer: Bring! verbinden, Einstellungen, Planen, Kochen, Anpassen, Einkaufen.
+// Startet von selbst nur bei einem wirklich NEUEN Konto (nichts geplant, kein Verlauf, keine
+// Einstellungen, noch nie gezeigt) - nie bei bestehenden Konten. Im Menue jederzeit wiederholbar.
+var TOUR_SCHRITTE = [
+  { icon: '👋', titel: 'Willkommen bei Menüplan',
+    text: '<p style="margin:0 0 8px">Menüplan plant deine Abendessen für die Woche, schreibt die Rezepte dazu und macht die Einkaufsliste.</p>' +
+          '<p style="margin:0">Die Einführung dauert etwa eine Minute. Du findest sie später jederzeit im Menü (Kreis oben rechts) unter «Einführung».</p>' },
+  { icon: '🛒', titel: 'Bring! verbinden', id: 'bring',
+    text: '<p style="margin:0 0 8px">Bring! ist die Einkaufslisten-App. Nach dem Verbinden schickst du die Einkaufsliste mit einem Tipp dorthin.</p>' +
+          '<p style="margin:0">Auf der Startseite steht dafür die Karte «Mit Bring! verbinden». Das ist freiwillig und geht auch später in den Einstellungen.</p>' },
+  { icon: '⚙️', titel: 'Einstellungen setzen', id: 'prefs',
+    text: '<p style="margin:0 0 8px">Lege fest, was für dich normal ist:</p>' +
+          '<ul style="margin:0 0 8px;padding-left:18px"><li>Personen und Fleisch-Modus (vegetarisch, optional, alle)</li><li>Kochabende pro Woche, Resteverwertung, Einfrieren</li><li>Einkaufstag, Lieblingsküchen, Abneigungen und Allergien</li></ul>' +
+          '<p style="margin:0">Das sind die Vorgaben für jede neue Woche. Beim Planen kannst du sie jederzeit anpassen.</p>' },
+  { icon: '📅', titel: 'Eine Woche planen',
+    text: '<p style="margin:0 0 8px">Tippe auf «Kalender &amp; Planung», wähle im Kalender die Tage, an denen du kochst, und tippe unten auf «Planen».</p>' +
+          '<p style="margin:0 0 8px">Du entscheidest, wie du kochst: <b>Frei kochen</b> (jedes Gericht für sich), <b>Clever einkaufen</b> (gemeinsame Zutaten, Standard) oder <b>Aufbauend kochen</b> (etwas Vorbereitetes wird an einem späteren Abend weiterverwendet).</p>' +
+          '<p style="margin:0">Du bekommst drei Vorschläge, wählst einen und setzt ihn als aktiven Plan.</p>' },
+  { icon: '👨‍🍳', titel: 'Kochen und bewerten',
+    text: '<p style="margin:0 0 8px">Öffne ein Gericht und tippe auf «Jetzt kochen»: Die Rezepte laufen Schritt für Schritt, mit Timern, und der Bildschirm bleibt an.</p>' +
+          '<p style="margin:0">Danach kannst du das Gericht bewerten. Ab fünf Bewertungen lernt Menüplan, was dir schmeckt.</p>' },
+  { icon: '✏️', titel: 'Plan anpassen',
+    text: '<p style="margin:0 0 8px">Ein Tipp auf ein Gericht im Kalender zeigt die Möglichkeiten:</p>' +
+          '<ul style="margin:0 0 8px;padding-left:18px"><li><b>Austauschen</b> gegen ein anderes Rezept</li><li><b>Verschieben</b> auf einen freien Tag oder mit einem anderen Gericht tauschen</li><li><b>Fällt aus</b> oder <b>Auswärts</b>, wenn du nicht kochst</li><li><b>Nicht gekocht</b>, falls etwas versehentlich als gekocht markiert wurde</li></ul>' +
+          '<p style="margin:0">Die meisten Änderungen lassen sich gleich wieder rückgängig machen.</p>' },
+  { icon: '🛍️', titel: 'Einkaufen und mehr',
+    text: '<p style="margin:0 0 8px">Unter «Einkaufsliste» steht alles für die Woche. Mit «In Bring! importieren» landet die Liste in deiner Bring!-App.</p>' +
+          '<p style="margin:0">Rezepte kannst du als PDF speichern oder aufs Tablet schicken. Ein Einzelrezept erstellst du per Foto oder Text, alte Wochen findest du im Verlauf.</p>' },
+  { icon: '🎉', titel: 'Es kann losgehen', id: 'ende',
+    text: '<p style="margin:0">Plane jetzt deine erste Woche. Die Einführung findest du jederzeit wieder im Menü unter «Einführung».</p>' }
+];
+var G_tour = { i: 0, offen: false, fokusVorher: null };
+
+function tourFlagKey() { var s = getSession(); return 'tour_' + (s ? s.username : 'guest'); }
+function tourMarkieren() { try { localStorage.setItem(tourFlagKey(), '1'); } catch (e) {} }
+function tourBereitsGezeigt() { try { return localStorage.getItem(tourFlagKey()) === '1'; } catch (e) { return true; } }
+
+// Neues Konto? Nichts Eigenes vorhanden - weder Plan noch Verlauf noch Einstellungen.
+function tourKontoIstNeu() {
+  try {
+    if (localStorage.getItem(userKey('active_plan'))) return false;
+    var hist = JSON.parse(localStorage.getItem(userKey('local_history')) || '[]');
+    if (Array.isArray(hist) && hist.length) return false;
+    // Die App legt beim Start selbst {budget:0} an - das zaehlt nicht als eigene Einstellung.
+    var pr = JSON.parse(localStorage.getItem(getPrefKey()) || '{}') || {};
+    if (Object.keys(pr).some(function(k) { return !(k === 'budget' && !pr[k]); })) return false;
+    var rt = JSON.parse(localStorage.getItem(userKey('local_ratings')) || '[]');
+    if (Array.isArray(rt) && rt.length) return false;
+  } catch (e) { return false; }
+  return true;
+}
+
+// Wird nach der Anmeldung (mit kurzer Verzoegerung, damit der Abgleich mit der Cloud
+// bestehende Daten schon geholt hat) aufgerufen.
+function tourAutoStart() {
+  if (!getSession() || G_tour.offen || tourBereitsGezeigt()) return;
+  if (aktuellerScreenId() !== 'sh') return;
+  if (!tourKontoIstNeu()) { tourMarkieren(); return; }   // bestehendes Konto: nie von selbst zeigen
+  tourStarten();
+}
+
+function tourStarten() {
+  if (!getSession()) return;
+  tourMarkieren();
+  G_tour.i = 0; G_tour.offen = true;
+  G_tour.fokusVorher = document.activeElement;
+  if (aktuellerScreenId() !== 'sh') go('sh');
+  tourZeigen();
+  $('tour-modal').style.display = 'flex';
+  var t = $('tour-title'); if (t) t.focus();
+}
+
+function tourZeigen() {
+  var n = TOUR_SCHRITTE.length, st = TOUR_SCHRITTE[G_tour.i];
+  $('tour-icon').textContent = st.icon;
+  $('tour-title').textContent = st.titel;
+  $('tour-body').innerHTML = st.text;
+  $('tour-count').textContent = (G_tour.i + 1) + ' / ' + n;
+  $('tour-dots').innerHTML = TOUR_SCHRITTE.map(function(_, k) {
+    return '<span style="width:' + (k === G_tour.i ? '18px' : '6px') + ';height:6px;border-radius:3px;background:' + (k === G_tour.i ? 'var(--red)' : 'var(--bdr)') + '"></span>';
+  }).join('');
+  $('tour-back').style.visibility = G_tour.i === 0 ? 'hidden' : 'visible';
+  var letzter = G_tour.i === n - 1;
+  $('tour-next').textContent = letzter ? 'Woche planen' : (G_tour.i === 0 ? 'Los geht’s' : 'Weiter');
+  $('tour-skip').style.display = letzter ? 'none' : 'block';
+  // Aktionsknopf je Schritt
+  var ak = $('tour-action'); ak.style.display = 'none'; ak.onclick = null;
+  if (st.id === 'bring') {
+    if (G.bToken) { $('tour-body').innerHTML += '<p style="margin:10px 0 0;color:var(--grn);font-weight:700">✓ Bring! ist bereits verbunden.</p>'; }
+    else { ak.textContent = 'Jetzt verbinden'; ak.style.display = 'flex'; ak.onclick = tourBringVerbinden; }
+  } else if (st.id === 'prefs') {
+    ak.textContent = 'Einstellungen öffnen'; ak.style.display = 'flex';
+    ak.onclick = function() { tourSchliessen(); openPrefs(); };
+  }
+}
+
+function tourSchritt(d) {
+  var n = TOUR_SCHRITTE.length;
+  var neu = G_tour.i + d;
+  if (neu >= n) { tourSchliessen(); openKalender(); return; }   // Ende: direkt zum Planen
+  if (neu < 0) return;
+  G_tour.i = neu;
+  tourZeigen();
+  var t = $('tour-title'); if (t) t.focus();
+}
+
+function tourSchliessen() {
+  if ($('tour-modal')) $('tour-modal').style.display = 'none';
+  G_tour.offen = false;
+  try { if (G_tour.fokusVorher && G_tour.fokusVorher.focus) G_tour.fokusVorher.focus(); } catch (e) {}
+}
+
+// Bring!-Karte der Startseite zeigen und das E-Mail-Feld bereitmachen.
+function tourBringVerbinden() {
+  tourSchliessen();
+  try { localStorage.removeItem('bring_skip_' + getSession().username); } catch (e) {}
+  updateDashboard();
+  var karte = $('dash-bring-card');
+  if (karte && karte.style.display !== 'none') {
+    karte.scrollIntoView({ block: 'center', behavior: 'smooth' });
+    var f = $('dash-bemail'); if (f) setTimeout(function() { f.focus(); }, 350);
+  } else { openPrefs(); }
+}
+
+document.addEventListener('keydown', function(e) {
+  if (!G_tour.offen) return;
+  if (e.key === 'Escape') { tourSchliessen(); return; }
+  if (e.key === 'Tab') {   // Fokus bleibt im Fenster
+    var els = Array.prototype.filter.call($('tour-modal').querySelectorAll('button'), function(b) { return b.offsetParent !== null && b.style.visibility !== 'hidden'; });
+    if (!els.length) return;
+    var first = els[0], last = els[els.length - 1];
+    if (e.shiftKey && (document.activeElement === first || document.activeElement === $('tour-title'))) { e.preventDefault(); last.focus(); }
+    else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+  }
+});
 
 // ─── DASHBOARD ─────────────────────────────────────────────
 // Alter Name bleibt erhalten: Planen beginnt jetzt immer im Kalender.
@@ -10020,6 +10175,25 @@ var STAR_LABELS = ['', 'Nicht so gut', 'Geht so', 'Gut', 'Sehr gut', 'Ausgezeich
 // ─── TOKEN & PASSWORT ──────────────────────────────────────
 </script>
 
+<!-- EINFUEHRUNGSTOUR -->
+<div id="tour-modal" role="dialog" aria-modal="true" aria-labelledby="tour-title" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.55);z-index:300;align-items:flex-end;justify-content:center">
+  <div style="background:#fff;border-radius:20px 20px 0 0;padding:22px 20px 24px;width:100%;max-width:480px;max-height:92vh;overflow-y:auto">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+      <div id="tour-dots" aria-hidden="true" style="display:flex;gap:6px"></div>
+      <div id="tour-count" style="font-size:12px;color:var(--gr3)"></div>
+    </div>
+    <div id="tour-icon" aria-hidden="true" style="font-size:38px;line-height:1;margin-bottom:8px"></div>
+    <h2 id="tour-title" tabindex="-1" style="font-size:19px;font-weight:800;color:var(--txt);margin:0 0 8px"></h2>
+    <div id="tour-body" style="font-size:14px;line-height:1.5;color:var(--txt2)"></div>
+    <button id="tour-action" class="btn btn-out" style="display:none;margin-top:14px;padding:11px;font-size:14px">Weiter zur Aktion</button>
+    <div style="display:flex;gap:8px;margin-top:16px">
+      <button id="tour-back" class="btn btn-out" onclick="tourSchritt(-1)" style="flex:1;padding:12px">Zurück</button>
+      <button id="tour-next" class="btn btn-red" onclick="tourSchritt(1)" style="flex:2;padding:12px">Weiter</button>
+    </div>
+    <button id="tour-skip" onclick="tourSchliessen()" style="width:100%;background:none;border:none;font-size:12px;color:var(--gr3);cursor:pointer;font-family:inherit;text-decoration:underline;margin-top:6px;min-height:44px">Einführung überspringen</button>
+  </div>
+</div>
+
 <!-- USER MENU -->
 <div id="user-menu" style="display:none;position:fixed;top:56px;right:10px;z-index:150;background:#fff;border-radius:var(--rlg);border:.5px solid var(--bdr);overflow:hidden;box-shadow:0 6px 24px rgba(0,0,0,.15);min-width:230px">
   <div style="padding:14px 16px;background:var(--red);color:#fff">
@@ -10030,6 +10204,8 @@ var STAR_LABELS = ['', 'Nicht so gut', 'Geht so', 'Gut', 'Sehr gut', 'Ausgezeich
     <button onclick="openHistory();toggleUserMenu()" style="width:100%;text-align:left;padding:11px 16px;background:none;border:none;font-size:14px;color:var(--txt);cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:10px"><span style="font-size:17px">&#128197;</span> Verlauf</button>
     <div style="height:.5px;background:var(--bdr);margin:0 16px"></div>
     <button onclick="openPrefs();toggleUserMenu()" style="width:100%;text-align:left;padding:11px 16px;background:none;border:none;font-size:14px;color:var(--txt);cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:10px"><span style="font-size:17px">&#9881;</span> Präferenzen</button>
+    <div style="height:.5px;background:var(--bdr);margin:0 16px"></div>
+    <button onclick="toggleUserMenu();tourStarten()" style="width:100%;text-align:left;padding:11px 16px;background:none;border:none;font-size:14px;color:var(--txt);cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:10px"><span style="font-size:17px">&#128075;</span> Einführung</button>
     <div style="height:.5px;background:var(--bdr);margin:0 16px"></div>
     <button onclick="showInviteLink();toggleUserMenu()" style="width:100%;text-align:left;padding:11px 16px;background:none;border:none;font-size:14px;color:var(--txt);cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:10px"><span style="font-size:17px">&#128279;</span> Einladungslink</button>
     <div style="height:.5px;background:var(--bdr);margin:0 16px"></div>
