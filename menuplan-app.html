@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=yes">
-<title>Menüplan v7.08</title>
+<title>Menüplan v7.09</title>
 <meta name="theme-color" content="#5B7C78">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -321,7 +321,7 @@ body.netz-aus .netz-hint{display:block}
 
 <!-- HOME -->
 <div class="scr on" id="sh">
-  <div class="hero"><h1>Menüplan</h1><p id="hsub">v7.08 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
+  <div class="hero"><h1>Menüplan</h1><p id="hsub">v7.09 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
 
   <!-- Active plan card -->
 
@@ -668,7 +668,7 @@ body.netz-aus .netz-hint{display:block}
   <div id="cbody" style="padding:10px 10px 90px"></div>
   <div id="cook-footer" style="position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;box-sizing:border-box;background:#fff;border-top:.5px solid var(--bdr);padding:10px 10px calc(10px + env(safe-area-inset-bottom));display:flex;gap:8px;z-index:20">
     <button onclick="doStepBack()" style="flex:0 0 auto;width:80px;background:#f5f5f5;border:none;border-radius:var(--r);padding:14px;font-size:14px;font-weight:600;color:var(--txt2);cursor:pointer;font-family:inherit">Zurück</button>
-    <button onclick="doComplete(G.act)" id="cook-complete-btn" style="flex:1;background:var(--red);border:none;border-radius:var(--r);padding:14px;font-size:16px;font-weight:700;color:#fff;cursor:pointer;font-family:inherit">Erledigt &middot; Weiter</button>
+    <button onclick="cookWeiter()" id="cook-complete-btn" style="flex:1;background:var(--red);border:none;border-radius:var(--r);padding:14px;font-size:16px;font-weight:700;color:#fff;cursor:pointer;font-family:inherit">Erledigt &middot; Weiter</button>
   </div>
 </div>
 
@@ -5448,13 +5448,13 @@ function buildSteps(g) {
     type: beide ? 'v' : 'vo', titel: vegi[i].titel || '', text: vegi[i].text,
     timer_min: vegi[i].timer_min || 0, zs: normZs(vegi[i].zutaten_schritt),
     zubehoer: vegi[i].zubehoer || [], kontrolle: vegi[i].kontrolle || '',
-    parallel: vegi[i].parallel_hinweis || ''
+    parallel: vegi[i].parallel_hinweis || '', ablage: vegi[i].ablage || ''
   });
   for (var i = 0; i < fleisch.length; i++) st.push({
     type: beide ? 'f' : 'fo', titel: fleisch[i].titel || '', text: fleisch[i].text,
     timer_min: fleisch[i].timer_min || 0, zs: normZs(fleisch[i].zutaten_schritt),
     zubehoer: fleisch[i].zubehoer || [], kontrolle: fleisch[i].kontrolle || '',
-    parallel: fleisch[i].parallel_hinweis || ''
+    parallel: fleisch[i].parallel_hinweis || '', ablage: fleisch[i].ablage || ''
   });
   if (G.reste && g.prep_next && g.prep_next.length) st.push({ type: 'p', text: g.prep_next.join('\n'), timer_min: 0, zs: [], ml: true, zubehoer: [], kontrolle: '', parallel: '' });
   if (G.freeze && g.einfrieren && g.einfrieren.length) st.push({ type: 'fr', text: g.einfrieren.join('\n'), timer_min: 0, zs: [], ml: true, zubehoer: [], kontrolle: '', parallel: '' });
@@ -5465,6 +5465,7 @@ function buildSteps(g) {
 var G_cook_port = 2;
 var G_cook_base_port = 2;
 var G_cook_zutaten = [];
+var G_cook_base_heute = 2;
 
 // Unicode-Bruchzeichen -> Dezimalwert, fuer haeufige Kochmengen-Angaben
 var FRACTION_MAP = { '½': 0.5, '⅓': 1/3, '⅔': 2/3, '¼': 0.25, '¾': 0.75, '⅕': 0.2, '⅛': 0.125 };
@@ -5505,6 +5506,23 @@ function parseMengeUnit(menge) {
   if (!menge) return '';
   var s = ohneKlammerzusatz(menge);
   return s.replace(/^[\d.,\s/½⅓⅔¼¾⅕⅛]+/, '').trim();
+}
+
+// Der Klammerzusatz ("(ca. 2 Stück)") ist beim Kochen eine echte Hilfe - er soll
+// beim Skalieren nicht verschwinden, sondern mitwachsen.
+function klammerHinweis(menge) {
+  var m = String(menge || '').match(/\([^)]*\)/);
+  return m ? m[0] : '';
+}
+
+function skaliereKlammer(hinweis, faktor) {
+  if (!hinweis) return '';
+  if (Math.abs(faktor - 1) < 1e-9) return hinweis;
+  return hinweis.replace(/\d+(?:[.,]\d+)?/g, function(z) {
+    var n = parseFloat(z.replace(',', '.')) * faktor;
+    if (/[.,]/.test(z)) return String(Math.round(n * 10) / 10).replace('.', ',');
+    return String(Math.max(1, Math.round(n)));
+  });
 }
 
 function parseMenge(menge) {
@@ -5548,6 +5566,14 @@ function adjPort(d) {
   rescaleZutaten();
 }
 
+// Schnellwahl: so viele Personen essen HEUTE. Reste- und Tiefkuehlportionen
+// bleiben, wie geplant.
+function setHeute(n) {
+  var fest = Math.max(0, G_cook_base_port - G_cook_base_heute);
+  G_cook_port = fest + n;
+  adjPort(0);
+}
+
 // Rundet die skalierte Menge passend zur Einheit. "1.5 Prise" oder
 // "0.3 Messerspitze" sind beim Kochen sinnlos - solche Masse gibt es nur ganz.
 // Bei TL und EL sind halbe Schritte ueblich, bei Gramm und Millilitern zaehlt
@@ -5587,8 +5613,59 @@ function rescaleZutaten() {
     var unit = rows[i].dataset.unit || '';
     var cell = rows[i].querySelector('.zutat-menge');
     if (cell && !isNaN(base) && base > 0) {
-      cell.textContent = skalierteMenge(base, factor, unit) + (unit ? ' ' + unit : '');
+      cell.textContent = skalierteMenge(base, factor, unit) + (unit ? ' ' + unit : '') +
+        (rows[i].dataset.hint ? ' ' + skaliereKlammer(rows[i].dataset.hint, factor) : '');
     }
+  }
+  zeigeKapazitaet();
+}
+
+// Gefaess-Kapazitaet: Ein Backblech fasst nur eine begrenzte Menge Gemuese in
+// EINER Lage. Wird es zu voll, daempft das Gemuese, statt zu roesten. Der Wert
+// ist ein Richtwert fuer ein normales Ofenblech (ca. 40x30 cm).
+var BLECH_GRAMM = 700;
+
+function blechInfo() {
+  var faktor = G_cook_base_port > 0 ? G_cook_port / G_cook_base_port : 1;
+  var res = null;
+  (G.steps || []).forEach(function(st, idx) {
+    if (!st || !st.zs || !st.zs.length) return;
+    var hay = ((st.titel || '') + ' ' + (st.text || '') + ' ' + (st.zubehoer || []).join(' '));
+    if (!/blech/i.test(hay)) return;
+    var gramm = 0;
+    st.zs.forEach(function(z) {
+      var u = parseMengeUnit(z.menge).toLowerCase();
+      var n = parseMengeNum(z.menge);
+      if (u === 'g') gramm += n; else if (u === 'kg') gramm += n * 1000;
+    });
+    gramm = Math.round(gramm * faktor);
+    if (gramm <= 0) return;
+    var anzahl = Math.ceil(gramm / BLECH_GRAMM);
+    if (!res) res = {};
+    res[idx] = { gramm: gramm, anzahl: anzahl };
+  });
+  return res;
+}
+
+function blechHinweisHtml(info) {
+  if (!info || info.anzahl < 2) return '';
+  return '<div role="status" style="background:#FFF3E3;border-left:3px solid #f9a825;padding:10px 12px;border-radius:0 8px 8px 0;margin-bottom:12px;font-size:13px;color:#7d5a00">' +
+    '<b>&#9888; Blech-Hinweis:</b> Bei dieser Menge (ca. ' + info.gramm + ' g) brauchst du ca. <b>' + info.anzahl + ' Bleche</b> – sonst dämpft das Gemüse statt zu rösten. Richtwert: ca. ' + BLECH_GRAMM + ' g pro Blech, in einer Lage.' +
+    (info.anzahl >= 2 ? ' Mit zwei Blechen: auf zwei Schienen backen und nach der halben Zeit tauschen.' : '') +
+    '</div>';
+}
+
+function zeigeKapazitaet() {
+  var info = blechInfo();
+  var box = document.getElementById('cook-kap');
+  if (box) {
+    box.innerHTML = info && info[G.act] ? blechHinweisHtml(info[G.act]) : '';
+  }
+  var ueb = document.getElementById('cook-kap-ueb');
+  if (ueb) {
+    var worst = null;
+    for (var k in (info || {})) { if (!worst || info[k].anzahl > worst.anzahl) worst = info[k]; }
+    ueb.innerHTML = blechHinweisHtml(worst);
   }
 }
 
@@ -5636,7 +5713,8 @@ function showIngOverview(g) {
   for (var i = 0; i < zutaten.length; i++) {
     var _mNum = parseMengeNum(zutaten[i].menge);
     var _mUnit = parseMengeUnit(zutaten[i].menge);
-    rows += '<div class="zutat-row" data-base="' + _mNum + '" data-unit="' + esc(_mUnit) + '" style="display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:.5px solid #f0f0f0">' +
+    var _hint = klammerHinweis(zutaten[i].menge);
+    rows += '<div class="zutat-row" data-base="' + _mNum + '" data-unit="' + esc(_mUnit) + '"' + (_hint ? ' data-hint="' + esc(_hint) + '"' : '') + ' style="display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:.5px solid #f0f0f0">' +
       '<span style="font-size:14px;font-weight:500">' + esc(zutaten[i].name) + '</span>' +
       '<span class="zutat-menge" style="font-size:13px;color:var(--gr3);font-weight:500">' + mengeTxt(zutaten[i].menge) + '</span></div>';
   }
@@ -5650,6 +5728,7 @@ function showIngOverview(g) {
   var _mit = (!isFotoRezept && G.reste) ? _p : 0;
   var _tk  = (!isFotoRezept && G.freeze) ? 2 : 0;
   var _ges = _p + _mit + _tk;
+  G_cook_base_heute = _p;
   var _parts = [_p + ' heute'];
   if (_mit) _parts.push(_mit + ' morgen Mittag');
   if (_tk)  _parts.push(_tk + ' einfrieren');
@@ -5669,6 +5748,7 @@ function showIngOverview(g) {
     '<div style="background:#f9f9f9;border-radius:var(--r);padding:0 12px;margin-bottom:16px;border:.5px solid var(--bdr)">' +
     '<div style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--gr3);padding:10px 0 6px">' + (kompBox ? 'Zusätzlich einzukaufende Zutaten' : 'Zutaten') + '</div>' +
     rows + '</div>' +
+    '<div id="cook-kap-ueb"></div>' +
     '<div style="font-size:12px;color:var(--blu);background:var(--bll);border-radius:8px;padding:10px 12px;margin-bottom:16px;border:.5px solid #90caf9">Alle Zutaten bereitstellen und abmessen bevor du anfängst.</div>' +
     '<div style="background:#f9f9f9;border-radius:var(--r);padding:12px;margin-bottom:16px;border:.5px solid var(--bdr)">' +
       '<div style="font-size:12px;font-weight:600;color:var(--txt2);margin-bottom:8px">Portionen anpassen</div>' +
@@ -5676,10 +5756,17 @@ function showIngOverview(g) {
         '<button aria-label="Eine Portion weniger" onclick="adjPort(-1)" style="width:44px;height:44px;border-radius:50%;background:#fff;border:1.5px solid var(--bdr);font-size:20px;cursor:pointer;font-family:inherit;line-height:1">-</button>' +
         '<div style="flex:1;text-align:center"><div id="port-display" style="font-size:22px;font-weight:700;color:var(--red)">' + G_cook_port + '</div><div style="font-size:11px;color:var(--gr3)">Portionen</div></div>' +
         '<button aria-label="Eine Portion mehr" onclick="adjPort(1)" style="width:44px;height:44px;border-radius:50%;background:#fff;border:1.5px solid var(--bdr);font-size:20px;cursor:pointer;font-family:inherit;line-height:1">+</button>' +
-      '</div></div>' +
+      '</div>' +
+      '<div style="font-size:11px;color:var(--gr3);margin:12px 0 6px">Schnell wählen: heute essen …</div>' +
+      '<div class="chips" id="cook-heute-chips">' +
+        [2, 4, 6, 8].map(function(n) { return '<button class="chip" onclick="setHeute(' + n + ')">' + n + ' Personen</button>'; }).join('') +
+      '</div>' +
+      '<div style="font-size:11px;color:var(--gr3);margin-top:8px;line-height:1.4">Mengen skalieren linear. Garzeiten, Gewürze und Pfannen- bzw. Blechgrösse passen sich nicht automatisch an – bei grossen Mengen lieber vorsichtig würzen und in Etappen garen.</div>' +
+      '</div>' +
     '<button class="btn btn-red" onclick="beginCook()">Los geht\'s</button>';
 
   $('cbody').innerHTML = html;
+  zeigeKapazitaet();
 }
 
 function requestWakeLock() {
@@ -5742,7 +5829,8 @@ function renderCookStep() {
         var mUnit = parseMengeUnit(z.menge);
         // data-base/data-unit wie bei der Zutatenuebersicht: Originalmenge bleibt
         // unveraendert im Datenmodell, nur die ANZEIGE wird bei Portionsaenderung skaliert.
-        return '<div class="zutat-row" data-base="' + mNum + '" data-unit="' + esc(mUnit) + '" style="display:flex;justify-content:space-between;padding:4px 0;font-size:14px">' +
+        var zHint = klammerHinweis(z.menge);
+        return '<div class="zutat-row" data-base="' + mNum + '" data-unit="' + esc(mUnit) + '"' + (zHint ? ' data-hint="' + esc(zHint) + '"' : '') + ' style="display:flex;justify-content:space-between;padding:4px 0;font-size:14px">' +
           '<span>' + esc(z.name) + '</span>' + (z.menge ? '<span class="zutat-menge" style="font-weight:600;color:var(--txt2)">' + esc(z.menge) + '</span>' : '') +
         '</div>';
       }).join('') + '</div>';
@@ -5776,6 +5864,7 @@ function renderCookStep() {
   }
 
   var kontrolleHtml = s.kontrolle ? '<div style="background:var(--bll);border-radius:8px;padding:10px 12px;margin-bottom:12px;font-size:13px;color:var(--blu)"><b>&#10003; Fertig wenn:</b> ' + esc(s.kontrolle) + '</div>' : '';
+  var ablageHtml = s.ablage ? '<div style="background:#EEF5F0;border-left:3px solid #4F8067;padding:10px 12px;border-radius:0 8px 8px 0;margin-bottom:12px;font-size:13px;color:#2f5a45"><b>&#128205; Wohin damit:</b> ' + esc(s.ablage) + '</div>' : '';
   var parallelHtml = s.parallel ? '<div style="background:#FFF3E3;border-left:3px solid #f9a825;padding:10px 12px;border-radius:0 8px 8px 0;margin-bottom:12px;font-size:13px;color:#7d5a00"><b>Währenddessen:</b> ' + esc(s.parallel) + '</div>' : '';
 
   // "Als Naechstes"-Vorschau: naechster noch offener Schritt
@@ -5783,11 +5872,18 @@ function renderCookStep() {
   for (var j = i+1; j < G.steps.length; j++) { if (!G.done[j]) { nextIdx = j; break; } }
   var nextPreview = nextIdx >= 0 ? '<div style="text-align:center;font-size:12px;color:var(--gr3);margin-top:8px">Als Nächstes: ' + esc(G.steps[nextIdx].titel || 'weiterer Schritt') + '</div>' : '';
 
+  var hinweisHtml = '';
+  if (G.cookHinweis) {
+    hinweisHtml = '<div role="status" style="background:#FFF3E3;border:.5px solid #EBC9A0;border-radius:8px;padding:10px 12px;margin:8px 0;font-size:13px;color:#B97836;font-weight:600">' + esc(G.cookHinweis) + '</div>';
+    G.cookHinweis = '';
+  }
   var html =
+    hinweisHtml +
     (BADGES[s.type] || '') +
     '<div style="font-size:22px;font-weight:800;color:var(--txt);margin:8px 0 6px">' + esc(title) + '</div>' +
     (s.text ? '<div style="font-size:15px;color:var(--txt2);line-height:1.5;margin-bottom:14px">' + esc(s.text) + '</div>' : '') +
-    zubehoerHtml + zutatenHtml + timerHtml + kontrolleHtml + parallelHtml + nextPreview;
+    '<div id="cook-kap"></div>' +
+    zubehoerHtml + zutatenHtml + timerHtml + ablageHtml + kontrolleHtml + parallelHtml + nextPreview;
 
   $('cbody').innerHTML = html;
   updHeader();
@@ -5856,6 +5952,18 @@ function cookBackOrOverview() {
   leaveCookMode(ruecksprungZiel());
 }
 
+// Knopf "Erledigt · Weiter": Ein zweiter Tipp unmittelbar nach dem ersten (Doppeltipp, nasse
+// Finger, Nachprellen) wird ignoriert. Sonst hakt er den NAECHSTEN Schritt ab, ohne dass er je
+// zu sehen war. Aufrufe von doComplete() selbst bleiben unveraendert.
+var G_cookLetzterTipp = 0;
+var COOK_ENTPRELLUNG_MS = 700;
+function cookWeiter() {
+  var jetzt = Date.now();
+  if (jetzt - G_cookLetzterTipp < COOK_ENTPRELLUNG_MS) return;
+  G_cookLetzterTipp = jetzt;
+  doComplete(G.act);
+}
+
 function doComplete(i) {
   // WICHTIG: hier NICHT den Timer dieses Schrittes stoppen - ein Timer
   // (z.B. "Ofen 25 Min") soll bewusst weiterlaufen koennen, waehrend man
@@ -5865,6 +5973,13 @@ function doComplete(i) {
   if (i === G.act) {
     var next = -1;
     for (var j = i+1; j < G.steps.length; j++) { if (!G.done[j]) { next = j; break; } }
+    if (next < 0) {
+      // Dahinter ist nichts mehr offen. Wurde davor ein Schritt uebersprungen (Sprung in der
+      // Uebersicht, Doppeltipp), geht es dorthin zurueck - sonst bliebe man am letzten Schritt
+      // haengen und das Gericht liesse sich nie abschliessen oder bewerten.
+      for (var k = 0; k < i; k++) { if (!G.done[k]) { next = k; break; } }
+      if (next >= 0) G.cookHinweis = 'Dieser Schritt ist noch offen – bitte zuerst abhaken, dann bist du fertig.';
+    }
     G.act = next >= 0 ? next : Math.min(i + 1, G.steps.length - 1);
   }
   if (Object.keys(G.done).length === G.steps.length) {
@@ -8018,7 +8133,7 @@ function generateReplace() {
       : planR.modus === 'vegi'
         ? '"schritte_vegi":[SCHRITT]'
         : '"schritte_vegi":[SCHRITT],"schritte_fleisch":[SCHRITT]')
-      .split('SCHRITT').join('{"titel":"Schritt","text":"Detail","timer_min":0,"zutaten_schritt":[{"name":"X","menge":"Y"}],"zubehoer":[],"kontrolle":"","parallel_hinweis":""}') +
+      .split('SCHRITT').join('{"titel":"Schritt","text":"Detail","timer_min":0,"zutaten_schritt":[{"name":"X","menge":"Y"}],"zubehoer":[],"kontrolle":"","parallel_hinweis":"","ablage":""}') +
     ',"tipp":"Tipp"}]}';
 
   var repOpts = planOpts(planR, g, { dishes: existing, tag: g.tag });
@@ -9848,7 +9963,7 @@ function startFotoCook(){
   var steps=(r.schritte||[]).map(function(s){return{
     type:'v', titel:s.titel||s.title||'', text:s.text||'', timer_min:s.timer_min||0,
     zs: normZs(s.zutaten_schritt),
-    zubehoer: s.zubehoer || [], kontrolle: s.kontrolle || '', parallel: s.parallel_hinweis || ''
+    zubehoer: s.zubehoer || [], kontrolle: s.kontrolle || '', parallel: s.parallel_hinweis || '', ablage: s.ablage || ''
   };});
   if(!steps.length){alert('Keine Kochschritte vorhanden.');return;}
   merkeRuecksprung();
