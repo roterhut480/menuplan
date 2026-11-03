@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=yes">
-<title>Menüplan v7.09</title>
+<title>Menüplan v7.10</title>
 <meta name="theme-color" content="#5B7C78">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -321,7 +321,7 @@ body.netz-aus .netz-hint{display:block}
 
 <!-- HOME -->
 <div class="scr on" id="sh">
-  <div class="hero"><h1>Menüplan</h1><p id="hsub">v7.09 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
+  <div class="hero"><h1>Menüplan</h1><p id="hsub">v7.10 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
 
   <!-- Active plan card -->
 
@@ -1469,11 +1469,14 @@ function dayPickerOrder() {
 
 // ─── DATUMSBASIERTE TAGESWAHL ──────────────────────────────
 // Senkrecht scrollbare Liste mit echten Daten (4 Kalenderwochen ab der
-// laufenden). Ein Plan gilt weiterhin fuer genau EINE Kalenderwoche (weekStart
-// = Montag, Gerichte tragen nur ein Tageskuerzel). Deshalb ist immer genau
-// eine Woche "aktiv" (G.planWoche); tippt man einen freien Tag einer anderen
-// Woche an, wechselt die Auswahl dorthin. G.days bleibt tag-basiert, damit
-// cookingDays(), die Prompts und setN() unveraendert funktionieren.
+// laufenden). Ein Plan umfasst bis zu 7 aufeinanderfolgende Tage ("Fenster",
+// weekStart = erster Tag, meist ein Montag, siehe PLAN-FENSTER unten) - auch ueber
+// die Wochengrenze. Die Gerichte tragen nur ein Tageskuerzel; in 7 Tagen kommt
+// jedes Kuerzel genau einmal vor, daher bleibt die Zuordnung zum Datum eindeutig.
+// G.planWoche ist der erste Tag des Fensters. Ein freier Tag ausserhalb der
+// 7 Tage der bisherigen Auswahl beginnt die Auswahl neu. G.days bleibt
+// tag-basiert, damit cookingDays(), die Prompts und setN() unveraendert
+// funktionieren.
 var PICKER_WOCHEN = 4;
 
 // ISO-Datum -> { titel, planId, thema, eingekauft } des bereits verplanten
@@ -1556,25 +1559,77 @@ function pickerWochen() {
   return wochen;
 }
 
-// Bringt G.days in Einklang mit der aktiven Woche: verplante und vergangene
-// Tage koennen nicht gekocht werden. Fehlende Tage werden bis zur bisherigen
-// Anzahl aus den freien Tagen aufgefuellt (Bevorzugung: N_DAY_PREFERENCE).
+// ─── PLAN-FENSTER ──────────────────────────────────────────
+// Ein Plan umfasst bis zu 7 aufeinanderfolgende Tage. Meist ist das eine
+// Kalenderwoche (Mo-So); er darf aber ueber die Wochengrenze reichen, z.B. von
+// Donnerstag bis Mittwoch. G.planWoche ist der erste Tag dieses Fensters.
+
+// ISO-Daten der gewaehlten Kochtage -> { iso: Kuerzel }
+function gewaehlteTageIso() {
+  var out = {};
+  if (!G.planWoche) return out;
+  cookingDays().forEach(function(tag) {
+    var d = dateFromTag(G.planWoche, tag);
+    if (d) out[isoDateLocal(d)] = tag;
+  });
+  return out;
+}
+
+function isoPlusTage(iso, n) {
+  var d = new Date(iso + 'T00:00:00');
+  d.setDate(d.getDate() + n);
+  return isoDateLocal(d);
+}
+
+// Liegt iso innerhalb von 7 Tagen zu ALLEN uebrigen gewaehlten Tagen?
+function imPlanSpann(iso, isos) {
+  if (!isos.length) return true;
+  var min = isos.reduce(function(a, b) { return a < b ? a : b; });
+  var max = isos.reduce(function(a, b) { return a > b ? a : b; });
+  var lo = iso < min ? iso : min, hi = iso > max ? iso : max;
+  return hi <= isoPlusTage(lo, 6);
+}
+
+// Erster Tag des Fensters fuer die gewaehlten Tage:
+//  - alles in einer Kalenderwoche -> deren Montag (wie bisher)
+//  - ueber die Wochengrenze: ab HEUTE, wenn alle Tage in den naechsten 7 Tagen
+//    liegen (damit der Plan sofort der laufende ist), sonst ab dem ersten Tag
+function planFensterStart(isos) {
+  if (!isos.length) return G.planWoche;
+  var min = isos.reduce(function(a, b) { return a < b ? a : b; });
+  var max = isos.reduce(function(a, b) { return a > b ? a : b; });
+  var mo = function(iso) { return isoDateLocal(mondayOf(new Date(iso + 'T12:00:00'))); };
+  if (mo(min) === mo(max)) return mo(min);
+  var heute = isoDateLocal(new Date());
+  if (heute <= min && max <= isoPlusTage(heute, 6)) return heute;
+  return min;
+}
+
+// Bringt G.days in Einklang mit dem Fenster: verplante und vergangene Tage
+// koennen nicht gekocht werden. Fehlende Tage werden bis zur bisherigen Anzahl
+// aus den freien Tagen des Fensters aufgefuellt (Bevorzugung: N_DAY_PREFERENCE).
 function pickerWocheAbgleichen(wochen) {
-  var aktiv = null;
-  wochen.forEach(function(w) { if (w.iso === G.planWoche) aktiv = w; });
-  if (!aktiv) {
-    // Standard: erste Woche, in der noch genug freie Tage fuer die gewuenschte
-    // Anzahl uebrig sind (sonntags also die naechste Woche); sonst die erste
-    // Woche mit irgendeinem freien Tag.
+  var heute = new Date(); heute.setHours(0, 0, 0, 0);
+  var gueltig = false;
+  if (G.planWoche) {
+    var pe = new Date(G.planWoche + 'T00:00:00');
+    if (!isNaN(pe.getTime())) { pe.setDate(pe.getDate() + 6); gueltig = pe >= heute; }
+  }
+  if (!gueltig) {
+    // Standard: erste Kalenderwoche, in der noch genug freie Tage fuer die
+    // gewuenschte Anzahl uebrig sind (sonntags also die naechste Woche); sonst
+    // die erste Woche mit irgendeinem freien Tag.
     var soll0 = Math.max(1, cookingDays().length || G.n || 1);
     var zaehle = function(w) { return w.tage.filter(function(t) { return t.frei; }).length; };
-    aktiv = wochen.filter(function(w) { return zaehle(w) >= soll0; })[0] ||
+    var aktiv0 = wochen.filter(function(w) { return zaehle(w) >= soll0; })[0] ||
             wochen.filter(function(w) { return w.hatFrei; })[0] || wochen[wochen.length - 1];
-    G.planWoche = aktiv.iso;
+    G.planWoche = aktiv0.iso;
   }
   var soll = cookingDays().length;
-  var frei = {};
-  aktiv.tage.forEach(function(t) { frei[t.tag] = t.frei; });
+  var frei = {};     // Kuerzel -> frei?  (je Kuerzel genau ein Tag im Fenster)
+  wochen.forEach(function(w) { w.tage.forEach(function(t) {
+    if (t.iso >= G.planWoche && t.iso <= isoPlusTage(G.planWoche, 6)) frei[t.tag] = t.frei;
+  }); });
   DAYS_ORDER.forEach(function(d) {
     if (G.days[d] && G.days[d] !== 'auswaerts' && !frei[d]) G.days[d] = null;
   });
@@ -1582,12 +1637,19 @@ function pickerWocheAbgleichen(wochen) {
   if (hat < soll) {
     var fehlt = soll - hat;
     var reihe = N_DAY_PREFERENCE.filter(function(d) { return frei[d] && !G.days[d]; });
-    // Rest der freien Tage ebenfalls zulassen
-    DAYS_ORDER.forEach(function(d) { if (frei[d] && !G.days[d] && reihe.indexOf(d) < 0) reihe.push(d); });
+    // Rest der freien Tage ebenfalls zulassen (zeitliche Reihenfolge)
+    tagReihe(G.planWoche).forEach(function(d) { if (frei[d] && !G.days[d] && reihe.indexOf(d) < 0) reihe.push(d); });
     reihe.slice(0, fehlt).forEach(function(d) { G.days[d] = 'normal'; });
   }
+  // Fenster an die tatsaechliche Auswahl anpassen (die Daten bleiben gleich)
+  var isos = Object.keys(gewaehlteTageIso());
+  if (isos.length) G.planWoche = planFensterStart(isos);
+  var aktiv = null;
+  wochen.forEach(function(w) { if (w.iso === mondayIso(G.planWoche)) aktiv = w; });
   return aktiv;
 }
+
+function mondayIso(iso) { return isoDateLocal(mondayOf(new Date(iso + 'T12:00:00'))); }
 
 var KL_SVG = {
   haken: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#4F8067" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-label="gekocht" role="img" style="flex:none"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>',
@@ -1633,21 +1695,25 @@ function initDayPicker() {
     if (t.titel) t.farbe = farbe[t.planId || ('?' + t.thema)] || VERGANGEN_FARBE;
   }); });
   var gewaehlt = cookingDays().length > 0;
+  var gewIso = gewaehlteTageIso(), gewListe = Object.keys(gewIso);
   var html = '';
   wochen.forEach(function(w) {
     var zeilen = w.tage.filter(function(t) { return !t.vergangen || t.titel; });
     if (!zeilen.length) return;
-    var istAktiv = w.iso === G.planWoche;
+    var hatAuswahl = w.tage.some(function(t) { return !!gewIso[t.iso]; });
+    var istAktiv = hatAuswahl;
     var ende = w.tage[6].date;
     var spanne = w.tage[0].date.toLocaleDateString('de-CH', { day: 'numeric', month: 'short' }) + ' – ' +
                  ende.toLocaleDateString('de-CH', { day: 'numeric', month: 'short' });
     html += '<div class="kl-wk' + (istAktiv && gewaehlt ? ' aktiv' : '') + ' dp-woche" id="dw-' + w.iso + '" style="scroll-margin-top:calc(var(--tbar-h) + 4px)">' +
       '<span>' + esc(wochenEtikett(w.iso)) + (istAktiv && gewaehlt ? ' ✓' : '') + '</span><span>' + spanne + '</span></div>';
-    var gedaempft = gewaehlt && !istAktiv && w.tage.every(function(t) { return !t.vergangen; });
+    // Eine ganze Woche wird gedaempft, wenn kein einziger Tag davon noch zur Auswahl passt
+    var gedaempft = gewaehlt && !hatAuswahl && w.tage.every(function(t) { return !t.vergangen && !imPlanSpann(t.iso, gewListe); });
     html += '<div data-wk="' + w.iso + '"' + (gedaempft ? ' class="kl-gedaempft"' : '') + (w.tage.every(function(t) { return !t.vergangen; }) ? ' data-kuenftig="1"' : '') + '>';
     zeilen.forEach(function(t) {
       var datum = kalenderTagKurz(t.date);
-      var kl = 'day-row' + (t.heute ? ' heute' : '') + (t.vergangen ? ' vergangen' : '');
+      var kl = 'day-row' + (t.heute ? ' heute' : '') + (t.vergangen ? ' vergangen' : '') +
+        (gewaehlt && !t.titel && !t.vergangen && !gewIso[t.iso] && !imPlanSpann(t.iso, gewListe) && !gedaempft ? ' kl-gedaempft' : '');
       var tint = t.farbe ? 'background:' + t.farbe.bg + ';border-left:3px solid ' + t.farbe.bd + ';' : '';
       var attr = ' id="dr-' + t.iso + '" data-tag="' + t.tag + '" data-woche="' + w.iso + '"';
       if (t.titel) {
@@ -1665,7 +1731,7 @@ function initDayPicker() {
           html += '<div class="kl-detail">' + det + '</div>';
         }
       } else {
-        var an = istAktiv && G.days[t.tag] && G.days[t.tag] !== 'auswaerts';
+        var an = !!gewIso[t.iso];
         html += '<div class="' + kl + '"' + attr + '>' +
           '<label style="display:flex;align-items:center;gap:10px;flex:1;min-width:0;min-height:44px;cursor:pointer">' +
             '<input type="checkbox" id="dc-' + t.iso + '" onchange="toggleDay(\'' + t.iso + '\')" ' + (an ? 'checked ' : '') +
@@ -1675,7 +1741,7 @@ function initDayPicker() {
           '<select id="dm-' + t.iso + '" aria-label="Zeitrahmen ' + datum + '" onchange="setDayMode(\'' + t.tag + '\',this.value)" ' + (!an ? 'disabled ' : '') +
             'style="' + (an ? '' : 'display:none;') + 'font-size:12px;padding:6px 8px;border-radius:6px;border:.5px solid var(--bdr);background:#fff;font-family:inherit;color:var(--txt);max-width:150px">' +
             modi.map(function(m) {
-              return '<option value="' + m.key + '" ' + (istAktiv && G.days[t.tag] === m.key ? 'selected' : '') + '>' + m.label + '</option>';
+              return '<option value="' + m.key + '" ' + (an && G.days[t.tag] === m.key ? 'selected' : '') + '>' + m.label + '</option>';
             }).join('') + '</select></div>';
       }
     });
@@ -1694,49 +1760,72 @@ function initDayPicker() {
     }).join('');
   }
   var hint = $('day-picker-hint');
-  if (hint) hint.textContent = 'Ein Plan gilt für eine Kalenderwoche (Mo–So). Tippst du einen freien Tag einer anderen Woche an, wechselt die Auswahl dorthin.';
+  if (hint) hint.textContent = 'Ein Plan umfasst bis zu 7 aufeinanderfolgende Tage – auch über das Wochenende hinaus (z. B. Do bis Mi). Tippst du einen freien Tag ausserhalb dieser 7 Tage an, beginnt die Auswahl dort neu.';
   updateNFromDays();
   try { fotosHydrate(dp); } catch (e) {}
 }
 
-// iso = ISO-Datum der angetippten Zeile. Wechselt die aktive Woche bei Bedarf.
+// iso = ISO-Datum der angetippten Zeile. Die Auswahl darf bis zu 7 aufeinander-
+// folgende Tage umfassen; ein Tag ausserhalb davon beginnt die Auswahl neu.
 function toggleDay(iso) {
   var cb = $('dc-' + iso);
   var row = $('dr-' + iso);
   if (!cb || !row) return;
   var tag = row.getAttribute('data-tag');
-  var woche = row.getAttribute('data-woche');
-  if (woche !== G.planWoche) {
-    // Wechsel der Woche: Auswahl der bisherigen Woche verwerfen (G.days ist
-    // nur tag-basiert und kann nicht zwei Wochen zugleich halten).
-    DAYS_ORDER.forEach(function(d) { if (G.days[d] !== 'auswaerts') G.days[d] = null; });
-    G.planWoche = woche;
-    if (cb.checked) G.days[tag] = 'normal';
-    kalenderNeuZeichnen();
-    return;
-  }
-  var sel = $('dm-' + iso);
+  var isos = Object.keys(gewaehlteTageIso());
   if (cb.checked) {
+    if (isos.length && !imPlanSpann(iso, isos)) {
+      // Ausserhalb der 7 Tage: bisherige Auswahl verwerfen (G.days ist nur
+      // kuerzel-basiert und kann nicht zwei Zeitraeume zugleich halten).
+      DAYS_ORDER.forEach(function(d) { if (G.days[d] !== 'auswaerts') G.days[d] = null; });
+      G.days[tag] = 'normal';
+      G.planWoche = planFensterStart([iso]);
+      kalenderNeuZeichnen();
+      return;
+    }
     G.days[tag] = 'normal';
-    if (sel) { sel.disabled = false; sel.style.display = ''; sel.value = 'normal'; }
+    isos.push(iso);
+    G.planWoche = planFensterStart(isos);
   } else {
     G.days[tag] = null;
-    if (sel) { sel.disabled = true; sel.style.display = 'none'; }
+    isos = isos.filter(function(x) { return x !== iso; });
+    if (isos.length) G.planWoche = planFensterStart(isos);
   }
+  var sel = $('dm-' + iso);
+  if (cb.checked) { if (sel) { sel.disabled = false; sel.style.display = ''; sel.value = 'normal'; } }
+  else if (sel) { sel.disabled = true; sel.style.display = 'none'; }
   updateNFromDays();
-  // Folgewochen daempfen, solange in der aktiven Woche etwas gewaehlt ist
-  var anGewaehlt = cookingDays().length > 0;
+  pickerMarkierungen();
+}
+
+// Wochenkoepfe (Haken) und Daempfung nach einer Aenderung der Auswahl nachziehen,
+// ohne die Liste neu zu zeichnen.
+function pickerMarkierungen() {
+  var gewIso = gewaehlteTageIso(), gewListe = Object.keys(gewIso);
+  var anGewaehlt = gewListe.length > 0;
   var blk = document.querySelectorAll('#day-picker [data-wk]');
   for (var bi = 0; bi < blk.length; bi++) {
-    blk[bi].classList.toggle('kl-gedaempft', anGewaehlt && blk[bi].getAttribute('data-wk') !== G.planWoche && !!blk[bi].getAttribute('data-kuenftig'));
-  }
-  // Wochenkopf: "✓" nur solange etwas gewaehlt ist
-  var k = $('dw-' + G.planWoche);
-  if (k) {
-    var an = cookingDays().length > 0;
-    k.classList.toggle('aktiv', an);
-    var lbl = k.firstChild;
-    if (lbl) lbl.textContent = lbl.textContent.replace(/ ✓$/, '') + (an ? ' ✓' : '');
+    var rows = blk[bi].querySelectorAll('.day-row');
+    var hat = false, alleAusserhalb = !!blk[bi].getAttribute('data-kuenftig');
+    for (var ri = 0; ri < rows.length; ri++) {
+      var rid = (rows[ri].id || '').replace(/^dr-/, '');
+      if (gewIso[rid]) hat = true;
+      if (anGewaehlt && imPlanSpann(rid, gewListe)) alleAusserhalb = false;
+    }
+    blk[bi].classList.toggle('kl-gedaempft', anGewaehlt && !hat && alleAusserhalb);
+    var k = $('dw-' + blk[bi].getAttribute('data-wk'));
+    if (k) {
+      k.classList.toggle('aktiv', hat);
+      var lbl = k.firstChild;
+      if (lbl) lbl.textContent = lbl.textContent.replace(/ ✓$/, '') + (hat ? ' ✓' : '');
+    }
+    // einzelne freie Tage ausserhalb der 7 Tage, in sonst passenden Wochen
+    for (var rj = 0; rj < rows.length; rj++) {
+      var r2 = rows[rj], id2 = (r2.id || '').replace(/^dr-/, '');
+      var frei2 = !!r2.querySelector('input[type=checkbox]');
+      var ausser = frei2 && anGewaehlt && !gewIso[id2] && !imPlanSpann(id2, gewListe) && !r2.classList.contains('vergangen');
+      r2.classList.toggle('kl-gedaempft', ausser && !blk[bi].classList.contains('kl-gedaempft'));
+    }
   }
 }
 
@@ -1745,7 +1834,7 @@ function setDayMode(d, mode) {
 }
 
 function cookingDays() {
-  return DAYS_ORDER.filter(function(d){ return G.days[d] && G.days[d] !== 'auswaerts'; });
+  return tagReihe(G.planWoche).filter(function(d){ return G.days[d] && G.days[d] !== 'auswaerts'; });
 }
 
 function updateNFromDays() {
@@ -1789,14 +1878,23 @@ function tageZusammenfassung() {
 
 function getDayPlanText() {
   // Build text for Claude prompt
-  var cooking = DAYS_ORDER.filter(function(d){ return G.days[d] && G.days[d] !== 'auswaerts'; });
+  var cooking = cookingDays();
   if (!cooking.length) return '';
   var parts = cooking.map(function(d) {
     var mode = G.days[d];
     var hint = mode === 'schnell' ? 'max. 20 Min. aktiv' : mode === 'aufwendig' ? 'darf aufwendiger sein' : 'normal';
     return d + ' (' + hint + ')';
   });
-  return 'Koche an diesen Tagen: ' + parts.join(', ') + '. Weise jedem Gericht den passenden Tag zu.';
+  var text = 'Koche an diesen Tagen: ' + parts.join(', ') + '. Weise jedem Gericht den passenden Tag zu.';
+  // Reicht der Plan ueber das Wochenende hinaus, gehoert die zeitliche Reihenfolge
+  // ausdruecklich dazu: "Mo" nach "Fr" ist der Montag der FOLGEWOCHE.
+  var fs = G.planWoche ? new Date(G.planWoche + 'T00:00:00') : null;
+  if (fs && !isNaN(fs.getTime()) && wochentagIdx(fs) !== 0 && cooking.length > 1) {
+    text += ' Die Tage liegen in dieser zeitlichen Reihenfolge, auch ueber das Wochenende hinaus: ' +
+      cooking.map(function(t) { return kalenderTagKurz(dateFromTag(G.planWoche, t)); }).join(', ') +
+      '. Im Feld tag steht nur das Kuerzel, und die Gerichte folgen in genau dieser Reihenfolge.';
+  }
+  return text;
 }
 
 // Bevorzugte Reihenfolge beim Ableiten der Kochtage aus einer reinen Anzahl:
@@ -3600,7 +3698,7 @@ function goSuggest() {
   // Erwartete Kochtage einmalig berechnen: nur Tage mit aktivem Kochmodus,
   // "auswaerts" zaehlt nicht als Kochtag. Wird an validateOverview() uebergeben,
   // damit eine Antwort mit falscher/doppelter Tagzuordnung erkannt wird.
-  var expectedCookingTags = DAYS_ORDER.filter(function(d){ return G.days[d] && G.days[d] !== 'auswaerts'; });
+  var expectedCookingTags = cookingDays();
 
   var p = G.personen || 2;
   var modusText = G.modus === 'vegi' ? 'vegetarisch' : G.modus === 'fleisch' ? 'mit Fleisch' : 'vegi+Fleisch optional';
@@ -3871,6 +3969,10 @@ function goSuggest() {
           }
 
           sugs[0].id = id;
+          // Beginnt das Plan-Fenster nicht am Montag (z.B. Do bis Mi), merkt sich der
+          // Vorschlag den ersten Wochentag und ordnet seine Gerichte nach Datum.
+          setzeFensterTag(sugs[0], (G.sugWoche && G.sugWoche.woche) || G.planWoche);
+          if (sugs[0].startTag) sortiereGerichteChrono(sugs[0]);
           // Dedupe by thema — bei Dublette Thema eindeutig machen statt verwerfen
           var exists = G.sugs.some(function(s){ return s.thema === sugs[0].thema; });
           if (exists) sugs[0].thema = sugs[0].thema + ' (Variante ' + id + ')';
@@ -4055,6 +4157,8 @@ function uebernimmVollrezept(originalGericht, match) {
   if (match.mittag_tag)       originalGericht.mittag_tag       = match.mittag_tag;
   if (match.zutaten && match.zutaten.length) originalGericht.zutaten = match.zutaten;
   if (match.tipp)       originalGericht.tipp       = match.tipp;
+  var _ut = alsListe(match.utensilien);
+  if (_ut.length)       originalGericht.utensilien = _ut;
   if (match.zeit_aktiv) originalGericht.zeit_aktiv = match.zeit_aktiv;
   if (match.zeit_total) originalGericht.zeit_total = match.zeit_total;
 }
@@ -4080,7 +4184,19 @@ function sichereGerichtIds(sug) {
   });
   return sug;
 }
-function tagPos(tag) { return DAYS_ORDER.indexOf(tag); }
+function tagPos(tag, sug) {
+  var i = DAYS_ORDER.indexOf(tag);
+  if (i < 0) return i;
+  var b = sug && sug.startTag ? DAYS_ORDER.indexOf(sug.startTag) : 0;
+  return b > 0 ? (i - b + 7) % 7 : i;
+}
+// Gerichte eines Vorschlags nach Datum ordnen (stabil).
+function sortiereGerichteChrono(sug) {
+  if (!sug || !Array.isArray(sug.gerichte)) return;
+  sug.gerichte = sug.gerichte.map(function(g, i) { return { g: g, i: i }; })
+    .sort(function(a, b) { return tagPos((a.g.tag || '').slice(0, 2), sug) - tagPos((b.g.tag || '').slice(0, 2), sug) || a.i - b.i; })
+    .map(function(x) { return x.g; });
+}
 function gerichtMitGid(sug, gid) {
   var l = (sug && sug.gerichte) || [];
   for (var i = 0; i < l.length; i++) if (l[i] && l[i].gid === gid) return l[i];
@@ -4090,7 +4206,7 @@ function gerichtMitGid(sug, gid) {
 function aktiveGerichteChrono(sug) {
   return ((sug && sug.gerichte) || []).map(function(g, i) { return { g: g, i: i }; })
     .filter(function(x) { return x.g && !x.g._cancelled; })
-    .sort(function(a, b) { return tagPos(a.g.tag) - tagPos(b.g.tag) || a.i - b.i; });
+    .sort(function(a, b) { return tagPos(a.g.tag, sug) - tagPos(b.g.tag, sug) || a.i - b.i; });
 }
 function rund1(x) { return Math.round(Number(x) * 10) / 10; }
 function mengeMitEinheit(w, e) { return String(rund1(w)).replace('.', ',') + ' ' + e; }
@@ -4127,7 +4243,7 @@ function normalisiereKomponentenplan(raw) {
 function pruefeKomponentenplan(kp, sug) {
   if (!kp || !Array.isArray(kp.komponenten) || !kp.komponenten.length) return 'Der Komponentenplan ist leer.';
   var chrono = aktiveGerichteChrono(sug), pos = {}, kurz = {};
-  chrono.forEach(function(x) { pos[x.g.gid] = tagPos(x.g.tag); kurz[x.g.gid] = x.g.tag + ' ' + x.g.abend; });
+  chrono.forEach(function(x) { pos[x.g.gid] = tagPos(x.g.tag, sug); kurz[x.g.gid] = x.g.tag + ' ' + x.g.abend; });
   var ids = {}, mehrfach = false;
   for (var a = 0; a < kp.komponenten.length; a++) {
     var k = kp.komponenten[a];
@@ -4214,7 +4330,7 @@ function komponentenProbleme(sug) {
         text: '«' + k.name + '» sollte ' + (erz ? 'am ' + erz.tag + ' im Gericht «' + erz.abend + '» ' : '') + 'vorbereitet werden, aber dieses Gericht ' +
           (prod ? 'ist ausgefallen' : 'wurde entfernt') + '. Davon abhängig: ' + liste(aktiv) + '.' });
     } else if (!prod._gekocht) {
-      var falsch = aktiv.filter(function(x) { return tagPos(x.c.tag) <= tagPos(prod.tag); });
+      var falsch = aktiv.filter(function(x) { return tagPos(x.c.tag, sug) <= tagPos(prod.tag, sug); });
       if (falsch.length) out.push({ art: 'reihenfolge', kid: k.id, komponente: k.name, erzeuger: erz,
         betroffen: falsch.map(function(x) { return x.c.gid; }),
         text: '«' + k.name + '» wird erst am ' + prod.tag + ' im Gericht «' + prod.abend + '» vorbereitet, wird aber schon früher gebraucht: ' + liste(falsch) + '.' });
@@ -4703,7 +4819,7 @@ function goWeek() {
       goWeekRender(G.activePlan.sug, { keepTab: true });
       if ($('rlist')) $('rlist').insertAdjacentHTML('afterbegin',
         '<div class="st inf" style="margin:10px 10px 0">Plan „' + esc(sug.thema) + '" ist gespeichert – ' +
-        esc(wochenEtikett(G_zuletztAktiviert)) + '. Er wird ab Montag zur aktiven Woche; ' +
+        esc(wochenEtikett(G_zuletztAktiviert)) + '. Er wird ' + (function() { var d0 = new Date((G_zuletztAktiviert || '') + 'T00:00:00'); return isNaN(d0.getTime()) || wochentagIdx(d0) === 0 ? 'ab Montag' : 'ab ' + d0.toLocaleDateString('de-CH', { weekday: 'long' }); })() + ' zur aktiven Woche; ' +
         'bis dahin bleibt die laufende Woche im Vordergrund. In der Zeitachse ist er bereits sichtbar.</div>');
       return;
     }
@@ -5429,11 +5545,38 @@ function setTimelineLabel(iso) {
 // Strings, aus frueher generierten/gespeicherten Rezepten) als auch neues
 // Format (Array von {name, menge} Objekten aus dem Guided-Cooking-Prompt).
 // Global statt lokal in buildSteps(), damit auch startFotoCook() sie nutzen kann.
+// Die KI liefert gelegentlich andere Datentypen als verlangt (Text statt Liste,
+// Zahl statt Text, Liste statt Text). Frueher warf dann das Zeichnen EINES Schritts
+// einen Fehler: der Bildschirm blieb auf dem alten Schritt stehen, waehrend der
+// Zaehler intern weiterlief - nach mehreren Tipps sprang die Anzeige um mehrere
+// Schritte. Deshalb wird jeder Schritt beim Aufbau auf feste Typen gebracht.
+function alsText(x) {
+  if (x === null || x === undefined) return '';
+  if (Array.isArray(x)) return x.map(alsText).filter(function(t) { return t; }).join(' ');
+  if (typeof x === 'object') return alsText(x.text !== undefined ? x.text : (x.name !== undefined ? x.name : x.titel));
+  return String(x);
+}
+function alsListe(x) {
+  if (x === null || x === undefined || x === '') return [];
+  var a = Array.isArray(x) ? x : [x];
+  return a.map(function(e) { return alsText(e); }).filter(function(t) { return t; });
+}
 function normZs(zs) {
-  return (zs || []).map(function(z) {
-    if (typeof z === 'string') return { name: z, menge: '' };
-    return { name: z.name || '', menge: z.menge || '' };
-  });
+  if (zs === null || zs === undefined || zs === '') return [];
+  var arr = Array.isArray(zs) ? zs : (typeof zs === 'string' ? zs.split(',') : [zs]);
+  return arr.map(function(z) {
+    if (z && typeof z === 'object' && !Array.isArray(z)) return { name: alsText(z.name), menge: alsText(z.menge) };
+    return { name: alsText(z).trim(), menge: '' };
+  }).filter(function(z) { return z.name || z.menge; });
+}
+function normSchritt(r) {
+  if (!r || typeof r !== 'object' || Array.isArray(r)) r = { text: r };
+  var t = parseFloat(r.timer_min);
+  return {
+    titel: alsText(r.titel !== undefined ? r.titel : r.title), text: alsText(r.text),
+    timer_min: t > 0 ? t : 0, zs: normZs(r.zutaten_schritt), zubehoer: alsListe(r.zubehoer),
+    kontrolle: alsText(r.kontrolle), parallel: alsText(r.parallel_hinweis), ablage: alsText(r.ablage)
+  };
 }
 
 function buildSteps(g) {
@@ -5444,18 +5587,16 @@ function buildSteps(g) {
   var vegi = Array.isArray(g.schritte_vegi) ? g.schritte_vegi : [];
   var fleisch = Array.isArray(g.schritte_fleisch) ? g.schritte_fleisch : [];
   var beide = vegi.length > 0 && fleisch.length > 0;
-  for (var i = 0; i < vegi.length; i++) st.push({
-    type: beide ? 'v' : 'vo', titel: vegi[i].titel || '', text: vegi[i].text,
-    timer_min: vegi[i].timer_min || 0, zs: normZs(vegi[i].zutaten_schritt),
-    zubehoer: vegi[i].zubehoer || [], kontrolle: vegi[i].kontrolle || '',
-    parallel: vegi[i].parallel_hinweis || '', ablage: vegi[i].ablage || ''
-  });
-  for (var i = 0; i < fleisch.length; i++) st.push({
-    type: beide ? 'f' : 'fo', titel: fleisch[i].titel || '', text: fleisch[i].text,
-    timer_min: fleisch[i].timer_min || 0, zs: normZs(fleisch[i].zutaten_schritt),
-    zubehoer: fleisch[i].zubehoer || [], kontrolle: fleisch[i].kontrolle || '',
-    parallel: fleisch[i].parallel_hinweis || '', ablage: fleisch[i].ablage || ''
-  });
+  for (var i = 0; i < vegi.length; i++) {
+    var nv = normSchritt(vegi[i]);
+    st.push({ type: beide ? 'v' : 'vo', titel: nv.titel, text: nv.text, timer_min: nv.timer_min, zs: nv.zs,
+      zubehoer: nv.zubehoer, kontrolle: nv.kontrolle, parallel: nv.parallel, ablage: nv.ablage });
+  }
+  for (var i = 0; i < fleisch.length; i++) {
+    var nf = normSchritt(fleisch[i]);
+    st.push({ type: beide ? 'f' : 'fo', titel: nf.titel, text: nf.text, timer_min: nf.timer_min, zs: nf.zs,
+      zubehoer: nf.zubehoer, kontrolle: nf.kontrolle, parallel: nf.parallel, ablage: nf.ablage });
+  }
   if (G.reste && g.prep_next && g.prep_next.length) st.push({ type: 'p', text: g.prep_next.join('\n'), timer_min: 0, zs: [], ml: true, zubehoer: [], kontrolle: '', parallel: '' });
   if (G.freeze && g.einfrieren && g.einfrieren.length) st.push({ type: 'fr', text: g.einfrieren.join('\n'), timer_min: 0, zs: [], ml: true, zubehoer: [], kontrolle: '', parallel: '' });
   if (g.tipp) st.push({ type: 't', text: g.tipp, timer_min: 0, zs: [], zubehoer: [], kontrolle: '', parallel: '' });
@@ -5656,7 +5797,8 @@ function blechHinweisHtml(info) {
 }
 
 function zeigeKapazitaet() {
-  var info = blechInfo();
+  var info = null;
+  try { info = blechInfo(); } catch (e) { info = null; }
   var box = document.getElementById('cook-kap');
   if (box) {
     box.innerHTML = info && info[G.act] ? blechHinweisHtml(info[G.act]) : '';
@@ -5700,6 +5842,31 @@ function startCook(ri) {
   showIngOverview(g);
   go('sc');
   requestWakeLock();
+}
+
+// Kochutensilien fuer den Anfang: die Liste der KI (utensilien); fehlt sie
+// (aeltere Rezepte), die Gegenstaende aus den Schritten ("Jetzt bereitlegen").
+function kochutensilienListe(g) {
+  var l = alsListe(g && g.utensilien);
+  if (l.length) return { liste: l, aus: 'ki' };
+  var gesehen = {}, out = [];
+  (G.steps || []).forEach(function(st) {
+    alsListe(st && st.zubehoer).forEach(function(z) {
+      var k = z.toLowerCase();
+      if (!gesehen[k]) { gesehen[k] = true; out.push(z); }
+    });
+  });
+  return { liste: out, aus: 'schritte' };
+}
+
+function kochutensilienHtml(g) {
+  var u = kochutensilienListe(g);
+  if (!u.liste.length) return '';
+  return '<div id="cook-utensilien" style="background:#f9f9f9;border-radius:var(--r);padding:12px;margin-bottom:16px;border:.5px solid var(--bdr)">' +
+    '<div style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--gr3);margin-bottom:8px">Kochutensilien bereitstellen</div>' +
+    '<div style="display:flex;flex-wrap:wrap;gap:6px">' +
+    u.liste.map(function(x) { return '<span style="background:#fff;border:.5px solid var(--bdr);border-radius:100px;padding:5px 12px;font-size:13px;color:var(--txt2)">' + esc(x) + '</span>'; }).join('') +
+    '</div></div>';
 }
 
 function showIngOverview(g) {
@@ -5749,6 +5916,7 @@ function showIngOverview(g) {
     '<div style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--gr3);padding:10px 0 6px">' + (kompBox ? 'Zusätzlich einzukaufende Zutaten' : 'Zutaten') + '</div>' +
     rows + '</div>' +
     '<div id="cook-kap-ueb"></div>' +
+    kochutensilienHtml(g) +
     '<div style="font-size:12px;color:var(--blu);background:var(--bll);border-radius:8px;padding:10px 12px;margin-bottom:16px;border:.5px solid #90caf9">Alle Zutaten bereitstellen und abmessen bevor du anfängst.</div>' +
     '<div style="background:#f9f9f9;border-radius:var(--r);padding:12px;margin-bottom:16px;border:.5px solid var(--bdr)">' +
       '<div style="font-size:12px;font-weight:600;color:var(--txt2);margin-bottom:8px">Portionen anpassen</div>' +
@@ -5806,7 +5974,47 @@ function updHeader() {
 // G.cookViewMode: 'step' (Standard) oder 'overview' (alle Schritte als Liste)
 if (typeof G.cookViewMode === 'undefined') G.cookViewMode = 'step';
 
+// "Wohin damit" nur zeigen, wenn es etwas Neues sagt: nicht dasselbe wie die letzte
+// genannte Ablage, und nicht jedes Mal wieder "in den Topf", solange es im Topf weitergeht.
+function ablageAnzeigen(i) {
+  var s = G.steps[i];
+  if (!s || !alsText(s.ablage).trim()) return false;
+  var norm = function(t) { return alsText(t).toLowerCase().replace(/[^a-zäöüß0-9 ]/g, ' ').replace(/\s+/g, ' ').trim(); };
+  var nurTopf = function(t) { var n = norm(t); return /(topf|pfanne|pfännchen|kasserolle|blech)/.test(n) && !/(schüssel|schale|sieb|teller|brett|schälchen|becher|glas|dose)/.test(n); };
+  var heute = norm(s.ablage);
+  for (var j = i - 1; j >= 0; j--) {
+    var a = G.steps[j] && alsText(G.steps[j].ablage).trim();
+    if (!a) continue;
+    // nur mit der zuletzt genannten Ablage vergleichen
+    if (norm(a) === heute) return false;                    // wie zuvor
+    if (nurTopf(s.ablage) && nurTopf(a)) return false;      // weiter im Topf/in der Pfanne
+    return true;
+  }
+  return true;
+}
+
 function renderCookStep() {
+  try {
+    renderCookStepKern();
+  } catch (e) {
+    // Notfall: Der Bildschirm muss IMMER zum aktuellen Schritt passen. Lieber eine
+    // einfache Anzeige als ein stehengebliebener alter Schritt.
+    try { logFehler('kochmodus', 'Schritt ' + (G.act + 1) + ' nicht gezeichnet: ' + (e && e.message), e && e.stack); } catch (x) {}
+    try { console.error('Kochschritt konnte nicht gezeichnet werden:', e); } catch (x) {}
+    var s = G.steps[G.act] || {};
+    var titel = alsText(s.titel) || alsText(s.text).split(' ').slice(0, 4).join(' ') || 'Schritt';
+    $('cbody').innerHTML =
+      '<div style="font-size:22px;font-weight:800;color:var(--txt);margin:8px 0 6px">' + esc(titel) + '</div>' +
+      (s.text ? '<div style="font-size:15px;color:var(--txt2);line-height:1.5;margin-bottom:14px">' + esc(alsText(s.text)) + '</div>' : '') +
+      '<div role="status" style="background:#FFF3E3;border-radius:8px;padding:10px 12px;font-size:12px;color:#B97836">Dieser Schritt wird vereinfacht angezeigt (ein Detail war unlesbar).</div>';
+    try { updHeader(); } catch (x) {}
+    if ($('cook-footer')) $('cook-footer').style.display = 'flex';
+    var cb = $('cook-complete-btn');
+    if (cb) cb.textContent = G.done[G.act] ? 'Weiter' : (G.act === G.steps.length - 1 ? 'Fertig kochen · Bewerten' : 'Erledigt · Weiter');
+  }
+}
+
+function renderCookStepKern() {
   G.cookViewMode = 'step';
   if ($('cook-overview-btn')) $('cook-overview-btn').textContent = 'Alle Schritte';
   var i = G.act;
@@ -5864,7 +6072,7 @@ function renderCookStep() {
   }
 
   var kontrolleHtml = s.kontrolle ? '<div style="background:var(--bll);border-radius:8px;padding:10px 12px;margin-bottom:12px;font-size:13px;color:var(--blu)"><b>&#10003; Fertig wenn:</b> ' + esc(s.kontrolle) + '</div>' : '';
-  var ablageHtml = s.ablage ? '<div style="background:#EEF5F0;border-left:3px solid #4F8067;padding:10px 12px;border-radius:0 8px 8px 0;margin-bottom:12px;font-size:13px;color:#2f5a45"><b>&#128205; Wohin damit:</b> ' + esc(s.ablage) + '</div>' : '';
+  var ablageHtml = ablageAnzeigen(i) ? '<div style="background:#EEF5F0;border-left:3px solid #4F8067;padding:10px 12px;border-radius:0 8px 8px 0;margin-bottom:12px;font-size:13px;color:#2f5a45"><b>&#128205; Wohin damit:</b> ' + esc(s.ablage) + '</div>' : '';
   var parallelHtml = s.parallel ? '<div style="background:#FFF3E3;border-left:3px solid #f9a825;padding:10px 12px;border-radius:0 8px 8px 0;margin-bottom:12px;font-size:13px;color:#7d5a00"><b>Währenddessen:</b> ' + esc(s.parallel) + '</div>' : '';
 
   // "Als Naechstes"-Vorschau: naechster noch offener Schritt
@@ -6904,6 +7112,19 @@ function migrierePlanIds() {
   }
 }
 
+// Plan im Verlauf, dessen 7-Tage-Fenster das Datum enthaelt.
+function planImVerlaufFuerDatum(datum) {
+  try {
+    migrierePlanIds();
+    var hist = JSON.parse(localStorage.getItem(userKey('local_history')) || '[]');
+    for (var i = 0; i < hist.length; i++) {
+      var pl = hist[i].plan;
+      if (pl && pl.sug && wocheEnthaelt(pl.weekStart, datum)) return pl;
+    }
+  } catch (e) {}
+  return null;
+}
+
 function planImVerlaufFuerWoche(weekStartIso) {
   try {
     migrierePlanIds();
@@ -6928,7 +7149,7 @@ function befoerdereWochenplan() {
   var montag = isoDateLocal(mondayOf(heute));
   var aktiv = G.activePlan;
   if (aktiv && aktiv.sug && wocheEnthaelt(aktiv.weekStart, heute)) return false;   // alles gut
-  var richtig = planImVerlaufFuerWoche(montag);
+  var richtig = planImVerlaufFuerDatum(heute);
   if (!richtig) return false;                                   // nichts zu befoerdern
   if (aktiv && aktiv.planId === richtig.planId) return false;
   // Den bisherigen aktiven Plan im Verlauf sichern, bevor er ersetzt wird.
@@ -6946,8 +7167,12 @@ function befoerdereWochenplan() {
 function wochenEtikett(weekStartIso) {
   var heute = new Date();
   if (!weekStartIso) return 'Diese Woche';
-  if (wocheEnthaelt(weekStartIso, heute)) return 'Diese Woche';
+  if (wocheEnthaelt(weekStartIso, heute)) return wochentagIdx(new Date(weekStartIso + 'T00:00:00')) === 0 ? 'Diese Woche' : 'Aktuelle 7 Tage';
   var d = new Date(weekStartIso + 'T00:00:00');
+  // Fenster, das nicht am Montag beginnt (z.B. Do bis Mi): mit Datum benennen
+  if (wochentagIdx(d) !== 0) {
+    return d > heute ? 'Ab ' + d.toLocaleDateString('de-CH', { weekday: 'short', day: 'numeric', month: 'short' }) : 'Vergangene Woche';
+  }
   var diff = Math.round((d - mondayOf(heute)) / (7 * 86400000));
   if (diff === 1) return 'Nächste Woche';
   if (diff > 1) return 'In ' + diff + ' Wochen';
@@ -7001,13 +7226,38 @@ function lastEinkaufstag(ref) {
 // Rechnet ein Tageskuerzel ("Mo".."So") + weekStart (Montag der Woche, ISO
 // "YYYY-MM-DD") zu einem konkreten Date-Objekt um. Keine Index-Ratung - die
 // Zuordnung ist immer explizit ueber das Kuerzel selbst.
+// weekStart ist der erste Tag des Plan-Fensters. Ein Fenster umfasst 7 Tage am
+// Stueck; meist beginnt es an einem Montag (Kalenderwoche), kann aber an jedem
+// Wochentag beginnen (z.B. "die naechsten 7 Tage"). Jedes Kuerzel kommt in 7 Tagen
+// genau einmal vor, deshalb bleibt die Zuordnung Kuerzel -> Datum eindeutig.
+function wochentagIdx(d) { return d.getDay() === 0 ? 6 : d.getDay() - 1; }   // 0=Mo ... 6=So
+
 function dateFromTag(weekStartIso, tag) {
   var idx = DAYS_ORDER.indexOf(tag);
   if (idx < 0 || !weekStartIso) return null;
   var d = new Date(weekStartIso + 'T00:00:00');
   if (isNaN(d.getTime())) return null;
-  d.setDate(d.getDate() + idx);
+  d.setDate(d.getDate() + ((idx - wochentagIdx(d) + 7) % 7));
   return d;
+}
+
+// Die sieben Kuerzel in zeitlicher Reihenfolge ab dem Fensterstart.
+function tagReihe(weekStartIso) {
+  var b = 0;
+  if (weekStartIso) {
+    var d = new Date(weekStartIso + 'T00:00:00');
+    if (!isNaN(d.getTime())) b = wochentagIdx(d);
+  }
+  return DAYS_ORDER.slice(b).concat(DAYS_ORDER.slice(0, b));
+}
+
+// Der Vorschlag/Plan merkt sich, mit welchem Wochentag sein Fenster beginnt
+// (startTag). Fehlt die Angabe, beginnt er am Montag wie bisher.
+function setzeFensterTag(sug, weekStartIso) {
+  if (!sug) return;
+  var d = weekStartIso ? new Date(weekStartIso + 'T00:00:00') : null;
+  var t = d && !isNaN(d.getTime()) ? DAYS_ORDER[wochentagIdx(d)] : 'Mo';
+  if (t === 'Mo') delete sug.startTag; else sug.startTag = t;
 }
 
 // ISO-Datum (YYYY-MM-DD) eines beliebigen Date-Objekts, ohne Zeitzonen-
@@ -7146,13 +7396,15 @@ function setActivePlanAndGo(weekStartIso) {
   // Stabile Gericht-IDs: Verbindungen zwischen Gerichten (Komponentenplan) haengen
   // an ihnen, nicht an Array-Positionen oder Wochentagen.
   sichereGerichtIds(sug);
+  setzeFensterTag(sug, weekStartIso);
+  if (sug.startTag) sortiereGerichteChrono(sug);
   var planData = {
     planId: generatePlanId(),
     sug: sug, sel: G.sel, n: G.n, personen: G.personen,
     reste: G.reste, freeze: G.freeze, budget: G.budget, modus: G.modus,
     resteMode: G.resteMode, days: G.days,
     planungsart: planungsartGueltig(G.planungsart) ? G.planungsart : 'clever',
-    weekStart: weekStartIso,             // gewaehlte Woche, immer ein Montag
+    weekStart: weekStartIso,             // erster Tag des 7-Tage-Fensters (meist ein Montag)
     einkaufstag: G.einkaufstag || 'Mo',   // separat: nur Frische-/Promptlogik
     saved: new Date().toLocaleDateString('de-CH'),
     bringImportedAt: null, bringItemCount: 0,
@@ -7484,9 +7736,10 @@ function doVerschiebeAufTag(ri, tag) {
   g.tag = tag;
   // Die Mittagsportion folgt dem Abend: am Tag danach.
   if (g.mittag_tag) g.mittag_tag = DAYS_ORDER[(DAYS_ORDER.indexOf(tag) + 1) % 7];
+  var _basisSug = sug;
   // Chronologisch ordnen; Fixierungen (Schluessel = Position) mitziehen.
   var dek = sug.gerichte.map(function(x, i) { return { g: x, i: i }; });
-  dek.sort(function(a, b) { return DAYS_ORDER.indexOf((a.g.tag || '').slice(0, 2)) - DAYS_ORDER.indexOf((b.g.tag || '').slice(0, 2)) || a.i - b.i; });
+  dek.sort(function(a, b) { return tagPos((a.g.tag || '').slice(0, 2), _basisSug) - tagPos((b.g.tag || '').slice(0, 2), _basisSug) || a.i - b.i; });
   var fix = G.fixedDishes || {}, neuFix = {};
   Object.keys(fix).forEach(function(k) { if (k.indexOf(G.sel + '_') !== 0) neuFix[k] = fix[k]; });
   dek.forEach(function(x, ni) { var alt = G.sel + '_' + x.i; if (fix[alt] !== undefined) neuFix[G.sel + '_' + ni] = fix[alt]; });
@@ -8740,7 +8993,7 @@ function updateDashboard() {
   if (hasPlan && plan.weekStart) {
     // Beide Seiten sind jetzt Kalendermontage, der String-Vergleich auf
     // ISO-Datum ist damit korrekt und zeitzonenfest.
-    isStale = plan.weekStart < currentWeekStart();
+    isStale = isoPlusTage(plan.weekStart, 6) < isoDateLocal(new Date());
   }
   var staleEl = $('dash-stale');
   if (staleEl) staleEl.style.display = (hasPlan && isStale) ? 'block' : 'none';
@@ -9255,6 +9508,8 @@ function nochmalKochen(i) {
     newPlan.planId = generatePlanId(); // neue ID: dies ist ein NEUER Kochvorgang, kein Update des alten Eintrags
     newPlan.saved = new Date().toLocaleDateString('de-CH');
     newPlan.weekStart = currentWeekStart();
+    // Der Plan beginnt wieder an einem Montag: Fenster-Tag zuruecksetzen, Reihenfolge Mo-So
+    if (newPlan.sug) { delete newPlan.sug.startTag; sortiereGerichteChrono(newPlan.sug); }
     newPlan.einkaufstag = G.einkaufstag || 'Mo';
     newPlan.einkaufDone = false;
     newPlan.bringImportedAt = null;
@@ -9487,14 +9742,21 @@ function syncFotoRezepte(btn){
 }
 // ─── REZEPT AUF EINEN WOCHENTAG LEGEN ─────────────────────
 // Funktioniert fuer Foto-Rezepte und fuer Gerichte aus dem Verlauf. Der aktive
-// Plan deckt genau eine Woche ab (weekStart = Montag), deshalb sind nur die
-// freien Tage DIESER Woche waehlbar. Belegte Tage werden gar nicht angeboten.
+// Plan deckt ein 7-Tage-Fenster ab (weekStart = erster Tag), deshalb sind nur die
+// freien Tage DIESES Fensters waehlbar. Belegte Tage werden gar nicht angeboten.
 function freieTageImPlan() {
   var p = G.activePlan;
   if (!p || !p.sug || !p.weekStart) return [];
   var belegt = {};
   (p.sug.gerichte || []).forEach(function(g) { belegt[(g.tag || '').slice(0, 2)] = true; });
-  return DAYS_ORDER.filter(function(t) { return !belegt[t]; }).map(function(t) {
+  // Reicht der Plan in die Folgewoche, kann dort schon ein anderer Plan kochen.
+  var belegtDatum = {};
+  try { belegtDatum = belegteTageMap() || {}; } catch (e) {}
+  return tagReihe(p.weekStart).filter(function(t) {
+    if (belegt[t]) return false;
+    var d0 = dateFromTag(p.weekStart, t);
+    return !(d0 && belegtDatum[isoDateLocal(d0)]);
+  }).map(function(t) {
     var d = dateFromTag(p.weekStart, t);
     return { tag: t, datum: d, label: d.toLocaleDateString('de-CH', { weekday: 'long', day: 'numeric', month: 'short' }) };
   });
@@ -9510,6 +9772,7 @@ function alsPlanGericht(r) {
     tipp: r.tipp || '',
     _extern: true                    // selbst eingeplant, nicht generiert
   };
+  if (alsListe(r.utensilien).length) g.utensilien = alsListe(r.utensilien);
   // Beide Varianten getrennt uebernehmen. Ein historisches Gericht kann
   // schritte_vegi UND schritte_fleisch haben - vorher wurde davon eine
   // verworfen, weil alles in schritte_vegi gepresst wurde.
@@ -9606,7 +9869,7 @@ function einplanenAuf(tag) {
   G.activePlan.sug.gerichte.push(g);
   // Nach Wochentag sortieren, damit die Reihenfolge stimmt.
   G.activePlan.sug.gerichte.sort(function(a, b) {
-    return DAYS_ORDER.indexOf((a.tag || '').slice(0, 2)) - DAYS_ORDER.indexOf((b.tag || '').slice(0, 2));
+    return tagPos((a.tag || '').slice(0, 2), G.activePlan.sug) - tagPos((b.tag || '').slice(0, 2), G.activePlan.sug);
   });
   if (G.sugs && G.sel !== null && G.sugs[G.sel]) G.sugs[G.sel] = G.activePlan.sug;
   // Planzahlen mitziehen, sonst zeigen Dashboard und Verlauf weiter die alte
@@ -9960,10 +10223,9 @@ function showFotoPrint(){
 }
 function startFotoCook(){
   var r=window._fotoRezept; if(!r)return;
-  var steps=(r.schritte||[]).map(function(s){return{
-    type:'v', titel:s.titel||s.title||'', text:s.text||'', timer_min:s.timer_min||0,
-    zs: normZs(s.zutaten_schritt),
-    zubehoer: s.zubehoer || [], kontrolle: s.kontrolle || '', parallel: s.parallel_hinweis || '', ablage: s.ablage || ''
+  var steps=(Array.isArray(r.schritte)?r.schritte:[]).map(function(s0){var n=normSchritt(s0);return{
+    type:'v', titel:n.titel, text:n.text, timer_min:n.timer_min, zs:n.zs,
+    zubehoer:n.zubehoer, kontrolle:n.kontrolle, parallel:n.parallel, ablage:n.ablage
   };});
   if(!steps.length){alert('Keine Kochschritte vorhanden.');return;}
   merkeRuecksprung();
@@ -9976,7 +10238,7 @@ function startFotoCook(){
   G_cook_port = G_cook_base_port;
   G_cook_zutaten = r.zutaten || [];
   if($('ctit'))$('ctit').textContent=r.name||'Foto-Rezept';
-  var fakeGericht={abend:r.name||'Foto-Rezept',mittag_nächster_tag:null,zutaten:r.zutaten||[],zeit_aktiv:r.zeit_aktiv||'',zeit_total:r.zeit_total||''};
+  var fakeGericht={abend:r.name||'Foto-Rezept',mittag_nächster_tag:null,utensilien:r.utensilien,zutaten:r.zutaten||[],zeit_aktiv:r.zeit_aktiv||'',zeit_total:r.zeit_total||''};
   showIngOverview(fakeGericht); go('sc');
   if(navigator.wakeLock){navigator.wakeLock.request('screen').then(function(lock){G._wakeLock=lock;}).catch(function(){});}
 }
