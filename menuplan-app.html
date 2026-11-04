@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=yes">
-<title>Menüplan v7.12</title>
+<title>Menüplan v7.13</title>
 <meta name="theme-color" content="#5B7C78">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -226,6 +226,22 @@ body.netz-aus .netz-hint{display:block}
 .cprog{height:4px;background:rgba(0,0,0,.06)}
 .cprogb{height:100%;background:var(--red);transition:width .4s}
 .cbody{padding:14px}
+/* Kartenkopf: war bisher gar nicht definiert, die Beschriftung (z.B. der Tag in der
+   Plan-Ansicht oder "Konten" in der Benutzerverwaltung) stand ungestaltet am Rand. */
+.chead{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:11px 14px;background:var(--background);border-bottom:.5px solid var(--bdr);font-size:13px;font-weight:700;color:var(--txt2)}
+.chead-st{font-size:11px;font-weight:700;border-radius:100px;padding:3px 10px;background:var(--grl);color:var(--grn);border:.5px solid #B8D5C4;white-space:nowrap}
+.chead-st.aus{background:var(--gr);color:var(--gr3);border-color:var(--bdr)}
+/* Plan-Einstellungen als Kurzzeile in der Nur-Ansicht */
+.pp-row{display:flex;flex-wrap:wrap;gap:6px}
+.pp-chip{display:inline-flex;align-items:center;border-radius:100px;padding:5px 11px;font-size:12px;font-weight:600;background:var(--rl);color:var(--red);border:.5px solid var(--bdr);line-height:1.3}
+.pp-chip.neutral{background:var(--gr);color:var(--txt2)}
+.pp-meta{font-size:11px;color:var(--gr3);margin-top:10px}
+.hv-zut{margin-top:10px;border-top:.5px solid var(--bdr)}
+.hv-zut summary{cursor:pointer;min-height:44px;display:flex;align-items:center;font-size:12px;font-weight:600;color:var(--txt2)}
+.hv-zut-zeile{display:flex;justify-content:space-between;gap:10px;padding:4px 0;font-size:12px;border-bottom:.5px dotted var(--bdr)}
+.hv-zut-zeile:last-child{border-bottom:none}
+.hv-zut-zeile span:last-child{color:var(--gr3);text-align:right}
+.hv-reste{margin-top:6px;font-size:12px;color:var(--gr3)}
 .badge{display:inline-flex;align-items:center;gap:5px;border-radius:100px;padding:4px 11px;font-size:11px;font-weight:700;margin-bottom:10px}
 .bv{background:var(--grl);color:var(--grn);border:.5px solid #B8D5C4}
 .bf{background:var(--orl);color:var(--orn);border:.5px solid #ffcc80}
@@ -321,7 +337,7 @@ body.netz-aus .netz-hint{display:block}
 
 <!-- HOME -->
 <div class="scr on" id="sh">
-  <div class="hero"><h1>Menüplan</h1><p id="hsub">v7.12 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
+  <div class="hero"><h1>Menüplan</h1><p id="hsub">v7.13 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
 
   <!-- Active plan card -->
 
@@ -9429,6 +9445,55 @@ function viewHistoryEntry(i) {
   go('shview');
 }
 
+// Einstellungen, mit denen ein Plan erstellt wurde, als Liste kurzer Texte
+// (Personen, Fleisch-Modus, Planungsart, Kochabende, Mittagsreste, Einfrieren,
+// Budget, Einkaufstag). Liest NUR gespeicherte Werte: fehlt ein Feld in einem
+// aelteren Plan, wird es weggelassen statt geraten. Der Verlaufseintrag dient
+// als Rueckfall, weil er einige Felder zusaetzlich fuehrt. SCHREIBT NICHTS.
+function planParameterListe(plan, entry) {
+  plan = plan || {}; entry = entry || {};
+  function wert(k) {
+    if (plan[k] !== undefined && plan[k] !== null) return plan[k];
+    if (entry[k] !== undefined && entry[k] !== null) return entry[k];
+    return undefined;
+  }
+  var out = [];
+  var p = wert('personen');
+  if (p) out.push({ txt: p + (Number(p) === 1 ? ' Person' : ' Personen'), art: 'personen' });
+  var m = wert('modus');
+  if (m === 'vegi') out.push({ txt: '🥦 Vegetarisch', art: 'modus' });
+  else if (m === 'fleisch') out.push({ txt: '🍗 Mit Fleisch', art: 'modus' });
+  else if (m === 'optional') out.push({ txt: '🥩 Vegi + Fleisch optional', art: 'modus' });
+  var pa = wert('planungsart');
+  if (pa === undefined && wert('resteMode') === 'kette') pa = 'aufbauend';
+  if (planungsartGueltig(pa)) out.push({ txt: PLANUNGSART_NAMEN[pa], art: 'planungsart' });
+  var n = plan.n > 0 ? plan.n : (entry.kochabende > 0 ? entry.kochabende : 0);
+  if (n) out.push({ txt: n + (Number(n) === 1 ? ' Kochabend' : ' Kochabende'), art: 'kochabende' });
+  var r = wert('reste');
+  if (r !== undefined) out.push({ txt: r ? '🍱 Mit Mittagsresten' : 'Ohne Mittagsreste', art: 'reste', neutral: !r });
+  var f = wert('freeze');
+  if (f !== undefined) out.push({ txt: f ? '🧊 Einfrieren (+2 Portionen)' : 'Kein Einfrieren', art: 'freeze', neutral: !f });
+  var b = wert('budget');
+  if (b) out.push({ txt: '💰 Budget', art: 'budget' });
+  var et = wert('einkaufstag');
+  if (et && EINKAUFSTAG_LANGNAME[et]) out.push({ txt: '🛒 Einkauf ' + EINKAUFSTAG_LANGNAME[et], art: 'einkaufstag', neutral: true });
+  return out;
+}
+
+function planParameterHtml(plan, entry) {
+  var l = planParameterListe(plan, entry);
+  var gespeichert = (plan && plan.saved) || (entry && (entry.saved || entry.date)) || '';
+  if (!l.length && !gespeichert) return '';
+  return '<div class="card" id="hv-param" style="margin:10px">' +
+    '<div class="chead">Einstellungen dieses Plans</div>' +
+    '<div class="cbody">' +
+      (l.length ? '<div class="pp-row">' + l.map(function(c) {
+        return '<span class="pp-chip' + (c.neutral ? ' neutral' : '') + '" data-pp="' + c.art + '">' + esc(c.txt) + '</span>';
+      }).join('') + '</div>' : '') +
+      (gespeichert ? '<div class="pp-meta">Gespeichert am ' + esc(gespeichert) + '</div>' : '') +
+    '</div></div>';
+}
+
 function renderHistoryView() {
   var hv = G.histView;
   if (!hv) return;
@@ -9440,28 +9505,31 @@ function renderHistoryView() {
       new Date(hv.plan.weekStart + 'T00:00:00').toLocaleDateString('de-CH') : '') +
       ' · ' + gerichte.length + (gerichte.length === 1 ? ' Gericht' : ' Gerichte');
   }
+  var eintrag = (window._history && window._history[hv.index]) || null;
   var html = gerichte.map(function(g, gi) {
-    var zut = (g.zutaten || []).map(function(z) {
-      return '<div style="display:flex;justify-content:space-between;gap:10px;padding:3px 0;font-size:12px">' +
-        '<span>' + esc(z.name) + '</span>' +
-        '<span style="color:var(--gr3)">' + mengeTxt(z.menge) + '</span></div>';
+    var zeilen = (g.zutaten || []).map(function(z) {
+      return '<div class="hv-zut-zeile"><span>' + esc(z.name) + '</span><span>' + mengeTxt(z.menge) + '</span></div>';
     }).join('');
+    var zut = zeilen ? '<details class="hv-zut"><summary>Zutaten (' + (g.zutaten || []).length + ')</summary>' + zeilen + '</details>' : '';
     var d = hv.plan.weekStart ? dateFromTag(hv.plan.weekStart, (g.tag || '').slice(0, 2)) : null;
-    var datum = d ? d.toLocaleDateString('de-CH', { weekday: 'short', day: 'numeric', month: 'short' }) : esc(g.tag || '');
+    var datum = d ? d.toLocaleDateString('de-CH', { weekday: 'long', day: 'numeric', month: 'long' }) : esc(g.tag || '');
+    var aus = !!g._cancelled;
+    var kopfStatus = aus ? '<span class="chead-st aus">' + ((g.abend || '').indexOf('Auswärts') >= 0 ? 'auswärts' : 'ausgefallen') + '</span>'
+      : (g._gekocht ? '<span class="chead-st">✓ gekocht</span>' : '');
     return '<div class="card" style="margin:10px">' +
-      '<div class="chead">' + esc(datum) + '</div>' +
-      '<div class="cbody">' +
-        '<div style="font-size:15px;font-weight:700;color:var(--txt)">' + esc(g.abend || '') + bewertungsZusatz(sug.thema, g, !!g._gekocht, hv.plan.planId, gi) + '</div>' +
+      '<div class="chead"><span>' + esc(datum) + '</span>' + kopfStatus + '</div>' +
+      '<div class="cbody"' + (aus ? ' style="opacity:.65"' : '') + '>' +
+        '<div style="font-size:15px;font-weight:700;color:var(--txt);line-height:1.35">' + esc(g.abend || '') + bewertungsZusatz(sug.thema, g, !!g._gekocht, hv.plan.planId, gi) + '</div>' +
         (g._fotoId ? '<div class="foto-box"><img class="foto-img" data-fotoid="' + esc(g._fotoId) + '" src="' + FOTO_LEER + '" alt="Foto von ' + esc(g.abend || 'dem Gericht') + '" onclick="fotoGross(this)"><div class="foto-leer">Das Foto ist auf diesem Gerät noch nicht verfügbar.</div></div>' : '') +
-        (g.mittag_nächster_tag ? '<div style="font-size:12px;color:var(--gr3);margin-top:2px">&#8594; ' +
+        (g.mittag_nächster_tag ? '<div class="hv-reste">&#8594; ' +
            esc(g.mittag_tag || '') + ': ' + esc(g.mittag_nächster_tag) + '</div>' : '') +
-        (zut ? '<div style="margin-top:10px;border-top:.5px solid var(--bdr);padding-top:8px">' + zut + '</div>' : '') +
+        zut +
         '<button class="btn btn-out" onclick="einplanenAusVerlauf(' + gi + ')" ' +
           'style="width:100%;padding:9px;margin-top:10px;font-size:12px">📅 Einplanen</button>' +
       '</div></div>';
   }).join('');
-  if ($('hv-list')) $('hv-list').innerHTML = html ||
-    '<div style="padding:16px;color:var(--gr3);font-size:13px">Keine Gerichte gespeichert.</div>';
+  if ($('hv-list')) $('hv-list').innerHTML = planParameterHtml(hv.plan, eintrag) + (html ||
+    '<div style="padding:16px;color:var(--gr3);font-size:13px">Keine Gerichte gespeichert.</div>');
   try { fotosHydrate($('hv-list')); } catch (e) {}
 }
 
