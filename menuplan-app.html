@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=yes">
-<title>Menüplan v7.10</title>
+<title>Menüplan v7.12</title>
 <meta name="theme-color" content="#5B7C78">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -321,7 +321,7 @@ body.netz-aus .netz-hint{display:block}
 
 <!-- HOME -->
 <div class="scr on" id="sh">
-  <div class="hero"><h1>Menüplan</h1><p id="hsub">v7.10 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
+  <div class="hero"><h1>Menüplan</h1><p id="hsub">v7.12 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
 
   <!-- Active plan card -->
 
@@ -733,10 +733,9 @@ body.netz-aus .netz-hint{display:block}
     <button class="btn btn-red braucht-netz" id="foto-btn" onclick="analyzeEinzelrezept()" disabled style="margin-top:4px">Rezept ableiten</button>
   </div></div>
 
-  <!-- Saved foto recipes -->
+  <!-- Gespeicherte Rezepte stehen in der Rezeptdatenbank (Verlauf -> Rezepte) -->
   <div id="foto-saved-section" style="display:none;margin:10px 10px 0">
-    <div style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--gr3);margin-bottom:8px;padding:0 4px">Gespeicherte Rezepte</div>
-    <div id="foto-saved-list"></div>
+    <button class="btn btn-out" id="foto-zur-datenbank" onclick="openRezeptdatenbank()" style="width:100%;font-size:13px;padding:11px">🗂 Alle gespeicherten Rezepte → Rezeptdatenbank</button>
   </div>
 
   <div id="foto-load" style="display:none;text-align:center;padding:32px">
@@ -1508,7 +1507,9 @@ function belegteTageInfo() {
     var status = auswaerts ? 'x' : ((g._gekocht || tl[iso].entryStatus === 'gekocht') ? 'g' : 'p');
     out[iso] = { titel: auswaerts ? '🍽 Auswärts' : (g.abend || g.name || 'Geplant'),
                  planId: tl[iso].planId || '', thema: pi.thema || '', eingekauft: !!pi.eingekauft,
-                 status: status, fotoId: g._fotoId || '' };
+                 status: status, fotoId: g._fotoId || '',
+                 gi: tl[iso].gerichtIdx,
+                 sterne: auswaerts ? 0 : ((bewertungFuerGericht((tl[iso].sugRef && tl[iso].sugRef.thema) || pi.thema, g) || {}).stars || 0) };
   });
   return out;
 }
@@ -1552,6 +1553,7 @@ function pickerWochen() {
       return { tag: tag, iso: iso, date: d, vergangen: d < heute, heute: +d === +heute,
                titel: bi ? bi.titel : null, planId: bi ? bi.planId : '', thema: bi ? bi.thema : '',
                eingekauft: bi ? bi.eingekauft : false, status: bi ? bi.status : '', fotoId: bi ? bi.fotoId : '',
+               sterne: bi ? bi.sterne : 0, gi: bi ? bi.gi : -1,
                frei: d >= heute && !bi };
     });
     wochen.push({ iso: wiso, tage: tage, hatFrei: tage.some(function(t) { return t.frei; }) });
@@ -1721,7 +1723,7 @@ function initDayPicker() {
         var icon = t.status === 'g' ? KL_SVG.haken : t.status === 'x' ? KL_SVG.aus : KL_SVG.offen;
         html += '<div class="' + kl + ' day-gesperrt belegt"' + attr + ' style="' + tint + '">' +
           '<button class="kl-tap" onclick="kalenderTag(\'' + t.iso + '\')" aria-expanded="' + (offen ? 'true' : 'false') + '">' +
-            icon + '<span class="kl-datum">' + datum + '</span><span class="kl-titel dp-titel">' + esc(t.titel) + '</span>' +
+            icon + '<span class="kl-datum">' + datum + '</span><span class="kl-titel dp-titel">' + esc(t.titel) + (t.sterne ? sterneHtml(t.sterne) : (t.status === 'g' ? bewertenLinkHtml(t.planId || '@aktiv', t.gi) : '')) + '</span>' +
             (t.status === 'p' && t.eingekauft ? KL_SVG.korb : '') +
             (t.fotoId ? '<img class="foto-img foto-thumb" data-fotoid="' + esc(t.fotoId) + '" src="' + FOTO_LEER + '" alt="" style="width:30px;height:30px;min-height:30px;max-height:30px;border-radius:6px">' : '') +
           '</button></div>';
@@ -3726,7 +3728,7 @@ function goSuggest() {
     (prefKüchen ? '. Bevorzugte Küchen: ' + prefKüchen : '') +
     (prefAvoid ? '. Unbedingt vermeiden: ' + prefAvoid : '') +
     (learningProfile ? '. LERNPROFIL: ' + learningProfile : '') +
-    '. Küche variieren.';
+    '. Küche variieren.' + saisonText() + kuerzlichGekochtText();
 
   // Tagesplanung (welche Tage, welcher Zeitrahmen)
   var _dayPlan = getDayPlanText();
@@ -5317,10 +5319,12 @@ function timelineCardDetail(entry) {
     '<button class="btn btn-red" onclick="startCook(' + i + ')" style="margin-top:10px">👨‍🍳 Jetzt kochen</button>' +
     '<div class="btnrow">' +
       '<button class="btn btn-out" onclick="showReplaceGericht(' + i + ')" style="font-size:13px">↺ Austauschen</button>' +
-      ((g._gekocht || entry.entryStatus === 'gekocht') ? '<button class="btn btn-out" onclick="gerichtNichtGekocht(\'@aktiv\',' + i + ')" style="font-size:13px">↩ Nicht gekocht</button>'
+      ((g._gekocht || entry.entryStatus === 'gekocht') ? ''
                   : '<button class="btn btn-out" onclick="showRescheduleGericht(' + i + ')" style="font-size:13px">📅 Verschieben</button>') +
       '<button class="btn btn-out" onclick="cancelGericht(' + i + ')" style="font-size:13px">❌ Fällt aus</button>' +
-      '<button class="btn btn-out" onclick="auswaartsGericht(' + i + ')" style="font-size:13px">🍽 Auswärts</button>' +
+      ((g._gekocht || entry.entryStatus === 'gekocht')
+        ? '<button class="btn btn-out" onclick="gerichtNichtGekocht(\'@aktiv\',' + i + ')" style="font-size:13px">↩ Nicht gekocht</button>'
+        : '<button class="btn btn-out" onclick="gerichtGekochtMarkieren(' + i + ')" style="font-size:13px">✓ Gekocht</button>') +
     '</div>' +
     (g._gekocht ? '<button class="btn btn-out" onclick="showRatingModal(' + i + ')" style="display:flex;align-items:center;justify-content:center;gap:6px"><span style="color:#f59e0b;font-size:16px">&#9733;</span> Bewerten</button>' : '') +
     // Beide Ausgabewege nebeneinander - sie gehoeren inhaltlich zusammen.
@@ -5355,7 +5359,7 @@ function renderTimelineDayCard(entry, isToday, key) {
       '<div style="width:34px;height:34px;border-radius:50%;' + circleStyle + ';display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;text-align:center;line-height:1.1">' + esc(dateLbl.split(' ')[0]) + '<br>' + esc(dateLbl.split(' ')[1]||'') + '</div>' +
       '<div style="flex:1;min-width:0">' +
         (isToday ? '<div style="font-size:10px;font-weight:800;color:var(--red);letter-spacing:.5px;margin-bottom:2px">HEUTE</div>' : '') +
-        '<div style="font-size:14px;font-weight:700;color:var(--txt);white-space:nowrap;overflow:hidden;text-overflow:ellipsis' + (g._cancelled?';text-decoration:line-through;opacity:.6':'') + '">' + esc(g.abend) + '</div>' +
+        '<div style="font-size:14px;font-weight:700;color:var(--txt);white-space:nowrap;overflow:hidden;text-overflow:ellipsis' + (g._cancelled?';text-decoration:line-through;opacity:.6':'') + '">' + esc(g.abend) + bewertungsZusatz(entry && entry.sugRef && entry.sugRef.thema, g, !!g._gekocht, entry && (entry.isActivePlan ? '@aktiv' : entry.planId), entry && entry.gerichtIdx) + '</div>' +
         '<div style="display:flex;gap:8px;align-items:center;margin-top:2px">' + timelineStatusBadge(g, entry && entry.entryStatus) +
           (entry.hasFullRecipe && g.zeit_total ? '<span style="font-size:11px;color:var(--gr3)">&#9200; ' + esc(g.zeit_total) + '</span>' : '') +
         '</div>' +
@@ -5905,7 +5909,7 @@ function showIngOverview(g) {
   var kompAns = (!isFotoRezept && G.sugs && G.sel !== null && G.sugs[G.sel]) ? komponentenAnsicht(G.sugs[G.sel], g) : null;
   var kompBox = komponentenKarteHtml(kompAns);
   var html = '<div id="cing">' + _portInfo + '<div class="badge bv">Vor dem Kochen</div>' +
-    '<div style="font-size:16px;font-weight:700;margin-bottom:4px">' + esc(g.abend) + '</div>' +
+    '<div style="font-size:16px;font-weight:700;margin-bottom:4px">' + esc(g.abend) + (isFotoRezept ? '' : sterneNachTitel(G.sugs && G.sugs[G.sel] && G.sugs[G.sel].thema, g)) + '</div>' +
     (g.mittag_nächster_tag ? '<div style="font-size:13px;color:var(--gr3);margin-bottom:8px">Morgen: ' + esc(g.mittag_nächster_tag) + '</div>' : '') +
     ((g.zeit_aktiv || g.zeit_total) ? '<div style="display:flex;gap:12px;margin-bottom:16px">' +
       (g.zeit_aktiv ? '<span style="font-size:12px;color:var(--gr3)">&#9998; Aktiv: <b style="color:var(--txt2)">' + esc(g.zeit_aktiv) + '</b></span>' : '') +
@@ -6942,6 +6946,24 @@ function openKalender() {
   initDayPicker();     // sofort, damit die Liste ohne Verzoegerung steht
 }
 
+// Vom Dashboard: Kalender oeffnen, den Tag aufklappen und hinscrollen.
+function kalenderOeffneTag(iso) {
+  G_kal.tag = iso;
+  var tl = {};
+  try { tl = buildTimelineDays() || {}; } catch (e) {}
+  if (tl[iso] && tl[iso].isActivePlan) { try { wechselZuPlan(); } catch (e) {} }
+  go('skal');
+  initDayPicker();
+  setTimeout(function() {
+    var row = $('dr-' + iso);
+    if (!row) return;
+    var tbar = document.querySelector('#skal .tbar');
+    var wk = document.querySelector('#day-picker .kl-wk');
+    var oben = (tbar ? tbar.getBoundingClientRect().height : 0) + (wk ? wk.getBoundingClientRect().height : 0) + 6;
+    window.scrollTo({ top: Math.max(0, Math.round(row.getBoundingClientRect().top + (window.scrollY || 0) - oben)), behavior: 'auto' });
+  }, 80);
+}
+
 function kalenderPlanen() {
   if (!cookingDays().length) return;
   go('snew');
@@ -7571,6 +7593,22 @@ function markEinkaufDoneGekocht() {
 // versehentlich durchgeklickt). planToken: planId oder '@aktiv' fuer den aktiven Plan.
 // Bewertungen bleiben unberuehrt. Steht der ganze Verlaufseintrag auf "gekocht", geht er
 // zurueck auf "geplant"; die uebrigen Gerichte behalten ihren Gekocht-Stand.
+// Gericht des aktiven Plans von Hand als gekocht markieren (z. B. ohne den
+// gefuehrten Kochmodus gekocht). Gleicher Weg wie nach dem Kochmodus.
+function gerichtGekochtMarkieren(idx) {
+  var ap = G.activePlan;
+  var g = ap && ap.sug && Array.isArray(ap.sug.gerichte) ? ap.sug.gerichte[idx] : null;
+  if (!g) { logFehler('gekocht', 'Gericht zum Markieren nicht gefunden', String(idx)); return; }
+  if (g._cancelled) return;
+  wechselZuPlan();
+  var vorher = G.cookingGerichtIdx;
+  G.cookingGerichtIdx = idx;
+  try { markEinkaufDoneGekocht(); } finally { G.cookingGerichtIdx = vorher; }
+  updateDashboard();
+  try { renderRez(G.sugs && G.sel !== null ? G.sugs[G.sel] : null); } catch (e) { console.warn('render:', e.message); }
+  showSwapToast('Als gekocht markiert.', '#4F8067');
+}
+
 function gerichtNichtGekocht(planToken, idx) {
   var ap = G.activePlan;
   var aktiv = !!(ap && ap.sug && (planToken === '@aktiv' || ap.planId === planToken));
@@ -9019,7 +9057,7 @@ function updateDashboard() {
     };
   }
   // Diese Woche
-  var weekHtml = gerichte.map(function(g) {
+  var weekHtml = gerichte.map(function(g, gIdx) {
     var info = dayInfo(g);
     var tag = info.tag;
     var isToday = info.isToday;
@@ -9027,9 +9065,10 @@ function updateDashboard() {
     var isCancelled = !!g._cancelled;
     var isPast = info.isPastDay && !isCooked;  // zeitlich vorbei, aber nicht gekocht
     var hasReste = g.mittag_nächster_tag && g.mittag_nächster_tag !== 'Restename' && !isCancelled;
-    return '<div style="display:flex;align-items:flex-start;gap:10px;padding:6px 0;border-bottom:.5px solid #f5f5f5">' +
+    var klick = info.iso ? ' role="button" tabindex="0" aria-label="' + esc((g.abend || '') + ' im Kalender öffnen') + '" onclick="kalenderOeffneTag(\'' + info.iso + '\')" onkeydown="if(event.key===\'Enter\'||event.key===\' \'){event.preventDefault();kalenderOeffneTag(\'' + info.iso + '\')}" style="display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:.5px solid #f5f5f5;cursor:pointer;min-height:36px"' : ' style="display:flex;align-items:flex-start;gap:10px;padding:6px 0;border-bottom:.5px solid #f5f5f5"';
+    return '<div class="dash-tag"' + klick + '>' +
       '<span style="font-size:11px;font-weight:700;min-width:22px;margin-top:2px;color:' + (isToday?'var(--red)':isPast?'#ccc':'var(--gr3)') + '">' + esc(tag) + '</span>' +
-      '<div style="flex:1"><div style="font-size:14px;font-weight:' + (isToday?'700':'500') + ';color:' + (isCooked?'var(--grn)':isCancelled?'#bbb':isPast?'#bbb':'var(--txt)') + ';' + ((isCooked||isCancelled)?'text-decoration:line-through':'') + '">' + (isCooked?'✓ ':isCancelled?'':'') + esc(g.abend||'') + '</div>' +
+      '<div style="flex:1"><div style="font-size:14px;font-weight:' + (isToday?'700':'500') + ';color:' + (isCooked?'var(--grn)':isCancelled?'#bbb':isPast?'#bbb':'var(--txt)') + ';' + ((isCooked||isCancelled)?'text-decoration:line-through':'') + '">' + (isCooked?'✓ ':isCancelled?'':'') + esc(g.abend||'') + bewertungsZusatz(plan.sug.thema, g, isCooked, '@aktiv', gIdx) + '</div>' +
       (isPast && !isCooked && !isCancelled ? '<div style="font-size:10px;color:#c62828">nicht gekocht</div>' : '') +
       (hasReste && !isPast ? '<div style="font-size:11px;color:var(--gr3)">↳ ' + esc(g.mittag_nächster_tag) + '</div>' : '') + '</div></div>';
   }).join('');
@@ -9221,6 +9260,7 @@ function submitRating() {
     saveRatingToGH(pentry);
     G_rating.pastDish = null;
     $('rating-modal').style.display='none'; go(G_rating.returnScreen || 'sw');
+    nachBewertungAktualisieren();
     setTimeout(function(){var msg=G_rating.stars>=4?'Super! Bewertung gespeichert.':'Bewertung gespeichert.';showSt('ist',msg,'ok');setTimeout(function(){if($('ist'))$('ist').style.display='none';},3000);},300);
     return;
   }
@@ -9259,6 +9299,7 @@ function submitRating() {
     // Eine Planbewertung vergibt man ausdruecklich ueber "★ Bewerten" im Verlauf.
   }
   $('rating-modal').style.display='none'; go(G_rating.returnScreen || 'sw');
+  nachBewertungAktualisieren();
   setTimeout(function(){var msg=G_rating.stars>=4?'Super! Bewertung gespeichert.':'Bewertung gespeichert.';showSt('ist',msg,'ok');setTimeout(function(){if($('ist'))$('ist').style.display='none';},3000);},300);
 }
 // Kurzer Hinweis ohne Rueckgaengig, fuer abgelehnte Aktionen.
@@ -9317,6 +9358,7 @@ function statusBadge(status) {
 
 // ─── HISTORY ───────────────────────────────────────────────
 function openHistory() { go('sh2'); loadHistory(); hwtab('plans'); }
+function openRezeptdatenbank() { go('sh2'); loadHistory(); hwtab('recipes'); }
 function syncHistory() { loadHistory(); loadHistoryRecipes(); }
 function hwtab(t) {
   $('htab-plans').classList.toggle('on',t==='plans'); $('htab-recipes').classList.toggle('on',t==='recipes');
@@ -9339,7 +9381,7 @@ function renderHistoryList(history) {
   var html='';
   for(var i=0;i<history.length;i++){
     var e=history[i]; var status=e.status||'geplant'; var stars=e.stars?'<span style="color:#f59e0b">'+('★'.repeat(e.stars))+'</span>':'';
-    var dishes=(e.gerichte||[]).map(function(g){return '<div style="display:flex;gap:6px;padding:2px 0"><span style="font-size:11px;font-weight:700;color:var(--red);min-width:20px">'+esc((g.tag||'').slice(0,2))+'</span><span style="font-size:13px;color:var(--txt2)">'+esc(g.abend||'')+'</span></div>';}).join('');
+    var dishes=(e.gerichte||[]).map(function(g){return '<div style="display:flex;gap:6px;padding:2px 0"><span style="font-size:11px;font-weight:700;color:var(--red);min-width:20px">'+esc((g.tag||'').slice(0,2))+'</span><span style="font-size:13px;color:var(--txt2)">'+esc(g.abend||'')+sterneNachTitel(e.thema,g)+'</span></div>';}).join('');
     var isLoved = (e.stars || 0) >= 4;
     html+='<div style="background:#fff;border-radius:var(--rlg);border:.5px solid var(--bdr);margin-bottom:8px;overflow:hidden">'
       +'<div style="padding:10px 14px;border-bottom:.5px solid var(--gr)">'
@@ -9409,7 +9451,7 @@ function renderHistoryView() {
     return '<div class="card" style="margin:10px">' +
       '<div class="chead">' + esc(datum) + '</div>' +
       '<div class="cbody">' +
-        '<div style="font-size:15px;font-weight:700;color:var(--txt)">' + esc(g.abend || '') + '</div>' +
+        '<div style="font-size:15px;font-weight:700;color:var(--txt)">' + esc(g.abend || '') + bewertungsZusatz(sug.thema, g, !!g._gekocht, hv.plan.planId, gi) + '</div>' +
         (g._fotoId ? '<div class="foto-box"><img class="foto-img" data-fotoid="' + esc(g._fotoId) + '" src="' + FOTO_LEER + '" alt="Foto von ' + esc(g.abend || 'dem Gericht') + '" onclick="fotoGross(this)"><div class="foto-leer">Das Foto ist auf diesem Gerät noch nicht verfügbar.</div></div>' : '') +
         (g.mittag_nächster_tag ? '<div style="font-size:12px;color:var(--gr3);margin-top:2px">&#8594; ' +
            esc(g.mittag_tag || '') + ': ' + esc(g.mittag_nächster_tag) + '</div>' : '') +
@@ -9607,27 +9649,288 @@ function resetHistoryStatus(i) {
     updateDashboard();
   }
 }
+// ─── STERNE HINTER DEM MENUETITEL ───────────────────────────
+// Bewertungen liegen in local_ratings (gericht, thema, tag, stars). Ein Gericht
+// gilt als bewertet, wenn Name, Plan-Thema und Wochentag zusammenpassen. Die
+// Liste wird nur neu gelesen, wenn sich der gespeicherte Text aendert.
+var G_ratingCache = { raw: null, liste: [] };
+function bewertungsListe() {
+  var raw = null;
+  try { raw = localStorage.getItem(userKey('local_ratings')); } catch (e) {}
+  if (raw === G_ratingCache.raw) return G_ratingCache.liste;
+  var l = [];
+  try { l = JSON.parse(raw || '[]') || []; } catch (e) { l = []; }
+  G_ratingCache = { raw: raw, liste: l };
+  return l;
+}
+function bewertungFuerGericht(thema, g) {
+  if (!g || !g.abend) return null;
+  var l = bewertungsListe();
+  for (var k = 0; k < l.length; k++) {          // neueste zuerst (unshift)
+    var r = l[k];
+    if (r && r.gericht === g.abend && (r.thema || '') === (thema || '') && (!r.tag || !g.tag || r.tag === g.tag)) return r;
+  }
+  return null;
+}
+function sterneHtml(n) {
+  n = Math.max(0, Math.min(5, parseInt(n, 10) || 0));
+  if (!n) return '';
+  return ' <span class="titel-sterne" role="img" aria-label="' + n + (n === 1 ? ' Stern' : ' Sterne') + '" style="display:inline-block;color:#f59e0b;font-size:.85em;font-weight:400;white-space:nowrap;text-decoration:none">' + '&#9733;'.repeat(n) + '</span>';
+}
+function sterneNachTitel(thema, g) {
+  var b = bewertungFuerGericht(thema, g);
+  return sterneHtml(b && b.stars);
+}
+// "(bewerten)" hinter dem Titel eines gekochten, noch unbewerteten Gerichts.
+// planId: ID des Plans oder '@aktiv' fuer den aktiven Plan; idx: Position im Plan.
+function bewertenLinkHtml(planId, idx) {
+  if (planId === undefined || planId === null || planId === '' || idx === undefined || idx < 0) return '';
+  var a = "'" + String(planId).replace(/['\\]/g, '') + "'," + idx;
+  return ' <span class="titel-bewerten" role="button" tabindex="0" aria-label="Gericht bewerten" onclick="event.stopPropagation();bewerteGericht(' + a + ')" ' +
+    'onkeydown="if(event.key===\'Enter\'||event.key===\' \'){event.preventDefault();event.stopPropagation();bewerteGericht(' + a + ')}" ' +
+    'style="display:inline-block;color:var(--red);font-size:.8em;font-weight:500;white-space:nowrap;text-decoration:none;cursor:pointer;padding:2px 0">(bewerten)</span>';
+}
+// Sterne, wenn bewertet - sonst "(bewerten)", wenn das Gericht gekocht ist.
+function bewertungsZusatz(thema, g, gekocht, planId, idx) {
+  var b = bewertungFuerGericht(thema, g);
+  if (b && b.stars) return sterneHtml(b.stars);
+  return gekocht && !(g && g._cancelled) ? bewertenLinkHtml(planId, idx) : '';
+}
+function bewerteGericht(planId, idx) {
+  var ap = G.activePlan;
+  var pid = planId === '@aktiv' ? (ap && ap.planId) : planId;
+  var inHist = !!pid && collectHistoryPlans().some(function(h) { return h && h.planId === pid; });
+  if (inHist) return showPastDishRating(pid, idx);
+  if (ap && ap.sug && (planId === '@aktiv' || ap.planId === planId)) { wechselZuPlan(); return showRatingModal(idx); }
+  logFehler('bewertung', 'Gericht zum Bewerten nicht gefunden', String(planId) + '/' + idx);
+}
+// Nach einer Bewertung: alle Ansichten mit Sternen nachziehen.
+function nachBewertungAktualisieren() {
+  try { updateDashboard(); } catch (e) {}
+  try { kalenderAktualisieren(); } catch (e) {}
+  try { if ($('hrecipes-list') && $('htab-recipes-content') && $('htab-recipes-content').style.display !== 'none') loadHistoryRecipes(); } catch (e) {}
+}
+
+// ─── REZEPTDATENBANK ────────────────────────────────────────
+// Verlauf -> Rezepte: Einzelrezepte (Foto/Text) UND alle gekochten Gerichte aus
+// den Wochenplaenen, mit Foto und Bewertung. Sortierbar nach Datum, Bewertung,
+// Name (Antippen der aktiven Sortierung kehrt die Richtung um), durchsuchbar,
+// 10 Eintraege pro Seite.
+var RDB_PRO_SEITE = 10;
+var G_rdb = { sort: 'datum', dir: 'desc', filter: 'alle', suche: '', seite: 0 };
+
+function rdbIsoVonSaved(r) {
+  if (r && /^\d{4}-\d{2}-\d{2}/.test(r.date || '')) return r.date.slice(0, 10);
+  var m = /^(\d{1,2})\.(\d{1,2})\.(\d{4})/.exec((r && r.saved) || '');
+  return m ? m[3] + '-' + ('0' + m[2]).slice(-2) + '-' + ('0' + m[1]).slice(-2) : '';
+}
+
+// Alle gekochten Gerichte aus aktivem Plan und Verlauf. Gekocht = Gericht traegt
+// _gekocht, oder (Alt-Eintraege) der Verlaufseintrag steht auf "gekocht".
+// Ausgefallene und Auswaerts-Abende zaehlen nicht.
+function gekochteGerichteListe() {
+  var hist = collectHistoryPlans(), out = [], gesehen = {};
+  function bewertung(thema, g) { return bewertungFuerGericht(thema, g); }
+  function plan(planData, entryStatus, fallbackIso, inHist, key) {
+    var sug = planData && (planData.sug || (planData.sugs && planData.sugs[planData.sel != null ? planData.sel : 0]));
+    if (!sug || !Array.isArray(sug.gerichte)) return;
+    var ws = planData.weekStart;
+    if (!ws && fallbackIso) { var fb = new Date(fallbackIso + 'T00:00:00'); if (!isNaN(fb.getTime())) ws = isoDateLocal(mondayOf(fb)); }
+    sug.gerichte.forEach(function(g, gi) {
+      if (!g || g._cancelled || !g.abend || String(g.abend).indexOf('Auswärts') >= 0) return;
+      if (!g._gekocht && entryStatus !== 'gekocht') return;
+      var iso = '';
+      if (g._gekocht) { var dk = new Date(g._gekocht); if (!isNaN(dk.getTime())) iso = isoDateLocal(dk); }
+      if (!iso && ws) { var dp = dateFromTag(ws, (g.tag || '').slice(0, 2)); if (dp) iso = isoDateLocal(dp); }
+      if (!iso) iso = (fallbackIso || '').slice(0, 10);
+      var b = bewertung(sug.thema, g);
+      out.push({ art: 'gericht', name: String(g.abend), iso: iso, stars: b && b.stars ? b.stars : 0,
+                 thema: sug.thema || '', planId: planData.planId || '', gi: gi, key: key,
+                 fotoId: g._fotoId || '', inHist: inHist, g: g });
+    });
+  }
+  var aktivId = G.activePlan && G.activePlan.planId;
+  var inHistIds = {};
+  hist.forEach(function(e) { if (e && e.planId) inHistIds[e.planId] = true; });
+  if (aktivId) { gesehen[aktivId] = true; plan(G.activePlan, null, G.activePlan.date, !!inHistIds[aktivId], 'a'); }
+  hist.forEach(function(e, hi) {
+    if (!e || !e.plan) return;
+    if (e.planId) { if (gesehen[e.planId]) return; gesehen[e.planId] = true; }
+    plan(e.plan, e.status, e.date, !!e.planId, 'h' + hi);
+  });
+  return out;
+}
+
+function rdbEintraege() {
+  var saved = [];
+  try { saved = JSON.parse(localStorage.getItem(userKey('foto_rezepte')) || '[]'); } catch (e) {}
+  var alle = [];
+  saved.forEach(function(r, i) {
+    alle.push({ art: 'rezept', name: String(r.name || 'Rezept'), iso: rdbIsoVonSaved(r), stars: r.stars || 0, idx: i, r: r });
+  });
+  var gekocht = [];
+  try { gekocht = gekochteGerichteListe(); } catch (e) { logFehler('rezeptdb', 'Gekochte Gerichte nicht lesbar: ' + (e && e.message), e && e.stack); }
+  return { saved: saved, alle: alle.concat(gekocht), nRezepte: alle.length, nGerichte: gekocht.length };
+}
+
+function rdbSortiere(liste) {
+  var f = G_rdb.dir === 'asc' ? 1 : -1;
+  var coll = function(a, b) { return a.name.localeCompare(b.name, 'de', { sensitivity: 'base' }); };
+  liste.sort(function(a, b) {
+    var c = 0;
+    if (G_rdb.sort === 'name') c = coll(a, b) * (G_rdb.dir === 'asc' ? 1 : -1);
+    else if (G_rdb.sort === 'bewertung') {
+      // unbewertet steht in beiden Richtungen am Ende
+      if (!a.stars && !b.stars) c = 0; else if (!a.stars) return 1; else if (!b.stars) return -1;
+      else c = (a.stars - b.stars) * f;
+    } else c = (a.iso < b.iso ? -1 : a.iso > b.iso ? 1 : 0) * f;
+    if (c) return c;
+    // Gleichstand: neueste zuerst, dann nach Name
+    if (a.iso !== b.iso) return a.iso < b.iso ? 1 : -1;
+    return coll(a, b);
+  });
+  return liste;
+}
+
+function rdbSetSort(k) {
+  if (G_rdb.sort === k) G_rdb.dir = G_rdb.dir === 'asc' ? 'desc' : 'asc';
+  else { G_rdb.sort = k; G_rdb.dir = (k === 'name') ? 'asc' : 'desc'; }
+  G_rdb.seite = 0; loadHistoryRecipes();
+}
+function rdbSetFilter(f) { G_rdb.filter = f; G_rdb.seite = 0; loadHistoryRecipes(); }
+function rdbSuche(v) { G_rdb.suche = v || ''; G_rdb.seite = 0; rdbRender(); }
+function rdbSeite(n) {
+  G_rdb.seite = n; rdbRender();
+  var c = $('rdb-ctrl'); if (c && c.scrollIntoView) c.scrollIntoView({ block: 'start' });
+}
+
+function rdbSterne(n) { return n ? '<span style="color:#f59e0b;font-size:13px">' + '&#9733;'.repeat(n) + '</span>' : ''; }
+function rdbDatumTxt(iso) {
+  if (!iso) return '';
+  var d = new Date(iso + 'T00:00:00');
+  return isNaN(d.getTime()) ? '' : d.toLocaleDateString('de-CH', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' });
+}
+
+// Woher kommt der Eintrag? Wochenplan / Foto / Text. Aeltere Einzelrezepte wurden
+// ohne Quelle gespeichert und heissen deshalb schlicht "Einzelrezept".
+function rdbQuelleHtml(q) {
+  var t = q === 'plan' ? '📅 Wochenplan' : q === 'foto' ? '📷 Foto' : q === 'text' ? '✏️ Text' : '🍽 Einzelrezept';
+  return '<span class="rdb-quelle" data-quelle="' + esc(q || 'einzel') + '" style="font-weight:700;color:var(--txt2)">' + t + '</span>';
+}
+
+function rdbKarteRezept(e) {
+  var r = e.r, i = e.idx;
+  var zCount = (r.zutaten || []).length;
+  return '<div class="rdb-karte" style="background:#fff;border-radius:var(--rlg);border:.5px solid var(--bdr);margin-bottom:8px;overflow:hidden">'
+    + '<div style="padding:12px 14px;border-bottom:.5px solid var(--gr);display:flex;align-items:center;gap:10px">'
+      + '<div style="width:36px;height:36px;border-radius:8px;background:var(--rl);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0">🍽</div>'
+      + '<div style="flex:1;min-width:0">'
+        + '<div style="display:flex;align-items:center;gap:6px"><div style="font-size:15px;font-weight:700;color:var(--txt);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + esc(r.name || 'Rezept') + '</div>' + (r.stars ? rdbSterne(r.stars) : (r.status === 'gekocht' ? '<span class="titel-bewerten" role="button" tabindex="0" onclick="showFotoRating(' + i + ')" style="color:var(--red);font-size:12px;white-space:nowrap;cursor:pointer;flex-shrink:0">(bewerten)</span>' : '')) + '</div>'
+        + '<div style="font-size:11px;color:var(--gr3);margin-top:2px">' + rdbQuelleHtml(r.quelle) + ' · ' + esc(r.saved || r.date || '') + ' · ' + personenLabel(r.portionen || 2) + (r.zeit_total ? ' · ' + esc(r.zeit_total) : '') + ' · ' + zCount + (zCount === 1 ? ' Zutat' : ' Zutaten') + '</div>'
+      + '</div>'
+    + '</div>'
+    + '<div style="padding:8px 14px;display:flex;flex-direction:column;gap:6px">'
+      + '<div style="width:100%;margin-bottom:4px">' + statusBadge(r.status||'gespeichert') + '</div>'
+      + '<div style="display:flex;gap:6px"><button class="btn btn-red" onclick="openHistoryRecipe(' + i + ')" style="flex:1;padding:9px;font-size:12px">Öffnen</button>' + (r.status === 'gekocht' ? '<button class="btn btn-out" onclick="showFotoRating(' + i + ')" style="flex:1;padding:9px;font-size:12px">★ Bewerten</button>' : '') + '</div>'
+      + '<div style="display:flex;gap:6px"><button class="btn btn-out braucht-netz" onclick="importHistoryRecipeToBring(' + i + ')" style="flex:1;padding:9px;font-size:12px;white-space:nowrap">In Bring!</button>' + (r.status !== 'gekocht' ? '<button class="btn btn-out" onclick="markFotoRezeptGekocht(' + i + ')" style="flex:1;padding:9px;font-size:12px;white-space:nowrap">🍽 Gekocht</button>' : '') + ((r.status==='einkauf'||r.status==='gekocht') ? '<button class="btn btn-out" aria-label="Status zurücksetzen" onclick="resetFotoRezeptStatus(' + i + ')" style="flex:1;padding:9px;font-size:12px;white-space:nowrap" title="Status zurücksetzen">↩ ' + (r.status === 'gekocht' ? 'Nicht gekocht' : 'Nicht eingekauft') + '</button>' : '') + '<button aria-label="Rezept löschen" title="Rezept löschen" onclick="deleteHistoryRecipe(' + i + ')" style="background:none;border:.5px solid var(--bdr);border-radius:8px;padding:9px 12px;color:var(--gr3);cursor:pointer;font-size:16px">🗑</button></div>'
+    + '</div></div>';
+}
+
+function rdbKarteGericht(e, k) {
+  var vorne = e.fotoId
+    ? '<img class="foto-img foto-thumb" data-fotoid="' + esc(e.fotoId) + '" src="' + FOTO_LEER + '" alt="Foto von ' + esc(e.name) + '" onclick="fotoGross(this)" style="width:56px;height:56px;min-height:56px;max-height:56px;border-radius:10px">'
+    : '<div style="width:56px;height:56px;border-radius:10px;background:var(--rl);display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0">🍽</div>';
+  var dat = rdbDatumTxt(e.iso);
+  return '<div class="rdb-karte" style="background:#fff;border-radius:var(--rlg);border:.5px solid var(--bdr);margin-bottom:8px;overflow:hidden">'
+    + '<div style="padding:12px 14px;display:flex;align-items:center;gap:12px">' + vorne
+      + '<div style="flex:1;min-width:0">'
+        + '<div style="display:flex;align-items:center;gap:6px"><div style="font-size:15px;font-weight:700;color:var(--txt);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + esc(e.name) + '</div>' + (e.stars ? rdbSterne(e.stars) : (e.inHist ? '<span class="titel-bewerten" role="button" tabindex="0" onclick="rdbBewerten(' + k + ')" style="color:var(--red);font-size:12px;white-space:nowrap;cursor:pointer;flex-shrink:0">(bewerten)</span>' : '')) + '</div>'
+        + '<div style="font-size:11px;color:var(--gr3);margin-top:3px">' + rdbQuelleHtml('plan') + ' · Gekocht' + (dat ? ' · ' + esc(dat) : '') + (e.thema ? ' · ' + esc(e.thema) : '') + '</div>'
+      + '</div></div>'
+    + '<div style="padding:0 14px 12px;display:flex;gap:6px">'
+      + (e.inHist ? '<button class="btn btn-red" onclick="rdbAnsehen(' + k + ')" style="flex:1;padding:9px;font-size:12px">Ansehen</button>' : '')
+      + (e.inHist ? '<button class="btn btn-out" onclick="rdbBewerten(' + k + ')" style="flex:1;padding:9px;font-size:12px">★ Bewerten</button>' : '')
+      + '<button class="btn btn-out" aria-label="Gericht einplanen" onclick="rdbEinplanen(' + k + ')" style="flex:1;padding:9px;font-size:12px">📅 Einplanen</button>'
+    + '</div></div>';
+}
+
+function rdbAnsehen(k) {
+  var e = (window._rdbListe || [])[k]; if (!e) return;
+  var h = window._history;
+  var idx = -1;
+  if (h) for (var i = 0; i < h.length; i++) if (h[i] && h[i].planId === e.planId) { idx = i; break; }
+  if (idx < 0) {                       // Verlauf noch nicht geladen: lokalen Stand verwenden
+    h = collectHistoryPlans(); window._history = h;
+    for (var j = 0; j < h.length; j++) if (h[j] && h[j].planId === e.planId) { idx = j; break; }
+  }
+  if (idx >= 0) viewHistoryEntry(idx);
+}
+function rdbBewerten(k) {
+  var e = (window._rdbListe || [])[k]; if (!e) return;
+  showPastDishRating(e.planId, e.gi);
+}
+function rdbEinplanen(k) {
+  var e = (window._rdbListe || [])[k]; if (!e) return;
+  openEinplanen(JSON.parse(JSON.stringify(e.g)));
+}
+
+function rdbRender() {
+  var box = $('rdb-items'), pg = $('rdb-pager'), info = $('rdb-info');
+  if (!box) return;
+  var daten = window._rdbDaten || { alle: [] };
+  var q = (G_rdb.suche || '').trim().toLowerCase();
+  var liste = daten.alle.filter(function(e) {
+    if (G_rdb.filter === 'gerichte' && e.art !== 'gericht') return false;
+    if (G_rdb.filter === 'rezepte' && e.art !== 'rezept') return false;
+    return !q || e.name.toLowerCase().indexOf(q) >= 0 || (e.thema || '').toLowerCase().indexOf(q) >= 0;
+  });
+  rdbSortiere(liste);
+  var seiten = Math.max(1, Math.ceil(liste.length / RDB_PRO_SEITE));
+  if (G_rdb.seite >= seiten) G_rdb.seite = seiten - 1;
+  if (G_rdb.seite < 0) G_rdb.seite = 0;
+  var start = G_rdb.seite * RDB_PRO_SEITE;
+  var teil = liste.slice(start, start + RDB_PRO_SEITE);
+  window._rdbListe = teil;
+  if (info) info.textContent = liste.length + (liste.length === 1 ? ' Eintrag' : ' Einträge') + (liste.length > RDB_PRO_SEITE ? ' · ' + (start + 1) + '–' + (start + teil.length) : '');
+  box.innerHTML = teil.length
+    ? teil.map(function(e, k) { return e.art === 'rezept' ? rdbKarteRezept(e) : rdbKarteGericht(e, k); }).join('')
+    : '<div style="text-align:center;padding:30px 24px;color:var(--gr3);font-size:13px">' + (q ? 'Nichts gefunden für «' + esc(G_rdb.suche) + '».' : 'Keine Einträge in dieser Ansicht.') + '</div>';
+  if (pg) {
+    pg.innerHTML = seiten > 1
+      ? '<div style="display:flex;align-items:center;justify-content:space-between;gap:8px;padding:6px 0 14px">'
+        + '<button class="btn btn-out" id="rdb-zurueck" onclick="rdbSeite(' + (G_rdb.seite - 1) + ')" ' + (G_rdb.seite === 0 ? 'disabled' : '') + ' style="width:auto;padding:9px 14px;font-size:13px">‹ Zurück</button>'
+        + '<span id="rdb-seite" style="font-size:12px;color:var(--gr3)">Seite ' + (G_rdb.seite + 1) + ' von ' + seiten + '</span>'
+        + '<button class="btn btn-out" id="rdb-weiter" onclick="rdbSeite(' + (G_rdb.seite + 1) + ')" ' + (G_rdb.seite >= seiten - 1 ? 'disabled' : '') + ' style="width:auto;padding:9px 14px;font-size:13px">Weiter ›</button></div>'
+      : '';
+  }
+  try { fotosHydrate(box); } catch (e) {}
+}
+
 function loadHistoryRecipes() {
-  var saved=JSON.parse(localStorage.getItem(userKey('foto_rezepte'))||'[]'); var el=$('hrecipes-list'); if(!el)return;
-  if(!saved.length){el.innerHTML='<div style="text-align:center;padding:40px 24px;color:var(--gr3);font-size:13px">Noch keine gespeicherten Rezepte.<br><span style="font-size:12px;opacity:.8">Hier erscheinen Rezepte, die über 📷 Einzelrezept erstellt wurden. Menüpläne findest du im Tab "Menüpläne".</span></div>';return;}
-  var html=saved.map(function(r,i){
-    var zCount=(r.zutaten||[]).length; var sCount=(r.schritte||[]).length;
-    return '<div style="background:#fff;border-radius:var(--rlg);border:.5px solid var(--bdr);margin-bottom:8px;overflow:hidden">'
-      +'<div style="padding:12px 14px;border-bottom:.5px solid var(--gr);display:flex;align-items:center;gap:10px">'
-        +'<div style="width:36px;height:36px;border-radius:8px;background:var(--rl);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0">🍽</div>'
-        +'<div style="flex:1;min-width:0">'
-          +'<div style="display:flex;align-items:center;gap:6px"><div style="font-size:15px;font-weight:700;color:var(--txt);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+esc(r.name||'Rezept')+'</div>'+(r.stars?'<span style="color:#f59e0b;font-size:13px">'+('&#9733;'.repeat(r.stars))+'</span>':'')+'</div>'
-          +'<div style="font-size:11px;color:var(--gr3);margin-top:2px">'+esc(r.saved||r.date||'')+' · '+personenLabel(r.portionen||2)+(r.zeit_total?' · '+esc(r.zeit_total):'')+' · '+zCount+(zCount === 1 ? ' Zutat' : ' Zutaten')+'</div>'
-        +'</div>'
-      +'</div>'
-      +'<div style="padding:8px 14px;display:flex;flex-direction:column;gap:6px">'
-        +'<div style="width:100%;margin-bottom:4px">'+statusBadge(r.status||'gespeichert')+'</div>'
-        +'<div style="display:flex;gap:6px"><button class="btn btn-red" onclick="openHistoryRecipe('+i+')" style="flex:1;padding:9px;font-size:12px">Öffnen</button>'+(r.status==='gekocht'?'<button class="btn btn-out" onclick="showFotoRating('+i+')" style="flex:1;padding:9px;font-size:12px">★ Bewerten</button>':'')+'</div>'
-        +'<div style="display:flex;gap:6px"><button class="btn btn-out braucht-netz" onclick="importHistoryRecipeToBring('+i+')" style="flex:1;padding:9px;font-size:12px">In Bring!</button>'+(r.status!=='gekocht'?'<button class="btn btn-out" onclick="markFotoRezeptGekocht('+i+')" style="flex:1;padding:9px;font-size:11px">🍽 Gekocht</button>':'')+((r.status==='einkauf'||r.status==='gekocht')?'<button class="btn btn-out" aria-label="Status zurücksetzen" onclick="resetFotoRezeptStatus('+i+')" style="padding:9px;font-size:12px" title="Status zurücksetzen">✕</button>':'')+'<button aria-label="Rezept löschen" onclick="deleteHistoryRecipe('+i+')" style="background:none;border:.5px solid var(--bdr);border-radius:8px;padding:9px 12px;color:var(--gr3);cursor:pointer;font-size:16px">✕</button></div>'
-      +'</div>'
-    +'</div>';
-  }).join('');
-  el.innerHTML=html; window._historyRecipes=saved;
+  var el = $('hrecipes-list'); if (!el) return;
+  var d = rdbEintraege();
+  window._rdbDaten = d; window._historyRecipes = d.saved;
+  if (!d.alle.length) {
+    el.innerHTML = '<div style="text-align:center;padding:40px 24px;color:var(--gr3);font-size:13px">Noch keine Rezepte.<br><span style="font-size:12px;opacity:.8">Hier erscheinen gekochte Gerichte aus deinen Plänen (mit Foto und Bewertung) und Rezepte, die über 📷 Einzelrezept erstellt wurden. Menüpläne findest du im Tab "Menüpläne".</span></div>';
+    return;
+  }
+  var pfeil = G_rdb.dir === 'asc' ? ' ↑' : ' ↓';
+  var sortChip = function(k, l) {
+    var on = G_rdb.sort === k;
+    return '<button class="chip' + (on ? ' on' : '') + '" data-sort="' + k + '" aria-pressed="' + on + '" onclick="rdbSetSort(\'' + k + '\')">' + l + (on ? pfeil : '') + '</button>';
+  };
+  var filterChip = function(f, l, n) {
+    var on = G_rdb.filter === f;
+    return '<button class="chip' + (on ? ' on' : '') + '" data-filter="' + f + '" aria-pressed="' + on + '" onclick="rdbSetFilter(\'' + f + '\')">' + l + ' (' + n + ')</button>';
+  };
+  el.innerHTML =
+    '<div id="rdb-ctrl" style="margin-bottom:10px">'
+    + '<input type="search" id="rdb-suche" placeholder="Gericht suchen …" value="' + esc(G_rdb.suche) + '" oninput="rdbSuche(this.value)" aria-label="Rezepte durchsuchen" style="width:100%;box-sizing:border-box;padding:10px 12px;border:.5px solid var(--bdr);border-radius:var(--r);font-size:14px;font-family:inherit;margin-bottom:8px">'
+    + '<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px">' + filterChip('alle', 'Alle', d.alle.length) + filterChip('gerichte', 'Gekochte Gerichte', d.nGerichte) + filterChip('rezepte', 'Einzelrezepte', d.nRezepte) + '</div>'
+    + '<div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center"><span style="font-size:11px;color:var(--gr3)">Sortieren:</span>' + sortChip('datum', 'Datum') + sortChip('bewertung', 'Bewertung') + sortChip('name', 'Name') + '</div>'
+    + '<div id="rdb-info" style="font-size:11px;color:var(--gr3);margin-top:8px"></div></div>'
+    + '<div id="rdb-items"></div><div id="rdb-pager"></div>';
+  rdbRender();
 }
 function openHistoryRecipe(i) {
   var saved=JSON.parse(localStorage.getItem(userKey('foto_rezepte'))||'[]'); var r=saved[i]; if(!r)return;
@@ -9896,11 +10199,11 @@ function migriereFotoStatus(saved) {
 }
 
 function loadSavedFotoRezepte(){
+  // Die Liste selbst gibt es nur noch in der Rezeptdatenbank; hier bleibt der Link
+  // dorthin, solange Rezepte vorhanden sind.
   var saved=migriereFotoStatus(JSON.parse(localStorage.getItem(userKey('foto_rezepte'))||'[]'));var sec=$('foto-saved-section');
-  if(!saved.length){if(sec)sec.style.display='none';return;}
-  if(sec)sec.style.display='block';
-  var html=saved.map(function(r,i){return '<div style="background:#fff;border-radius:var(--r);border:.5px solid var(--bdr);padding:10px 14px;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between;gap:8px"><div style="flex:1;min-width:0"><div style="font-size:14px;font-weight:600;color:var(--txt);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+esc(r.name||'Rezept')+'</div><div style="font-size:11px;color:var(--gr3);margin-top:2px">'+esc(r.saved||r.date||'')+' · '+personenLabel(r.portionen||2)+(r.zeit_total?' · '+esc(r.zeit_total):'')+'</div></div><div style="display:flex;gap:6px;flex-shrink:0"><button aria-label="Rezept einplanen" onclick="openEinplanen(window._savedFotoRezepte['+i+'])" class="btn btn-out" style="width:auto;padding:7px 10px;font-size:12px" title="Einplanen">📅</button><button onclick="loadSavedFotoRezeptDetail('+i+')" class="btn btn-out" style="width:auto;padding:7px 12px;font-size:12px">Öffnen</button><button aria-label="Gespeichertes Rezept löschen" onclick="deleteSavedFotoRezept('+i+')" style="background:none;border:none;color:var(--gr3);font-size:18px;cursor:pointer;padding:0 4px">✕</button></div></div>';}).join('');
-  if($('foto-saved-list'))$('foto-saved-list').innerHTML=html; window._savedFotoRezepte=saved;
+  if(sec)sec.style.display=saved.length?'block':'none';
+  window._savedFotoRezepte=saved;
 }
 function loadSavedFotoRezeptDetail(i){
   var saved=JSON.parse(localStorage.getItem(userKey('foto_rezepte'))||'[]');var r=saved[i];if(!r)return;
@@ -9952,6 +10255,7 @@ function verarbeiteEinzelrezeptAntwort(raw) {
   var rezept=parseJSON(raw);
   var fotoValidationError = validateFotoRecipe(rezept);
   if (fotoValidationError) throw new Error(fotoValidationError);
+  rezept.quelle = (G_fotoModus === 'text') ? 'text' : 'foto';
   renderFotoRezept(rezept);
 }
 
@@ -10189,7 +10493,7 @@ function fotoRezeptId(r){
 
 function saveFotoRezeptSilent(r,status){
   var _fid=fotoRezeptId(r);
-  var entry={_id:_fid,id:Date.now(),date:isoDateLocal(new Date()),saved:new Date().toLocaleDateString('de-CH'),name:r.name||'Foto-Rezept',beschreibung:r.beschreibung||'',zeit_aktiv:r.zeit_aktiv||'',zeit_total:r.zeit_total||'',portionen:G_foto.portionen,zutaten:r.zutaten||[],schritte:r.schritte||[],tipp:r.tipp||'',status:status||r.status||'gespeichert',stars:r.stars,ratingFeedback:r.ratingFeedback};
+  var entry={_id:_fid,id:Date.now(),date:isoDateLocal(new Date()),saved:new Date().toLocaleDateString('de-CH'),name:r.name||'Foto-Rezept',beschreibung:r.beschreibung||'',zeit_aktiv:r.zeit_aktiv||'',zeit_total:r.zeit_total||'',portionen:G_foto.portionen,zutaten:r.zutaten||[],schritte:r.schritte||[],tipp:r.tipp||'',quelle:r.quelle||undefined,utensilien:(alsListe(r.utensilien).length?alsListe(r.utensilien):undefined),status:status||r.status||'gespeichert',stars:r.stars,ratingFeedback:r.ratingFeedback};
   var saved=JSON.parse(localStorage.getItem(userKey('foto_rezepte'))||'[]');
   // Primaer ueber die stabile _id zuordnen; Namensvergleich nur noch als
   // Fallback fuer Alt-Eintraege, die noch keine _id haben.
@@ -10454,6 +10758,42 @@ function letzteKuechen(anzahl) {
       .map(function(h) { return String(h.thema || '').split(' (')[0]; })
       .filter(Boolean);
   } catch (e) { return []; }
+}
+
+// Saison als sanfte Anregung, nie als Ausschluss: gekauft wird im Coop nebenan, dort gibt es fast alles.
+var SAISON_GEMUESE = {
+  Winter: 'Wurzelgemüse, Kohl, Lauch, Randen, Chicorée, Nüsslisalat, Kürbis aus dem Lager',
+  Frühling: 'Spargel, Bärlauch, Spinat, Radieschen, Rhabarber, Erbsen',
+  Sommer: 'Zucchini, Tomaten, Aubergine, Peperoni, Gurke, Mais, Bohnen, Beeren',
+  Herbst: 'Kürbis, Pilze, Kohl, Sellerie, Randen, Lauch, Wurzelgemüse, Äpfel und Birnen, Marroni'
+};
+function saisonText() {
+  try {
+    var d = (G.planWoche && /^\d{4}-\d{2}-\d{2}$/.test(G.planWoche)) ? new Date(G.planWoche + 'T00:00:00') : new Date();
+    if (isNaN(d.getTime())) d = new Date();
+    var m = d.getMonth();                       // 0 = Januar
+    var jz = (m === 11 || m <= 1) ? 'Winter' : m <= 4 ? 'Frühling' : m <= 7 ? 'Sommer' : 'Herbst';
+    var monat = ['Januar','Februar','März','April','Mai','Juni','Juli','August','September','Oktober','November','Dezember'][m];
+    return '. Saison: ' + monat + ' (' + jz + '). Saisonales Gemüse und Obst aus der Schweiz (z.B. ' + SAISON_GEMUESE[jz] + ') darf gerne vorkommen, ist aber KEIN Ausschlusskriterium: ' +
+      'jedes andere Gemüse ist ebenso erlaubt (eingekauft wird im Coop, dort gibt es fast alles)';
+  } catch (e) { return ''; }
+}
+
+// Zuletzt gekochte Gerichte (Rezeptdatenbank), damit die KI sie nicht wiederholt.
+// Nur Namen, hoechstens 20 verschiedene, neueste zuerst; leer, wenn nichts vorliegt.
+function kuerzlichGekochtText() {
+  try {
+    var liste = gekochteGerichteListe().slice();
+    liste.sort(function(a, b) { return a.iso < b.iso ? 1 : a.iso > b.iso ? -1 : 0; });
+    var gesehen = {}, namen = [];
+    for (var i = 0; i < liste.length && namen.length < 20; i++) {
+      var n = String(liste[i].name || '').replace(/["\\\r\n\t]+/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 70);
+      var k = n.toLowerCase();
+      if (!n || gesehen[k]) continue;
+      gesehen[k] = true; namen.push(n);
+    }
+    return namen.length ? '. Kürzlich gekocht, nicht wiederholen und auch keine Varianten davon: ' + namen.join(', ') : '';
+  } catch (e) { return ''; }
 }
 
 function buildLearningProfile(){
