@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=yes">
-<title>Menüplan v7.13</title>
+<title>Menüplan v7.14</title>
 <meta name="theme-color" content="#5B7C78">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -138,6 +138,15 @@ button:focus:not(:focus-visible),[role=button]:focus:not(:focus-visible){outline
 .foto-img.foto-thumb{width:40px;height:40px;min-height:40px;max-height:40px;flex:none;border-radius:8px;cursor:pointer}
 .foto-img[data-fotofehlt]{display:none}
 .foto-img.foto-thumb[data-fotofehlt]{display:none}
+.foto-platz{position:relative;border:1.5px dashed var(--bdr);background:var(--rl);padding:0;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-family:inherit;color:inherit}
+.foto-platz::after{content:'+';position:absolute;right:-5px;bottom:-5px;width:18px;height:18px;border-radius:50%;background:var(--red);color:#fff;font-size:14px;font-weight:700;line-height:17px;text-align:center}
+.foto-platz:active{transform:scale(.96)}
+#foto-quelle{position:fixed;inset:0;z-index:950;background:rgba(0,0,0,.45);display:flex;align-items:flex-end;justify-content:center}
+#foto-quelle .fq-blatt{width:100%;max-width:520px;background:#fff;border-radius:18px 18px 0 0;padding:14px 14px calc(14px + env(safe-area-inset-bottom,0px));box-shadow:0 -8px 30px rgba(0,0,0,.2)}
+#foto-quelle .fq-titel{font-size:13px;font-weight:700;color:var(--gr3);text-align:center;margin-bottom:10px;letter-spacing:.3px}
+#foto-quelle .btn{margin-top:8px}
+#foto-hinweis{position:fixed;left:50%;transform:translateX(-50%);bottom:90px;z-index:960;max-width:calc(100% - 32px);background:#2b2b2b;color:#fff;font-size:13px;padding:10px 16px;border-radius:100px;box-shadow:0 4px 16px rgba(0,0,0,.25)}
+#foto-hinweis.er{background:#b3261e}
 .foto-leer{display:none;font-size:12px;color:var(--gr3);padding:10px;background:var(--gr);border-radius:var(--r);text-align:center}
 .foto-img[data-fotofehlt]+.foto-leer{display:block}
 .btnrow{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:8px}
@@ -226,6 +235,24 @@ body.netz-aus .netz-hint{display:block}
 .cprog{height:4px;background:rgba(0,0,0,.06)}
 .cprogb{height:100%;background:var(--red);transition:width .4s}
 .cbody{padding:14px}
+
+/* Gefuehrtes Kochen als Feed: alle Schritte untereinander, nach oben/unten wischen, einrasten. */
+#sc.feed.on{display:flex;flex-direction:column;height:100vh;height:100dvh;min-height:0;padding-bottom:0;overflow:hidden}
+#sc.feed .ctbar{flex:none}
+#sc.feed #cook-feedwrap{position:relative;flex:1 1 auto;min-height:0}
+#sc.feed #cbody{position:absolute;inset:0;overflow-y:auto;overscroll-behavior:contain;scroll-snap-type:y mandatory;-webkit-overflow-scrolling:touch;padding:0!important}
+#sc.feed #cook-footer{position:static!important;transform:none!important;width:100%!important;max-width:none!important;flex:none}
+body:has(#sc.feed.on){overflow:hidden}
+.cfeed-card{box-sizing:border-box;min-height:100%;scroll-snap-align:start;scroll-snap-stop:always;padding:14px 14px 28px;border-bottom:1px solid var(--bdr);background:var(--background)}
+.cfeed-card.akt{box-shadow:inset 4px 0 0 var(--red)}
+.cfeed-card.erl .cfeed-titel{color:var(--gr3)}
+.cfeed-kopf{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:6px}
+.cfeed-nr{font-size:11px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;color:var(--gr3)}
+.cfeed-chip{font-size:11px;font-weight:700;border-radius:100px;padding:3px 10px;background:var(--gr);color:var(--gr3);border:.5px solid var(--bdr);white-space:nowrap}
+.cfeed-chip.akt{background:var(--red);color:#fff;border-color:var(--red)}
+.cfeed-chip.erl{background:var(--grl);color:var(--grn);border-color:#B8D5C4}
+.cfeed-titel{font-size:22px;font-weight:800;color:var(--txt);margin:8px 0 6px}
+#cook-zumaktuellen{position:absolute;left:50%;bottom:14px;transform:translateX(-50%);align-items:center;gap:6px;background:var(--red);color:#fff;border:none;border-radius:100px;padding:11px 18px;min-height:44px;font-size:13px;font-weight:700;box-shadow:0 6px 18px rgba(0,0,0,.28);z-index:5;cursor:pointer;font-family:inherit;white-space:nowrap}
 /* Kartenkopf: war bisher gar nicht definiert, die Beschriftung (z.B. der Tag in der
    Plan-Ansicht oder "Konten" in der Benutzerverwaltung) stand ungestaltet am Rand. */
 .chead{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:11px 14px;background:var(--background);border-bottom:.5px solid var(--bdr);font-size:13px;font-weight:700;color:var(--txt2)}
@@ -337,7 +364,7 @@ body.netz-aus .netz-hint{display:block}
 
 <!-- HOME -->
 <div class="scr on" id="sh">
-  <div class="hero"><h1>Menüplan</h1><p id="hsub">v7.13 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
+  <div class="hero"><h1>Menüplan</h1><p id="hsub">v7.14 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
 
   <!-- Active plan card -->
 
@@ -681,7 +708,10 @@ body.netz-aus .netz-hint{display:block}
     <div class="cprog"><div class="cprogb" id="cprogb"></div></div>
     <div id="cook-timerbar" style="display:none;gap:6px;padding:8px 12px;overflow-x:auto"></div>
   </div>
-  <div id="cbody" style="padding:10px 10px 90px"></div>
+  <div id="cook-feedwrap">
+    <div id="cbody" style="padding:10px 10px 90px"></div>
+    <button type="button" id="cook-zumaktuellen" onclick="cookZumAktuellen()" style="display:none">↩ Zum aktuellen Schritt</button>
+  </div>
   <div id="cook-footer" style="position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;box-sizing:border-box;background:#fff;border-top:.5px solid var(--bdr);padding:10px 10px calc(10px + env(safe-area-inset-bottom));display:flex;gap:8px;z-index:20">
     <button onclick="doStepBack()" style="flex:0 0 auto;width:80px;background:#f5f5f5;border:none;border-radius:var(--r);padding:14px;font-size:14px;font-weight:600;color:var(--txt2);cursor:pointer;font-family:inherit">Zurück</button>
     <button onclick="cookWeiter()" id="cook-complete-btn" style="flex:1;background:var(--red);border:none;border-radius:var(--r);padding:14px;font-size:16px;font-weight:700;color:#fff;cursor:pointer;font-family:inherit">Erledigt &middot; Weiter</button>
@@ -704,7 +734,7 @@ body.netz-aus .netz-hint{display:block}
 
     <div id="foto-modus-foto-inhalt">
       <div class="clbl">Foto hochladen</div>
-      <div id="foto-upload-area" onclick="$('foto-input').click()"
+      <div id="foto-upload-area" role="button" tabindex="0" onclick="fotoAnalyseWaehlen()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();fotoAnalyseWaehlen()}"
         style="border:2px dashed var(--bdr);border-radius:var(--r);padding:32px 16px;text-align:center;cursor:pointer;transition:border-color .2s;margin-bottom:10px"
         ondragover="event.preventDefault();this.style.borderColor='var(--red)'"
         ondragleave="this.style.borderColor='var(--bdr)'"
@@ -714,7 +744,9 @@ body.netz-aus .netz-hint{display:block}
         <div style="font-size:12px;color:var(--gr3);margin-top:4px">Rezept, Menukarte, Kochbuch-Seite...</div>
       </div>
       <input type="file" id="foto-input" accept="image/*" style="display:none" onchange="handleFotoFile(this.files[0])">
+      <input type="file" id="foto-kamera-input" accept="image/*" capture="environment" style="display:none" onchange="handleFotoFile(this.files[0])">
       <input type="file" id="dish-foto-input" accept="image/*" style="display:none" onchange="dishFotoGewaehlt(this.files[0])">
+      <input type="file" id="dish-foto-kamera" accept="image/*" capture="environment" style="display:none" onchange="dishFotoGewaehlt(this.files[0])">
 
       <div id="foto-preview" style="display:none;margin-bottom:10px;text-align:center">
         <img id="foto-img" alt="Vorschau des gewählten Rezeptfotos" style="max-width:100%;max-height:200px;border-radius:var(--r);border:.5px solid var(--bdr)">
@@ -5819,9 +5851,9 @@ function blechHinweisHtml(info) {
 function zeigeKapazitaet() {
   var info = null;
   try { info = blechInfo(); } catch (e) { info = null; }
-  var box = document.getElementById('cook-kap');
-  if (box) {
-    box.innerHTML = info && info[G.act] ? blechHinweisHtml(info[G.act]) : '';
+  for (var _i = 0; _i < (G.steps || []).length; _i++) {
+    var box = document.getElementById('cook-kap-' + _i);
+    if (box) box.innerHTML = info && info[_i] ? blechHinweisHtml(info[_i]) : '';
   }
   var ueb = document.getElementById('cook-kap-ueb');
   if (ueb) {
@@ -5890,6 +5922,10 @@ function kochutensilienHtml(g) {
 }
 
 function showIngOverview(g) {
+  G_cookAnzeige = { schritt: -1, modus: '' };
+  G.view = 0;
+  if ($('sc')) $('sc').classList.remove('feed');   // Zutatenuebersicht: normale Seite, kein Feed
+  if ($('cook-zumaktuellen')) $('cook-zumaktuellen').style.display = 'none';
   if ($('csteplbl')) $('csteplbl').textContent = 'Zutatenübersicht';
   if ($('cprogb')) $('cprogb').style.width = '0%';
   if ($('cook-timerbar')) $('cook-timerbar').style.display = 'none';
@@ -5969,7 +6005,7 @@ function beginCook() {
   // Wake Lock lief bereits seit der Zutatenuebersicht (requestWakeLock beim
   // Betreten von sc) - hier NICHT freigeben, sonst geht der Bildschirm
   // genau beim Start des eigentlichen Kochens wieder aus.
-  G.cur = 0; G.act = 0; G.done = {}; G.timers = {};
+  G.cur = 0; G.act = 0; G.view = 0; G.done = {}; G.timers = {};
   renderCookStep();
 }
 
@@ -5986,7 +6022,8 @@ function updHeader() {
   // gleichzeitig Pasta kochen) waere eine simple Summe aller Timer sichtbar
   // falsch. Lieber nur "Schritt X von Y" ohne eine irrefuehrende Zeitangabe.
   if ($('csteplbl')) {
-    $('csteplbl').textContent = 'Schritt ' + Math.min(G.act + 1, G.steps.length) + ' von ' + G.steps.length;
+    var _v = (G.cookViewMode === 'step' && G.view >= 0) ? G.view : G.act;
+    $('csteplbl').textContent = 'Schritt ' + Math.min(_v + 1, G.steps.length) + ' von ' + G.steps.length;
   }
 }
 
@@ -6013,39 +6050,29 @@ function ablageAnzeigen(i) {
   return true;
 }
 
-function renderCookStep() {
-  try {
-    renderCookStepKern();
-  } catch (e) {
-    // Notfall: Der Bildschirm muss IMMER zum aktuellen Schritt passen. Lieber eine
-    // einfache Anzeige als ein stehengebliebener alter Schritt.
-    try { logFehler('kochmodus', 'Schritt ' + (G.act + 1) + ' nicht gezeichnet: ' + (e && e.message), e && e.stack); } catch (x) {}
-    try { console.error('Kochschritt konnte nicht gezeichnet werden:', e); } catch (x) {}
-    var s = G.steps[G.act] || {};
-    var titel = alsText(s.titel) || alsText(s.text).split(' ').slice(0, 4).join(' ') || 'Schritt';
-    $('cbody').innerHTML =
-      '<div style="font-size:22px;font-weight:800;color:var(--txt);margin:8px 0 6px">' + esc(titel) + '</div>' +
-      (s.text ? '<div style="font-size:15px;color:var(--txt2);line-height:1.5;margin-bottom:14px">' + esc(alsText(s.text)) + '</div>' : '') +
-      '<div role="status" style="background:#FFF3E3;border-radius:8px;padding:10px 12px;font-size:12px;color:#B97836">Dieser Schritt wird vereinfacht angezeigt (ein Detail war unlesbar).</div>';
-    try { updHeader(); } catch (x) {}
-    if ($('cook-footer')) $('cook-footer').style.display = 'flex';
-    var cb = $('cook-complete-btn');
-    if (cb) cb.textContent = G.done[G.act] ? 'Weiter' : (G.act === G.steps.length - 1 ? 'Fertig kochen · Bewerten' : 'Erledigt · Weiter');
-  }
+// Nur fuer die Uebersicht ("Alle Schritte"): beim Wechsel der Ansicht wieder ganz nach oben.
+var G_cookAnzeige = { schritt: -1, modus: '' };
+function cookNachObenWennNeu(modus) {
+  var neu = G_cookAnzeige.schritt !== G.act || G_cookAnzeige.modus !== modus;
+  G_cookAnzeige = { schritt: G.act, modus: modus };
+  if (!neu) return;
+  try { window.scrollTo({ top: 0, left: 0, behavior: 'instant' }); } catch (e) { try { window.scrollTo(0, 0); } catch (x) {} }
 }
 
-function renderCookStepKern() {
-  G.cookViewMode = 'step';
-  if ($('cook-overview-btn')) $('cook-overview-btn').textContent = 'Alle Schritte';
-  var i = G.act;
+// ─── GEFUEHRTES KOCHEN ALS FEED ───────────────────────────────
+// Alle Schritte stehen untereinander in einer Spalte, die einrastet (scroll-snap): nach oben und
+// unten wischen zeigt jeweils genau einen Schritt. G.act ist der AKTUELLE Schritt (hier wird
+// gekocht), G.view der gerade ANGESEHENE. "Erledigt · Weiter" betrifft immer den aktuellen Schritt,
+// auch wenn man nur vorausschaut - so wird beim Blaettern nie ein Schritt versehentlich abgehakt
+// und es springt nichts mehr. Die Pille "Zum aktuellen Schritt" fuehrt zurueck.
+var G_feed = { auto: 0, raf: 0, nach: 0, warte: false, letzte: -1 };
+function istFeed() { return !!($('sc') && $('sc').classList.contains('feed')); }
+
+function schrittKarteInnen(i) {
   var s = G.steps[i];
-  if (!s) { $('cbody').innerHTML = ''; return; }
-
   var isDone = !!G.done[i];
-  var isLast = i === G.steps.length - 1;
+  var isAct = i === G.act;
   var activeTimer = G.timers[i];
-
-  // Titel: expliziter Titel oder abgeleitet aus den ersten Worten
   var title = s.titel || (s.text ? s.text.split(' ').slice(0,4).join(' ') : 'Schritt');
 
   var zutatenHtml = '';
@@ -6079,8 +6106,8 @@ function renderCookStepKern() {
       var rem = Math.max(0, Math.ceil((activeTimer.end - Date.now()) / 1000));
       timerHtml = '<div style="background:#FFF3E3;border-radius:var(--r);padding:16px;margin-bottom:12px;text-align:center">' +
         '<div style="font-size:11px;color:#B97836;font-weight:700;margin-bottom:4px">TIMER LÄUFT</div>' +
-        '<div id="cook-active-timer-disp" style="font-size:32px;font-weight:800;color:#1a1a1a;margin-bottom:8px">' + fmt(rem) + '</div>' +
-        '<div style="background:#ffe0b2;border-radius:100px;height:6px;overflow:hidden"><div id="cook-active-timer-bar" style="height:6px;background:#B97836;border-radius:100px;width:' + Math.round((rem/activeTimer.total)*100) + '%"></div></div>' +
+        '<div id="cook-active-timer-disp-' + i + '" style="font-size:32px;font-weight:800;color:#1a1a1a;margin-bottom:8px">' + fmt(rem) + '</div>' +
+        '<div style="background:#ffe0b2;border-radius:100px;height:6px;overflow:hidden"><div id="cook-active-timer-bar-' + i + '" style="height:6px;background:#B97836;border-radius:100px;width:' + Math.round((rem/activeTimer.total)*100) + '%"></div></div>' +
       '</div>';
     } else if (activeTimer && activeTimer.done) {
       timerHtml = '<div style="background:#E8F2EC;border-radius:var(--r);padding:16px;margin-bottom:12px;text-align:center">' +
@@ -6095,41 +6122,175 @@ function renderCookStepKern() {
   var ablageHtml = ablageAnzeigen(i) ? '<div style="background:#EEF5F0;border-left:3px solid #4F8067;padding:10px 12px;border-radius:0 8px 8px 0;margin-bottom:12px;font-size:13px;color:#2f5a45"><b>&#128205; Wohin damit:</b> ' + esc(s.ablage) + '</div>' : '';
   var parallelHtml = s.parallel ? '<div style="background:#FFF3E3;border-left:3px solid #f9a825;padding:10px 12px;border-radius:0 8px 8px 0;margin-bottom:12px;font-size:13px;color:#7d5a00"><b>Währenddessen:</b> ' + esc(s.parallel) + '</div>' : '';
 
-  // "Als Naechstes"-Vorschau: naechster noch offener Schritt
-  var nextIdx = -1;
-  for (var j = i+1; j < G.steps.length; j++) { if (!G.done[j]) { nextIdx = j; break; } }
-  var nextPreview = nextIdx >= 0 ? '<div style="text-align:center;font-size:12px;color:var(--gr3);margin-top:8px">Als Nächstes: ' + esc(G.steps[nextIdx].titel || 'weiterer Schritt') + '</div>' : '';
-
   var hinweisHtml = '';
-  if (G.cookHinweis) {
-    hinweisHtml = '<div role="status" style="background:#FFF3E3;border:.5px solid #EBC9A0;border-radius:8px;padding:10px 12px;margin:8px 0;font-size:13px;color:#B97836;font-weight:600">' + esc(G.cookHinweis) + '</div>';
+  if (isAct && G.cookHinweis) {
+    hinweisHtml = '<div role="status" style="background:#FFF3E3;border:.5px solid #EBC9A0;border-radius:8px;padding:10px 12px;margin:0 0 10px;font-size:13px;color:#B97836;font-weight:600">' + esc(G.cookHinweis) + '</div>';
     G.cookHinweis = '';
   }
-  var html =
+  var chip = isDone ? '<span class="cfeed-chip erl">&#10003; erledigt</span>'
+    : (isAct ? '<span class="cfeed-chip akt">Aktueller Schritt</span>' : '<span class="cfeed-chip">Noch offen</span>');
+  return '<div class="cfeed-kopf"><span class="cfeed-nr">Schritt ' + (i + 1) + ' von ' + G.steps.length + '</span>' + chip + '</div>' +
     hinweisHtml +
     (BADGES[s.type] || '') +
-    '<div style="font-size:22px;font-weight:800;color:var(--txt);margin:8px 0 6px">' + esc(title) + '</div>' +
+    '<div class="cfeed-titel">' + esc(title) + '</div>' +
     (s.text ? '<div style="font-size:15px;color:var(--txt2);line-height:1.5;margin-bottom:14px">' + esc(s.text) + '</div>' : '') +
-    '<div id="cook-kap"></div>' +
-    zubehoerHtml + zutatenHtml + timerHtml + ablageHtml + kontrolleHtml + parallelHtml + nextPreview;
+    '<div id="cook-kap-' + i + '"></div>' +
+    zubehoerHtml + zutatenHtml + timerHtml + ablageHtml + kontrolleHtml + parallelHtml;
+}
 
-  $('cbody').innerHTML = html;
-  updHeader();
-  renderTimerBar();
-  rescaleZutaten(); // wendet die aktuell gewaehlte Portionsgroesse sofort auf den neuen Schritt an
-  if ($('cook-footer')) $('cook-footer').style.display = 'flex';
-  var completeBtn = $('cook-complete-btn');
-  if (completeBtn) {
-    // Bereits erledigter Schritt wird nur zum Nachlesen angezeigt (z.B. via
-    // Zurueck-Button) - "Weiter" navigiert dann einfach, ohne den Schritt
-    // (der ja schon erledigt ist) erneut als erledigt zu markieren.
-    completeBtn.textContent = isDone ? 'Weiter' : (isLast ? 'Fertig kochen · Bewerten' : 'Erledigt · Weiter');
+// Eine Karte. Faellt ein Detail aus (fehlerhafte KI-Daten), zeigt NUR diese Karte eine einfache
+// Anzeige - der Rest des Feeds und der Fortschritt bleiben richtig.
+function schrittKarteHtml(i) {
+  var innen;
+  var s = G.steps[i] || {};
+  try {
+    innen = schrittKarteInnen(i);
+  } catch (e) {
+    try { logFehler('kochmodus', 'Schritt ' + (i + 1) + ' nicht gezeichnet: ' + (e && e.message), e && e.stack); } catch (x) {}
+    try { console.error('Kochschritt konnte nicht gezeichnet werden:', e); } catch (x) {}
+    var titel = alsText(s.titel) || alsText(s.text).split(' ').slice(0, 4).join(' ') || 'Schritt';
+    innen = '<div class="cfeed-kopf"><span class="cfeed-nr">Schritt ' + (i + 1) + ' von ' + G.steps.length + '</span></div>' +
+      '<div class="cfeed-titel">' + esc(titel) + '</div>' +
+      (s.text ? '<div style="font-size:15px;color:var(--txt2);line-height:1.5;margin-bottom:14px">' + esc(alsText(s.text)) + '</div>' : '') +
+      '<div role="status" style="background:#FFF3E3;border-radius:8px;padding:10px 12px;font-size:12px;color:#B97836">Dieser Schritt wird vereinfacht angezeigt (ein Detail war unlesbar).</div>';
   }
+  return '<section class="cfeed-card' + (i === G.act ? ' akt' : '') + (G.done[i] ? ' erl' : '') + '" id="cf_' + i + '" data-i="' + i + '">' + innen + '</section>';
+}
+
+// Zeichnet nur eine Karte neu (Timer gestartet/abgelaufen, Schritt abgehakt) - die Scrollposition
+// bleibt, weil das Element erhalten bleibt.
+function renderStepCard(i) {
+  var el = $('cf_' + i);
+  if (!el || !G.steps[i]) return;
+  var tmp = document.createElement('div');
+  tmp.innerHTML = schrittKarteHtml(i);
+  var neu = tmp.firstChild;
+  el.className = neu.className;
+  el.innerHTML = neu.innerHTML;
+  rescaleZutaten();
+}
+
+// Kopfzeile, Knopf und Pille passend zu aktuellem und angesehenem Schritt.
+function cookFeedAnzeigen() {
+  try { updHeader(); } catch (e) {}
+  var offen = G.steps.length - Object.keys(G.done).length;
+  var letzter = offen <= 1;
+  var nr = G.act + 1;
+  var b = $('cook-complete-btn');
+  if (b) {
+    b.textContent = (G.view !== G.act)
+      ? ('Schritt ' + nr + ' erledigt · ' + (letzter ? 'Fertig kochen' : 'Weiter'))
+      : (letzter ? 'Fertig kochen · Bewerten' : 'Erledigt · Weiter');
+  }
+  var p = $('cook-zumaktuellen');
+  if (p) {
+    var zeigen = G.cookViewMode === 'step' && istFeed() && G.view !== G.act;
+    p.style.display = zeigen ? 'flex' : 'none';
+    p.textContent = '↩ Zum aktuellen Schritt (' + nr + ')';
+  }
+}
+
+// Zu einem Schritt scrollen (rastet oben ein). weich=false: sofort, z.B. beim Aufbau.
+function cookScrollZu(i, weich) {
+  var box = $('cbody'), card = $('cf_' + i);
+  if (!box || !card) return;
+  G.view = i;
+  G_feed.auto = Date.now() + (weich ? 800 : 200);
+  if (!weich) {                                          // sofort - bricht auch ein noch laufendes sanftes Scrollen ab
+    box.scrollTop = card.offsetTop;
+    // Nach dem ersten Layout nachpruefen: beim Wechsel aus einer anderen Ansicht kann die Position um ein paar Pixel abweichen
+    requestAnimationFrame(function() { var c2 = $('cf_' + i), b2 = $('cbody'); if (c2 && b2 && G.view === i && Math.abs(b2.scrollTop - c2.offsetTop) > 1) b2.scrollTop = c2.offsetTop; });
+  }
+  else { try { box.scrollTo({ top: card.offsetTop, behavior: 'smooth' }); } catch (e) { box.scrollTop = card.offsetTop; } }
+  cookFeedAnzeigen();
+}
+function cookZumAktuellen() { cookScrollZu(G.act, true); }
+
+// Beim Wischen: welcher Schritt steht gerade oben?
+function cookFeedScroll() {
+  if (G_feed.raf) return;
+  G_feed.raf = requestAnimationFrame(function() {
+    G_feed.raf = 0;
+    var box = $('cbody');
+    if (!box || !istFeed() || G.cookViewMode !== 'step') return;
+    // Waehrend eines gewollten Sprungs (Weiter, Zurueck, Pille) gilt das Ziel - sonst flackert die Anzeige
+    // beim Anfahren kurz auf den alten Schritt zurueck. Danach einmal nachpruefen, wo die Ansicht gelandet ist.
+    var rest = G_feed.auto - Date.now();
+    if (rest > 0) {
+      clearTimeout(G_feed.nach);
+      G_feed.warte = true;
+      G_feed.nach = setTimeout(cookFeedScroll, rest + 80);
+      return;
+    }
+    if (G_feed.warte) {          // der gewollte Sprung ist vorbei: erst auswerten, wenn das Scrollen wirklich steht
+      if (Math.abs(box.scrollTop - G_feed.letzte) > 0.5) {
+        G_feed.letzte = box.scrollTop;
+        clearTimeout(G_feed.nach);
+        G_feed.nach = setTimeout(cookFeedScroll, 100);
+        return;
+      }
+      G_feed.warte = false;
+    }
+    var grenze = box.scrollTop + box.clientHeight * 0.35, v = 0, karten = box.children;
+    for (var k = 0; k < karten.length; k++) { if (karten[k].offsetTop <= grenze) v = k; else break; }
+    if (v !== G.view) {
+      G.view = v;
+      if (Date.now() > G_feed.auto) { try { if (navigator.vibrate) navigator.vibrate(8); } catch (e) {} }   // kurzes Einrasten spuerbar
+      cookFeedAnzeigen();
+    }
+  });
+}
+// Maus/Touchpad: ein Rollen = ein Schritt (sonst rastet ein kurzes Rollen wieder zurueck, weil der
+// Schritt den ganzen Bildschirm fuellt). Ist ein Schritt hoeher als der Bildschirm, rollt er normal.
+var G_wheelBis = 0;
+function cookFeedWheel(ev) {
+  var box = $('cbody');
+  if (!box || !istFeed() || G.cookViewMode !== 'step' || ev.ctrlKey) return;
+  var karte = $('cf_' + G.view);
+  if (!karte || karte.offsetHeight > box.clientHeight + 2) return;
+  ev.preventDefault();
+  var jetzt = Date.now();
+  if (jetzt < G_wheelBis || Math.abs(ev.deltaY) < 4) return;
+  G_wheelBis = jetzt + 450;
+  cookScrollZu(Math.max(0, Math.min(G.steps.length - 1, G.view + (ev.deltaY > 0 ? 1 : -1))), true);
+}
+function cookFeedStart() {
+  var b = $('cbody');
+  if (!b) return;
+  b.addEventListener('scroll', cookFeedScroll, { passive: true });
+  b.addEventListener('wheel', cookFeedWheel, { passive: false });
+}
+if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', cookFeedStart); else cookFeedStart();
+document.addEventListener('keydown', function(ev) {
+  if ((ev.key !== 'ArrowDown' && ev.key !== 'ArrowUp') || !istFeed() || G.cookViewMode !== 'step') return;
+  var sc = $('sc'); if (!sc || !sc.classList.contains('on')) return;
+  if (ev.target && /^(INPUT|TEXTAREA|SELECT)$/.test(ev.target.tagName)) return;
+  ev.preventDefault();
+  var z = Math.max(0, Math.min(G.steps.length - 1, (G.view || 0) + (ev.key === 'ArrowDown' ? 1 : -1)));
+  cookScrollZu(z, true);
+});
+
+function renderCookStep() { renderCookStepKern(); }
+
+function renderCookStepKern() {
+  G.cookViewMode = 'step';
+  if ($('cook-overview-btn')) $('cook-overview-btn').textContent = 'Alle Schritte';
+  var sc = $('sc'); if (sc) sc.classList.add('feed');
+  if (!(G.view >= 0 && G.view < G.steps.length)) G.view = Math.min(Math.max(G.act, 0), Math.max(G.steps.length - 1, 0));
+  var html = '';
+  for (var i = 0; i < G.steps.length; i++) html += schrittKarteHtml(i);
+  $('cbody').innerHTML = html;
+  if ($('cook-footer')) $('cook-footer').style.display = 'flex';
+  renderTimerBar();
+  rescaleZutaten();           // wendet die gewaehlte Portionsgroesse sofort auf alle Karten an
+  cookScrollZu(G.view, false);
 }
 
 // Klassische Kartenuebersicht - jetzt sekundaere Ansicht, ueber "Alle Schritte" erreichbar
 function renderAllSteps() {
   G.cookViewMode = 'overview';
+  if ($('sc')) $('sc').classList.remove('feed');
+  if ($('cook-zumaktuellen')) $('cook-zumaktuellen').style.display = 'none';
   if ($('cook-overview-btn')) $('cook-overview-btn').textContent = 'Fokus-Ansicht';
   var html = '';
   for (var i = 0; i < G.steps.length; i++) {
@@ -6154,6 +6315,7 @@ function renderAllSteps() {
   $('cbody').innerHTML = html;
   updHeader();
   if ($('cook-footer')) $('cook-footer').style.display = 'none';
+  cookNachObenWennNeu('overview');
 }
 
 function toggleStepOverview() {
@@ -6225,17 +6387,19 @@ function doComplete(i) {
     }
     return;
   }
-  if (G.cookViewMode === 'overview') renderAllSteps();
-  else renderCookStep();
+  if (G.cookViewMode === 'overview') { renderAllSteps(); return; }
+  if (!istFeed()) { renderCookStep(); return; }
+  // Feed: abgehakte Karte und neue aktuelle Karte neu zeichnen, dann sanft zum aktuellen Schritt.
+  var alt = i;
+  renderStepCard(alt);
+  if (G.act !== alt) renderStepCard(G.act);
+  cookScrollZu(G.act, true);
 }
 
+// "Zurueck" blaettert nur: ein Schritt nach oben. Fortschritt bleibt unberuehrt.
 function doStepBack() {
-  if (G.act <= 0) return;
-  // Nur zum Nachlesen: G.done bleibt komplett unangetastet. "Zurueck" ist
-  // reine Navigation, kein Zuruecksetzen des Fortschritts - dafuer gibt es
-  // separat unDone() als bewusste Aktion.
-  G.act = G.act - 1;
-  renderCookStep();
+  if (G.cookViewMode !== 'step' || !(G.view > 0)) return;
+  cookScrollZu(G.view - 1, true);
 }
 
 function unDone(i) {
@@ -6282,16 +6446,17 @@ function startT(i) {
       } catch(e) {}
       renderTimerBar();
       scheduleTimerAutoDismiss(i);
-      // Wenn gerade dieser Schritt aktiv angezeigt wird, ebenfalls aktualisieren
-      if (G.act === i) renderCookStep();
+      // Karte dieses Schritts neu zeichnen (zeigt "Timer fertig"), Scrollposition bleibt
+      if (istFeed()) renderStepCard(i);
       return;
     }
     t.remaining = rem;
     renderTimerBar();
-    if (G.act === i) updateActiveTimerDisplay(rem, t.total);
+    updateActiveTimerDisplay(i, rem, t.total);
   }, 500);
 
   renderTimerBar();
+  if (istFeed()) renderStepCard(i);   // zeigt sofort "Timer laeuft" statt des Startknopfs
 }
 
 function stopT(i) {
@@ -6335,16 +6500,18 @@ function scheduleTimerAutoDismiss(stepIdx) {
   }, 20000);
 }
 
-function updateActiveTimerDisplay(rem, total) {
-  var td = $('cook-active-timer-disp');
-  var tb = $('cook-active-timer-bar');
+function updateActiveTimerDisplay(i, rem, total) {
+  var td = $('cook-active-timer-disp-' + i);
+  var tb = $('cook-active-timer-bar-' + i);
   if (td) { td.textContent = fmt(rem); td.style.color = rem <= 30 ? '#8E3232' : ''; }
   if (tb) tb.style.width = Math.round((rem / total) * 100) + '%';
 }
 
+// Zu einem Schritt blaettern (Timerleiste, Uebersicht). Der AKTUELLE Schritt bleibt, wo er ist.
 function jumpToStep(i) {
-  G.act = i;
-  renderCookStep();
+  if (!(i >= 0 && i < G.steps.length)) return;
+  if (G.cookViewMode !== 'step' || !istFeed()) { G.view = i; renderCookStep(); return; }
+  cookScrollZu(i, true);
 }
 function fmt(s) { return (Math.floor(s/60) < 10 ? '0' : '') + Math.floor(s/60) + ':' + (s%60 < 10 ? '0' : '') + (s%60); }
 
@@ -6831,35 +6998,106 @@ function gerichtFotoZuordnen(planToken, idx, neueId) {
   return { ok: true, alt: alt };
 }
 
-function fotoWaehlen(planToken, idx) {
-  G_fotoZiel = { plan: planToken, idx: idx };
-  var inp = $('dish-foto-input');
+// Kleines Blatt unten: Kamera oder Galerie. Der Dateidialog wird direkt im Tipp auf den Knopf geoeffnet
+// (sonst blockieren Handys ihn). Am Rechner ignoriert der Browser "capture" und zeigt den Dateidialog.
+function fotoQuelleFragen(weiter) {
+  var alt = $('foto-quelle'); if (alt) alt.remove();
+  var ov = document.createElement('div');
+  ov.id = 'foto-quelle'; ov.setAttribute('role', 'dialog'); ov.setAttribute('aria-modal', 'true'); ov.setAttribute('aria-label', 'Foto hinzufügen');
+  ov.innerHTML = '<div class="fq-blatt"><div class="fq-titel">Foto hinzufügen</div>' +
+    '<button type="button" class="btn btn-red" data-quelle="kamera">📷 Foto aufnehmen</button>' +
+    '<button type="button" class="btn btn-out" data-quelle="galerie">🖼 Aus der Galerie wählen</button>' +
+    '<button type="button" class="btn btn-out" data-quelle="abbrechen" style="border-color:transparent;color:var(--gr3)">Abbrechen</button></div>';
+  ov.addEventListener('click', function(ev) {
+    var b = ev.target.closest ? ev.target.closest('button[data-quelle]') : null;
+    if (!b && ev.target !== ov) return;
+    var q = b ? b.getAttribute('data-quelle') : 'abbrechen';
+    ov.remove();
+    if (q !== 'abbrechen') { try { weiter(q); } catch (e) { logFehler('foto', 'Fotoauswahl: ' + (e && e.message), e && e.stack); } }
+  });
+  document.body.appendChild(ov);
+  var erst = ov.querySelector('button'); if (erst) erst.focus();
+}
+function fotoDateiDialog(kameraId, galerieId, quelle) {
+  var inp = $(quelle === 'kamera' ? kameraId : galerieId);
   if (!inp) return;
   inp.value = '';
   inp.click();
+}
+// Einzelrezept per Foto (Analyse): Kamera oder Galerie
+function fotoAnalyseWaehlen() {
+  fotoQuelleFragen(function(q) { fotoDateiDialog('foto-kamera-input', 'foto-input', q); });
+}
+// Foto zu einem Gericht eines Plans
+function fotoWaehlen(planToken, idx) {
+  G_fotoZiel = { plan: planToken, idx: idx };
+  fotoQuelleFragen(function(q) { fotoDateiDialog('dish-foto-kamera', 'dish-foto-input', q); });
+}
+// Foto zu einem gespeicherten Einzelrezept (Rezeptdatenbank)
+function fotoWaehlenRezept(idx) {
+  var saved = []; try { saved = JSON.parse(localStorage.getItem(userKey('foto_rezepte')) || '[]'); } catch (e) {}
+  G_fotoZiel = { rezept: idx, rezeptId: (saved[idx] && saved[idx]._id) || '' };
+  fotoQuelleFragen(function(q) { fotoDateiDialog('dish-foto-kamera', 'dish-foto-input', q); });
+}
+// Traegt die Foto-ID am gespeicherten Einzelrezept ein (neueId = null entfernt sie). Liefert { ok, alt }.
+function rezeptFotoZuordnen(idx, rezeptId, neueId) {
+  var saved = []; try { saved = JSON.parse(localStorage.getItem(userKey('foto_rezepte')) || '[]'); } catch (e) {}
+  var r = null;
+  if (rezeptId) r = saved.filter(function(x) { return x && x._id === rezeptId; })[0] || null;
+  else r = saved[idx] || null;
+  if (!r) return { ok: false };
+  var alt = r._fotoId || null;
+  if (neueId) r._fotoId = neueId; else delete r._fotoId;
+  localStorage.setItem(userKey('foto_rezepte'), JSON.stringify(saved));
+  saveFotoRezepteToGH(saved);
+  return { ok: true, alt: alt };
+}
+// Listen nach einer Fotoaenderung nachziehen (Rezeptdatenbank, Kalender)
+function fotoListenAktualisieren() {
+  try { if ($('rdb-items')) { window._rdbDaten = rdbEintraege(); window._historyRecipes = window._rdbDaten.saved; rdbRender(); } } catch (e) {}
+  try { kalenderAktualisieren(); } catch (e) {}
+}
+// Kurze Rueckmeldung, auch dort sichtbar, wo es kein Statusfeld gibt (z. B. Rezeptdatenbank)
+function fotoMeldung(text, typ) {
+  try { showSt('ist', text, typ); } catch (e) {}
+  var t = $('foto-hinweis'); if (t) t.remove();
+  t = document.createElement('div'); t.id = 'foto-hinweis'; t.setAttribute('role', 'status');
+  if (typ === 'er') t.className = 'er';
+  t.textContent = text; document.body.appendChild(t);
+  setTimeout(function() { var x = $('foto-hinweis'); if (x === t) t.remove(); }, typ === 'er' ? 5000 : 2200);
 }
 
 function dishFotoGewaehlt(file) {
   var ziel = G_fotoZiel;
   if (!file || !ziel) return;
   if (!/^image\//.test(file.type || '') && !/\.(jpe?g|png|webp|heic|heif|gif)$/i.test(file.name || '')) {
-    showSt('ist', 'Das ist kein Bild.', 'er'); return;
+    fotoMeldung('Das ist kein Bild.', 'er'); return;
   }
-  showSt('ist', 'Foto wird verarbeitet …', 'ok');
+  fotoMeldung('Foto wird verarbeitet …', 'ok');
   fotoVerkleinern(file).then(function(data) {
     var id = neueFotoId();
     return fotoLokalSchreiben(id, data).then(function() {
-      var r = gerichtFotoZuordnen(ziel.plan, ziel.idx, id);
-      if (!r.ok) { fotoLokalLoeschen(id); throw new Error('Gericht nicht gefunden'); }
+      var r = (ziel.rezept !== undefined) ? rezeptFotoZuordnen(ziel.rezept, ziel.rezeptId, id) : gerichtFotoZuordnen(ziel.plan, ziel.idx, id);
+      if (!r.ok) { fotoLokalLoeschen(id); throw new Error(ziel.rezept !== undefined ? 'Rezept nicht gefunden' : 'Gericht nicht gefunden'); }
       if (r.alt) fotoEntsorgen(r.alt);
       fotoCloudHochladen(id, data);
       try { renderRez(G.sugs && G.sel !== null ? G.sugs[G.sel] : null); } catch (e) {}
-      showSt('ist', 'Foto gespeichert.', 'ok');
+      fotoListenAktualisieren();
+      fotoMeldung('Foto gespeichert.', 'ok');
       setTimeout(function() { if ($('ist')) $('ist').style.display = 'none'; }, 2500);
     });
   }).catch(function(e) {
-    showSt('ist', 'Foto konnte nicht gespeichert werden: ' + (e && e.message ? e.message : 'unbekannter Fehler'), 'er');
+    fotoMeldung('Foto konnte nicht gespeichert werden: ' + (e && e.message ? e.message : 'unbekannter Fehler'), 'er');
   });
+}
+
+// Foto am gespeicherten Einzelrezept entfernen
+function fotoEntfernenRezept(idx, rezeptId) {
+  if (!confirm('Foto zu diesem Rezept entfernen?')) return;
+  var r = rezeptFotoZuordnen(idx, rezeptId, null);
+  if (!r.ok) return;
+  if (r.alt) fotoEntsorgen(r.alt);
+  fotoListenAktualisieren();
 }
 
 function fotoEntfernen(planToken, idx) {
@@ -6868,6 +7106,7 @@ function fotoEntfernen(planToken, idx) {
   if (!r.ok) return;
   if (r.alt) fotoEntsorgen(r.alt);
   try { renderRez(G.sugs && G.sel !== null ? G.sugs[G.sel] : null); } catch (e) {}
+  fotoListenAktualisieren();
 }
 
 // Vollbildansicht: Antippen schliesst wieder.
@@ -6881,6 +7120,17 @@ function fotoGross(img) {
   im.src = img.src; im.alt = img.alt || '';
   im.style.cssText = 'max-width:100%;max-height:100%;border-radius:8px;object-fit:contain';
   ov.appendChild(im);
+  var d = img.dataset || {};
+  if (d.fzPlan !== undefined || d.fzRezept !== undefined) {
+    var leiste = document.createElement('div');
+    leiste.style.cssText = 'position:absolute;left:0;right:0;bottom:0;display:flex;gap:8px;justify-content:center;padding:14px 12px calc(14px + env(safe-area-inset-bottom,0px))';
+    leiste.onclick = function(ev) { ev.stopPropagation(); };
+    var mk = function(txt, fn) { var b = document.createElement('button'); b.type = 'button'; b.className = 'btn btn-out'; b.style.cssText = 'width:auto;padding:10px 16px;font-size:13px;background:#fff'; b.textContent = txt; b.onclick = function(ev) { ev.stopPropagation(); ov.remove(); fn(); }; return b; };
+    var istRezept = d.fzRezept !== undefined, idx = parseInt(istRezept ? d.fzRezept : d.fzIdx, 10);
+    leiste.appendChild(mk('📷 Ersetzen', function() { if (istRezept) fotoWaehlenRezept(idx); else fotoWaehlen(d.fzPlan, idx); }));
+    leiste.appendChild(mk('Entfernen', function() { if (istRezept) fotoEntfernenRezept(idx, d.fzRid || ''); else fotoEntfernen(d.fzPlan, idx); }));
+    ov.appendChild(leiste);
+  }
   document.body.appendChild(ov);
 }
 
@@ -9891,7 +10141,9 @@ function rdbKarteRezept(e) {
   var zCount = (r.zutaten || []).length;
   return '<div class="rdb-karte" style="background:#fff;border-radius:var(--rlg);border:.5px solid var(--bdr);margin-bottom:8px;overflow:hidden">'
     + '<div style="padding:12px 14px;border-bottom:.5px solid var(--gr);display:flex;align-items:center;gap:10px">'
-      + '<div style="width:36px;height:36px;border-radius:8px;background:var(--rl);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0">🍽</div>'
+      + (r._fotoId
+          ? '<img class="foto-img foto-thumb" data-fotoid="' + esc(r._fotoId) + '" data-fz-rezept="' + i + '" data-fz-rid="' + esc(r._id || '') + '" src="' + FOTO_LEER + '" alt="Foto von ' + esc(r.name || 'Rezept') + '" onclick="fotoGross(this)" style="width:44px;height:44px;min-height:44px;max-height:44px;border-radius:10px">'
+          : '<button type="button" class="foto-platz" aria-label="Foto hinzufügen: ' + esc(r.name || 'Rezept') + '" onclick="fotoWaehlenRezept(' + i + ')" style="width:44px;height:44px;border-radius:10px;font-size:20px">🍽</button>')
       + '<div style="flex:1;min-width:0">'
         + '<div style="display:flex;align-items:center;gap:6px"><div style="font-size:15px;font-weight:700;color:var(--txt);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + esc(r.name || 'Rezept') + '</div>' + (r.stars ? rdbSterne(r.stars) : (r.status === 'gekocht' ? '<span class="titel-bewerten" role="button" tabindex="0" onclick="showFotoRating(' + i + ')" style="color:var(--red);font-size:12px;white-space:nowrap;cursor:pointer;flex-shrink:0">(bewerten)</span>' : '')) + '</div>'
         + '<div style="font-size:11px;color:var(--gr3);margin-top:2px">' + rdbQuelleHtml(r.quelle) + ' · ' + esc(r.saved || r.date || '') + ' · ' + personenLabel(r.portionen || 2) + (r.zeit_total ? ' · ' + esc(r.zeit_total) : '') + ' · ' + zCount + (zCount === 1 ? ' Zutat' : ' Zutaten') + '</div>'
@@ -9906,8 +10158,10 @@ function rdbKarteRezept(e) {
 
 function rdbKarteGericht(e, k) {
   var vorne = e.fotoId
-    ? '<img class="foto-img foto-thumb" data-fotoid="' + esc(e.fotoId) + '" src="' + FOTO_LEER + '" alt="Foto von ' + esc(e.name) + '" onclick="fotoGross(this)" style="width:56px;height:56px;min-height:56px;max-height:56px;border-radius:10px">'
-    : '<div style="width:56px;height:56px;border-radius:10px;background:var(--rl);display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0">🍽</div>';
+    ? '<img class="foto-img foto-thumb" data-fotoid="' + esc(e.fotoId) + '"' + (e.planId ? ' data-fz-plan="' + esc(e.planId) + '" data-fz-idx="' + e.gi + '"' : '') + ' src="' + FOTO_LEER + '" alt="Foto von ' + esc(e.name) + '" onclick="fotoGross(this)" style="width:56px;height:56px;min-height:56px;max-height:56px;border-radius:10px">'
+    : (e.planId
+        ? '<button type="button" class="foto-platz" aria-label="Foto hinzufügen: ' + esc(e.name) + '" onclick="fotoWaehlen(\'' + esc(e.planId) + '\',' + e.gi + ')" style="width:56px;height:56px;border-radius:10px;font-size:24px">🍽</button>'
+        : '<div style="width:56px;height:56px;border-radius:10px;background:var(--rl);display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0">🍽</div>');
   var dat = rdbDatumTxt(e.iso);
   return '<div class="rdb-karte" style="background:#fff;border-radius:var(--rlg);border:.5px solid var(--bdr);margin-bottom:8px;overflow:hidden">'
     + '<div style="padding:12px 14px;display:flex;align-items:center;gap:12px">' + vorne
@@ -10034,6 +10288,7 @@ function deleteHistoryRecipe(i) {
   var saved=JSON.parse(localStorage.getItem(userKey('foto_rezepte'))||'[]');
   migrateFotoIds(saved);
   if (saved[i]) addFotoTombstone(saved[i]);   // Loeschung geraeteuebergreifend merken
+  if (saved[i] && saved[i]._fotoId) fotoEntsorgen(saved[i]._fotoId);
   saved.splice(i,1);
   localStorage.setItem(userKey('foto_rezepte'),JSON.stringify(saved));
   saveFotoRezepteToGH(saved);
@@ -10091,7 +10346,7 @@ function handleFotoFile(file){
     if($('foto-err'))$('foto-err').style.display='none';
   });
 }
-function clearFoto(){G_foto.base64=null;G_foto.mime=null;$('foto-input').value='';$('foto-preview').style.display='none';$('foto-upload-area').style.display='block';$('foto-btn').disabled=true;$('foto-result').style.display='none';}
+function clearFoto(){G_foto.base64=null;G_foto.mime=null;$('foto-input').value='';if($('foto-kamera-input'))$('foto-kamera-input').value='';$('foto-preview').style.display='none';$('foto-upload-area').style.display='block';$('foto-btn').disabled=true;$('foto-result').style.display='none';}
 function openFotoScreen(){
   // Einen offenen Foto-Import beenden, sonst arbeitet ein spaeterer Import
   // noch auf dem alten Rezept.
@@ -10286,6 +10541,7 @@ function deleteSavedFotoRezept(i){
   // Rezept beim naechsten Sync von einem anderen Geraet zurueck.
   migrateFotoIds(saved);
   if (saved[i]) addFotoTombstone(saved[i]);
+  if (saved[i] && saved[i]._fotoId) fotoEntsorgen(saved[i]._fotoId);
   saved.splice(i,1);
   localStorage.setItem(userKey('foto_rezepte'),JSON.stringify(saved));
   saveFotoRezepteToGH(saved);
@@ -10543,7 +10799,11 @@ function mergeFotoRezepte(remote, local, tomb) {
   tomb = tomb || loadFotoTombstones();
   var merged = migrateFotoIds((remote || []).slice());
   migrateFotoIds(local || []);
-  (local || []).forEach(function(l) { if (!findFotoDup(merged, l)) merged.push(l); });
+  (local || []).forEach(function(l) {
+    var d = findFotoDup(merged, l);
+    if (!d) merged.push(l);
+    else if (l._fotoId && !d._fotoId) d._fotoId = l._fotoId;      // lokal gesetztes Foto nicht durch die Cloud-Fassung verlieren
+  });
   return merged.filter(function(r) { return !tomb[r._id]; });
 }
 
@@ -10567,6 +10827,8 @@ function saveFotoRezeptSilent(r,status){
   // Fallback fuer Alt-Eintraege, die noch keine _id haben.
   var exists=saved.findIndex(function(s){return s._id && s._id===entry._id;});
   if(exists<0)exists=saved.findIndex(function(s){return !s._id && s.name===entry.name;});
+  var _fid2=r._fotoId||(exists>=0&&saved[exists]&&saved[exists]._fotoId)||'';
+  if(_fid2)entry._fotoId=_fid2;
   if(exists>=0)saved[exists]=entry; else saved.unshift(entry);
   if(saved.length>100)saved=saved.slice(0,100);
   localStorage.setItem(userKey('foto_rezepte'),JSON.stringify(saved));
