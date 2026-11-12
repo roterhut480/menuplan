@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=yes">
-<title>Menüplan v7.15</title>
+<title>Menüplan v7.16</title>
 <meta name="theme-color" content="#5B7C78">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -366,7 +366,7 @@ body:has(#sc.feed.on){overflow:hidden}
 
 <!-- HOME -->
 <div class="scr on" id="sh">
-  <div class="hero"><h1>Menüplan</h1><p id="hsub">v7.15 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
+  <div class="hero"><h1>Menüplan</h1><p id="hsub">v7.16 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
 
   <!-- Active plan card -->
 
@@ -10197,7 +10197,7 @@ function rdbKarteRezept(e) {
     + '<div style="padding:8px 14px;display:flex;flex-direction:column;gap:6px">'
       + '<div style="width:100%;margin-bottom:4px">' + statusBadge(r.status||'gespeichert') + '</div>'
       + '<div style="display:flex;gap:6px"><button class="btn btn-red" onclick="openHistoryRecipe(' + i + ')" style="flex:1;padding:9px;font-size:12px">Öffnen</button>' + (r.status === 'gekocht' ? '<button class="btn btn-out" onclick="showFotoRating(' + i + ')" style="flex:1;padding:9px;font-size:12px">★ Bewerten</button>' : '') + '</div>'
-      + '<div style="display:flex;gap:6px"><button class="btn btn-out braucht-netz" onclick="importHistoryRecipeToBring(' + i + ')" style="flex:1;padding:9px;font-size:12px;white-space:nowrap">In Bring!</button>' + (r.status !== 'gekocht' ? '<button class="btn btn-out" onclick="markFotoRezeptGekocht(' + i + ')" style="flex:1;padding:9px;font-size:12px;white-space:nowrap">🍽 Gekocht</button>' : '') + ((r.status==='einkauf'||r.status==='gekocht') ? '<button class="btn btn-out" aria-label="Status zurücksetzen" onclick="resetFotoRezeptStatus(' + i + ')" style="flex:1;padding:9px;font-size:12px;white-space:nowrap" title="Status zurücksetzen">↩ ' + (r.status === 'gekocht' ? 'Nicht gekocht' : 'Nicht eingekauft') + '</button>' : '') + '<button aria-label="Rezept löschen" title="Rezept löschen" onclick="deleteHistoryRecipe(' + i + ')" style="background:none;border:.5px solid var(--bdr);border-radius:8px;padding:9px 12px;color:var(--gr3);cursor:pointer;font-size:16px">🗑</button></div>'
+      + '<div style="display:flex;gap:6px"><button class="btn btn-out braucht-netz" onclick="importHistoryRecipeToBring(' + i + ')" style="flex:1;padding:9px;font-size:12px;white-space:nowrap">In Bring!</button>' + (r.status !== 'gekocht' ? '<button class="btn btn-out" onclick="markFotoRezeptGekocht(' + i + ')" style="flex:1;padding:9px;font-size:12px;white-space:nowrap">🍽 Gekocht</button>' : '') + ((r.status==='einkauf'||r.status==='gekocht') ? '<button class="btn btn-out" aria-label="Status zurücksetzen" onclick="resetFotoRezeptStatus(' + i + ')" style="flex:1;padding:9px;font-size:12px;white-space:nowrap" title="Status zurücksetzen">↩ ' + (r.status === 'gekocht' ? 'Nicht gekocht' : 'Nicht eingekauft') + '</button>' : '') + '<button aria-label="Rezept löschen" title="Rezept löschen" onclick="deleteHistoryRecipe(' + i + ')" style="background:none;border:.5px solid var(--bdr);border-radius:8px;padding:9px 12px;color:var(--gr3);cursor:pointer;font-size:16px">🗑</button></div>' + '<button class="btn btn-out" aria-label="Rezept einplanen" onclick="einplanenEinzelrezept(' + i + ')" style="width:100%;margin-top:6px;padding:9px;font-size:12px">📅 Einplanen</button>' + (r.status === 'gekocht' ? kochtagWaehlerHtml(i, r) : '')
     + '</div></div>';
 }
 
@@ -10323,6 +10323,24 @@ function nochmalKochenFoto(i) {
 function markFotoRezeptGekocht(i) {
   var saved=JSON.parse(localStorage.getItem(userKey('foto_rezepte'))||'[]'); if(!saved[i])return;
   saved[i].status='gekocht'; saved[i].gekochtAm=isoDateLocal(new Date()); localStorage.setItem(userKey('foto_rezepte'),JSON.stringify(saved)); saveFotoRezepteToGH(saved); loadHistoryRecipes(); loadSavedFotoRezepte(); try{kalenderAktualisieren();}catch(e){}
+}
+// Kochtag eines gekochten Einzelrezepts aendern: Beschriftung ist ein echtes Datumsfeld (oeffnet auf jedem Geraet den eigenen Datumsdialog).
+function kochtagWaehlerHtml(i, r) {
+  var iso = (/^\d{4}-\d{2}-\d{2}$/.test(r.gekochtAm || '') ? r.gekochtAm : rdbIsoVonSaved(r));
+  var anz = iso ? new Date(iso + 'T12:00:00').toLocaleDateString('de-CH', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' }) : 'kein Datum';
+  return '<label class="kochtag-wahl" style="position:relative;display:flex;align-items:center;justify-content:center;gap:6px;margin-top:6px;padding:9px;border:.5px solid var(--bdr);border-radius:8px;font-size:12px;cursor:pointer;background:#fff">' +
+    '📅 Gekocht am <b>' + esc(anz) + '</b> · ändern' +
+    '<input type="date" class="kochtag-input" aria-label="Kochtag von ' + esc(r.name || 'Rezept') + ' ändern" value="' + esc(iso) + '" max="' + isoDateLocal(new Date()) + '" ' +
+      'onchange="setzeFotoKochtag(' + i + ',this.value)" style="position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer;font-size:16px"></label>';
+}
+function setzeFotoKochtag(i, iso) {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(iso || '')) return;
+  var saved = JSON.parse(localStorage.getItem(userKey('foto_rezepte')) || '[]'); if (!saved[i]) return;
+  if (iso > isoDateLocal(new Date())) { kurzHinweis('Der Kochtag kann nicht in der Zukunft liegen.'); loadHistoryRecipes(); return; }
+  saved[i].gekochtAm = iso; saved[i].status = 'gekocht';
+  localStorage.setItem(userKey('foto_rezepte'), JSON.stringify(saved)); saveFotoRezepteToGH(saved);
+  loadHistoryRecipes(); loadSavedFotoRezepte(); try { kalenderAktualisieren(); } catch (e) {}
+  kurzHinweis('Kochtag: ' + new Date(iso + 'T12:00:00').toLocaleDateString('de-CH', { day: 'numeric', month: 'long', year: 'numeric' }));
 }
 function resetFotoRezeptStatus(i) {
   var saved=JSON.parse(localStorage.getItem(userKey('foto_rezepte'))||'[]'); if(!saved[i])return;
@@ -10479,8 +10497,10 @@ function aktualisierePlanKennzahlen() {
 // laufen, nur eben mit einem einzigen Gericht statt einer ganzen Woche. Plant
 // der Nutzer spaeter tatsaechlich eine Woche, ersetzt das wie gewohnt den
 // aktiven Plan - der spontane Eintrag bleibt dabei im Verlauf erhalten.
-function einplanenSpontanHeute(r) {
-  var heuteIdx = new Date().getDay() === 0 ? 6 : new Date().getDay() - 1; // 0=Mo ... 6=So
+function einplanenSpontanHeute(r, datumIso) {
+  // datumIso (optional): beliebiger Tag statt heute; der Plan startet dann am Montag dieser Woche
+  var zielDatum = datumIso ? new Date(datumIso + 'T12:00:00') : new Date();
+  var heuteIdx = zielDatum.getDay() === 0 ? 6 : zielDatum.getDay() - 1; // 0=Mo ... 6=So
   var heuteTag = DAYS_ORDER[heuteIdx];
   var planData = {
     planId: generatePlanId(),
@@ -10488,12 +10508,13 @@ function einplanenSpontanHeute(r) {
     sel: 0, n: 0, personen: G.personen || 2,
     reste: G.reste, freeze: G.freeze, budget: G.budget, modus: G.modus || 'optional',
     resteMode: G.resteMode, days: G.days, planungsart: 'frei',
-    weekStart: isoDateLocal(mondayOf(new Date())),
+    weekStart: isoDateLocal(mondayOf(zielDatum)),
     einkaufstag: G.einkaufstag || 'Mo',
     saved: new Date().toLocaleDateString('de-CH'),
     bringImportedAt: null, bringItemCount: 0
   };
   planData.sugsAll = [planData.sug]; planData.sugsPartial = false;
+  if (G.activePlan && G.activePlan.sug) { try { updateHistoryEntryPlan(G.activePlan); } catch (e) {} }   // bisherigen Plan im Verlauf sichern
   G.activePlan = planData; G.sugs = [planData.sug]; G.sel = 0; G.checked = {};
   G.sugsPartial = false;
   localStorage.setItem(userKey('active_plan'), JSON.stringify(planData));
@@ -10504,29 +10525,75 @@ function einplanenSpontanHeute(r) {
   einplanenAuf(heuteTag);
 }
 
-function openEinplanen(r) {
-  if (!G.activePlan || !G.activePlan.sug) {
-    einplanenSpontanHeute(r);
-    return;
+// Freie Kalendertage ab heute (4 Wochen): nicht belegt, nicht vergangen. Liegt ein Tag im
+// Fenster des aktiven Plans, kommt das Gericht dort hinein (tag gesetzt); sonst startet
+// ein eigener Plan fuer diesen Tag (tag leer).
+var EINPLAN_HORIZONT_TAGE = 28;
+function einplanTageListe() {
+  var heute = new Date(); heute.setHours(0, 0, 0, 0);
+  var belegt = {};
+  try { belegt = belegteTageMap() || {}; } catch (e) { belegt = {}; }
+  var p = G.activePlan, tagVonIso = {}, imPlan = {};
+  if (p && p.sug && p.weekStart) {
+    tagReihe(p.weekStart).forEach(function(t) { var d = dateFromTag(p.weekStart, t); if (d) tagVonIso[isoDateLocal(d)] = t; });
+    (p.sug.gerichte || []).forEach(function(g) { imPlan[(g.tag || '').slice(0, 2)] = true; });
   }
-  var frei = freieTageImPlan();
-  if (!frei.length) {
-    alert('Diese Woche ist bereits vollständig verplant.\n\n' +
+  var out = [];
+  for (var n = 0; n < EINPLAN_HORIZONT_TAGE; n++) {
+    var d = new Date(heute); d.setDate(heute.getDate() + n);
+    var iso = isoDateLocal(d), t = tagVonIso[iso] || '';
+    if (belegt[iso]) continue;
+    if (t && imPlan[t]) continue;
+    out.push({ iso: iso, tag: t, datum: d, label: d.toLocaleDateString('de-CH', { weekday: 'long', day: 'numeric', month: 'short' }),
+               woche: isoDateLocal(mondayOf(d)) });
+  }
+  return out;
+}
+
+function openEinplanen(r) {
+  var tage = einplanTageListe();
+  if (!tage.length) {
+    alert('In den nächsten 4 Wochen ist kein Tag mehr frei.\n\n' +
           'Entferne zuerst ein Gericht, wenn du dieses Rezept einplanen möchtest.');
     return;
   }
   window._einplanRezept = r;
-  var html = frei.map(function(f) {
-    return '<button class="btn btn-out" onclick="einplanenAuf(\'' + f.tag + '\')" ' +
-      'style="width:100%;padding:12px;margin-bottom:6px;text-align:left;font-size:14px">' +
-      esc(f.label) + '</button>';
-  }).join('');
+  var html = '', letzteWoche = '';
+  tage.forEach(function(f) {
+    if (f.woche !== letzteWoche) {
+      letzteWoche = f.woche;
+      var lbl = ''; try { lbl = wochenEtikett(f.woche); } catch (e) { lbl = 'Woche ab ' + f.woche; }
+      html += '<div style="font-size:11px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--gr3);margin:10px 2px 6px">' + esc(lbl) + '</div>';
+    }
+    html += '<button class="btn btn-out einplan-tag" data-iso="' + f.iso + '" onclick="einplanenAufDatum(\'' + f.iso + '\')" ' +
+      'style="width:100%;padding:12px;margin-bottom:6px;text-align:left;font-size:14px">' + esc(f.label) + '</button>';
+  });
   var name = r.abend || r.name || 'Rezept';
   $('einplan-titel').textContent = name;
   $('einplan-tage').innerHTML = html;
   $('einplan-modal').style.display = 'flex';
+  $('einplan-tage').scrollTop = 0;
 }
 
+// Tag aus der Liste gewaehlt: im aktiven Plan ablegen oder - ausserhalb seines Fensters -
+// als eigenen Ein-Gericht-Plan anlegen. Liegt dieser in einer spaeteren Woche, bleibt er im Verlauf/Kalender,
+// bis seine Woche beginnt (befoerdereWochenplan haelt den Plan der laufenden Woche aktiv).
+function einplanenFotoRezept() {
+  var r = window._fotoRezept; if (!r) return;
+  openEinplanen(JSON.parse(JSON.stringify(r)));
+}
+function einplanenEinzelrezept(i) {
+  var saved = JSON.parse(localStorage.getItem(userKey('foto_rezepte')) || '[]'); var r = saved[i]; if (!r) return;
+  openEinplanen(JSON.parse(JSON.stringify(r)));
+}
+function einplanenAufDatum(iso) {
+  var r = window._einplanRezept; if (!r) return closeEinplanen();
+  var eintrag = einplanTageListe().filter(function(f) { return f.iso === iso; })[0];
+  if (eintrag && eintrag.tag && G.activePlan && G.activePlan.sug) return einplanenAuf(eintrag.tag);
+  window._einplanRezept = r;
+  $('einplan-modal').style.display = 'none';
+  einplanenSpontanHeute(r, iso);
+}
 function closeEinplanen() {
   $('einplan-modal').style.display = 'none';
   window._einplanRezept = null;
@@ -10712,7 +10779,7 @@ function analyzeFoto(){
 function renderFotoRezept(r){
   var zRows=(r.zutaten||[]).map(function(z){return '<div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:.5px solid #f5f5f5"><span style="font-size:14px;font-weight:500">'+esc(z.name)+'</span><span style="font-size:13px;color:var(--gr3)">'+mengeTxt(z.menge)+'</span></div>';}).join('');
   var sRows=(r.schritte||[]).map(function(s,i){var pills=normZs(s.zutaten_schritt).map(function(z){return '<span class="zpill">'+esc(z.name)+(z.menge?' '+esc(z.menge):'')+'</span>';}).join('');return '<div style="margin-bottom:14px"><div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><div style="width:24px;height:24px;border-radius:50%;background:var(--red);color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0">'+(i+1)+'</div><b style="font-size:13px;color:var(--txt)">'+esc(s.titel||'')+'</b>'+(s.timer_min>0?'<span style="font-size:11px;color:var(--gr3);background:#f5f5f5;padding:2px 8px;border-radius:100px">⏱ '+s.timer_min+' Min.</span>':'')+'</div>'+(pills?'<div class="zpills" style="margin-bottom:6px">'+pills+'</div>':'')+'<div style="font-size:14px;color:var(--txt);line-height:1.6">'+esc(s.text)+'</div></div>';}).join('');
-  var html='<div class="card"><div class="cp"><div style="font-size:19px;font-weight:800;color:var(--txt);margin-bottom:4px">'+esc(r.name||'Rezept')+'</div>'+(r.beschreibung?'<div style="font-size:13px;color:var(--gr3);margin-bottom:10px">'+esc(r.beschreibung)+'</div>':'')+'<div style="display:flex;gap:12px;margin-bottom:14px">'+(r.zeit_aktiv?'<span style="font-size:12px;color:var(--gr3)">✏ Aktiv: <b style="color:var(--txt2)">'+esc(r.zeit_aktiv)+'</b></span>':'')+(r.zeit_total?'<span style="font-size:12px;color:var(--gr3)">⏰ Total: <b style="color:var(--txt2)">'+esc(r.zeit_total)+'</b></span>':'')+'</div><div class="clbl">Zutaten für '+G_foto.portionen+' Personen</div><div style="margin-bottom:14px">'+zRows+'</div>'+(r.tipp?'<div style="background:#fffde7;border-left:3px solid #f9a825;padding:10px 12px;border-radius:0 8px 8px 0;font-size:13px;margin-bottom:14px"><b>Tipp:</b> '+esc(r.tipp)+'</div>':'')+'</div></div><div class="card"><div class="cp"><div class="clbl">Zubereitung</div>'+sRows+'</div></div><div style="padding:0 10px 10px;display:flex;flex-direction:column;gap:8px"><button class="btn btn-red" onclick="startFotoCook()" style="font-size:13px">👨‍🍳 Jetzt kochen</button><button class="btn btn-out" onclick="importFotoFromResult()" style="font-size:13px">In Bring! importieren</button><div style="display:flex;gap:8px"><button class="btn btn-out" onclick="saveFotoRezept(this)" style="flex:1;font-size:13px">💾 Speichern</button><button class="btn btn-out" onclick="showFotoPrint()" style="flex:1;font-size:13px">🖨 PDF</button></div></div>';
+  var html='<div class="card"><div class="cp"><div style="font-size:19px;font-weight:800;color:var(--txt);margin-bottom:4px">'+esc(r.name||'Rezept')+'</div>'+(r.beschreibung?'<div style="font-size:13px;color:var(--gr3);margin-bottom:10px">'+esc(r.beschreibung)+'</div>':'')+'<div style="display:flex;gap:12px;margin-bottom:14px">'+(r.zeit_aktiv?'<span style="font-size:12px;color:var(--gr3)">✏ Aktiv: <b style="color:var(--txt2)">'+esc(r.zeit_aktiv)+'</b></span>':'')+(r.zeit_total?'<span style="font-size:12px;color:var(--gr3)">⏰ Total: <b style="color:var(--txt2)">'+esc(r.zeit_total)+'</b></span>':'')+'</div><div class="clbl">Zutaten für '+G_foto.portionen+' Personen</div><div style="margin-bottom:14px">'+zRows+'</div>'+(r.tipp?'<div style="background:#fffde7;border-left:3px solid #f9a825;padding:10px 12px;border-radius:0 8px 8px 0;font-size:13px;margin-bottom:14px"><b>Tipp:</b> '+esc(r.tipp)+'</div>':'')+'</div></div><div class="card"><div class="cp"><div class="clbl">Zubereitung</div>'+sRows+'</div></div><div style="padding:0 10px 10px;display:flex;flex-direction:column;gap:8px"><button class="btn btn-red" onclick="startFotoCook()" style="font-size:13px">👨‍🍳 Jetzt kochen</button><button class="btn btn-out" onclick="importFotoFromResult()" style="font-size:13px">In Bring! importieren</button><button class="btn btn-out" aria-label="Einzelrezept einplanen" onclick="einplanenFotoRezept()" style="font-size:13px">📅 Einplanen</button><div style="display:flex;gap:8px"><button class="btn btn-out" onclick="saveFotoRezept(this)" style="flex:1;font-size:13px">💾 Speichern</button><button class="btn btn-out" onclick="showFotoPrint()" style="flex:1;font-size:13px">🖨 PDF</button></div></div>';
   window._fotoRezept=r; if($('foto-result')){$('foto-result').innerHTML=html;$('foto-result').style.display='block';}
 }
 function importFotoFromResult(){
@@ -11489,8 +11556,8 @@ var STAR_LABELS = ['', 'Nicht so gut', 'Geht so', 'Gut', 'Sehr gut', 'Ausgezeich
   <div style="background:#fff;width:100%;max-width:480px;border-radius:var(--rlg) var(--rlg) 0 0;padding:18px 16px calc(18px + env(safe-area-inset-bottom))">
     <div style="font-size:12px;color:var(--gr3);text-transform:uppercase;letter-spacing:.4px">Einplanen</div>
     <div id="einplan-titel" style="font-size:16px;font-weight:700;color:var(--txt);margin:2px 0 4px"></div>
-    <div style="font-size:12px;color:var(--gr3);margin-bottom:12px">An welchem Tag dieser Woche?</div>
-    <div id="einplan-tage"></div>
+    <div style="font-size:12px;color:var(--gr3);margin-bottom:12px">An welchem Tag? (freie Tage der nächsten 4 Wochen)</div>
+    <div id="einplan-tage" style="max-height:52vh;overflow-y:auto;-webkit-overflow-scrolling:touch"></div>
     <button class="btn btn-out" onclick="closeEinplanen()" style="width:100%;padding:11px;margin-top:4px">Abbrechen</button>
   </div>
 </div>
