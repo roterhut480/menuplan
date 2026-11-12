@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=yes">
-<title>Menüplan v7.14</title>
+<title>Menüplan v7.15</title>
 <meta name="theme-color" content="#5B7C78">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -128,6 +128,8 @@ button:focus:not(:focus-visible),[role=button]:focus:not(:focus-visible){outline
 .day-row.belegt{border-top:none;border-right:none;border-bottom:none}
 .day-row.heute{box-shadow:inset 0 0 0 1.5px var(--red)}
 .day-row.vergangen{opacity:.7}
+.ez-row{display:flex;align-items:center;gap:10px;min-height:46px;padding:0 10px;margin-bottom:2px;border-radius:6px;background:#F1EFEA;border:.5px solid var(--bdr);border-left:3px solid #C3C9C7;box-sizing:border-box}
+.ez-row .kl-tap{flex:1}
 .kl-tap{display:flex;align-items:center;gap:10px;width:100%;min-height:46px;border:none;background:none;font-family:inherit;text-align:left;padding:0;color:var(--txt);cursor:pointer}
 .kl-datum{font-size:14px;font-weight:700;min-width:70px;white-space:nowrap}
 .kl-titel{flex:1;min-width:0;font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -364,7 +366,7 @@ body:has(#sc.feed.on){overflow:hidden}
 
 <!-- HOME -->
 <div class="scr on" id="sh">
-  <div class="hero"><h1>Menüplan</h1><p id="hsub">v7.14 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
+  <div class="hero"><h1>Menüplan</h1><p id="hsub">v7.15 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
 
   <!-- Active plan card -->
 
@@ -443,7 +445,7 @@ body:has(#sc.feed.on){overflow:hidden}
       <div style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--gr3);margin:6px 2px 8px">Ausserhalb dieser Woche</div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:4px">
         <button onclick="openFotoScreen()" style="background:#fff;border:.5px solid var(--bdr);border-radius:var(--rlg);padding:14px;text-align:left;cursor:pointer;font-family:inherit"><div style="font-size:22px;margin-bottom:4px">📷</div><div style="font-size:13px;font-weight:700;color:var(--txt)">Einzelrezept</div><div style="font-size:11px;color:var(--gr3)">Foto oder Text</div></button>
-        <button onclick="openHistory()" style="background:#fff;border:.5px solid var(--bdr);border-radius:var(--rlg);padding:14px;text-align:left;cursor:pointer;font-family:inherit"><div style="font-size:22px;margin-bottom:4px">🗂️</div><div style="font-size:13px;font-weight:700;color:var(--txt)">Verlauf</div><div style="font-size:11px;color:var(--gr3)">Frühere Wochen & Fotos</div></button>
+        <button onclick="openRezeptdatenbank()" style="background:#fff;border:.5px solid var(--bdr);border-radius:var(--rlg);padding:14px;text-align:left;cursor:pointer;font-family:inherit"><div style="font-size:22px;margin-bottom:4px">🍳</div><div style="font-size:13px;font-weight:700;color:var(--txt)">Rezepte</div><div style="font-size:11px;color:var(--gr3)">Gekochtes, Wochen & Fotos</div></button>
       </div>
     </div>
     <div id="invite-btn" style="display:none"></div>
@@ -899,17 +901,17 @@ body:has(#sc.feed.on){overflow:hidden}
 <div class="scr" id="sh2">
   <div class="tbar">
     <div class="tbar-bk" onclick="go('sh')">&#8592;</div>
-    <div><h1>Verlauf</h1><div class="tbar-sub">Menüpläne &amp; Rezepte</div></div>
-    <button aria-label="Verlauf aktualisieren" onclick="syncHistory()" style="background:rgba(255,255,255,.2);border:none;border-radius:6px;padding:6px 10px;font-size:12px;color:#fff;cursor:pointer;font-family:inherit;margin-left:auto">&#x1F504;</button>
+    <div><h1>Rezepte</h1><div class="tbar-sub">Rezepte &amp; Menüpläne</div></div>
+    <button aria-label="Rezepte aktualisieren" onclick="syncHistory()" style="background:rgba(255,255,255,.2);border:none;border-radius:6px;padding:6px 10px;font-size:12px;color:#fff;cursor:pointer;font-family:inherit;margin-left:auto">&#x1F504;</button>
   </div>
-  <div class="tabs" role="tablist" aria-label="Verlauf" style="margin:10px 10px 0">
-    <div class="tab on" id="htab-plans" role="tab" aria-selected="true" onclick="hwtab('plans')">&#128197; Menüpläne</div>
-    <div class="tab" id="htab-recipes" role="tab" aria-selected="false" onclick="hwtab('recipes')">&#127859; Rezepte</div>
+  <div class="tabs" role="tablist" aria-label="Rezepte und Menüpläne" style="margin:10px 10px 0">
+    <div class="tab on" id="htab-recipes" role="tab" aria-selected="true" onclick="hwtab('recipes')">&#127859; Rezepte</div>
+    <div class="tab" id="htab-plans" role="tab" aria-selected="false" onclick="hwtab('plans')">&#128197; Menüpläne</div>
   </div>
   <div id="htab-plans-content">
     <div id="hload" style="display:none;text-align:center;padding:32px">
       <div class="spin" style="width:22px;height:22px;margin:0 auto 10px;border-width:2px"></div>
-      <div style="font-size:13px;color:var(--gr3)">Lade Verlauf...</div>
+      <div style="font-size:13px;color:var(--gr3)">Lade Rezepte und Pläne...</div>
     </div>
     <div id="hlist" style="padding:10px 10px 0"></div>
   </div>
@@ -1530,6 +1532,21 @@ var PICKER_WOCHEN = 4;
 // Gerichts (die Zeitachse ist die Wahrheit). Ausgefallene Abende gelten als
 // frei, "Auswaerts" bleibt belegt. "eingekauft" = Einkaufsliste dieses
 // Menue-Laufs wurde nach Bring! uebertragen.
+// Gekochte Einzelrezepte (Foto-/Einzelrezepte) je Kochtag: { iso: [ {idx, name, stars, fotoId} ] }.
+// Kochtag = gekochtAm; bei Alt-Eintraegen das Speicherdatum.
+function gekochteEinzelrezepteNachTag() {
+  var out = {}, saved = [];
+  try { saved = JSON.parse(localStorage.getItem(userKey('foto_rezepte')) || '[]'); } catch (e) { saved = []; }
+  if (!Array.isArray(saved)) return out;
+  saved.forEach(function(r, i) {
+    if (!r || r.status !== 'gekocht') return;
+    var iso = (/^\d{4}-\d{2}-\d{2}$/.test(r.gekochtAm || '') ? r.gekochtAm : rdbIsoVonSaved(r));
+    if (!iso) return;
+    (out[iso] = out[iso] || []).push({ idx: i, name: String(r.name || 'Einzelrezept'), stars: r.stars || 0, fotoId: r._fotoId || '' });
+  });
+  return out;
+}
+
 function belegteTageInfo() {
   var out = {};
   var tl = {};
@@ -1583,9 +1600,12 @@ var KL_MAX_RUECK = 26;   // hoechstens so viele vergangene Wochen anzeigen
 // PICKER_WOCHEN Wochen ab der laufenden.
 function pickerWochen() {
   var belegt = belegteTageInfo();
+  var einzel = {};
+  try { einzel = gekochteEinzelrezepteNachTag(); } catch (e) { einzel = {}; }
   var heute = new Date(); heute.setHours(0, 0, 0, 0);
   var thisMo = mondayOf(heute);
   var rueck = 0;
+  Object.keys(einzel).forEach(function(iso) { if (!belegt[iso]) belegt[iso] = null; });
   Object.keys(belegt).forEach(function(iso) {
     var w = Math.round((thisMo - mondayOf(new Date(iso + 'T12:00:00'))) / (7 * 86400000));
     if (w > rueck) rueck = w;
@@ -1598,7 +1618,8 @@ function pickerWochen() {
       var d = dateFromTag(wiso, tag);
       var iso = isoDateLocal(d);
       var bi = belegt[iso] || null;
-      return { tag: tag, iso: iso, date: d, vergangen: d < heute, heute: +d === +heute,
+      var ez = einzel[iso] || [];
+      return { tag: tag, iso: iso, date: d, vergangen: d < heute, heute: +d === +heute, einzel: ez,
                titel: bi ? bi.titel : null, planId: bi ? bi.planId : '', thema: bi ? bi.thema : '',
                eingekauft: bi ? bi.eingekauft : false, status: bi ? bi.status : '', fotoId: bi ? bi.fotoId : '',
                sterne: bi ? bi.sterne : 0, gi: bi ? bi.gi : -1,
@@ -1748,7 +1769,7 @@ function initDayPicker() {
   var gewIso = gewaehlteTageIso(), gewListe = Object.keys(gewIso);
   var html = '';
   wochen.forEach(function(w) {
-    var zeilen = w.tage.filter(function(t) { return !t.vergangen || t.titel; });
+    var zeilen = w.tage.filter(function(t) { return !t.vergangen || t.titel || (t.einzel && t.einzel.length); });
     if (!zeilen.length) return;
     var hatAuswahl = w.tage.some(function(t) { return !!gewIso[t.iso]; });
     var istAktiv = hatAuswahl;
@@ -1762,6 +1783,16 @@ function initDayPicker() {
     html += '<div data-wk="' + w.iso + '"' + (gedaempft ? ' class="kl-gedaempft"' : '') + (w.tage.every(function(t) { return !t.vergangen; }) ? ' data-kuenftig="1"' : '') + '>';
     zeilen.forEach(function(t) {
       var datum = kalenderTagKurz(t.date);
+      // Gekochte Einzelrezepte dieses Tages: eigene Zeilen, Tipp oeffnet das Rezept
+      var ezHtml = (t.einzel || []).map(function(e, n) {
+        return '<div class="ez-row" id="dre-' + t.iso + '-' + n + '" data-iso="' + t.iso + '" data-idx="' + e.idx + '">' +
+          '<button class="kl-tap" onclick="openHistoryRecipe(' + e.idx + ')" aria-label="Einzelrezept ' + esc(e.name) + ' öffnen">' +
+            KL_SVG.haken + '<span class="kl-datum">' + datum + '</span><span class="kl-titel dp-titel" style="display:flex;align-items:baseline;gap:4px"><span style="min-width:0;overflow:hidden;text-overflow:ellipsis" title="Einzelrezept">🍳 ' + esc(e.name) + '</span>' +
+            '<span style="flex:none">' + (e.stars ? sterneHtml(e.stars) : '<span class="titel-bewerten" role="button" tabindex="0" aria-label="Einzelrezept bewerten" onclick="event.stopPropagation();showFotoRating(' + e.idx + ',\'skal\')" style="display:inline-block;color:var(--red);font-size:.8em;font-weight:500;white-space:nowrap;cursor:pointer;padding:2px 0">(bewerten)</span>') + '</span></span>' +
+            (e.fotoId ? '<img class="foto-img foto-thumb" data-fotoid="' + esc(e.fotoId) + '" src="' + FOTO_LEER + '" alt="" style="width:30px;height:30px;min-height:30px;max-height:30px;border-radius:6px">' : '') +
+          '</button></div>';
+      }).join('');
+      if (ezHtml && !t.titel) html += ezHtml;
       var kl = 'day-row' + (t.heute ? ' heute' : '') + (t.vergangen ? ' vergangen' : '') +
         (gewaehlt && !t.titel && !t.vergangen && !gewIso[t.iso] && !imPlanSpann(t.iso, gewListe) && !gedaempft ? ' kl-gedaempft' : '');
       var tint = t.farbe ? 'background:' + t.farbe.bg + ';border-left:3px solid ' + t.farbe.bd + ';' : '';
@@ -1780,7 +1811,8 @@ function initDayPicker() {
           try { det = timelineCardDetail(tl[t.iso]); } catch (ex) { det = ''; }
           html += '<div class="kl-detail">' + det + '</div>';
         }
-      } else {
+        html += ezHtml;
+      } else if (!t.vergangen) {
         var an = !!gewIso[t.iso];
         html += '<div class="' + kl + '"' + attr + '>' +
           '<label style="display:flex;align-items:center;gap:10px;flex:1;min-width:0;min-height:44px;cursor:pointer">' +
@@ -3573,6 +3605,7 @@ function callWorker(kind, message, maxTokens, opts, model, onProgress, messagesO
   };
   if (messagesOverride) _p.messages = messagesOverride; else _p.message = message;
   var payload = JSON.stringify(_p);
+  var limitErhoeht = false;          // Token-Limit wird nur EINMAL automatisch angehoben
 
   function attempt() {
     var ctrl = (typeof AbortController === 'function') ? new AbortController() : null;
@@ -3650,6 +3683,17 @@ function callWorker(kind, message, maxTokens, opts, model, onProgress, messagesO
   function mitWiederholung(versuch) {
     return attempt().catch(function(e) {
       var msg = (e && e.message) || '';
+      // Antwort am Token-Limit abgeschnitten: das Rezept war laenger als erwartet (z. B. viele
+      // Schritte mit Utensilien und Ablage-Hinweisen). Einmal automatisch mit doppeltem Limit
+      // wiederholen - bei gleichem Limit wuerde es wieder genauso abbrechen. Das Worker-Limit ist 16000.
+      if (/Token-Limit/.test(msg) && !limitErhoeht && _p.max_tokens < 16000) {
+        limitErhoeht = true;
+        _p.max_tokens = Math.min(_p.max_tokens * 2, 16000);
+        payload = JSON.stringify(_p);
+        console.warn('Antwort am Token-Limit abgeschnitten - neuer Versuch mit max_tokens ' + _p.max_tokens);
+        if (onRetry) { try { onRetry(versuch + 2, WIEDERHOLUNG_WARTE_MS.length + 1, 'limit'); } catch(ex) {} }
+        return mitWiederholung(versuch);
+      }
       var wiederholbar = /Failed to fetch|NetworkError|Verbindung unterbrochen|network/i.test(msg);
       if (!wiederholbar || versuch >= WIEDERHOLUNG_WARTE_MS.length) {
         // Alle Versuche verbraucht: pruefen, ob es am Netz liegt. Dann zeigt der
@@ -4888,7 +4932,7 @@ function goWeek() {
       if ($('rlist')) $('rlist').insertAdjacentHTML('afterbegin',
         '<div class="st inf" style="margin:10px 10px 0">Plan „' + esc(sug.thema) + '" (' +
         esc(wochenEtikett(G_zuletztAktiviert)) + ') ist gespeichert, aber unvollständig: ' + esc(e.message) +
-        ' Die fehlenden Rezepte lassen sich später im Verlauf nachholen. Bis dahin bleibt die laufende Woche im Vordergrund.</div>');
+        ' Die fehlenden Rezepte lassen sich später unter «Rezepte» im Reiter «Menüpläne» nachholen. Bis dahin bleibt die laufende Woche im Vordergrund.</div>');
       logFehler('rezepte', 'Zukunftsplan unvollständig', e.message);
       return;
     }
@@ -9149,7 +9193,7 @@ var TOUR_SCHRITTE = [
           '<p style="margin:0">Die meisten Änderungen lassen sich gleich wieder rückgängig machen.</p>' },
   { icon: '🛍️', titel: 'Einkaufen und mehr',
     text: '<p style="margin:0 0 8px">Unter «Einkaufsliste» steht alles für die Woche. Mit «In Bring! importieren» landet die Liste in deiner Bring!-App.</p>' +
-          '<p style="margin:0">Rezepte kannst du als PDF speichern oder aufs Tablet schicken. Ein Einzelrezept erstellst du per Foto oder Text, alte Wochen findest du im Verlauf.</p>' },
+          '<p style="margin:0">Rezepte kannst du als PDF speichern oder aufs Tablet schicken. Ein Einzelrezept erstellst du per Foto oder Text, alte Wochen findest du unter «Rezepte» im Reiter «Menüpläne».</p>' },
   { icon: '🎉', titel: 'Es kann losgehen', id: 'ende',
     text: '<p style="margin:0">Plane jetzt deine erste Woche. Die Einführung findest du jederzeit wieder im Menü unter «Einführung».</p>' }
 ];
@@ -9594,12 +9638,12 @@ function showHistoryRating(i) {
   markExistingRmTags(G_rating.tags);
   $('rating-modal').style.display='flex';
 }
-function showFotoRating(i) {
+function showFotoRating(i, rueck) {
   var saved=JSON.parse(localStorage.getItem(userKey('foto_rezepte'))||'[]'); if(!saved[i])return;
   if (saved[i].status !== 'gekocht') { kurzHinweis('Bewerten ist erst möglich, wenn das Rezept gekocht ist.'); return; }
   var r=saved[i]; G_rating.stars=r.stars||0; G_rating.fotoIdx=i; G_rating.historyIdx=null; G_rating.gerichtIdx=null; G_rating.pastDish=null;
   G_rating.tags = (r.tags||[]).slice();
-  G_rating.returnScreen = 'sh2';
+  G_rating.returnScreen = rueck || 'sh2';
   $('rm-title').textContent=r.name||'Einzelrezept'; $('rm-feedback').value=r.ratingFeedback||''; $('rm-starlbl').textContent=''; $('rm-submit').disabled=false;
   var stars=$('rm-stars').querySelectorAll('.star-btn');
   for(var j=0;j<stars.length;j++){stars[j].style.opacity=j<(r.stars||0)?'1':'.25';stars[j].style.color=j<(r.stars||0)?'#f59e0b':'#888';}
@@ -9623,6 +9667,7 @@ function statusBadge(status) {
 }
 
 // ─── HISTORY ───────────────────────────────────────────────
+// Menüpläne-Reiter (z. B. zurück aus der Plan-Ansicht); die Kachel «Rezepte» öffnet openRezeptdatenbank()
 function openHistory() { go('sh2'); loadHistory(); hwtab('plans'); }
 function openRezeptdatenbank() { go('sh2'); loadHistory(); hwtab('recipes'); }
 function syncHistory() { loadHistory(); loadHistoryRecipes(); }
@@ -10277,11 +10322,11 @@ function nochmalKochenFoto(i) {
 
 function markFotoRezeptGekocht(i) {
   var saved=JSON.parse(localStorage.getItem(userKey('foto_rezepte'))||'[]'); if(!saved[i])return;
-  saved[i].status='gekocht'; localStorage.setItem(userKey('foto_rezepte'),JSON.stringify(saved)); saveFotoRezepteToGH(saved); loadHistoryRecipes(); loadSavedFotoRezepte();
+  saved[i].status='gekocht'; saved[i].gekochtAm=isoDateLocal(new Date()); localStorage.setItem(userKey('foto_rezepte'),JSON.stringify(saved)); saveFotoRezepteToGH(saved); loadHistoryRecipes(); loadSavedFotoRezepte(); try{kalenderAktualisieren();}catch(e){}
 }
 function resetFotoRezeptStatus(i) {
   var saved=JSON.parse(localStorage.getItem(userKey('foto_rezepte'))||'[]'); if(!saved[i])return;
-  saved[i].status='gespeichert'; localStorage.setItem(userKey('foto_rezepte'),JSON.stringify(saved)); saveFotoRezepteToGH(saved); loadHistoryRecipes(); loadSavedFotoRezepte();
+  saved[i].status='gespeichert'; delete saved[i].gekochtAm; localStorage.setItem(userKey('foto_rezepte'),JSON.stringify(saved)); saveFotoRezepteToGH(saved); loadHistoryRecipes(); loadSavedFotoRezepte(); try{kalenderAktualisieren();}catch(e){}
 }
 function deleteHistoryRecipe(i) {
   if(!confirm('Rezept löschen?'))return;
@@ -10593,7 +10638,7 @@ function zeigeEinzelrezeptFehler(e) {
 // Stand des gescheiterten Versuchs stehen (z.B. "3281 Zeichen"), waehrend im
 // Hintergrund laengst neu von vorne begonnen wurde - wirkte wie haengen
 // geblieben statt wie ein aktiver Wiederholungsversuch.
-function zeigeEinzelrezeptWiederholung(versuch, gesamt) {
+function zeigeEinzelrezeptWiederholung(versuch, gesamt, grund) {
   var el = $('foto-load');
   if (!el) return;
   var z = el.querySelector('.foto-fortschritt');
@@ -10601,7 +10646,9 @@ function zeigeEinzelrezeptWiederholung(versuch, gesamt) {
     z.className = 'foto-fortschritt';
     z.style.cssText = 'font-size:12px;color:var(--text-secondary);margin-top:8px';
     el.appendChild(z); }
-  z.textContent = 'Verbindung kurz unterbrochen – versuche erneut… (' + versuch + '/' + gesamt + ')';
+  z.textContent = (grund === 'limit')
+    ? 'Das Rezept ist länger als erwartet – neuer Versuch mit mehr Platz…'
+    : 'Verbindung kurz unterbrochen – versuche erneut… (' + versuch + '/' + gesamt + ')';
 }
 
 function analyzeEinzelrezept() {
@@ -10620,7 +10667,7 @@ function analyzeEinzelrezeptText() {
   var hint=$('foto-hint').value.trim(); var p=G_foto.portionen;
   var msg = 'Erstelle ein vollständiges Rezept für "' + beschreibung + '" für ' + p + ' Personen. ' +
     'Gib alle Zutaten mit genauen Mengen an. Schritte detailliert.' + (hint ? ' Hinweis: ' + hint + '.' : '');
-  callWorker('einzelrezept', msg, 3000, currentOpts(), 'claude-sonnet-5', function(teil) {
+  callWorker('einzelrezept', msg, 6000, currentOpts(), 'claude-sonnet-5', function(teil) {
     var el = $('foto-load');
     if (el && teil) {
       var z = el.querySelector('.foto-fortschritt');
@@ -10648,7 +10695,7 @@ function analyzeFoto(){
   // Ueber callWorker(): damit gelten Streaming, Leerlauf-Frist, mehrere
   // Wiederholungsversuche bei Verbindungsabbruch und die Diagnose in der
   // Fehlermeldung auch fuer die Fotoanalyse.
-  callWorker('photo', msg, 3000, currentOpts(), 'claude-sonnet-5', function(teil) {
+  callWorker('photo', msg, 6000, currentOpts(), 'claude-sonnet-5', function(teil) {
     var el = $('foto-load');
     if (el && teil) {
       var z = el.querySelector('.foto-fortschritt');
@@ -10802,7 +10849,10 @@ function mergeFotoRezepte(remote, local, tomb) {
   (local || []).forEach(function(l) {
     var d = findFotoDup(merged, l);
     if (!d) merged.push(l);
-    else if (l._fotoId && !d._fotoId) d._fotoId = l._fotoId;      // lokal gesetztes Foto nicht durch die Cloud-Fassung verlieren
+    else {
+      if (l._fotoId && !d._fotoId) d._fotoId = l._fotoId;      // lokal gesetztes Foto nicht durch die Cloud-Fassung verlieren
+      if (l.gekochtAm && d.status === 'gekocht' && !d.gekochtAm) d.gekochtAm = l.gekochtAm;   // Kochtag nicht verlieren
+    }
   });
   return merged.filter(function(r) { return !tomb[r._id]; });
 }
@@ -10829,6 +10879,11 @@ function saveFotoRezeptSilent(r,status){
   if(exists<0)exists=saved.findIndex(function(s){return !s._id && s.name===entry.name;});
   var _fid2=r._fotoId||(exists>=0&&saved[exists]&&saved[exists]._fotoId)||'';
   if(_fid2)entry._fotoId=_fid2;
+  // Kochtag fuers Kalender: frisch gekocht = heute; sonst bleibt ein vorhandener Tag erhalten
+  if(entry.status==='gekocht'){
+    var _alt=exists>=0?saved[exists]:null;
+    entry.gekochtAm=(status==='gekocht')?isoDateLocal(new Date()):(r.gekochtAm||(_alt&&_alt.status==='gekocht'&&(_alt.gekochtAm||rdbIsoVonSaved(_alt)))||isoDateLocal(new Date()));
+  }
   if(exists>=0)saved[exists]=entry; else saved.unshift(entry);
   if(saved.length>100)saved=saved.slice(0,100);
   localStorage.setItem(userKey('foto_rezepte'),JSON.stringify(saved));
@@ -11248,7 +11303,7 @@ var STAR_LABELS = ['', 'Nicht so gut', 'Geht so', 'Gut', 'Sehr gut', 'Ausgezeich
     <div id="um-username" style="font-size:15px;font-weight:700"></div>
   </div>
   <div style="padding:6px 0">
-    <button onclick="openHistory();toggleUserMenu()" style="width:100%;text-align:left;padding:11px 16px;background:none;border:none;font-size:14px;color:var(--txt);cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:10px"><span style="font-size:17px">&#128197;</span> Verlauf</button>
+    <button onclick="openRezeptdatenbank();toggleUserMenu()" style="width:100%;text-align:left;padding:11px 16px;background:none;border:none;font-size:14px;color:var(--txt);cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:10px"><span style="font-size:17px">&#127859;</span> Rezepte</button>
     <div style="height:.5px;background:var(--bdr);margin:0 16px"></div>
     <button onclick="openPrefs();toggleUserMenu()" style="width:100%;text-align:left;padding:11px 16px;background:none;border:none;font-size:14px;color:var(--txt);cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:10px"><span style="font-size:17px">&#9881;</span> Präferenzen</button>
     <div style="height:.5px;background:var(--bdr);margin:0 16px"></div>
