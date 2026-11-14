@@ -11,12 +11,17 @@
 // API-Aufrufe werden NIE zwischengespeichert - eine gecachte Menügenerierung
 // oder ein gecachter Bring!-Import wären schlimmer als ein Fehler.
 
-const CACHE = 'menuplan-v7.16';
+const CACHE = 'menuplan-v7.17';
 const DOKUMENT = './menuplan-app.html';
 
 // Pfade, die immer ans Netz gehen müssen.
-const NUR_NETZ = [/\/generate\b/, /\/gh\//, /\/bring/, /\/auth\b/,
-                  /\/share\b/, /\/r\//, /\/users\b/, /\/ping\b/, /api\.anthropic\.com/];
+const NUR_NETZ = [/\/generate\b/, /\/gh\//, /\/bring/, /\/auth\b/, /\/login\b/, /\/logout\b/,
+                  /\/share\b/, /\/r\//, /\/users\b/, /\/ping\b/, /api\.anthropic\.com/,
+                  /\.workers\.dev\//];       // der ganze Worker: API-Antworten (auch Fehler) nie anfassen
+
+// Hoechstens so lange auf das Netz warten, wenn eine zwischengespeicherte Fassung bereitliegt.
+// Ohne Cache gibt es nichts, worauf man zurueckfallen koennte - dann wird normal gewartet.
+const NETZ_TIMEOUT_MS = 6000;
 
 self.addEventListener('install', (e) => {
   // NUR das App-Dokument vorab ablegen. Frueher stand hier auch './' - auf
@@ -41,30 +46,49 @@ self.addEventListener('activate', (e) => {
   );
 });
 
+// Ersatz aus dem Cache: die genaue Anfrage, bei einem Seitenaufruf sonst das App-Dokument.
+// Das App-Dokument wird NUR fuer Seitenaufrufe geliefert - ein fehlendes Bild oder eine
+// API-Antwort bekommt nie HTML zurueck.
+async function ersatz(request) {
+  const t = await caches.match(request);
+  if (t) return t;
+  if (request.mode === 'navigate') return caches.match(DOKUMENT);
+  return null;
+}
+
+function mitZeitlimit(request, ms) {
+  if (!ms || typeof AbortController === 'undefined') return fetch(request);
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), ms);
+  return fetch(request, { signal: ctrl.signal }).finally(() => clearTimeout(timer));
+}
+
+async function netzZuerst(request) {
+  const vorhanden = await ersatz(request);
+  let antwort;
+  try {
+    antwort = await mitZeitlimit(request, vorhanden ? NETZ_TIMEOUT_MS : 0);
+  } catch (err) {
+    // Kein Netz oder zu langsam (haengende Verbindung).
+    return vorhanden || new Response('Offline', { status: 504, statusText: 'Offline' });
+  }
+  if (antwort && antwort.ok) {
+    // Nur erfolgreiche Antworten ablegen.
+    const kopie = antwort.clone();
+    caches.open(CACHE).then((c) => c.put(request, kopie));
+    return antwort;
+  }
+  // Serverfehler (502/503/504 ...): lieber die gespeicherte Fassung als eine Fehlerseite.
+  // 4xx (z. B. 404) bleibt unveraendert - das ist eine echte Antwort.
+  if (antwort && antwort.status >= 500 && vorhanden) return vorhanden;
+  return antwort;
+}
+
 self.addEventListener('fetch', (e) => {
   const url = e.request.url;
   if (e.request.method !== 'GET') return;
   if (NUR_NETZ.some((r) => r.test(url))) return;   // durchreichen, nicht anfassen
-
-  e.respondWith(
-    fetch(e.request)
-      .then((antwort) => {
-        // Nur erfolgreiche Antworten ablegen.
-        if (antwort && antwort.ok) {
-          const kopie = antwort.clone();
-          caches.open(CACHE).then((c) => c.put(e.request, kopie));
-        }
-        return antwort;
-      })
-      .catch(() => caches.match(e.request).then((t) => {
-        if (t) return t;
-        // Das App-Dokument nur als Ersatz fuer einen SEITENAUFRUF liefern.
-        // Frueher bekam auch ein fehlendes Bild das HTML zurueck - mit
-        // falschem Content-Type statt eines sauberen Fehlers.
-        if (e.request.mode === 'navigate') return caches.match(DOKUMENT);
-        return new Response('Offline', { status: 504, statusText: 'Offline' });
-      }))
-  );
+  e.respondWith(netzZuerst(e.request));
 });
 
 // Erlaubt der App, ein wartendes Update sofort zu übernehmen.

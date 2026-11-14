@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=yes">
-<title>Menüplan v7.16</title>
+<title>Menüplan v7.17</title>
 <meta name="theme-color" content="#5B7C78">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -143,6 +143,26 @@ button:focus:not(:focus-visible),[role=button]:focus:not(:focus-visible){outline
 .foto-platz{position:relative;border:1.5px dashed var(--bdr);background:var(--rl);padding:0;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-family:inherit;color:inherit}
 .foto-platz::after{content:'+';position:absolute;right:-5px;bottom:-5px;width:18px;height:18px;border-radius:50%;background:var(--red);color:#fff;font-size:14px;font-weight:700;line-height:17px;text-align:center}
 .foto-platz:active{transform:scale(.96)}
+/* Einheitliche Rezeptkarte (A1) */
+.rk{background:#fff;border-radius:var(--rlg);border:.5px solid var(--bdr);margin-bottom:8px;overflow:hidden}
+.rk-kopf{padding:12px 14px 6px;display:flex;align-items:center;gap:12px}
+.rk-text{flex:1;min-width:0}
+.rk-zeile{display:flex;align-items:center;gap:6px}
+.rk-name{font-size:15px;font-weight:700;color:var(--txt);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rk-meta{font-size:11px;color:var(--gr3);margin-top:3px;line-height:1.45}
+.rk-badge{padding:0 14px 8px}
+.rk-aktionen{padding:0 14px 10px;display:flex;gap:8px}
+.rk-aktionen .btn{padding:10px;font-size:13px;min-height:44px}
+.rk-bewerten{background:none;border:none;padding:4px 2px;min-height:32px;font-family:inherit;cursor:pointer;flex-shrink:0;color:var(--red);font-size:12px;white-space:nowrap}
+.rk-bewerten.hat{color:#f59e0b;font-size:13px}
+.rk-menu{border-top:.5px solid var(--gr)}
+.rk-menu>summary{list-style:none;cursor:pointer;padding:11px 14px;font-size:12px;color:var(--gr3);min-height:44px;display:flex;align-items:center;gap:6px}
+.rk-menu>summary::-webkit-details-marker{display:none}
+.rk-menu[open]>summary{color:var(--txt)}
+.rk-menu-liste{padding:0 10px 10px;display:flex;flex-direction:column;gap:6px}
+.rk-menu-liste .btn{padding:10px;font-size:13px;text-align:left;min-height:44px}
+.rk-menu-liste .gefahr{color:var(--danger)}
+.tab:focus-visible,.chip:focus-visible,.rk summary:focus-visible,.rk-bewerten:focus-visible{outline:2px solid var(--red);outline-offset:2px}
 #foto-quelle{position:fixed;inset:0;z-index:950;background:rgba(0,0,0,.45);display:flex;align-items:flex-end;justify-content:center}
 #foto-quelle .fq-blatt{width:100%;max-width:520px;background:#fff;border-radius:18px 18px 0 0;padding:14px 14px calc(14px + env(safe-area-inset-bottom,0px));box-shadow:0 -8px 30px rgba(0,0,0,.2)}
 #foto-quelle .fq-titel{font-size:13px;font-weight:700;color:var(--gr3);text-align:center;margin-bottom:10px;letter-spacing:.3px}
@@ -366,7 +386,7 @@ body:has(#sc.feed.on){overflow:hidden}
 
 <!-- HOME -->
 <div class="scr on" id="sh">
-  <div class="hero"><h1>Menüplan</h1><p id="hsub">v7.16 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
+  <div class="hero"><h1>Menüplan</h1><p id="hsub">v7.17 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
 
   <!-- Active plan card -->
 
@@ -444,7 +464,7 @@ body:has(#sc.feed.on){overflow:hidden}
       </button>
       <div style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--gr3);margin:6px 2px 8px">Ausserhalb dieser Woche</div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:4px">
-        <button onclick="openFotoScreen()" style="background:#fff;border:.5px solid var(--bdr);border-radius:var(--rlg);padding:14px;text-align:left;cursor:pointer;font-family:inherit"><div style="font-size:22px;margin-bottom:4px">📷</div><div style="font-size:13px;font-weight:700;color:var(--txt)">Einzelrezept</div><div style="font-size:11px;color:var(--gr3)">Foto oder Text</div></button>
+        <button onclick="openFotoScreen(true)" style="background:#fff;border:.5px solid var(--bdr);border-radius:var(--rlg);padding:14px;text-align:left;cursor:pointer;font-family:inherit"><div style="font-size:22px;margin-bottom:4px">📷</div><div style="font-size:13px;font-weight:700;color:var(--txt)">Neues Rezept</div><div style="font-size:11px;color:var(--gr3)">Foto oder Text</div></button>
         <button onclick="openRezeptdatenbank()" style="background:#fff;border:.5px solid var(--bdr);border-radius:var(--rlg);padding:14px;text-align:left;cursor:pointer;font-family:inherit"><div style="font-size:22px;margin-bottom:4px">🍳</div><div style="font-size:13px;font-weight:700;color:var(--txt)">Rezepte</div><div style="font-size:11px;color:var(--gr3)">Gekochtes, Wochen & Fotos</div></button>
       </div>
     </div>
@@ -571,7 +591,7 @@ body:has(#sc.feed.on){overflow:hidden}
         <div style="display:flex;flex-direction:column;gap:6px" id="rchips">
           <button class="chip-card on" id="rc-mikro" onclick="setR(1,'mikro')" style="text-align:left;padding:10px 14px;border-radius:10px;background:#fff;border:2px solid var(--red);cursor:pointer;font-family:inherit">
             <div style="font-size:13px;font-weight:700;color:var(--red)">✅ Ja – Mittag aus Resten</div>
-            <div style="font-size:11px;color:var(--gr3);margin-top:2px">Nur Mikrowelle, kein Herd. Reste für nächsten Tag einplanen.</div>
+            <div style="font-size:11px;color:var(--gr3);margin-top:2px">Reste vom Abend gibt es am nächsten Mittag: aufgewärmt nur in der Mikrowelle (kein Herd), kalte Gerichte kalt.</div>
           </button>
           <button class="chip-card" id="rc-nein" onclick="setR(0,'nein')" style="text-align:left;padding:10px 14px;border-radius:10px;background:#fff;border:1.5px solid var(--bdr);cursor:pointer;font-family:inherit">
             <div style="font-size:13px;font-weight:700;color:var(--txt)">❌ Nein – nur Abendessen</div>
@@ -594,6 +614,8 @@ body:has(#sc.feed.on){overflow:hidden}
           </button>
         </div>
       </div>
+
+      <div id="port-summe" role="status" style="margin-top:10px;padding:10px 12px;border-radius:10px;background:var(--rl);font-size:12px;line-height:1.5;color:var(--txt2)"></div>
 
       <div class="fld" style="margin-top:10px">
         <label>💰 Budget</label>
@@ -723,12 +745,12 @@ body:has(#sc.feed.on){overflow:hidden}
 <!-- FOTO REZEPT -->
 <div class="scr" id="sf">
   <div class="tbar">
-    <div class="tbar-bk" onclick="go('sh')">&#8592;</div>
-    <div><h1>Einzelrezept</h1><div class="tbar-sub">Per Foto oder Text erstellen</div></div>
+    <div class="tbar-bk" id="sf-zurueck" role="button" tabindex="0" aria-label="Zurück" onclick="fotoZurueck()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();fotoZurueck()}">&#8592;</div>
+    <div><h1 id="sf-titel">Neues Rezept</h1><div class="tbar-sub" id="sf-sub">Per Foto oder Text erstellen</div></div>
     <button aria-label="Einzelrezepte aktualisieren" onclick="syncFotoRezepte(this)" style="background:rgba(255,255,255,.2);border:none;border-radius:6px;padding:6px 10px;font-size:12px;color:#fff;cursor:pointer;font-family:inherit;margin-left:auto">&#x1F504;</button>
   </div>
 
-  <div class="card"><div class="cp">
+  <div class="card" id="foto-eingabe"><div class="cp">
     <div class="chips" style="margin-bottom:12px" role="tablist" aria-label="Eingabeart">
       <button class="chip on" id="foto-modus-foto" onclick="setEinzelrezeptModus('foto')" role="tab" aria-selected="true">📷 Foto</button>
       <button class="chip" id="foto-modus-text" onclick="setEinzelrezeptModus('text')" role="tab" aria-selected="false">✏️ Text</button>
@@ -989,9 +1011,70 @@ function withMpAuth(headers) {
   var out = {};
   if (headers) for (var k in headers) out[k] = headers[k];
   var s = getSession();
-  if (s) { out['X-MP-User'] = s.username; out['X-MP-Pass'] = s.pw; }
+  if (s) {
+    out['X-MP-User'] = s.username;
+    // Sitzungs-Token (ab Worker v4.31); das Passwort wird nur noch von Altstaenden
+    // oder einem Worker ohne /login mitgeschickt.
+    if (s.token) out['X-MP-Token'] = s.token;
+    else if (s.pw) out['X-MP-Pass'] = s.pw;
+  }
   return out;
 }
+
+// ─── SITZUNG: Token statt gespeichertem Passwort ───────────
+function sitzungSetzen(username, o) {
+  localStorage.setItem('gh_session', JSON.stringify({
+    username: username, token: o.token || undefined, pw: o.token ? undefined : (o.pw || undefined),
+    verified: true, admin: !!o.admin
+  }));
+}
+// Einmal pro Seitenaufruf: Bestehende Sitzungen mit gespeichertem Passwort gegen ein
+// Token tauschen und das Passwort danach vom Geraet loeschen. Ein Worker ohne /login
+// (404/501) oder ein voruebergehender Fehler (429/5xx/offline) laesst alles beim Alten.
+var G_sitzungMigriert = false;
+function sitzungMigrieren() {
+  var s = getSession();
+  if (G_sitzungMigriert || !s || s.token || !s.pw) return Promise.resolve(false);
+  G_sitzungMigriert = true;
+  return fetch(PROXY + '/login', { method: 'POST', body: '{}',
+    headers: { 'X-MP-User': s.username, 'X-MP-Pass': s.pw, 'Content-Type': 'application/json' } })
+  .then(function(r) {
+    if (r.ok) return r.json().then(function(d) {
+      var cur = getSession();
+      if (cur && cur.username === s.username && d && d.token) { sitzungSetzen(cur.username, { token: d.token, admin: cur.admin }); return true; }
+      return false;
+    });
+    if (r.status === 401) { sitzungAbgelaufen('Das Passwort wurde geändert. Bitte neu anmelden.'); return false; }
+    return false;
+  }).catch(function() { G_sitzungMigriert = false; return false; });
+}
+// Der Worker meldet 401/grund "sitzung": Token abgelaufen oder widerrufen.
+var G_sitzungMeldung = false;
+function sitzungAbgelaufen(text) {
+  if (G_sitzungMeldung) return;
+  G_sitzungMeldung = true;
+  var s = getSession();
+  doLogout(true);
+  if (s && $('login-user')) $('login-user').value = s.username;
+  var err = $('login-err');
+  if (err) { err.textContent = text || 'Sitzung abgelaufen. Bitte neu anmelden.'; err.style.display = 'block'; }
+  setTimeout(function() { G_sitzungMeldung = false; }, 3000);
+}
+(function() {
+  var orig = window.fetch;
+  if (!orig) return;
+  window.fetch = function(url, opts) {
+    return orig.apply(this, arguments).then(function(r) {
+      try {
+        if (r && r.status === 401 && typeof url === 'string' && url.indexOf(PROXY) === 0 &&
+            opts && opts.headers && opts.headers['X-MP-Token']) {
+          r.clone().json().then(function(d) { if (d && d.grund === 'sitzung') sitzungAbgelaufen(); }).catch(function() {});
+        }
+      } catch (e) {}
+      return r;
+    });
+  };
+})();
 
 // ─── STATE ─────────────────────────────────────────────────
 var G = {
@@ -1014,6 +1097,7 @@ function go(id) {
   var screens = document.querySelectorAll('.scr');
   for (var i = 0; i < screens.length; i++) screens[i].classList.remove('on');
   $(id).classList.add('on');
+  if (G_reloadWartet && id !== 'sc') { G_reloadWartet = false; window.location.reload(); return; }
   setTimeout(messeKopfleiste, 0);
   // Nur die Druckansicht darf die Handybreite verlassen.
   var shell = document.getElementById('app-shell');
@@ -1040,13 +1124,14 @@ function navPush(id) {
     history.pushState({ mp: 1, id: id }, '');
   } catch (e) {}
 }
-var NAV_FENSTER = ['replace-modal', 'reschedule-modal', 'dep-modal', 'rating-modal', 'woche-modal', 'qr-modal', 'einplan-modal', 'pw-modal', 'tour-modal'];
+var NAV_FENSTER = ['kochtag-modal', 'replace-modal', 'reschedule-modal', 'dep-modal', 'rating-modal', 'woche-modal', 'qr-modal', 'einplan-modal', 'pw-modal', 'tour-modal'];
 function navOffenesFensterSchliessen() {
   for (var i = 0; i < NAV_FENSTER.length; i++) {
     var el = document.getElementById(NAV_FENSTER[i]);
     if (el && el.style.display && el.style.display !== 'none') {
       if (NAV_FENSTER[i] === 'replace-modal' && typeof closeReplace === 'function') closeReplace();
       else if (NAV_FENSTER[i] === 'einplan-modal' && typeof closeEinplanen === 'function') closeEinplanen();
+      else if (NAV_FENSTER[i] === 'kochtag-modal' && typeof kochtagSchliessen === 'function') kochtagSchliessen();
       else if (NAV_FENSTER[i] === 'tour-modal' && typeof tourSchliessen === 'function') tourSchliessen();
       else el.style.display = 'none';
       return true;
@@ -1227,17 +1312,31 @@ if ('serviceWorker' in navigator) {
         console.info('Offline-Modus nicht aktiv:', (e && e.message) || e);
       });
 
-    // Nach dem Wechsel einmal neu laden, damit keine gemischten Staende
-    // entstehen.
+    // Nach einem BEWUSSTEN Update einmal neu laden, damit keine gemischten Staende entstehen.
+    // Nicht neu laden, wenn
+    //  - der Wechsel nicht von diesem Fenster angestossen wurde (erste Installation, oder
+    //    ein anderes Fenster/Geraet-Tab hat "Neu laden" getippt): sonst verliert ein
+    //    kochendes Fenster mitten im Schritt seinen Stand;
+    //  - gerade der Kochmodus offen ist: dann erst nach dem Verlassen (siehe go()).
     var neugeladen = false;
     navigator.serviceWorker.addEventListener('controllerchange', function() {
-      if (neugeladen) return;
+      if (neugeladen || !G_updateAngefordert) return;
       neugeladen = true;
-      window.location.reload();
+      updateNeuLaden();
     });
   });
 }
 
+var G_updateAngefordert = false, G_reloadWartet = false;
+function kochmodusOffen() { var sc = document.getElementById('sc'); return !!(sc && sc.classList.contains('on')); }
+function updateNeuLaden() {
+  if (kochmodusOffen()) {
+    G_reloadWartet = true;
+    try { showSwapToast('Update ist bereit – die App lädt neu, sobald du den Kochmodus verlässt.', '#4F8067'); } catch (e) {}
+    return;
+  }
+  window.location.reload();
+}
 function zeigeUpdateHinweis(reg) {
   if (document.getElementById('update-hinweis')) return;
   var d = document.createElement('div');
@@ -1252,6 +1351,7 @@ function zeigeUpdateHinweis(reg) {
   b.style.cssText = 'background:rgba(255,255,255,.2);border:none;color:#fff;font-weight:700;' +
     'font-size:12px;padding:6px 10px;border-radius:8px;cursor:pointer;font-family:inherit;flex-shrink:0';
   b.onclick = function() {
+    G_updateAngefordert = true;
     if (reg.waiting) reg.waiting.postMessage('jetzt-aktualisieren');
     d.remove();
   };
@@ -1480,10 +1580,21 @@ function renderFehlerlog() {
 }
 
 // Alles, was der Nutzer als Fehler sieht, landet auch im Protokoll.
+// Technische Angaben in eckigen Klammern am Ende einer Fehlermeldung ("[Stream, HTTP 200, ...]") stehen zugeklappt
+// unter einem Link; die verstaendliche Meldung bleibt kurz.
+function fehlerAufteilen(msg) {
+  var m = /^([\s\S]*?)\s*\[([^\]]{3,})\]\s*$/.exec(String(msg || ''));
+  return m ? { kurz: m[1].trim(), details: m[2].trim() } : { kurz: String(msg || ''), details: '' };
+}
+function fehlerTextSetzen(el, msg) {
+  var t = fehlerAufteilen(msg);
+  if (t.details) el.innerHTML = esc(t.kurz) + '<details class="fehler-details" style="margin-top:6px;font-size:11px;opacity:.85"><summary style="cursor:pointer">Technische Details</summary><span style="word-break:break-word">' + esc(t.details) + '</span></details>';
+  else el.textContent = msg;
+}
 function showSt(id, msg, type) {
   var el = $(id);
   el.className = 'st ' + type;
-  el.textContent = msg;
+  if (type === 'er') fehlerTextSetzen(el, msg); else el.textContent = msg;
   el.style.display = 'block';
   if (type === 'er') logFehler('showSt:' + id, msg);
 }
@@ -1786,7 +1897,7 @@ function initDayPicker() {
       // Gekochte Einzelrezepte dieses Tages: eigene Zeilen, Tipp oeffnet das Rezept
       var ezHtml = (t.einzel || []).map(function(e, n) {
         return '<div class="ez-row" id="dre-' + t.iso + '-' + n + '" data-iso="' + t.iso + '" data-idx="' + e.idx + '">' +
-          '<button class="kl-tap" onclick="openHistoryRecipe(' + e.idx + ')" aria-label="Einzelrezept ' + esc(e.name) + ' öffnen">' +
+          '<button class="kl-tap" onclick="ursprungMerken();openHistoryRecipe(' + e.idx + ')" aria-label="Einzelrezept ' + esc(e.name) + ' öffnen">' +
             KL_SVG.haken + '<span class="kl-datum">' + datum + '</span><span class="kl-titel dp-titel" style="display:flex;align-items:baseline;gap:4px"><span style="min-width:0;overflow:hidden;text-overflow:ellipsis" title="Einzelrezept">🍳 ' + esc(e.name) + '</span>' +
             '<span style="flex:none">' + (e.stars ? sterneHtml(e.stars) : '<span class="titel-bewerten" role="button" tabindex="0" aria-label="Einzelrezept bewerten" onclick="event.stopPropagation();showFotoRating(' + e.idx + ',\'skal\')" style="display:inline-block;color:var(--red);font-size:.8em;font-weight:500;white-space:nowrap;cursor:pointer;padding:2px 0">(bewerten)</span>') + '</span></span>' +
             (e.fotoId ? '<img class="foto-img foto-thumb" data-fotoid="' + esc(e.fotoId) + '" src="' + FOTO_LEER + '" alt="" style="width:30px;height:30px;min-height:30px;max-height:30px;border-radius:6px">' : '') +
@@ -2008,6 +2119,19 @@ function setP(n) {
   n = Math.max(1, Math.min(6, n));
   G.personen = n;
   if ($('p-display')) $('p-display').textContent = n;
+  aktualisierePortionsSumme();
+}
+// Wie viele Portionen pro Kochabend gekocht (und eingekauft) werden: Abendessen + Mittagsreste + Einfrierportionen.
+function portionsSummeText(personen, reste, freeze) {
+  var teile = [personen + (personen === 1 ? ' Person' : ' Personen') + ' am Abend'];
+  var summe = personen;
+  if (reste) { teile.push(personen + ' Mittagsreste'); summe += personen; }
+  if (freeze) { teile.push('2 zum Einfrieren'); summe += 2; }
+  return 'Pro Kochabend werden <b>' + summe + ' Portionen</b> gekocht: ' + teile.join(' + ') + '.';
+}
+function aktualisierePortionsSumme() {
+  var el = $('port-summe');
+  if (el) el.innerHTML = portionsSummeText(G.personen || 2, !!G.reste, !!G.freeze);
 }
 function setM(m) {
   G.modus = m;
@@ -2019,6 +2143,7 @@ function setM(m) {
 }
 function setR(v, mode) {
   G.reste = v;
+  setTimeout(aktualisierePortionsSumme, 0);
   // Mittagsreste und Planungsart sind getrennte Entscheidungen: es gibt nur noch
   // "mit Mittagsresten" (mikro) und "ohne". Der frueher hier gefuehrte Modus "kette"
   // ist in der Planungsart "aufbauend" aufgegangen und loest keine Mittagsportionen mehr aus.
@@ -2130,6 +2255,7 @@ function planungsartTaste(ev) {
 
 function setF(v) {
   G.freeze = v ? 1 : 0;
+  aktualisierePortionsSumme();
   var cards = ['fc-ja', 'fc-nein'];
   var active = v ? 'fc-ja' : 'fc-nein';
   cards.forEach(function(id) {
@@ -2201,47 +2327,51 @@ function doLogin() {
   if (loginBtn) { loginBtn.disabled = true; loginBtn.textContent = 'Prüfe...'; }
   err.style.display = 'none';
 
-  // Verify against worker using a lightweight ping
-  fetch(PROXY + '/auth', {
-    method: 'POST',
-    headers: { 'X-MP-User': username, 'X-MP-Pass': pw, 'Content-Type': 'application/json' },
-    body: '{}'
-  }).then(function(r) {
+  // Anmelden: Passwort EINMAL gegen /login tauschen und nur das Token behalten.
+  // Worker ohne /login (404/501): Rueckfall auf /auth und das alte Verfahren.
+  var kopf = { 'X-MP-User': username, 'X-MP-Pass': pw, 'Content-Type': 'application/json' };
+  function zeigeFehler(text) {
     if (loginBtn) { loginBtn.disabled = false; loginBtn.textContent = 'Anmelden'; }
-    if (r.status === 401) {
-      err.textContent = 'Falscher Benutzername oder Passwort.';
-      err.style.display = 'block';
-      $('login-pw').value = '';
-      return;
+    err.textContent = text; err.style.display = 'block';
+  }
+  function fertig(d, token) {
+    if (loginBtn) { loginBtn.disabled = false; loginBtn.textContent = 'Anmelden'; }
+    // "verified" merkt sich, dass zuletzt eine ECHTE Server-Pruefung erfolgreich war.
+    sitzungSetzen(username, { token: token, pw: token ? null : pw, admin: !!(d && d.admin) });
+    G_sitzungMeldung = false;
+    showLoggedIn();
+    G_lastSync = Date.now();
+    syncAllFromGH();
+  }
+  function antwortFehler(r) {
+    if (r.status === 401) { $('login-pw').value = ''; return zeigeFehler('Falscher Benutzername oder Passwort.'); }
+    if (r.status === 429) {
+      return r.json().catch(function() { return {}; }).then(function(d) {
+        var min = Math.max(1, Math.ceil(((d && d.retryAfter) || 900) / 60));
+        zeigeFehler('Zu viele Versuche. Bitte ' + min + (min === 1 ? ' Minute' : ' Minuten') + ' warten.');
+      });
     }
-    if (!r.ok) {
-      err.textContent = 'Login fehlgeschlagen (Status ' + r.status + ').';
-      err.style.display = 'block';
-      return;
-    }
-    // Antwortkoerper auswerten - dort steht, ob dieses Konto Admin ist.
-    return r.json().catch(function() { return {}; }).then(function(d) {
-      // "verified" merkt sich fuer wen zuletzt eine ECHTE Server-Pruefung
-      // erfolgreich war - nur dieser exakte Nutzer darf spaeter offline rein.
-      localStorage.setItem('gh_session', JSON.stringify({
-        username: username, pw: pw, verified: true, admin: !!(d && d.admin)
-      }));
-      showLoggedIn();
-      G_lastSync = Date.now();
-      syncAllFromGH();
+    zeigeFehler('Login fehlgeschlagen (Status ' + r.status + ').');
+  }
+  fetch(PROXY + '/login', { method: 'POST', headers: kopf, body: '{}' }).then(function(r) {
+    if (r.ok) return r.json().catch(function() { return {}; }).then(function(d) { fertig(d, d && d.token); });
+    if (r.status !== 404 && r.status !== 501) return antwortFehler(r);
+    // Alter Worker: Passwort pruefen wie bisher.
+    return fetch(PROXY + '/auth', { method: 'POST', headers: kopf, body: '{}' }).then(function(r2) {
+      if (!r2.ok) return antwortFehler(r2);
+      return r2.json().catch(function() { return {}; }).then(function(d) { fertig(d, null); });
     });
   }).catch(function() {
     if (loginBtn) { loginBtn.disabled = false; loginBtn.textContent = 'Anmelden'; }
-    // Worker nicht erreichbar: NUR erlauben wenn genau dieser Benutzername+Passwort
-    // schon einmal echt (online) verifiziert wurde. Sonst koennte jemand mit
-    // Netzwerk aus/an einfach einen beliebigen Namen eintippen und auf lokal
-    // gespeicherte Daten eines anderen Benutzers zugreifen.
+    // Worker nicht erreichbar: NUR erlauben, wenn auf diesem Geraet schon eine geprueft
+    // angemeldete Sitzung genau dieses Benutzers besteht. Ein Passwort wird nicht mehr
+    // lokal gespeichert, also kann es offline auch nicht verglichen werden.
     var prior = null;
     try { prior = JSON.parse(localStorage.getItem('gh_session')); } catch(e) {}
-    if (prior && prior.verified && prior.username === username && prior.pw === pw) {
+    if (prior && prior.verified && prior.username === username && (prior.token || prior.pw)) {
       showLoggedIn();
     } else {
-      err.textContent = 'Keine Verbindung zum Server. Offline-Anmeldung ist nur für zuvor bereits online verifizierte Zugangsdaten möglich.';
+      err.textContent = 'Keine Verbindung zum Server. Anmelden geht nur online.';
       err.style.display = 'block';
     }
   });
@@ -2257,7 +2387,15 @@ function getUserFolder() {
   return session ? 'users/' + session.username + '/' : '';
 }
 
-function doLogout() {
+function doLogout(ohneServer, alle) {
+  // Sitzung auch im Worker beenden (best effort - lokal wird immer abgemeldet).
+  var alt = getSession();
+  if (!ohneServer && alt && (alt.token || alt.pw)) {
+    try {
+      fetch(PROXY + '/logout', { method: 'POST', headers: withMpAuth({ 'Content-Type': 'application/json' }),
+        body: JSON.stringify(alle ? { all: true } : {}) }).catch(function() {});
+    } catch (e) {}
+  }
   localStorage.removeItem('gh_session');
   if ($('loggedin-section')) $('loggedin-section').style.display = 'none';
   if ($('login-card')) $('login-card').style.display = 'block';
@@ -2336,7 +2474,7 @@ function decodeGHContent(d) {
 function getAuthHeaders() {
   var s = getSession();
   if (!s) return null;
-  return { 'X-MP-User': s.username, 'X-MP-Pass': s.pw, 'Content-Type': 'application/json' };
+  return withMpAuth({ 'Content-Type': 'application/json' });
 }
 
 function ghGet(filepath) {
@@ -2352,63 +2490,205 @@ function ghGet(filepath) {
 // Plans) sich gegenseitig mit veralteter SHA ueberschreiben (409 Conflict).
 var _ghWriteQueue = {};
 
-// Fuehrt bei einem Schreibkonflikt den fremden Stand mit dem eigenen zusammen.
-// Ohne das gewinnt schlicht, wer zuletzt schreibt - und die Aenderung des
-// anderen Geraets ist still verloren.
-var GH_MERGE = {
-  // Verlauf: Eintraege ueber die stabile planId zusammenfuehren, neuere gewinnt.
-  'history.json': function(fremd, eigen) {
-    if (!Array.isArray(fremd) || !Array.isArray(eigen)) return eigen;
-    var nachId = {};
-    fremd.concat(eigen).forEach(function(e) {
-      if (!e) return;
-      var k = e.planId || (e.thema + '|' + (e.date || e.saved || ''));
-      // Der spaeter einsortierte Eintrag stammt aus der eigenen Liste und ist
-      // der frischere - er ueberschreibt den fremden mit gleichem Schluessel.
-      nachId[k] = e;
-    });
-    return Object.keys(nachId).map(function(k) { return nachId[k]; })
-      .sort(function(a, b) { return String(b.date || '').localeCompare(String(a.date || '')); })
-      .slice(0, 52);
-  },
-  // Foto-Rezepte: ueber _id, Tombstones werden separat gefuehrt.
-  'foto-rezepte.json': function(fremd, eigen) {
-    if (!Array.isArray(fremd) || !Array.isArray(eigen)) return eigen;
-    var zus = migrateFotoIds(eigen.slice());
-    migrateFotoIds(fremd).forEach(function(f) { if (!findFotoDup(zus, f)) zus.push(f); });
-    return zus;
-  },
-  // Loeschliste: eine Loeschung auf IRGENDEINEM Geraet gilt ueberall.
-  'foto-geloescht.json': function(fremd, eigen) {
-    if (!fremd || typeof fremd !== 'object' || Array.isArray(fremd)) return eigen;
-    var z = Object.assign({}, fremd, eigen || {});
-    Object.keys(fremd).forEach(function(k) {
-      if (!z[k] || fremd[k] > z[k]) z[k] = fremd[k];
-    });
-    return z;
-  },
-  // Bewertungen: additiv, neuere Bewertung desselben Gerichts gewinnt.
-  // ACHTUNG: Der Gerichtsname steht im Feld "gericht", NICHT in "name" -
-  // letzteres gibt es nur im Lernprofil. Mit r.name waere der Schluessel
-  // ueberall undefined gewesen und alle Bewertungen zu EINER zusammengefallen.
-  'ratings.json': function(fremd, eigen) {
-    if (!Array.isArray(fremd) || !Array.isArray(eigen)) return eigen;
-    var k = {};
-    fremd.concat(eigen).forEach(function(r) {
-      if (!r) return;
-      // Schluessel: Gericht plus Datum - dasselbe Gericht kann an
-      // verschiedenen Tagen verschieden bewertet worden sein.
-      var s = r.gericht || r.name;
-      if (!s) return;
-      var key = s + '|' + (r.date || '');
-      var alt = k[key];
-      if (!alt || String(r.date || '') >= String(alt.date || '')) k[key] = r;
-    });
-    return Object.keys(k).map(function(n) { return k[n]; }).slice(0, 200);
+// ─── SYNC-KERN: Drei-Wege-Zusammenfuehrung ─────────────────
+// Jede Cloud-Datei hat lokal eine BASIS (der Stand, der zuletzt mit der Cloud abgeglichen war,
+// in IndexedDB). Beim Schreiben und beim Laden wird aus Basis, lokalem Stand und Cloud-Stand
+// feldweise zusammengefuehrt: wer nur etwas geaendert hat, gewinnt; aenderten beide dasselbe
+// Feld verschieden, gilt der lokale Wert und der Konflikt wird festgehalten und angezeigt.
+// "Ausstehend" heisst: lokaler Stand != Basis - das ueberlebt App-Neustart und Offline-Phasen.
+function syncStabil(v) {
+  if (Array.isArray(v)) return '[' + v.map(syncStabil).join(',') + ']';
+  if (v && typeof v === 'object') {
+    return '{' + Object.keys(v).sort().filter(function(k) { return v[k] !== undefined; })
+      .map(function(k) { return JSON.stringify(k) + ':' + syncStabil(v[k]); }).join(',') + '}';
   }
-  // active-plan.json bewusst NICHT: ein Wochenplan laesst sich nicht sinnvoll
-  // verschmelzen. Dort meldet sich der Konflikt beim Nutzer (siehe unten).
+  return JSON.stringify(v === undefined ? null : v);
+}
+function syncGleich(a, b) { return syncStabil(a) === syncStabil(b); }
+function syncIstObjekt(v) { return !!v && typeof v === 'object' && !Array.isArray(v); }
+
+// Schluessel eines Listenelements; null = keine stabile Identitaet (dann wird die Liste als Ganzes behandelt).
+function syncElementSchluessel(pfad, o, wurzel) {
+  if (!syncIstObjekt(o)) return null;
+  var letzter = pfad.length ? pfad[pfad.length - 1] : '';
+  if (!pfad.length) return wurzel ? wurzel(o) : null;
+  if (letzter === 'gerichte') return o.tag ? 't:' + o.tag : null;
+  if (o._id) return 'i:' + o._id;
+  return null;
+}
+
+function syncMerge3(b, l, r, ctx, pfad) {
+  pfad = pfad || [];
+  if (syncGleich(l, r)) return l;
+  if (syncGleich(l, b)) return r;      // nur die Cloud hat geaendert
+  if (syncGleich(r, b)) return l;      // nur dieses Geraet hat geaendert
+  if (syncIstObjekt(l) && syncIstObjekt(r)) {
+    var bb = syncIstObjekt(b) ? b : {}, out = {}, keys = {};
+    Object.keys(l).concat(Object.keys(r)).forEach(function(k) { keys[k] = true; });
+    Object.keys(keys).forEach(function(k) {
+      var inL = Object.prototype.hasOwnProperty.call(l, k), inR = Object.prototype.hasOwnProperty.call(r, k), inB = Object.prototype.hasOwnProperty.call(bb, k);
+      if (inL && inR) out[k] = syncMerge3(bb[k], l[k], r[k], ctx, pfad.concat(k));
+      else if (inL) { if (!inB || !syncGleich(l[k], bb[k])) out[k] = l[k]; }       // Cloud hat entfernt: nur bei unveraendertem lokalen Wert uebernehmen
+      else if (inR) { if (!inB || !syncGleich(r[k], bb[k])) out[k] = r[k]; }       // lokal entfernt: nur bei unveraendertem Cloud-Wert uebernehmen
+    });
+    return out;
+  }
+  if (Array.isArray(l) && Array.isArray(r)) {
+    var bl = Array.isArray(b) ? b : [];
+    var ks = function(o) { return syncElementSchluessel(pfad, o, ctx.wurzel); };
+    var alleMitSchluessel = function(arr) { var seen = {}; return arr.every(function(o) { var k = ks(o); if (k === null || seen[k]) return false; seen[k] = true; return true; }); };
+    if (alleMitSchluessel(l) && alleMitSchluessel(r) && alleMitSchluessel(bl)) {
+      var mb = {}, ml = {}, mr = {};
+      bl.forEach(function(o) { mb[ks(o)] = o; }); l.forEach(function(o) { ml[ks(o)] = o; }); r.forEach(function(o) { mr[ks(o)] = o; });
+      var result = [], gesetzt = {};
+      function nimm(k, el) { if (!gesetzt[k]) { gesetzt[k] = true; result.push(el); } }
+      l.forEach(function(o) {
+        var k = ks(o);
+        if (k in mr) nimm(k, syncMerge3(mb[k], o, mr[k], ctx, pfad.concat('[' + k + ']')));
+        else if (ctx.erstlauf || !(k in mb) || !syncGleich(o, mb[k])) nimm(k, o);       // lokal neu oder lokal geaendert (Erstlauf ohne Basis: nie verwerfen)
+        // sonst: in der Cloud geloescht und lokal unveraendert -> weg
+      });
+      var vorher = null;
+      r.forEach(function(o) {
+        var k = ks(o);
+        if (!gesetzt[k] && !(k in ml)) {
+          if (!(k in mb) || !syncGleich(o, mb[k])) {                                     // in der Cloud neu oder geaendert (lokal geloescht + Cloud geaendert -> bleibt)
+            var pos = vorher === null ? -1 : result.map(ks).indexOf(vorher);
+            result.splice(pos + 1, 0, o); gesetzt[k] = true;
+          }
+        }
+        vorher = k;
+      });
+      return result;
+    }
+  }
+  ctx.konflikte.push({ pfad: pfad.join('.'), lokal: l, fremd: r });
+  return l;                                                                              // lokal gewinnt, Konflikt vermerkt
+}
+
+var SYNC_DATEIEN = {
+  'history.json':       { lokal: 'local_history', wurzel: function(e) { return e.planId ? 'p:' + e.planId : 'h:' + e.thema + '|' + (e.date || e.saved || ''); } },
+  'active-plan.json':   { lokal: 'active_plan' },
+  'ratings.json':       { lokal: 'local_ratings', wurzel: function(e) { return (e.gericht || e.name) ? 'r:' + (e.gericht || e.name) + '|' + (e.date || '') : null; } },
+  'foto-rezepte.json':  { lokal: 'foto_rezepte', wurzel: function(e) { return e._id ? 'i:' + e._id : (e.name ? 'n:' + e.name : null); } },
+  'foto-geloescht.json': { lokal: 'foto_deleted', karte: true },
+  'plan-geloescht.json': { lokal: 'plan_geloescht', karte: true }
 };
+
+function syncLokalLesen(datei) {
+  var cfg = SYNC_DATEIEN[datei]; if (!cfg) return null;
+  try { var t = localStorage.getItem(userKey(cfg.lokal)); return t ? JSON.parse(t) : null; } catch (e) { return null; }
+}
+function syncLokalSchreiben(datei, wert) {
+  var cfg = SYNC_DATEIEN[datei]; if (!cfg) return;
+  try { if (wert === null || wert === undefined) localStorage.removeItem(userKey(cfg.lokal)); else localStorage.setItem(userKey(cfg.lokal), JSON.stringify(wert)); } catch (e) {}
+}
+
+// Zusammenfuehren je Dateiart (rein: ohne Speicher, ohne Netz) - testbar.
+function syncMergeDatei(datei, base, lokal, fremd, konflikte, erstlauf) {
+  var cfg = SYNC_DATEIEN[datei] || {};
+  var ctx = { wurzel: cfg.wurzel, konflikte: konflikte || [], erstlauf: !!erstlauf };
+  if (cfg.karte) {                                  // Loeschlisten: Vereinigung, spaeterer Zeitpunkt gewinnt
+    var z = Object.assign({}, syncIstObjekt(fremd) ? fremd : {}, syncIstObjekt(lokal) ? lokal : {});
+    Object.keys(fremd || {}).forEach(function(k) { if (!z[k] || fremd[k] > z[k]) z[k] = fremd[k]; });
+    return z;
+  }
+  var m = syncMerge3(base, lokal, fremd, ctx, []);
+  if (datei === 'history.json' && Array.isArray(m)) {
+    var tomb = syncLokalLesen('plan-geloescht.json') || {};
+    m = m.filter(function(e) { return !(e && e.planId && tomb[e.planId]); });
+    m = m.map(function(e, i) { return [e, i]; }).sort(function(a, b) {
+      var c = String(b[0].date || '').localeCompare(String(a[0].date || '')); return c || a[1] - b[1];
+    }).map(function(x) { return x[0]; });
+  } else if (datei === 'ratings.json' && Array.isArray(m)) {
+    m = m.map(function(e, i) { return [e, i]; }).sort(function(a, b) {
+      var c = String(b[0].date || '').localeCompare(String(a[0].date || '')); return c || a[1] - b[1];
+    }).map(function(x) { return x[0]; });
+  } else if (datei === 'foto-rezepte.json' && Array.isArray(m)) {
+    var ft = syncLokalLesen('foto-geloescht.json') || {};
+    m = m.filter(function(e) { return !(e && e._id && ft[e._id]); });
+  }
+  return m;
+}
+
+// Basis in IndexedDB (eigene Datenbank; localStorage waere durch den Verlauf schnell voll).
+var G_syncDb = null, G_syncBaseCache = {};
+function syncDb() {
+  if (G_syncDb) return G_syncDb;
+  G_syncDb = new Promise(function(res) {
+    try {
+      var rq = indexedDB.open('menuplan-sync', 1);
+      rq.onupgradeneeded = function() { rq.result.createObjectStore('b'); };
+      rq.onsuccess = function() { res(rq.result); };
+      rq.onerror = rq.onblocked = function() { res(null); };
+    } catch (e) { res(null); }
+  });
+  return G_syncDb;
+}
+function syncBaseKey(datei) { var s = getSession(); return (s ? s.username : '') + '|' + datei; }
+function syncBaseLesen(datei) {
+  var k = syncBaseKey(datei);
+  if (Object.prototype.hasOwnProperty.call(G_syncBaseCache, k)) return Promise.resolve(G_syncBaseCache[k]);
+  return syncDb().then(function(db) {
+    if (!db) return null;
+    return new Promise(function(res) {
+      try {
+        var rq = db.transaction('b').objectStore('b').get(k);
+        rq.onsuccess = function() { var v = rq.result === undefined ? null : rq.result; G_syncBaseCache[k] = v; res(v); };
+        rq.onerror = function() { res(null); };
+      } catch (e) { res(null); }
+    });
+  });
+}
+function syncBaseSchreiben(datei, wert) {
+  var k = syncBaseKey(datei);
+  wert = (wert === null || wert === undefined) ? null : JSON.parse(JSON.stringify(wert));   // Kopie: spaetere Aenderungen am Arbeitsobjekt duerfen die Basis nicht veraendern
+  G_syncBaseCache[k] = wert;
+  return syncDb().then(function(db) {
+    if (!db) return false;
+    return new Promise(function(res) {
+      try {
+        var tx = db.transaction('b', 'readwrite'); tx.objectStore('b').put(wert, k);
+        tx.oncomplete = function() { res(true); }; tx.onerror = tx.onabort = function() { res(false); };
+      } catch (e) { res(false); }
+    });
+  });
+}
+
+// Konflikte merken (fuer die Anzeige) - nur die letzten 30.
+function syncKonfliktMerken(datei, liste) {
+  if (!liste || !liste.length) return;
+  var alt = []; try { alt = JSON.parse(localStorage.getItem(userKey('sync_konflikte')) || '[]'); } catch (e) {}
+  liste.forEach(function(k) { alt.push({ datei: datei, pfad: k.pfad, zeit: new Date().toISOString(), lokal: String(syncStabil(k.lokal)).slice(0, 120), fremd: String(syncStabil(k.fremd)).slice(0, 120) }); });
+  try { localStorage.setItem(userKey('sync_konflikte'), JSON.stringify(alt.slice(-30))); } catch (e) {}
+  setSyncState('konflikt', liste.length + ' Feld' + (liste.length === 1 ? '' : 'er'));
+}
+
+// Merge-Ergebnis in den lokalen Speicher uebernehmen, ohne zwischenzeitliche lokale Aenderungen zu verlieren.
+function syncUebernehmeLokal(datei, aktuell, gemergt) {
+  var jetzt = syncLokalLesen(datei);
+  var ziel = gemergt;
+  if (jetzt !== null && !syncGleich(jetzt, aktuell)) {
+    var kf = []; ziel = syncMergeDatei(datei, aktuell, jetzt, gemergt, kf); syncKonfliktMerken(datei, kf);
+  }
+  if (syncGleich(ziel, jetzt)) return ziel;
+  syncLokalSchreiben(datei, ziel);
+  syncNachMerge(datei, ziel);
+  return ziel;
+}
+
+// Oberflaeche und Arbeitsstand nach einem Merge nachziehen (nie mitten im Kochen).
+function syncNachMerge(datei, wert) {
+  try {
+    if (datei === 'active-plan.json' && wert && wert.sug && G.activePlan && G.activePlan.planId === wert.planId) {
+      var alt = G.activePlan.sug;
+      G.activePlan = wert;
+      if (G.sugs && G.sel !== null && G.sugs[G.sel] === alt) G.sugs[G.sel] = wert.sug;
+      var koch = document.getElementById('sc') && document.getElementById('sc').classList.contains('on');
+      if (!koch) renderActivePlan();
+    } else if (datei === 'foto-rezepte.json') { if (typeof loadSavedFotoRezepte === 'function') loadSavedFotoRezepte(); }
+  } catch (e) {}
+}
 
 function ghDecode(antwort) {
   try {
@@ -2421,68 +2701,54 @@ function ghPut(filename, data, message) {
   var h = getAuthHeaders();
   if (!h) return Promise.resolve(null);
   var filepath = ghFile(filename);
-  // Der Inhalt liegt in einer Variablen, NICHT fest kodiert: bei einem Konflikt
-  // wird er mit dem fremden Stand zusammengefuehrt und neu serialisiert.
   var aktuell = data;
 
   function attempt(retriesLeft) {
     return fetch(PROXY + '/gh/' + filepath, { headers: h })
       .then(function(r) { return r.ok ? r.json() : null; })
       .then(function(existing) {
-        var body = {
-          message: message || 'Update',
-          content: btoa(unescape(encodeURIComponent(JSON.stringify(aktuell, null, 2))))
-        };
-        if (existing && existing.sha) body.sha = existing.sha;
-        return fetch(PROXY + '/gh/' + filepath, { method: 'PUT', headers: h, body: JSON.stringify(body) });
-      })
-      .then(function(r) {
-        if (r && r.status === 409 && retriesLeft > 0) {
-          // Vor dem naechsten Versuch den fremden Stand holen und einmischen.
-          // Frueher wurde derselbe, inzwischen veraltete Inhalt erneut
-          // hochgeladen - die Aenderung des anderen Geraets war damit weg.
-          var mischen = GH_MERGE[filename];
-          if (mischen) {
-            return fetch(PROXY + '/gh/' + filepath, { headers: h })
-              .then(function(rr) { return rr.ok ? rr.json() : null; })
-              .then(function(dd) {
-                var fremd = ghDecode(dd);
-                if (fremd) {
-                  try { aktuell = mischen(fremd, aktuell); }
-                  catch (e) { console.warn('Zusammenfuehren fehlgeschlagen:', e.message); }
-                }
-                return new Promise(function(res) { setTimeout(res, 150 + Math.random() * 200); });
-              })
-              .then(function() { return attempt(retriesLeft - 1); });
+        var fremd = existing ? ghDecode(existing) : null;
+        return syncBaseLesen(filename).then(function(base) {
+          var zuSchreiben = aktuell;
+          // Cloud-Stand abweichend von dem, worauf diese Aenderung aufbaut -> zusammenfuehren statt ueberschreiben
+          var istMarker = syncIstObjekt(fremd) && fremd.cleared;
+          var schreibtMarker = syncIstObjekt(aktuell) && aktuell.cleared;       // bewusstes Beenden/Loeschen: gilt ohne Merge
+          if (fremd !== null && !istMarker && !schreibtMarker && SYNC_DATEIEN[filename] && !syncGleich(fremd, base) && !syncGleich(fremd, aktuell)) {
+            var kf = [];
+            try { zuSchreiben = syncMergeDatei(filename, base === null ? (Array.isArray(aktuell) ? [] : (syncIstObjekt(aktuell) ? {} : null)) : base, aktuell, fremd, kf); syncKonfliktMerken(filename, kf); }
+            catch (e) { console.warn('Zusammenfuehren fehlgeschlagen:', e && e.message); zuSchreiben = aktuell; }
           }
-          // Kurze, leicht zufaellige Pause bevor mit frischer SHA erneut versucht wird.
-          // 5 statt 3 Versuche: bei einem kompletten Kochvorgang koennen mehrere
-          // Funktionen (Rezepte nachladen, als gekocht markieren, bewerten) kurz
-          // hintereinander in dieselbe Datei schreiben wollen - jeder Konflikt
-          // wird durch die Warteschlange ohnehin sauber serialisiert, aber mehr
-          // Versuche geben spuerbar mehr Sicherheitsmarge bei so einer Kette.
+          var body = {
+            message: message || 'Update',
+            content: btoa(unescape(encodeURIComponent(JSON.stringify(zuSchreiben, null, 2))))
+          };
+          if (existing && existing.sha) body.sha = existing.sha;
+          return fetch(PROXY + '/gh/' + filepath, { method: 'PUT', headers: h, body: JSON.stringify(body) })
+            .then(function(r) { return { r: r, geschrieben: zuSchreiben }; });
+        });
+      })
+      .then(function(x) {
+        var r = x.r;
+        if (r && r.status === 409 && retriesLeft > 0) {
           return new Promise(function(resolve) { setTimeout(resolve, 150 + Math.random() * 200); })
             .then(function() { return attempt(retriesLeft - 1); });
         }
-        // Nach ausgeschoepften Retries: jede nicht erfolgreiche Antwort (401,
-        // 403, 409, 500, ...) muss rejecten. Frueher wurde sie als erfuellte
-        // Promise durchgereicht - die UI meldete dann "gespeichert", obwohl nur
-        // lokal geschrieben wurde.
+        // Nicht erfolgreiche Antworten (401, 403, 409, 500, ...) muessen rejecten; sonst meldet
+        // die Oberflaeche "gespeichert", obwohl nur lokal geschrieben wurde. Die Aenderung bleibt als
+        // "ausstehend" erhalten (lokaler Stand != Basis) und wird beim naechsten Sync nachgeholt.
         if (!r || !r.ok) {
           var err = new Error('GitHub-Sync fehlgeschlagen (Status ' + (r ? r.status : 'kein Response') + ')');
           err.status = r ? r.status : 0;
           throw err;
         }
-        return r;
+        return syncBaseSchreiben(filename, x.geschrieben).then(function() {
+          if (SYNC_DATEIEN[filename] && !syncGleich(x.geschrieben, aktuell)) syncUebernehmeLokal(filename, aktuell, x.geschrieben);
+          return r;
+        });
       });
   }
 
-  // In die Warteschlange dieser Datei einreihen: erst wenn der vorherige
-  // Schreibvorgang (egal ob erfolgreich) fertig ist, startet der naechste.
-  // Das serialisiert alle ghPut()-Aufrufe auf dieselbe Datei zuverlaessig -
-  // die in der Konsole sichtbaren 409-Antworten sind erwartete Zwischenschritte
-  // dieser Serialisierung (der Browser loggt jede Non-2xx-Netzwerkantwort),
-  // keine nach aussen durchschlagenden Fehler, solange genug Versuche uebrig bleiben.
+  // Schreibvorgaenge pro Datei nacheinander (nie parallel); die 409-Antworten in der Konsole sind erwartete Zwischenschritte.
   var prev = _ghWriteQueue[filepath] || Promise.resolve();
   var next = prev.catch(function(){}).then(function() { return attempt(5); });
   _ghWriteQueue[filepath] = next;
@@ -2493,24 +2759,47 @@ function ghPut(filename, data, message) {
 // Frueher wurde ein fehlgeschlagener GitHub-Sync stillschweigend verschluckt -
 // der Nutzer glaubte, seine Aenderung sei ueberall angekommen.
 function setSyncState(state, detail) {
-  G.syncState = state;                 // 'ok' | 'fail'
+  G.syncState = state;                 // 'ok' | 'fail' | 'konflikt'
   G.syncDetail = detail || '';
   var el = document.getElementById('sync-warn');
+  if (state === 'konflikt') {
+    // Konflikt hat Vorrang vor "ok": Der Nutzer soll sehen, dass seine Version ein Feld der anderen ueberschrieb.
+    G.syncKonfliktAnzahl = detail || '';
+  } else if (state === 'ok' && G.syncKonfliktAnzahl) {
+    state = 'konflikt'; detail = G.syncKonfliktAnzahl;
+  }
   if (!el) {
     if (state === 'ok') return;
     el = document.createElement('div');
     el.id = 'sync-warn';
+    el.setAttribute('role', 'status');
     el.style.cssText = 'position:fixed;left:50%;transform:translateX(-50%);width:100%;max-width:480px;box-sizing:border-box;bottom:0;background:#B97836;color:#fff;' +
       'padding:8px 12px calc(8px + env(safe-area-inset-bottom));font-size:12px;font-weight:600;' +
       'text-align:center;z-index:400;cursor:pointer';
     el.title = 'Antippen zum Ausblenden';
-    el.onclick = function() { el.remove(); };
+    el.onclick = function() {
+      if (G.syncState === 'konflikt') { G.syncKonfliktAnzahl = ''; syncKonfliktDetails(); }
+      el.remove();
+    };
     var shell = document.getElementById('app-shell') || document.body;
     shell.appendChild(el);
   }
   if (state === 'ok') { el.remove(); return; }
-  el.textContent = '⚠ Nur lokal gespeichert – Cloud-Sync fehlgeschlagen' +
+  if (state === 'konflikt') {
+    el.style.background = '#8a5a2b';
+    el.textContent = '⚠ Konflikt in ' + (detail || 'einigen Feldern') + ': auf zwei Geräten verschieden geändert – deine Version gilt (antippen für Details)';
+    return;
+  }
+  el.style.background = '#B97836';
+  el.textContent = '⚠ Übertragung ausstehend – lokal gespeichert, wird nachgeholt' +
     (G.syncDetail ? ' (' + G.syncDetail + ')' : '');
+}
+
+function syncKonfliktDetails() {
+  var k = []; try { k = JSON.parse(localStorage.getItem(userKey('sync_konflikte')) || '[]'); } catch (e) {}
+  if (!k.length) return;
+  alert('Zwei Geräte haben dasselbe Feld verschieden geändert. Es gilt die Version dieses Geräts:\n\n' +
+    k.slice(-8).map(function(x) { return '• ' + x.datei + ' ' + x.pfad + '\n   hier: ' + x.lokal + '\n   anderes Gerät: ' + x.fremd; }).join('\n'));
 }
 
 function saveToGH(data) {
@@ -2588,60 +2877,261 @@ function showRemoteClearedBanner(stamp) {
   (document.getElementById('app-shell') || document.body).appendChild(el);
 }
 
+// Gesamtabgleich mit der Cloud. Jede Datei wird einzeln behandelt (syncDatei):
+//  - keine lokalen Aenderungen (lokal == Basis) -> Cloud-Stand uebernehmen
+//  - lokale Aenderungen ausstehend           -> zusammenfuehren und zurueckschreiben, NIE ersetzen
+var G_syncLaeuft = null;
+// ── Rezeptarchiv (B6) ────────────────────────────────────────────────────────
+// Der Verlauf haelt nur die letzten 52 Plaene (Dateigroesse!). Frueher gingen damit auch deren GEKOCHTE Gerichte aus
+// der Rezeptdatenbank verloren. Bevor ein Plan den Verlauf verlaesst, werden seine gekochten Gerichte jetzt als
+// eigenstaendige Rezepte ins Archiv uebernommen: pro Quartal eine Datei (rezeptarchiv-JJJJ-Qn.json, klein genug fuer
+// GitHub) plus ein Index. Archiveintraege laufen durch denselben Drei-Wege-Abgleich wie alles andere (Schluessel _id).
+var ARCHIV_SHARD_RE = /^rezeptarchiv-(\d{4})-Q([1-4])\.json$/;
+var ARCHIV_INDEX = 'rezeptarchiv-index.json';
+function archivRegistrieren(datei) {
+  if (SYNC_DATEIEN[datei]) return true;
+  var wurzel = function(e) { return e && e._id ? 'i:' + e._id : null; };
+  if (datei === ARCHIV_INDEX) { SYNC_DATEIEN[datei] = { lokal: 'archiv_index', wurzel: wurzel }; return true; }
+  var m = ARCHIV_SHARD_RE.exec(datei);
+  if (!m) return false;
+  SYNC_DATEIEN[datei] = { lokal: 'archiv_' + m[1] + '_Q' + m[2], wurzel: wurzel };
+  return true;
+}
+function archivShardName(iso) {
+  var m = /^(\d{4})-(\d{2})/.exec(iso || '');
+  if (!m) return null;
+  return 'rezeptarchiv-' + m[1] + '-Q' + (Math.floor((parseInt(m[2], 10) - 1) / 3) + 1) + '.json';
+}
+function archivIndexLesen() {
+  archivRegistrieren(ARCHIV_INDEX);
+  var l = syncLokalLesen(ARCHIV_INDEX);
+  return Array.isArray(l) ? l.map(function(e) { return e && e._id; }).filter(Boolean) : [];
+}
+// Alle archivierten Gerichte (lokal), neueste zuerst.
+function archivEintraege() {
+  var out = [];
+  archivIndexLesen().forEach(function(n) {
+    archivRegistrieren(n);
+    var l = syncLokalLesen(n);
+    if (Array.isArray(l)) l.forEach(function(e) { if (e && e._id) out.push(e); });
+  });
+  return out;
+}
+function archivGerichtSauber(g) {
+  var c = JSON.parse(JSON.stringify(g || {}));
+  Object.keys(c).forEach(function(k) { if (k.charAt(0) === '_' && k !== '_basisPortionen' && k !== '_quellPortionen') delete c[k]; });
+  return c;
+}
+// Gekochte Gerichte eines Verlaufseintrags -> Archiveintraege.
+function archivEintraegeAusPlan(entry) {
+  var pl = entry && entry.plan, sug = pl && (pl.sug || (pl.sugs && pl.sugs[pl.sel != null ? pl.sel : 0]));
+  var out = [];
+  if (!sug || !Array.isArray(sug.gerichte)) return out;
+  var ws = pl.weekStart || (entry.date ? isoDateLocal(mondayOf(new Date(entry.date + 'T12:00:00'))) : '');
+  sug.gerichte.forEach(function(g) {
+    if (!g || g._cancelled || !g.abend || String(g.abend).indexOf('Auswärts') >= 0) return;
+    if (!g._gekocht && entry.status !== 'gekocht') return;
+    var iso = '';
+    if (g._gekocht) { var dk = new Date(g._gekocht); if (!isNaN(dk.getTime())) iso = isoDateLocal(dk); }
+    if (!iso && ws) { var dp = dateFromTag(ws, (g.tag || '').slice(0, 2)); if (dp) iso = isoDateLocal(dp); }
+    if (!iso) iso = (entry.date || '').slice(0, 10);
+    if (!iso) return;
+    var b = null; try { b = bewertungFuerGericht(sug.thema, g); } catch (e) {}
+    out.push({ _id: (pl.planId || entry.planId || 'x') + '|' + (g.gid || g.tag || '') + '|' + g.abend,
+               name: String(g.abend), iso: iso, thema: sug.thema || entry.thema || '', planId: pl.planId || entry.planId || '',
+               stars: b && b.stars ? b.stars : 0, basis: g._basisPortionen || planGesamtPortionen(pl, g), g: archivGerichtSauber(g),
+               archiviertAm: isoDateLocal(new Date()) });
+  });
+  return out;
+}
+// Traegt Eintraege in die Quartalsdateien ein (lokal sofort, Cloud im Hintergrund; was nicht hochkommt, bleibt als
+// ausstehende Aenderung erhalten und wird beim naechsten Sync nachgeholt).
+function archivHinzufuegen(eintraege) {
+  if (!eintraege || !eintraege.length) return 0;
+  var gruppen = {}, neu = 0;
+  eintraege.forEach(function(e) { var n = archivShardName(e.iso); if (n) (gruppen[n] = gruppen[n] || []).push(e); });
+  var idx = syncLokalLesen(ARCHIV_INDEX); idx = Array.isArray(idx) ? idx : [];
+  var geaendert = [];
+  Object.keys(gruppen).forEach(function(n) {
+    archivRegistrieren(n);
+    var l = syncLokalLesen(n); l = Array.isArray(l) ? l : [];
+    var vorhanden = {}; l.forEach(function(e) { vorhanden[e._id] = true; });
+    gruppen[n].forEach(function(e) { if (!vorhanden[e._id]) { l.push(e); vorhanden[e._id] = true; neu++; } });
+    syncLokalSchreiben(n, l);
+    if (!idx.some(function(x) { return x._id === n; })) idx.push({ _id: n });
+    geaendert.push(n);
+  });
+  archivRegistrieren(ARCHIV_INDEX); syncLokalSchreiben(ARCHIV_INDEX, idx);
+  geaendert.concat([ARCHIV_INDEX]).forEach(function(n) {
+    try { ghPut(n, syncLokalLesen(n), 'Rezeptarchiv').catch(function() { setSyncState('fail', 'Rezeptarchiv'); }); } catch (e) {}
+  });
+  return neu;
+}
+
+// ── Daten sichern / wiederherstellen (B6) ──────────────────────────────────────
+// Eine einzige Datei mit allem, was dem Nutzer gehoert (Plaene, Rezepte, Bewertungen, Archiv, Loeschlisten).
+// Wiederherstellen ist ADDITIV: es werden Eintraege ergaenzt, nie etwas ersetzt oder geloescht.
+var SICHERUNG_FORMAT = 'menuplan-sicherung';
+function datenSicherungErstellen() {
+  var s = getSession();
+  var dateien = {};
+  Object.keys(SYNC_DATEIEN).forEach(function(d) { var v = syncLokalLesen(d); if (v !== null && v !== undefined) dateien[d] = v; });
+  archivIndexLesen().forEach(function(n) { archivRegistrieren(n); var v = syncLokalLesen(n); if (v !== null) dateien[n] = v; });
+  return { format: SICHERUNG_FORMAT, version: 1, benutzer: s ? s.username : '', erstellt: new Date().toISOString(), dateien: dateien };
+}
+function datenSichern() {
+  var sicherung = datenSicherungErstellen();
+  var blob = new Blob([JSON.stringify(sicherung, null, 1)], { type: 'application/json' });
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'menuplan-sicherung-' + (sicherung.benutzer || 'nutzer') + '-' + isoDateLocal(new Date()) + '.json';
+  document.body.appendChild(a); a.click();
+  setTimeout(function() { URL.revokeObjectURL(a.href); a.remove(); }, 500);
+  kurzHinweis('Sicherung erstellt: ' + Object.keys(sicherung.dateien).length + ' Dateien.');
+  return sicherung;
+}
+// Prueft und uebernimmt eine Sicherung. Rueckgabe: { ok, fehler?, ergaenzt:{datei:n} }.
+function datenWiederherstellen(sicherung) {
+  if (!sicherung || sicherung.format !== SICHERUNG_FORMAT || !sicherung.dateien || typeof sicherung.dateien !== 'object') {
+    return { ok: false, fehler: 'Das ist keine Menüplan-Sicherung.' };
+  }
+  var s = getSession();
+  if (sicherung.benutzer && s && sicherung.benutzer !== s.username) {
+    return { ok: false, fehler: 'Die Sicherung gehört zu «' + sicherung.benutzer + '», du bist als «' + s.username + '» angemeldet.' };
+  }
+  var namen = Object.keys(sicherung.dateien), ergaenzt = {}, geschrieben = [];
+  for (var i = 0; i < namen.length; i++) {            // erst pruefen, dann schreiben: bei einem Fehler aendert sich nichts
+    var d = namen[i]; archivRegistrieren(d);
+    if (!SYNC_DATEIEN[d]) return { ok: false, fehler: 'Unbekannte Datei in der Sicherung: ' + d };
+    var v = sicherung.dateien[d];
+    var karte = !!SYNC_DATEIEN[d].karte, istAktivPlan = d === 'active-plan.json';
+    if (!(karte || istAktivPlan ? syncIstObjekt(v) : Array.isArray(v))) return { ok: false, fehler: 'Beschädigter Inhalt in ' + d + '.' };
+  }
+  namen.forEach(function(d) {
+    var fremd = sicherung.dateien[d], lokal = syncLokalLesen(d);
+    var ziel;
+    if (d === 'active-plan.json') { ziel = (lokal && lokal.sug) ? lokal : fremd; }               // einen laufenden aktiven Plan nie ersetzen
+    else ziel = syncMergeDatei(d, null, lokal, fremd, [], true);
+    if (!syncGleich(ziel, lokal)) {
+      ergaenzt[d] = Array.isArray(ziel) ? ziel.length - (Array.isArray(lokal) ? lokal.length : 0) : 1;
+      syncLokalSchreiben(d, ziel); geschrieben.push(d);
+    }
+  });
+  var idx = syncLokalLesen(ARCHIV_INDEX);
+  geschrieben.forEach(function(d) { try { ghPut(d, syncLokalLesen(d), 'Wiederherstellung').catch(function() { setSyncState('fail', 'Wiederherstellung'); }); } catch (e) {} });
+  try { G.activePlan = G.activePlan || JSON.parse(localStorage.getItem(userKey('active_plan')) || 'null'); } catch (e) {}
+  try { loadHistoryRecipes(); loadSavedFotoRezepte(); updateDashboard(); } catch (e) {}
+  return { ok: true, ergaenzt: ergaenzt, dateien: geschrieben.length };
+}
+function datenWiederherstellenWaehlen() { var i = $('sicherung-input'); if (i) { i.value = ''; i.click(); } }
+function datenWiederherstellenDatei(file) {
+  if (!file) return;
+  var rd = new FileReader();
+  rd.onload = function() {
+    var sic; try { sic = JSON.parse(rd.result); } catch (e) { kurzHinweis('Die Datei ist keine gültige Sicherung.'); return; }
+    var r = datenWiederherstellen(sic);
+    kurzHinweis(r.ok ? 'Wiederhergestellt: ' + r.dateien + ' Dateien ergänzt.' : r.fehler);
+  };
+  rd.readAsText(file);
+}
+
+function syncDatei(datei, headers) {
+  archivRegistrieren(datei);
+  var cfg = SYNC_DATEIEN[datei];
+  return fetch(PROXY + '/gh/' + ghFile(datei), { headers: headers })
+    .then(function(r) { return r.ok ? r.json() : null; })
+    .then(function(d) {
+      var fremd = d ? ghDecode(d) : null;
+      return syncBaseLesen(datei).then(function(base) {
+        var lokal = syncLokalLesen(datei);
+        if (fremd === null) {                                  // Cloud hat (noch) nichts / nicht erreichbar
+          if (d === null) return null;
+          return null;
+        }
+        if (datei === 'active-plan.json' && syncIstObjekt(fremd) && fremd.cleared) {
+          return syncBaseSchreiben(datei, fremd).then(function() {
+            var tomb = syncLokalLesen('plan-geloescht.json') || {};
+            if (fremd.planId && G.activePlan && G.activePlan.planId === fremd.planId && tomb[fremd.planId]) planGeloeschtAnwenden();   // geloescht: still entfernen
+            else if (fremd.planId && G.activePlan && G.activePlan.planId && G.activePlan.planId !== fremd.planId) { /* anderer Plan aktiv: Marker betrifft ihn nicht */ }
+            else handleRemoteCleared(fremd);
+            return null;
+          });
+        }
+        var lokalLeer = lokal === null || (Array.isArray(lokal) && !lokal.length) || (syncIstObjekt(lokal) && !Object.keys(lokal).length);
+        // Ohne Basis (neues Geraet / erster Lauf) gilt Leeres als "nichts lokal"; mit Basis ist jede Abweichung eine ausstehende Aenderung (auch ein lokal beendeter Plan)
+        var keineAenderung = base === null ? lokalLeer : syncGleich(lokal, base);
+        var ziel;
+        if (keineAenderung) ziel = fremd;
+        else {
+          var kf = [];
+          // Ohne Basis (erster Lauf nach dem Update): Cloud gilt als Stand, auf dem das Geraet aufbaut
+          ziel = syncMergeDatei(datei, base === null ? lokal : base, lokal, fremd, kf, base === null);
+          syncKonfliktMerken(datei, kf);
+        }
+        if (datei === 'history.json' && Array.isArray(ziel)) ziel = syncMergeDatei(datei, ziel, ziel, ziel, []);   // Loeschmarken + Sortierung anwenden
+        if (datei === 'foto-rezepte.json' && Array.isArray(ziel)) ziel = syncMergeDatei(datei, ziel, ziel, ziel, []);
+        if (ziel === null && datei === 'active-plan.json') {   // lokal beendet, noch nicht in der Cloud
+          return ghPut(datei, { cleared: true, date: new Date().toISOString(), planId: base && base.planId }, 'Plan beendet').then(function() { setSyncState('ok'); });
+        }
+        var vorher = lokal;
+        if (!syncGleich(ziel, vorher)) { syncLokalSchreiben(datei, ziel); syncNachMerge(datei, ziel); }
+        if (syncGleich(ziel, fremd)) return syncBaseSchreiben(datei, fremd);
+        // Lokale/zusammengefuehrte Aenderungen liegen noch nicht in der Cloud -> hochladen
+        return ghPut(datei, ziel, 'Abgleich').then(function() { setSyncState('ok'); });
+      });
+    });
+}
+
 function syncAllFromGH() {
   var h = getAuthHeaders();
-  if (!h) return;
+  if (!h) return Promise.resolve();
   var sess = getSession();
-  var user = sess ? sess.username : null;
-  if (!user) return;
+  if (!sess || !sess.username) return Promise.resolve();
+  if (G_syncLaeuft) return G_syncLaeuft;
   try { fotoSyncPending(); } catch (e) {}
-  fetch(PROXY + '/gh/' + ghFile('active-plan.json'), { headers: h })
-    .then(function(r) { return r.ok ? r.json() : null; })
-    .then(function(d) {
-      var plan = decodeGHContent(d);
-      if (plan && plan.cleared) {
-        // Auf einem anderen Geraet beendet/geloescht. Der Marker wurde bisher
-        // nur ignoriert - der lokale Plan blieb stehen und wurde bei der
-        // naechsten Mutation wieder hochgeladen, wodurch der geloeschte Plan
-        // zurueckkam. Jetzt wird nachgefragt statt still zu entscheiden.
-        handleRemoteCleared(plan);
-      } else if (plan && plan.sug) {
-        G.activePlan = plan;
-        localStorage.setItem(userKey('active_plan'), JSON.stringify(plan));
-        renderActivePlan();
-      }
-    }).catch(function(){});
-  syncFotoFromGH(h).catch(function(){});
-  fetch(PROXY + '/gh/' + ghFile('history.json'), { headers: h })
-    .then(function(r) { return r.ok ? r.json() : null; })
-    .then(function(d) {
-      var hist = decodeGHContent(d);
-      if (Array.isArray(hist)) localStorage.setItem(userKey('local_history'), JSON.stringify(hist));
-    }).catch(function(){});
+  // Reihenfolge: Loeschlisten zuerst, damit Merge und Anzeige sie kennen
+  var reihe = ['plan-geloescht.json', 'foto-geloescht.json', 'foto-rezepte.json', 'history.json', 'active-plan.json', 'ratings.json'];
+  G_syncLaeuft = reihe.reduce(function(p, f) {
+    return p.then(function() { return syncDatei(f, h).catch(function(e) { console.warn('Sync', f, e && e.message); setSyncState('fail', e && e.status ? 'Status ' + e.status : ''); }); });
+  }, Promise.resolve()).then(function() {
+    // Rezeptarchiv: erst der Index, dann jede darin genannte Quartalsdatei (kleine Dateien, nur bei Bedarf vorhanden)
+    return syncDatei(ARCHIV_INDEX, h).then(function() {
+      return archivIndexLesen().reduce(function(p2, n) { return p2.then(function() { return syncDatei(n, h); }); }, Promise.resolve());
+    }).catch(function(e) { console.warn('Sync Archiv', e && e.message); });
+  }).then(function() {
+    G_syncLaeuft = null;
+    try { planGeloeschtAnwenden(); } catch (e) {}
+    try { if (typeof befoerdereWochenplan === 'function') befoerdereWochenplan(); } catch (e) {}
+    try { updateDashboard(); } catch (e) {}
+  }, function() { G_syncLaeuft = null; });
+  return G_syncLaeuft;
 }
+
+// Ein auf einem Geraet geloeschter Plan darf hier nicht aktiv bleiben.
+function planGeloeschtAnwenden() {
+  var tomb = syncLokalLesen('plan-geloescht.json') || {};
+  if (G.activePlan && G.activePlan.planId && tomb[G.activePlan.planId]) {
+    var gId = G.activePlan.planId;
+    G.activePlan = null; G.sugs = []; G.sel = null;
+    try { localStorage.removeItem(userKey('active_plan')); einkaufHakenEntfernen(gId); } catch (e) {}
+    try { renderActivePlan(); } catch (e) {}
+  }
+}
+
+// Wiederholt ausstehende Aenderungen, sobald das Netz zurueck ist.
+window.addEventListener('online', function() { try { syncIfDue(true); } catch (e) {} });
 
 
 function syncGH(btn) {
   var origText = btn ? btn.textContent : '';
   if (btn) { btn.textContent = '...'; btn.disabled = true; }
-  var h = getAuthHeaders();
-  if (!h) { if (btn) { btn.textContent = origText; btn.disabled = false; } return; }
-  fetch(PROXY + '/gh/' + ghFile('active-plan.json'), { headers: h })
-    .then(function(r) { return r.ok ? r.json() : null; })
-    .then(function(d) {
-      if (d && d.content) {
-        var plan = JSON.parse(decodeURIComponent(escape(atob(d.content.split('\n').join('')))));
-        if (plan && plan.sug) {
-          G.activePlan = plan;
-          localStorage.setItem(userKey('active_plan'), JSON.stringify(plan));
-          renderActivePlan();
-        }
-      }
-      if (btn) { btn.textContent = 'OK'; setTimeout(function(){ btn.textContent = origText; btn.disabled = false; }, 1500); }
-    })
-    .catch(function() {
-      if (btn) { btn.textContent = 'Err'; setTimeout(function(){ btn.textContent = origText; btn.disabled = false; }, 1500); }
-    });
+  if (!getAuthHeaders()) { if (btn) { btn.textContent = origText; btn.disabled = false; } return; }
+  syncAllFromGH().then(function() {
+    try { renderActivePlan(); } catch (e) {}
+    if (btn) { btn.textContent = 'OK'; setTimeout(function(){ btn.textContent = origText; btn.disabled = false; }, 1500); }
+  }, function() {
+    if (btn) { btn.textContent = 'Err'; setTimeout(function(){ btn.textContent = origText; btn.disabled = false; }, 1500); }
+  });
 }
 
 
@@ -2671,7 +3161,7 @@ function loadSaved() {
 // zurück, falls kein Login besteht oder KV nicht erreichbar ist.
 function bringTokenHeaders() {
   var s = getSession();
-  return s ? { 'X-MP-User': s.username, 'X-MP-Pass': s.pw, 'Content-Type': 'application/json' } : null;
+  return s ? withMpAuth({ 'Content-Type': 'application/json' }) : null;
 }
 
 function saveBringTokenRemote(data) {
@@ -2993,7 +3483,12 @@ function doImportItems() {
     // erledigt - auch wenn nichts an Bring! ging. Frueher blieb die Startseite
     // auf "zu übertragen" stehen, obwohl nichts mehr zu tun war.
     if (alleItems.length) {
-      markEinkaufDone(0);
+      if (G.fotoImport) {                       // Foto-/Einzelrezept: nicht den aktiven Wochenplan anfassen
+        var fr0 = window._fotoRezept;
+        if (fr0) { fr0.status = 'einkauf'; saveFotoRezeptSilent(fr0, 'einkauf'); }
+      } else {
+        markEinkaufDone(0);
+      }
       showSt('ist', 'Alle ' + alleItems.length +
         ' Artikel sind bereits vorhanden – Einkauf als erledigt markiert.', 'ok');
     } else {
@@ -3320,9 +3815,62 @@ function validateOverview(data, expectedCount, expectedTags) {
 // Antworten mit nur einem Gericht), entfaellt die Mengen-/Zuordnungspruefung.
 // Validiert ein einzelnes Foto-Rezept (eigenes Schema: "schritte" statt
 // "schritte_vegi", kein "tag"-Feld, kein "gerichte"-Array-Wrapper).
+// ── Gemeinsames Rezeptschema (C2) ──────────────────────────────────────────
+// Foto-/Text-Rezepte ("name", "schritte") und Plan-Gerichte ("abend", "schritte_vegi/_fleisch") laufen durch
+// DIESELBE Bereinigung, bevor sie validiert, angezeigt, gespeichert oder eingeplant werden: Zutaten sind Objekte mit
+// Textname (nie null/Zahl/leer), Mengen Text, Schritte Objekte mit Text, timer_min eine Zahl >= 0.
+function rezeptZutatenBereinigen(liste) {
+  if (liste === null || liste === undefined || liste === '') return [];
+  var arr = Array.isArray(liste) ? liste : [liste];
+  var out = [];
+  arr.forEach(function(z) {
+    if (z === null || z === undefined) return;
+    var o = (z && typeof z === 'object' && !Array.isArray(z)) ? Object.assign({}, z) : { name: alsText(z) };
+    o.name = alsText(o.name).trim();
+    o.menge = (o.menge === null || o.menge === undefined) ? '' : alsText(o.menge).trim();
+    if (o.name) out.push(o);
+  });
+  return out;
+}
+function rezeptSchritteBereinigen(liste) {
+  if (!Array.isArray(liste)) return [];
+  var out = [];
+  liste.forEach(function(st) {
+    if (st === null || st === undefined) return;
+    var o = (st && typeof st === 'object' && !Array.isArray(st)) ? Object.assign({}, st) : { text: alsText(st) };
+    o.titel = alsText(o.titel !== undefined ? o.titel : o.title).trim();
+    o.text = alsText(o.text).trim();
+    var t = parseFloat(o.timer_min);
+    o.timer_min = t > 0 ? t : 0;
+    if (o.zutaten_schritt !== undefined) o.zutaten_schritt = normZs(o.zutaten_schritt);
+    if (o.zubehoer !== undefined) o.zubehoer = alsListe(o.zubehoer);
+    ['kontrolle', 'parallel_hinweis', 'ablage'].forEach(function(k) { if (o[k] !== undefined) o[k] = alsText(o[k]); });
+    if (o.text || o.titel) out.push(o);
+  });
+  return out;
+}
+// Bereinigt ein Rezept/Gericht an Ort und Stelle und gibt es zurueck. Fehlende Teile bleiben fehlend (der Validator
+// meldet sie); falsche Typen werden korrigiert; unbrauchbare Eintraege (null, Zutat ohne Namen, Schritt ohne Text) entfallen.
+function rezeptNormalisieren(r) {
+  if (!r || typeof r !== 'object') return r;
+  if (r.zutaten !== undefined) r.zutaten = rezeptZutatenBereinigen(r.zutaten);
+  ['schritte', 'schritte_vegi', 'schritte_fleisch'].forEach(function(k) {
+    if (r[k] === undefined) return;
+    if (r[k] === null) { delete r[k]; return; }
+    r[k] = rezeptSchritteBereinigen(r[k]);
+  });
+  ['name', 'abend', 'beschreibung', 'tipp', 'zeit_aktiv', 'zeit_total'].forEach(function(k) {
+    if (r[k] !== undefined && r[k] !== null && typeof r[k] !== 'string') r[k] = alsText(r[k]);
+    if (r[k] === null) delete r[k];
+  });
+  if (r.utensilien !== undefined) r.utensilien = alsListe(r.utensilien);
+  return r;
+}
+
 function validateFotoRecipe(data) {
-  if (!data) return 'Keine Antwort erhalten';
-  if (!data.name) return 'Rezeptname fehlt';
+  if (!data || typeof data !== 'object') return 'Keine Antwort erhalten';
+  rezeptNormalisieren(data);
+  if (!data.name || !String(data.name).trim()) return 'Rezeptname fehlt';
   if (!Array.isArray(data.zutaten) || !data.zutaten.length) return 'Zutaten fehlen';
   if (!Array.isArray(data.schritte) || !data.schritte.length) return 'Kochschritte fehlen';
   return null;
@@ -3366,7 +3914,9 @@ function validateFullRecipe(data, expectedTags, modus) {
   if (!data.gerichte.length) return 'Keine Gerichte enthalten';
   for (var i = 0; i < data.gerichte.length; i++) {
     var g = data.gerichte[i];
-    if (!g.abend) return 'Gericht ' + (i+1) + ': Name fehlt';
+    if (!g || typeof g !== 'object') return 'Gericht ' + (i+1) + ': ungültiger Eintrag';
+    rezeptNormalisieren(g);
+    if (!g.abend || !String(g.abend).trim()) return 'Gericht ' + (i+1) + ': Name fehlt';
     if (!Array.isArray(g.zutaten) || !g.zutaten.length) return 'Gericht ' + (i+1) + ': Zutaten fehlen';
     var missing = fehlendeSchritte(g, modus);
     if (missing) return 'Gericht ' + (i+1) + ': ' + missing;
@@ -3412,18 +3962,12 @@ function parseJSON(raw) {
       .replace(/([^\\])\t/g, '$1\\t'));
   } catch(e3) {}
 
-  // Try to close truncated JSON by adding missing brackets
-  try {
-    var open = (jsonStr.match(/\[/g)||[]).length - (jsonStr.match(/\]/g)||[]).length;
-    var openB = (jsonStr.match(/\{/g)||[]).length - (jsonStr.match(/\}/g)||[]).length;
-    var fixed = jsonStr.replace(/,\s*$/, ''); // remove trailing comma
-    for (var i = 0; i < open; i++) fixed += ']';
-    for (var i = 0; i < openB; i++) fixed += '}';
-    var result = JSON.parse(fixed);
-    console.warn('JSON was truncated and auto-fixed');
-    return result;
-  } catch(e4) {}
-
+  // Abgeschnittene Antworten werden bewusst NICHT "repariert": ein von Hand geschlossenes JSON sieht gueltig aus,
+  // enthaelt aber fehlende Schritte/Zutaten und wuerde als vollstaendiges Rezept gespeichert. Fehlendes Ende =
+  // Fehler (der Aufrufer wiederholt oder meldet), ausser die Quelle hat das Token-Limit schon sauber gemeldet.
+  var klammern = (jsonStr.match(/\{/g) || []).length - (jsonStr.match(/\}/g) || []).length;
+  var eckig = (jsonStr.match(/\[/g) || []).length - (jsonStr.match(/\]/g) || []).length;
+  if (klammern > 0 || eckig > 0) throw new Error('Antwort unvollständig (abgeschnittenes JSON): ' + jsonStr.slice(-80));
   throw new Error('JSON ungueltig: ' + jsonStr.slice(0, 150));
 }
 
@@ -3594,8 +4138,7 @@ function readAnthropicStream(response, onProgress) {
 // oder Diagnose.
 function callWorker(kind, message, maxTokens, opts, model, onProgress, messagesOverride, onRetry) {
   var s = getSession();
-  var h = { 'Content-Type': 'application/json' };
-  if (s) { h['X-MP-User'] = s.username; h['X-MP-Pass'] = s.pw; }
+  var h = withMpAuth({ 'Content-Type': 'application/json' });
   var _p = {
     kind: kind,
     opts: currentOpts(opts),
@@ -3637,6 +4180,8 @@ function callWorker(kind, message, maxTokens, opts, model, onProgress, messagesO
         disarm();
         return r.json().then(function(d) {
           if (d.error) throw new Error(d.error.message || d.error || 'API Fehler');
+          // Wie im Stream: stop_reason "max_tokens" heisst abgeschnitten - nie als Erfolg zurueckgeben.
+          if (d.stop_reason === 'max_tokens') throw new Error('Antwort wurde am Token-Limit abgeschnitten.');
           return (d.content && d.content[0] && d.content[0].text) ? d.content[0].text : '';
         });
       }
@@ -5034,6 +5579,7 @@ window.addEventListener('scroll', function() {
 }, { passive: true });
 
 function wtab(t) {
+  setTimeout(tabsAktualisieren, 0);
   var tabs = document.querySelectorAll('.tabs .tab');
   if (!tabs || tabs.length < 2) return;
   var wechsel = G_aktiverTab !== t;
@@ -5245,13 +5791,46 @@ function itemKey(item) {
   return item && item.name ? String(item.name).toLowerCase().trim() : '';
 }
 
-function loadCheckedState() {
-  try { return JSON.parse(localStorage.getItem(userKey('einkauf_checked')) || '{}'); }
-  catch(e) { return {}; }
+// Einkaufshaken gehoeren zu EINER Einkaufsliste: dem aktiven Wochenplan (planId) oder einem Foto-/Einzelrezept
+// (G.fotoImport). Speicherformat: { v:2, ctx: { '<kontext>': { '<artikel>': true } } }. Das alte flache Format
+// ({ artikel: true }) wird beim ersten Lesen dem damals aktiven Kontext zugeordnet.
+var EINKAUF_KONTEXTE_MAX = 40;
+function einkaufKontextId() {
+  if (G.fotoImport) {
+    var fr = window._fotoRezept;
+    return 'foto:' + ((fr && (fr._id || fr.name)) || '?');
+  }
+  return 'plan:' + ((G.activePlan && G.activePlan.planId) || 'aktiv');
 }
-
+function einkaufStoreLesen() {
+  var roh;
+  try { roh = JSON.parse(localStorage.getItem(userKey('einkauf_checked')) || '{}'); } catch (e) { roh = {}; }
+  if (roh && roh.v === 2 && roh.ctx && typeof roh.ctx === 'object') return roh;
+  var neu = { v: 2, ctx: {} };
+  if (roh && typeof roh === 'object' && Object.keys(roh).length) neu.ctx[einkaufKontextId()] = roh;   // Migration altes Format
+  return neu;
+}
+function loadCheckedState() {
+  var st = einkaufStoreLesen();
+  return st.ctx[einkaufKontextId()] || {};
+}
 function saveCheckedState() {
-  try { localStorage.setItem(userKey('einkauf_checked'), JSON.stringify(G.checked || {})); } catch(e) {}
+  try {
+    var st = einkaufStoreLesen(), id = einkaufKontextId();
+    delete st.ctx[id];                                       // ans Ende: zuletzt benutzte Kontexte bleiben erhalten
+    if (G.checked && Object.keys(G.checked).length) st.ctx[id] = G.checked;
+    var ids = Object.keys(st.ctx);
+    while (ids.length > EINKAUF_KONTEXTE_MAX) delete st.ctx[ids.shift()];
+    localStorage.setItem(userKey('einkauf_checked'), JSON.stringify(st));
+  } catch(e) {}
+}
+// Haken eines beendeten/geloeschten Plans entfernen (andere Kontexte bleiben unberuehrt).
+function einkaufHakenEntfernen(planId) {
+  try {
+    var st = einkaufStoreLesen();
+    delete st.ctx['plan:' + (planId || 'aktiv')];
+    localStorage.setItem(userKey('einkauf_checked'), JSON.stringify(st));
+  } catch (e) {}
 }
 
 function togItem(i) {
@@ -5801,6 +6380,19 @@ function adjPort(d) {
   }
   // Rescale ingredient amounts in the displayed list
   rescaleZutaten();
+  markiereSchnellwahl();
+}
+
+// Schnellwahl 2/4/6/8: der Knopf, der dem aktuellen Wert "heute" entspricht, ist markiert (Klasse + aria-pressed).
+function markiereSchnellwahl() {
+  var box = $('cook-heute-chips'); if (!box) return;
+  var fest = Math.max(0, G_cook_base_port - G_cook_base_heute);
+  var heute = G_cook_port - fest;
+  Array.prototype.forEach.call(box.querySelectorAll('.chip'), function(c) {
+    var an = parseInt(c.getAttribute('data-n'), 10) === heute;
+    c.classList.toggle('on', an);
+    c.setAttribute('aria-pressed', an ? 'true' : 'false');
+  });
 }
 
 // Schnellwahl: so viele Personen essen HEUTE. Reste- und Tiefkuehlportionen
@@ -5811,27 +6403,48 @@ function setHeute(n) {
   adjPort(0);
 }
 
-// Rundet die skalierte Menge passend zur Einheit. "1.5 Prise" oder
-// "0.3 Messerspitze" sind beim Kochen sinnlos - solche Masse gibt es nur ganz.
-// Bei TL und EL sind halbe Schritte ueblich, bei Gramm und Millilitern zaehlt
-// die tatsaechliche Zahl.
+// Bruchschreibweise fuer Kochmengen: 0.25 -> "¼", 1.5 -> "1½". Liefert '' wenn der
+// Wert kein sauberer Bruch ist (dann wird als Dezimalzahl angezeigt).
+var BRUCH_ANZEIGE = [[0.125, '⅛'], [0.25, '¼'], [1/3, '⅓'], [0.5, '½'], [2/3, '⅔'], [0.75, '¾']];
+function bruchTxt(v) {
+  if (!(v > 0)) return '';
+  var ganz = Math.floor(v + 1e-9), rest = v - ganz;
+  if (rest < 1e-6) return String(ganz);
+  for (var i = 0; i < BRUCH_ANZEIGE.length; i++) {
+    if (Math.abs(rest - BRUCH_ANZEIGE[i][0]) < 1e-6) return (ganz ? String(ganz) : '') + BRUCH_ANZEIGE[i][1];
+  }
+  return '';
+}
+
+// Rundet die skalierte Verbrauchsmenge passend zur Einheit. Ausgangspunkt ist immer die
+// ORIGINALmenge (basis, numerisch) - nie eine bereits gerundete Anzeige. Bei Faktor 1 bleibt
+// die Originalmenge unveraendert (½ Bund bleibt ½ Bund, ¼ TL bleibt ¼ TL).
+// Einkaufsgebinde (ganze Bund/Dosen) werden getrennt in der Einkaufsliste berechnet, nicht hier.
 function skalierteMenge(basis, faktor, einheit) {
   var e = String(einheit || '').toLowerCase().replace('.', '');
   var wert = basis * faktor;
-  // Nur ganzzahlig sinnvoll
+  var basisBruch = Math.abs(basis - Math.round(basis)) > 1e-6;      // z.B. ½, 1½, ¼
+  if (Math.abs(faktor - 1) < 1e-9) {
+    var orig = /^(g|kg|ml|l|dl|cl|mg)$/.test(e) ? '' : bruchTxt(basis);   // Gewicht/Volumen bleiben Dezimalzahlen
+    if (orig) return orig;
+    return String(Math.round(basis * 100) / 100);
+  }
+  // Zaehlbare Einheiten
   if (/^(prise|prisen|messerspitze|msp|zweig|zweige|bund|handvoll|stueck|stück|stk|zehe|zehen|dose|dosen|packung|blatt)$/.test(e)) {
+    if (basisBruch) {
+      // Ausgangsmenge ist ein Bruch (½ Bund): in Viertelschritten bleiben, nie unter ¼
+      var v4 = Math.max(0.25, Math.round(wert * 4) / 4);
+      return bruchTxt(v4) || String(v4);
+    }
     return String(Math.max(1, Math.round(wert)));
   }
-  // Halbe Schritte
+  // Loeffelmasse: halbe Schritte, bei Viertel-Ausgangsmengen (¼ TL) Viertelschritte
   if (/^(tl|el|kl|essloeffel|esslöffel|teeloeffel|teelöffel|kaffeeloeffel|kaffeelöffel)$/.test(e)) {
-    var halb = Math.round(wert * 2) / 2;
-    if (halb < 0.5) halb = 0.5;
-    // Als Bruch schreiben, wie es in Rezepten ueblich ist: "½ TL" statt
-    // "0.5 TL", "1½ EL" statt "1.5 EL". Nach dem Rueckskalieren stand sonst
-    // die Dezimalzahl da, obwohl das Original "1/2 TL" hiess.
-    var ganz = Math.floor(halb), rest = halb - ganz;
-    if (rest === 0.5) return (ganz ? ganz : '') + '½';
-    return String(ganz);
+    var schritt = (Math.abs(basis * 2 - Math.round(basis * 2)) > 1e-6) ? 0.25 : 0.5;
+    var halb = Math.round(wert / schritt) * schritt;
+    if (halb < schritt) halb = schritt;
+    // Als Bruch schreiben, wie es in Rezepten ueblich ist: "½ TL" statt "0.5 TL"
+    return bruchTxt(halb) || String(halb);
   }
   // Gewicht und Volumen: ab 10 auf ganze Zahlen, darunter eine Nachkommastelle
   if (wert >= 10) return String(Math.round(wert));
@@ -5930,7 +6543,7 @@ function startCook(ri) {
   // nicht nur fuer G.personen. Sonst skaliert "+1 Portion" viel zu stark.
   var _mit = (G.reste && !g._cancelled) ? (G.personen || 2) : 0;
   var _tk  = G.freeze ? 2 : 0;
-  G_cook_base_port = (G.personen || 2) + _mit + _tk;
+  G_cook_base_port = g._basisPortionen || ((G.personen || 2) + _mit + _tk);
   G_cook_port = G_cook_base_port;
   G_cook_zutaten = g.zutaten || [];
   clearInterval(G.tiv);
@@ -6027,7 +6640,7 @@ function showIngOverview(g) {
       '</div>' +
       '<div style="font-size:11px;color:var(--gr3);margin:12px 0 6px">Schnell wählen: heute essen …</div>' +
       '<div class="chips" id="cook-heute-chips">' +
-        [2, 4, 6, 8].map(function(n) { return '<button class="chip" onclick="setHeute(' + n + ')">' + n + ' Personen</button>'; }).join('') +
+        [2, 4, 6, 8].map(function(n) { return '<button class="chip" data-n="' + n + '" aria-pressed="false" onclick="setHeute(' + n + ')">' + n + ' Personen</button>'; }).join('') +
       '</div>' +
       '<div style="font-size:11px;color:var(--gr3);margin-top:8px;line-height:1.4">Mengen skalieren linear. Garzeiten, Gewürze und Pfannen- bzw. Blechgrösse passen sich nicht automatisch an – bei grossen Mengen lieber vorsichtig würzen und in Etappen garen.</div>' +
       '</div>' +
@@ -6035,6 +6648,7 @@ function showIngOverview(g) {
 
   $('cbody').innerHTML = html;
   zeigeKapazitaet();
+  markiereSchnellwahl();
 }
 
 function requestWakeLock() {
@@ -6586,7 +7200,7 @@ function teileRezept(ri) {
 
   fetch(PROXY + '/share', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'X-MP-User': s.username, 'X-MP-Pass': s.pw },
+    headers: withMpAuth({ 'Content-Type': 'application/json' }),
     body: JSON.stringify({ html: html, ttl: 86400 })
   })
   .then(function(r) { return r.json().then(function(d) { return { ok: r.ok, d: d }; }); })
@@ -6610,23 +7224,134 @@ function teileRezept(ri) {
   });
 }
 
-// Solange ein Dialog offen ist: Hintergrund nicht scrollen, Escape schliesst.
-var G_offenerDialog = null;
-function dialogAuf(id, schliessFn) {
-  G_offenerDialog = { id: id, close: schliessFn };
-  document.body.style.overflow = 'hidden';
-  var m = $(id);
-  if (m) {
-    var f = m.querySelector('button, [tabindex="0"], input');
-    if (f) setTimeout(function() { f.focus(); }, 30);
-  }
+// ── Gemeinsamer Dialogbaustein (A7) ─────────────────────────────────────────
+// Fuer ALLE Dialoge der App (Liste DIALOG_IDS): sobald ein Dialog sichtbar wird, bekommt er role="dialog" und
+// aria-modal, den Fokus (erstes bedienbares Element), eine Fokusfalle (Tab/Shift+Tab bleiben im Dialog), Escape zum
+// Schliessen und einen gesperrten Hintergrund (inert + aria-hidden, kein Scrollen). Beim Schliessen kehrt der Fokus
+// zum ausloesenden Element zurueck. Erkennung ueber einen MutationObserver auf style - die einzelnen
+// Oeffnen-/Schliessen-Funktionen muessen nichts davon wissen und koennen es nicht mehr vergessen.
+var DIALOG_IDS = ['kochtag-modal', 'wieder-modal', 'replace-modal', 'reschedule-modal', 'dep-modal', 'rating-modal', 'woche-modal',
+                  'qr-modal', 'einplan-modal', 'pw-modal', 'tour-modal'];
+var G_dialogStapel = [];
+var DIALOG_FOKUS = 'button:not([disabled]), [href], input:not([disabled]):not([type="hidden"]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
+function dialogSichtbar(el) { return !!el && !!el.style.display && el.style.display !== 'none'; }
+function dialogFokussierbar(el) {
+  return Array.prototype.filter.call(el.querySelectorAll(DIALOG_FOKUS), function(n) {
+    return n.offsetParent !== null || n === document.activeElement;
+  });
 }
-function dialogZu() {
-  G_offenerDialog = null;
-  document.body.style.overflow = '';
+function dialogHintergrundSperren(el) {
+  var liste = [], n = el;
+  while (n && n !== document.body && n.parentNode) {
+    var par = n.parentNode;
+    Array.prototype.forEach.call(par.children, function(sib) {
+      if (sib === n || sib.tagName === 'SCRIPT' || sib.tagName === 'STYLE') return;
+      if (sib.getAttribute('role') === 'status' || sib.getAttribute('aria-live')) return;
+      liste.push({ el: sib, inert: sib.hasAttribute('inert'), hidden: sib.getAttribute('aria-hidden') });
+      sib.setAttribute('inert', ''); sib.setAttribute('aria-hidden', 'true');
+    });
+    n = par;
+  }
+  return liste;
+}
+function dialogSchliessFunktion(id) {
+  var f = { 'replace-modal': 'closeReplace', 'einplan-modal': 'closeEinplanen', 'kochtag-modal': 'kochtagSchliessen',
+            'tour-modal': 'tourSchliessen', 'qr-modal': 'closeQR' }[id];
+  if (f && typeof window[f] === 'function') return window[f];
+  return function() { var el = document.getElementById(id); if (el) el.style.display = 'none'; };
+}
+function dialogAktivieren(el) {
+  if (G_dialogStapel.some(function(d) { return d.el === el; })) return;
+  var e = { el: el, opener: document.activeElement, sperre: null, warInert: el.hasAttribute('inert'), warHidden: el.getAttribute('aria-hidden') };
+  el.removeAttribute('inert'); el.removeAttribute('aria-hidden');
+  el.setAttribute('role', 'dialog'); el.setAttribute('aria-modal', 'true');
+  if (!el.getAttribute('aria-labelledby') && !el.getAttribute('aria-label')) {
+    var h = el.querySelector('[id$="titel"], [id$="title"], h1, h2, h3');
+    if (h && h.id) el.setAttribute('aria-labelledby', h.id);
+    else el.setAttribute('aria-label', (h && h.textContent.trim()) || 'Dialog');
+  }
+  e.sperre = dialogHintergrundSperren(el);
+  G_dialogStapel.push(e);
+  document.body.style.overflow = 'hidden';
+  setTimeout(function() {
+    if (!dialogSichtbar(el) || el.contains(document.activeElement)) return;
+    var z = el.querySelector('[autofocus]') || dialogFokussierbar(el)[0];
+    if (z) z.focus(); else { el.setAttribute('tabindex', '-1'); el.focus(); }
+  }, 0);
+}
+function dialogFreigeben(el) {
+  var i = -1;
+  G_dialogStapel.forEach(function(d, k) { if (d.el === el) i = k; });
+  if (i < 0) return;
+  var e = G_dialogStapel.splice(i, 1)[0];
+  e.sperre.forEach(function(s) {
+    if (!s.inert) s.el.removeAttribute('inert');
+    if (s.hidden === null) s.el.removeAttribute('aria-hidden'); else s.el.setAttribute('aria-hidden', s.hidden);
+  });
+  if (e.warInert) el.setAttribute('inert', '');
+  if (e.warHidden !== null) el.setAttribute('aria-hidden', e.warHidden);
+  if (!G_dialogStapel.length) document.body.style.overflow = '';
+  var ziel = e.opener;
+  setTimeout(function() { if (ziel && document.contains(ziel) && ziel.focus) { try { ziel.focus(); } catch (x) {} } }, 0);
+}
+function dialogBeobachtenStarten() {
+  if (typeof MutationObserver !== 'function') return;
+  var obs = new MutationObserver(function(muts) {
+    muts.forEach(function(m) {
+      var el = m.target;
+      if (dialogSichtbar(el)) dialogAktivieren(el); else dialogFreigeben(el);
+    });
+  });
+  DIALOG_IDS.forEach(function(id) {
+    var el = document.getElementById(id);
+    if (!el) return;
+    obs.observe(el, { attributes: true, attributeFilter: ['style'] });
+    if (dialogSichtbar(el)) dialogAktivieren(el);
+  });
 }
 document.addEventListener('keydown', function(ev) {
-  if (ev.key === 'Escape' && G_offenerDialog) { G_offenerDialog.close(); }
+  var top = G_dialogStapel[G_dialogStapel.length - 1];
+  if (!top) return;
+  if (ev.key === 'Escape') { ev.preventDefault(); dialogSchliessFunktion(top.el.id)(); return; }
+  if (ev.key !== 'Tab') return;
+  var f = dialogFokussierbar(top.el);
+  if (!f.length) { ev.preventDefault(); return; }
+  var erst = f[0], letzt = f[f.length - 1], a = document.activeElement;
+  if (!top.el.contains(a)) { ev.preventDefault(); erst.focus(); }
+  else if (ev.shiftKey && a === erst) { ev.preventDefault(); letzt.focus(); }
+  else if (!ev.shiftKey && a === letzt) { ev.preventDefault(); erst.focus(); }
+});
+document.addEventListener('DOMContentLoaded', function() { dialogBeobachtenStarten(); tabsAktualisieren(); aktualisierePortionsSumme(); });
+// Alte Aufrufer (QR-Dialog) bleiben gueltig; die Arbeit macht der Beobachter.
+function dialogAuf(id, schliessFn) {}
+function dialogZu() {}
+
+// ── Reiter: fokussierbar und per Pfeiltasten bedienbar (A7) ─────────────────
+function tabsAktualisieren() {
+  Array.prototype.forEach.call(document.querySelectorAll('.tabs'), function(liste) {
+    liste.setAttribute('role', 'tablist');
+    var tabs = liste.querySelectorAll('.tab');
+    var aktiv = -1;
+    Array.prototype.forEach.call(tabs, function(t, i) { if (t.classList.contains('on')) aktiv = i; });
+    if (aktiv < 0) aktiv = 0;
+    Array.prototype.forEach.call(tabs, function(t, i) {
+      t.setAttribute('role', 'tab');
+      t.setAttribute('aria-selected', i === aktiv ? 'true' : 'false');
+      t.tabIndex = i === aktiv ? 0 : -1;
+    });
+  });
+}
+document.addEventListener('keydown', function(ev) {
+  var t = ev.target;
+  if (!t || !t.classList || !t.classList.contains('tab')) return;
+  var liste = Array.prototype.slice.call(t.parentNode.querySelectorAll('.tab'));
+  var i = liste.indexOf(t), ziel = null;
+  if (ev.key === 'ArrowRight') ziel = liste[(i + 1) % liste.length];
+  else if (ev.key === 'ArrowLeft') ziel = liste[(i - 1 + liste.length) % liste.length];
+  else if (ev.key === 'Home') ziel = liste[0];
+  else if (ev.key === 'End') ziel = liste[liste.length - 1];
+  else if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); t.click(); return; }
+  if (ziel) { ev.preventDefault(); ziel.click(); tabsAktualisieren(); ziel.focus(); }
 });
 
 function closeQR() {
@@ -6769,7 +7494,13 @@ function saveToHistory(planData) {
   // Save locally always
   var localHist = JSON.parse(localStorage.getItem(userKey('local_history')) || '[]');
   localHist.unshift(entry);
-  if (localHist.length > 52) localHist = localHist.slice(0,52);
+  if (localHist.length > 52) {
+    // Gekochte Gerichte der Plaene, die jetzt aus dem Verlauf fallen, bleiben als Rezepte im Archiv erhalten.
+    var weg = localHist.slice(52), arch = [];
+    weg.forEach(function(e) { try { arch = arch.concat(archivEintraegeAusPlan(e)); } catch (x) {} });
+    try { archivHinzufuegen(arch); } catch (x) { console.warn('Archiv:', x && x.message); }
+    localHist = localHist.slice(0,52);
+  }
   localStorage.setItem(userKey('local_history'), JSON.stringify(localHist));
   // Save to GH via worker
   saveHistoryToGH(localHist);
@@ -7451,7 +8182,7 @@ function planImVerlaufFuerDatum(datum) {
     var hist = JSON.parse(localStorage.getItem(userKey('local_history')) || '[]');
     for (var i = 0; i < hist.length; i++) {
       var pl = hist[i].plan;
-      if (pl && pl.sug && wocheEnthaelt(pl.weekStart, datum)) return pl;
+      if (pl && pl.sug && !hist[i].beendetAm && wocheEnthaelt(pl.weekStart, datum)) return pl;
     }
   } catch (e) {}
   return null;
@@ -7745,7 +8476,6 @@ function setActivePlanAndGo(weekStartIso) {
   G.activePlan = planData;
   G.checked = {};
   localStorage.setItem(userKey('active_plan'), JSON.stringify(planData));
-  localStorage.removeItem(userKey('einkauf_checked'));
   saveToGH(planData);
   saveToHistory(planData);
   updateDashboard();
@@ -7846,13 +8576,22 @@ function openActivePlan(tab) {
 
 function clearActivePlan() {
   if (!confirm('Aktiven Plan beenden?')) return;
+  var beendeteId = G.activePlan && G.activePlan.planId;
+  // Im Verlauf als beendet markieren, sonst befoerdert ihn befoerdereWochenplan() sofort wieder zum aktiven Plan
+  try {
+    var _h = JSON.parse(localStorage.getItem(userKey('local_history')) || '[]');
+    var _ix = G.activePlan ? findHistoryEntryIndex(_h, G.activePlan) : -1;
+    if (_ix >= 0) { _h[_ix].beendetAm = new Date().toISOString(); localStorage.setItem(userKey('local_history'), JSON.stringify(_h)); saveHistoryToGH(_h); }
+  } catch (e) {}
+  var beendetId = G.activePlan && G.activePlan.planId;
   G.activePlan = null;
   localStorage.removeItem(userKey('active_plan'));
-  localStorage.removeItem(userKey('einkauf_checked'));
+  einkaufHakenEntfernen(beendetId);
   G.checked = {};
   /* legacy active-plan entfernt */
   // Also clear on GH by saving empty plan marker
-  ghPut('active-plan.json', { cleared: true, date: new Date().toISOString() }, 'Plan beendet').catch(function(){});
+  ghPut('active-plan.json', { cleared: true, date: new Date().toISOString(), planId: beendeteId }, 'Plan beendet').catch(function(){});
+  try { updateDashboard(); } catch (e) {}
 }
 
 function renderActivePlan() {
@@ -8669,10 +9408,12 @@ function showReplaceGericht(ri) {
   }
   G_rep.gerichtIdx = ri;
   G_rep.newGericht = null;
+  G_repAnfrage++;
   G_rep.tags = [];
   $('rep-title').textContent = g.abend + ' (' + g.tag + ')';
   $('rep-hint').value = '';
   $('rep-load').style.display = 'none';
+  $('rep-fehler').style.display = 'none'; $('rep-vorschlag').style.display = '';
   $('rep-result').style.display = 'none';
   $('rep-apply').style.display = 'none';
   $('rep-gen-btn').style.display = '';
@@ -8692,9 +9433,20 @@ function toggleRepTag(btn, tag) {
 
 function closeReplace() {
   $('replace-modal').style.display = 'none';
+  G_repAnfrage++;                         // laufende Anfrage ist damit veraltet
   G_rep.newGericht = null;
 }
 
+// Fehler im Austausch-Dialog: eigenes Feld, damit Name/Meta des letzten Vorschlags nicht zerstoert werden und
+// ein spaeterer Erfolg wieder sauber anzeigen kann.
+function repFehlerZeigen(text) {
+  $('rep-fehler').textContent = 'Fehler: ' + text;
+  $('rep-fehler').style.display = 'block';
+  $('rep-vorschlag').style.display = 'none';
+  $('rep-result').style.display = 'block';
+  $('rep-apply').style.display = 'none';
+}
+var G_repAnfrage = 0;       // Zaehler: nur die jüngste Anfrage darf den Dialog veraendern
 function generateReplace() {
   if (!netzGuard()) return;
   if (G.sel === null) return;
@@ -8703,8 +9455,12 @@ function generateReplace() {
   var ri = G_rep.gerichtIdx;
   var g = sug.gerichte[ri];
   var hint = $('rep-hint').value.trim();
+  var anfrageNr = ++G_repAnfrage;
+  var ankerGid = g.gid || null, ankerSug = sug;      // Kontext der Anfrage festhalten
 
   $('rep-load').style.display = 'block';
+  $('rep-fehler').style.display = 'none';
+  $('rep-vorschlag').style.display = '';
   $('rep-result').style.display = 'none';
   $('rep-apply').style.display = 'none';
   $('rep-gen-btn').disabled = true;
@@ -8738,8 +9494,14 @@ function generateReplace() {
     ',"tipp":"Tipp"}]}';
 
   var repOpts = planOpts(planR, g, { dishes: existing, tag: g.tag });
+  // Veraltet: Dialog wurde geschlossen, ein anderes Gericht gewaehlt oder neu angefragt.
+  function veraltet() {
+    return anfrageNr !== G_repAnfrage || $('replace-modal').style.display === 'none' || G_rep.gerichtIdx !== ri ||
+           G.sugs[G.sel] !== ankerSug || (ankerGid && (ankerSug.gerichte[ri] || {}).gid !== ankerGid);
+  }
   callWorker('replace', msg, 5000, repOpts)
     .then(function(raw) {
+      if (veraltet()) return;
       $('rep-load').style.display = 'none';
       $('rep-gen-btn').disabled = false;
       try {
@@ -8761,19 +9523,22 @@ function generateReplace() {
         $('rep-meta').textContent =
           (ng.zeit_aktiv||'') + (ng.zeit_total ? ' · Total ' + ng.zeit_total : '') +
           ((ng.zutaten||[]).length ? ' · ' + ng.zutaten.length + (ng.zutaten.length === 1 ? ' Zutat' : ' Zutaten') : '');
+        $('rep-fehler').style.display = 'none';
+        $('rep-vorschlag').style.display = '';
         $('rep-result').style.display = 'block';
         $('rep-apply').style.display = '';
         $('rep-gen-btn').textContent = '↺ Nochmals';
       } catch(e) {
-        $('rep-result').innerHTML = '<div style="color:var(--danger);font-size:13px">Fehler: ' + esc(e.message) + '</div>';
-        $('rep-result').style.display = 'block';
+        G_rep.newGericht = null;
+        repFehlerZeigen(e.message);
       }
     })
     .catch(function(e) {
+      if (veraltet()) return;
       $('rep-load').style.display = 'none';
       $('rep-gen-btn').disabled = false;
-      $('rep-result').innerHTML = '<div style="color:var(--danger);font-size:13px">Fehler: ' + esc(e.message) + '</div>';
-      $('rep-result').style.display = 'block';
+      G_rep.newGericht = null;
+      repFehlerZeigen(e.message);
     });
 }
 
@@ -8872,6 +9637,7 @@ function showLoggedIn() {
   if ($('menu-admin-sep')) $('menu-admin-sep').style.display = showAdmin ? 'block' : 'none';
   migrateOldLocalStorageKeys();
   loadPrefs();
+  sitzungMigrieren();
   try {
     var ap = JSON.parse(localStorage.getItem(userKey('active_plan')) || 'null');
     if (ap && ap.sug) { normalizeMittagFeld(ap.sug); G.activePlan = ap; }
@@ -8893,23 +9659,16 @@ var G_tourPlan = null;
 
 
 function saveRatingToGH(entry) {
-  var h = getAuthHeaders();
-  var local = JSON.parse(localStorage.getItem(userKey('local_ratings')) || '[]');
+  // Lokal zuerst (nie begrenzt auf 200 - die Lernhistorie soll vollstaendig bleiben); die Cloud-Datei wird
+  // ueber den Drei-Wege-Abgleich zusammengefuehrt, Bewertungen anderer Geraete gehen dabei nicht verloren.
+  var local = [];
+  try { local = JSON.parse(localStorage.getItem(userKey('local_ratings')) || '[]'); } catch (e) {}
   local.unshift(entry);
-  localStorage.setItem(userKey('local_ratings'), JSON.stringify(local.slice(0, 200)));
-  if (!h) return;
-  ghGet(ghFile('ratings.json')).then(function(d) {
-    var ratings = [];
-    if (d && d.content) { try { ratings = JSON.parse(decodeURIComponent(escape(atob(d.content.split('\n').join(''))))); } catch(e) {} }
-    ratings.unshift(entry);
-    if (ratings.length > 200) ratings = ratings.slice(0, 200);
-    // return: sonst haengt das Ergebnis von ghPut() lose neben der Kette und
-    // ein Fehlschlag (offline, Konflikt) wird zur unbehandelten Ablehnung
-    // statt vom catch() darunter aufgefangen zu werden. Die Bewertung liegt
-    // in local_ratings bereits sicher - hier soll nur der Cloud-Teil best
-    // effort bleiben, nicht laut scheitern.
-    return ghPut('ratings.json', ratings, 'Bewertung ' + entry.date);
-  }).catch(function(){});
+  try { localStorage.setItem(userKey('local_ratings'), JSON.stringify(local.slice(0, 5000))); } catch (e) {}
+  if (!getAuthHeaders()) return;
+  ghPut('ratings.json', local, 'Bewertung ' + entry.date)
+    .then(function() { setSyncState('ok'); })
+    .catch(function(e) { setSyncState('fail', e && e.status ? 'Status ' + e.status : 'Bewertung'); });
 }
 
 function showChangePassword() {
@@ -8935,24 +9694,24 @@ function doChangePassword() {
   if (!newPw || newPw.length < 8) return fail('Neues Passwort braucht mindestens 8 Zeichen');
   if (newPw !== newPw2) return fail('Passwörter stimmen nicht überein');
   var session = getSession();
-  if (!session || session.pw !== oldPw) return fail('Falsches aktuelles Passwort');
+  if (!session) return fail('Nicht angemeldet');
 
   var btn = $('pw-save');
   if (btn) { btn.disabled = true; btn.textContent = 'Wird geändert...'; }
   fetch(PROXY + '/users/password', {
     method: 'POST',
+    // Bewusst NUR das Passwort (kein Token): der Worker soll das alte Passwort pruefen.
     headers: { 'Content-Type': 'application/json', 'X-MP-User': session.username, 'X-MP-Pass': oldPw },
     body: JSON.stringify({ password: newPw })
   }).then(function(r) {
-    return r.json().then(function(d) { return { ok: r.ok, d: d }; });
+    return r.json().catch(function() { return {}; }).then(function(d) { return { ok: r.ok, status: r.status, d: d }; });
   }).then(function(res) {
     if (btn) { btn.disabled = false; btn.textContent = 'Passwort ändern'; }
-    if (!res.ok) return fail((res.d && res.d.error) || 'Änderung fehlgeschlagen');
-    // Session auf das neue Passwort umstellen, sonst schlagen alle weiteren
-    // Worker-Aufrufe in dieser Sitzung mit 401 fehl.
-    localStorage.setItem('gh_session', JSON.stringify({
-      username: session.username, pw: newPw, verified: true, admin: !!session.admin
-    }));
+    if (!res.ok) return fail(res.status === 401 ? 'Falsches aktuelles Passwort' : ((res.d && res.d.error) || 'Änderung fehlgeschlagen'));
+    // Alle Sitzungen sind jetzt widerrufen; die Antwort bringt ein frisches Token fuer dieses Geraet.
+    // (Aelterer Worker ohne Token: das Passwort wie bisher mitziehen.)
+    sitzungSetzen(session.username, { token: res.d && res.d.token, pw: newPw, admin: session.admin });
+    G_sitzungMeldung = false;
     $('pw-modal').style.display = 'none';
     $('pw-old').value = ''; $('pw-new').value = ''; $('pw-new2').value = '';
     showSwapToast('Passwort geändert – gilt auf allen Geräten.', '#4F8067');
@@ -8970,7 +9729,7 @@ function isAdmin() {
 
 function adminHeaders() {
   var s = getSession();
-  return { 'Content-Type': 'application/json', 'X-MP-User': s.username, 'X-MP-Pass': s.pw };
+  return withMpAuth({ 'Content-Type': 'application/json' });
 }
 
 function openAdmin() {
@@ -9076,9 +9835,7 @@ function adminResetPw(name) {
       if (wasSelf) {
         // Eigenes Passwort geaendert: Session mitziehen, sonst 401 bei allem Weiteren.
         var s = getSession();
-        localStorage.setItem('gh_session', JSON.stringify({
-          username: s.username, pw: pw, verified: true, admin: !!s.admin
-        }));
+        sitzungSetzen(s.username, { token: res.d && res.d.token, pw: pw, admin: s.admin });
       }
       adminMsg('Passwort für "' + name + '" gesetzt.', 'ok');
     }).catch(function(e) { adminMsg('Netzwerkfehler: ' + e.message, 'er'); });
@@ -9658,7 +10415,7 @@ var STATUS_CFG = {
   // Foto-Rezepte sind nur gespeichert, nicht eingeplant - "Geplant" war dort
   // schlicht falsch.
   'gespeichert': {label:'Gespeichert', bg:'#f5f5f5', color:'#888', icon:'&#128190;'},
-  'einkauf': {label:'Eingekauft', bg:'#e3f2fd', color:'#1565c0', icon:'&#9989;'},
+  'einkauf': {label:'In Bring! übertragen', bg:'#e3f2fd', color:'#1565c0', icon:'&#9989;'},
   'gekocht': {label:'Gekocht', bg:'#E8F2EC', color:'#4F8067', icon:'&#127859;'}
 };
 function statusBadge(status) {
@@ -9672,6 +10429,7 @@ function openHistory() { go('sh2'); loadHistory(); hwtab('plans'); }
 function openRezeptdatenbank() { go('sh2'); loadHistory(); hwtab('recipes'); }
 function syncHistory() { loadHistory(); loadHistoryRecipes(); }
 function hwtab(t) {
+  setTimeout(tabsAktualisieren, 0);
   $('htab-plans').classList.toggle('on',t==='plans'); $('htab-recipes').classList.toggle('on',t==='recipes');
   $('htab-plans').setAttribute('aria-selected', t==='plans'); $('htab-recipes').setAttribute('aria-selected', t==='recipes');
   $('htab-plans-content').style.display=t==='plans'?'block':'none'; $('htab-recipes-content').style.display=t==='recipes'?'block':'none';
@@ -9680,12 +10438,26 @@ function hwtab(t) {
 function loadHistory() {
   if($('hload'))$('hload').style.display='block'; if($('hlist'))$('hlist').innerHTML='';
   var h=getAuthHeaders(); var url=h?PROXY+'/gh/'+ghFile('history.json'):null;
-  var fetchProm=url?fetch(url,{headers:h}).then(function(r){if(!r.ok)return[];return r.json().then(function(d){if(!d||!d.content)return[];return JSON.parse(decodeURIComponent(escape(atob(d.content.split('\n').join('')))));});}):Promise.resolve([]);
+  function lokal(){ try { return JSON.parse(localStorage.getItem(userKey('local_history'))||'[]'); } catch(e) { return []; } }
+  // Drei getrennte Faelle: (1) Server antwortet, es gibt keine Plaene -> "noch keine"; (2) Server antwortet mit
+  // einem Fehler oder ist nicht erreichbar -> lokaler Stand plus Hinweis bzw. Fehlerkarte; (3) Plaene vorhanden.
+  var fetchProm = url ? fetch(url,{headers:h}).then(function(r){
+    if (r.status === 404) return [];                                   // Datei existiert noch nicht: wirklich leer
+    if (!r.ok) { var er = new Error('Der Server antwortete mit Status ' + r.status + '.'); er.status = r.status; throw er; }
+    return r.json().then(function(d){ if(!d||!d.content) return []; return JSON.parse(decodeURIComponent(escape(atob(d.content.split('\n').join(''))))); });
+  }) : Promise.resolve(null);
   fetchProm.then(function(history){
     if($('hload'))$('hload').style.display='none';
-    if(!history||!history.length){var lh=JSON.parse(localStorage.getItem(userKey('local_history'))||'[]');if(lh.length){renderHistoryList(lh);return;} if($('hlist'))$('hlist').innerHTML='<div style="text-align:center;padding:40px;color:var(--gr3);font-size:13px">Noch keine gespeicherten Pläne.</div>';return;}
-    renderHistoryList(history);
-  }).catch(function(){if($('hload'))$('hload').style.display='none';var lh=JSON.parse(localStorage.getItem(userKey('local_history'))||'[]');if(lh.length){renderHistoryList(lh);}else{if($('hlist'))$('hlist').innerHTML='<div style="text-align:center;padding:40px;color:var(--gr3);font-size:13px">Verlauf nicht verfügbar.</div>';}});
+    var liste = (history && history.length) ? history : lokal();
+    if (liste.length) { renderHistoryList(liste); return; }
+    if($('hlist'))$('hlist').innerHTML='<div id="hleer" style="text-align:center;padding:40px;color:var(--gr3);font-size:13px">Noch keine gespeicherten Pläne.</div>';
+  }).catch(function(e){
+    if($('hload'))$('hload').style.display='none';
+    var lh = lokal(), msg = (e && e.message) || 'Unbekannter Fehler';
+    var box = '<div id="hfehler" role="alert" class="st er" style="display:block;margin:0 0 10px"></div>';
+    if (lh.length) { renderHistoryList(lh); if ($('hlist')) $('hlist').insertAdjacentHTML('afterbegin', box); var fb = $('hfehler'); if (fb) fehlerTextSetzen(fb, 'Pläne konnten nicht vom Server geladen werden – du siehst den lokal gespeicherten Stand. [' + msg + ']'); }
+    else if ($('hlist')) { $('hlist').innerHTML = box + '<button class="btn btn-out" onclick="loadHistory()" style="width:100%;font-size:13px;padding:11px">Erneut versuchen</button>'; var fb2 = $('hfehler'); if (fb2) fehlerTextSetzen(fb2, 'Pläne konnten nicht geladen werden. Das ist ein Ladefehler – deine Pläne sind nicht weg. [' + msg + ']'); }
+  });
 }
 function renderHistoryList(history) {
   history = history || [];   // defensiv: nie mit undefined arbeiten
@@ -9850,9 +10622,7 @@ function reuseFromHistoryView() {
   if (!hv) return;
   // Kontext NICHT vorab loeschen: bricht der Nutzer die Rueckfrage ab, soll er
   // in der Nur-Ansicht bleiben statt in einem leeren Zustand zu landen.
-  var vorher = G.activePlan;
-  nochmalKochen(hv.index);
-  if (G.activePlan !== vorher) G.histView = null;   // nur bei echter Uebernahme
+  nochmalKochen(hv.index);                          // oeffnet die Auswahl des Zeitraums; G.histView wird erst bei echter Uebernahme geloescht
 }
 
 // Alter Name bleibt als Alias erhalten, falls noch irgendwo referenziert.
@@ -9895,48 +10665,119 @@ function fehlendeRezepteNachholen(btn, i) {
   });
 }
 
+// ── Alten Plan erneut verwenden (v7.17: eigener Zielzeitraum statt "aktueller Montag") ──
+// Frueher wurde der Plan immer auf den Montag der laufenden Woche gesetzt - am Wochenende landeten Gerichte auf
+// vergangenen Tagen, und ein bestehender Plan derselben Woche wurde ueberlagert. Jetzt waehlt man den Start; Fenster
+// duerfen sich nie mit bestehenden Plaenen ueberschneiden (siehe neuerPlanStart/planFuerDatum).
+var G_wieder = null;
+function wiederKochenOptionen() {
+  var plaene = alleBearbeitbarenPlaene().filter(function(p) { return p.weekStart; });
+  var heute = new Date(); heute.setHours(12, 0, 0, 0);
+  function addTage(d, n) { var x = new Date(d); x.setDate(x.getDate() + n); return x; }
+  function konflikt(startD) {
+    var ende = addTage(startD, 6);
+    for (var i = 0; i < plaene.length; i++) {
+      var ws = new Date(plaene[i].weekStart + 'T12:00:00'), we = addTage(ws, 6);
+      if (startD <= we && ende >= ws) return { thema: (plaene[i].sug && plaene[i].sug.thema) || 'Menüplan', von: ws, bis: we };
+    }
+    return null;
+  }
+  var naechsterMo = addTage(mondayOf(heute), 7); naechsterMo.setHours(12, 0, 0, 0);
+  var letzteEnde = heute;
+  plaene.forEach(function(p) { var we = addTage(new Date(p.weekStart + 'T12:00:00'), 6); if (we >= letzteEnde) letzteEnde = addTage(we, 1); });
+  var kand = [
+    { titel: 'Ab heute', start: heute },
+    { titel: 'Ab nächstem Montag', start: naechsterMo },
+    { titel: 'Nach den bereits geplanten Tagen', start: letzteEnde }
+  ];
+  var gesehen = {}, out = [];
+  kand.forEach(function(k) {
+    var iso = isoDateLocal(k.start); if (gesehen[iso]) return; gesehen[iso] = true;
+    var ende = addTage(k.start, 6), kf = konflikt(k.start);
+    var f = function(d) { return d.toLocaleDateString('de-CH', { weekday: 'short', day: 'numeric', month: 'numeric' }); };
+    out.push({ iso: iso, titel: k.titel, zeitraum: f(k.start) + ' – ' + f(ende),
+               frei: !kf, grund: kf ? 'Überschneidet «' + kf.thema + '» (' + f(kf.von) + ' – ' + f(kf.bis) + ')' : '' });
+  });
+  return out;
+}
 function nochmalKochen(i) {
   var e = window._history;
   if (!e || !e[i] || !e[i].plan) return;
+  var opt = wiederKochenOptionen();
+  var erste = -1; opt.forEach(function(o, x) { if (erste < 0 && o.frei) erste = x; });
+  G_wieder = { index: i, optionen: opt };
+  $('wieder-titel').textContent = e[i].thema || 'Menüplan';
+  $('wieder-liste').innerHTML = opt.map(function(o, x) {
+    return '<label class="wieder-opt" style="display:flex;gap:10px;align-items:flex-start;padding:10px;border:.5px solid var(--bdr);border-radius:10px;margin-bottom:8px;' + (o.frei ? '' : 'opacity:.55') + '">' +
+      '<input type="radio" name="wieder-start" value="' + o.iso + '"' + (x === erste ? ' checked' : '') + (o.frei ? '' : ' disabled') + ' style="margin-top:3px">' +
+      '<span><b>' + esc(o.titel) + '</b><br><span style="font-size:12px;color:var(--gr3)">' + esc(o.zeitraum) + '</span>' +
+      (o.frei ? '' : '<br><span style="font-size:12px;color:var(--danger)">' + esc(o.grund) + '</span>') + '</span></label>';
+  }).join('');
+  $('wieder-modal').style.display = 'flex';
+}
+function wiederSchliessen() { $('wieder-modal').style.display = 'none'; G_wieder = null; }
+function wiederBestaetigen() {
+  var w = G_wieder; if (!w) return;
+  var r = document.querySelector('input[name="wieder-start"]:checked');
+  if (!r) return;
+  var idx = w.index; wiederSchliessen();
+  nochmalKochenAusfuehren(idx, r.value);
+}
+function nochmalKochenAusfuehren(i, startIso) {
+  var e = window._history;
+  if (!e || !e[i] || !e[i].plan) return false;
   var plan = e[i].plan;
-  // Option: add to current plan or start fresh
-  var choice = confirm(
-    '"' + (e[i].thema||'Menüplan') + '" wieder kochen?\n\n' +
-    'OK = Als neuen aktiven Plan setzen\n' +
-    'Abbrechen = nichts tun'
-  );
-  if (choice) {
-    // Set as new active plan with fresh date - weekStart und Bring-Status
-    // muessen ebenfalls zurueckgesetzt werden, sonst gilt der reaktivierte
-    // Plan sofort als "veraltet" und die Einkaufsliste als "schon uebertragen".
-    var newPlan = JSON.parse(JSON.stringify(plan));
-    newPlan.planId = generatePlanId(); // neue ID: dies ist ein NEUER Kochvorgang, kein Update des alten Eintrags
-    newPlan.saved = new Date().toLocaleDateString('de-CH');
-    newPlan.weekStart = currentWeekStart();
-    // Der Plan beginnt wieder an einem Montag: Fenster-Tag zuruecksetzen, Reihenfolge Mo-So
-    if (newPlan.sug) { delete newPlan.sug.startTag; sortiereGerichteChrono(newPlan.sug); }
-    newPlan.einkaufstag = G.einkaufstag || 'Mo';
-    newPlan.einkaufDone = false;
-    newPlan.bringImportedAt = null;
-    newPlan.bringItemCount = 0;
-    newPlan.bringStale = false;
-    // Gekocht-Markierungen der einzelnen Gerichte ebenfalls zuruecksetzen
-    if (newPlan.sug && newPlan.sug.gerichte) {
-      newPlan.sug.gerichte.forEach(function(g) { delete g._gekocht; delete g._fotoId; });
-    }
-    G.activePlan = newPlan;
-    G.checked = {};
+  var startD = new Date(startIso + 'T12:00:00');
+  // Neuer Plan mit frischer ID: dies ist ein NEUER Kochvorgang, kein Update des alten Eintrags. Bring-Status und
+  // Gekocht-Markierungen werden zurueckgesetzt, sonst gaelte der Plan sofort als veraltet / schon uebertragen.
+  var newPlan = JSON.parse(JSON.stringify(plan));
+  newPlan.planId = generatePlanId();
+  newPlan.saved = new Date().toLocaleDateString('de-CH');
+  newPlan.weekStart = startIso;
+  if (newPlan.sug) {
+    delete newPlan.sug.startTag;
+    if (startD.getDay() !== 1) newPlan.sug.startTag = DAYS_ORDER[startD.getDay() === 0 ? 6 : startD.getDay() - 1];
+    sortiereGerichteChrono(newPlan.sug);
+    (newPlan.sug.gerichte || []).forEach(function(g) { delete g._gekocht; delete g._fotoId; });
+  }
+  newPlan.einkaufstag = G.einkaufstag || 'Mo';
+  newPlan.einkaufDone = false; newPlan.bringImportedAt = null; newPlan.bringItemCount = 0; newPlan.bringStale = false;
+  // Aktiv wird er, wenn es keinen laufenden aktiven Plan gibt - oder wenn er den heutigen Tag enthaelt und der aktive nicht.
+  var a = G.activePlan, heute = new Date(); heute.setHours(0, 0, 0, 0);
+  function enthaeltHeute(p) {
+    if (!p || !p.weekStart) return false;
+    var ws = new Date(p.weekStart + 'T00:00:00'), we = new Date(ws); we.setDate(we.getDate() + 6);
+    return heute >= ws && heute <= we;
+  }
+  function beendet(p) { if (!p || !p.weekStart) return true; var we = new Date(p.weekStart + 'T12:00:00'); we.setDate(we.getDate() + 6); return we < heute; }
+  var aktivWerden = !a || !a.sug || beendet(a) || (enthaeltHeute(newPlan) && !enthaeltHeute(a));
+  saveToHistory(newPlan);
+  if (aktivWerden) {
+    if (a && a.sug) { try { updateHistoryEntryPlan(a); } catch (er) {} }
+    G.activePlan = newPlan; G.checked = {};
     localStorage.setItem(userKey('active_plan'), JSON.stringify(newPlan));
-    localStorage.removeItem(userKey('einkauf_checked'));
     saveToGH(newPlan);
-    saveToHistory(newPlan);
+    G.histView = null;
     updateDashboard();
     go('sh');
-    showSwapToast('🔁 Plan wieder aktiv gesetzt!');
+    showSwapToast('🔁 Plan ab ' + startD.toLocaleDateString('de-CH', { weekday: 'short', day: 'numeric', month: 'numeric' }) + ' aktiv gesetzt');
+  } else {
+    G.histView = null;
+    try { updateDashboard(); } catch (er) {}
+    showSwapToast('🔁 Plan ab ' + startD.toLocaleDateString('de-CH', { weekday: 'short', day: 'numeric', month: 'numeric' }) + ' vorgemerkt – er wird zu Beginn des Zeitraums aktiv.');
   }
-  // Abbrechen bedeutet ABBRECHEN. Frueher oeffnete es die Nur-Ansicht und
-  // sprang danach trotzdem auf 'sw' - man sah also womoeglich den aktiven
-  // statt des historischen Plans. Zum Ansehen gibt es den eigenen Knopf.
+  return true;
+}
+
+// Loeschmarke fuer einen Plan (geraeteuebergreifend): ein geloeschter Plan darf durch Zusammenfuehren oder Sync nicht zurueckkommen.
+function planGeloeschtMerken(planId) {
+  if (!planId) return;
+  var t = syncLokalLesen('plan-geloescht.json') || {};
+  t[planId] = new Date().toISOString();
+  var keys = Object.keys(t);
+  if (keys.length > 1000) { keys.sort(function(a, b) { return t[a] < t[b] ? -1 : 1; }); keys.slice(0, keys.length - 1000).forEach(function(k) { delete t[k]; }); }
+  syncLokalSchreiben('plan-geloescht.json', t);
+  ghPut('plan-geloescht.json', t, 'Plan gelöscht').catch(function(){});
 }
 
 function deleteHistoryPlan(i) {
@@ -9958,17 +10799,23 @@ function deleteHistoryPlan(i) {
                  !!G.activePlan.sug && G.activePlan.sug.thema === hist[i].thema;
     }
   }
-  if (isActive) {
-    G.activePlan = null;
-    localStorage.removeItem(userKey('active_plan'));
-    localStorage.removeItem(userKey('einkauf_checked'));
-    ghPut('active-plan.json', { cleared: true, date: new Date().toISOString() }, 'Plan gelöscht').catch(function(){});
-    updateDashboard();
-  }
-
+  var geloeschteId = hist[i].planId || (isActive && G.activePlan && G.activePlan.planId) || '';
+  // 1) Verlauf und Loeschmarke zuerst - sonst holt die automatische Beförderung den noch vorhandenen Eintrag zurueck
   hist.splice(i, 1);
   localStorage.setItem(userKey('local_history'), JSON.stringify(hist));
+  if (geloeschteId) planGeloeschtMerken(geloeschteId);
   saveHistoryToGH(hist);
+  // 2) Aktiven Zustand bereinigen
+  if (isActive) {
+    var loeschId = G.activePlan && G.activePlan.planId;
+    G.activePlan = null; G.sugs = []; G.sel = null;
+    localStorage.removeItem(userKey('active_plan'));
+    einkaufHakenEntfernen(loeschId);
+    ghPut('active-plan.json', { cleared: true, date: new Date().toISOString(), planId: geloeschteId }, 'Plan gelöscht').catch(function(){});
+    // 3) erst jetzt Beförderung/Oberflaeche - ein anderer Plan der laufenden Woche darf aktiv werden, der geloeschte nicht
+    try { befoerdereWochenplan(); } catch (e) {}
+    updateDashboard();
+  }
   renderHistoryList(hist);
 }
 
@@ -10109,7 +10956,7 @@ function gekochteGerichteListe() {
       var b = bewertung(sug.thema, g);
       out.push({ art: 'gericht', name: String(g.abend), iso: iso, stars: b && b.stars ? b.stars : 0,
                  thema: sug.thema || '', planId: planData.planId || '', gi: gi, key: key,
-                 fotoId: g._fotoId || '', inHist: inHist, g: g });
+                 fotoId: g._fotoId || '', inHist: inHist, g: g, quellePortionen: g._basisPortionen || planGesamtPortionen(planData, g) });
     });
   }
   var aktivId = G.activePlan && G.activePlan.planId;
@@ -10121,6 +10968,14 @@ function gekochteGerichteListe() {
     if (e.planId) { if (gesehen[e.planId]) return; gesehen[e.planId] = true; }
     plan(e.plan, e.status, e.date, !!e.planId, 'h' + hi);
   });
+  // Archivierte Gerichte (Plaene, die nicht mehr im Verlauf stehen), sofern ihr Plan nicht ohnehin noch da ist.
+  try {
+    archivEintraege().forEach(function(a) {
+      if (a.planId && (gesehen[a.planId] || inHistIds[a.planId])) return;
+      out.push({ art: 'gericht', archiv: true, name: a.name, iso: a.iso, stars: a.stars || 0, thema: a.thema || '', planId: a.planId || '',
+                 gi: -1, key: 'z' + a._id, fotoId: '', inHist: false, g: a.g, quellePortionen: a.basis || 0 });
+    });
+  } catch (e) {}
   return out;
 }
 
@@ -10181,44 +11036,273 @@ function rdbQuelleHtml(q) {
   return '<span class="rdb-quelle" data-quelle="' + esc(q || 'einzel') + '" style="font-weight:700;color:var(--txt2)">' + t + '</span>';
 }
 
+// ── Rueckkehr zum Ursprung (A4) ─────────────────────────────────────────────
+// Wer aus einer Liste ein Rezept oeffnet, kommt mit "Zurueck" genau dorthin zurueck: gleicher Bildschirm, gleicher
+// Reiter, gleiche Suche/Sortierung/Seite und gleiche Scrollposition.
+var G_ursprung = null;
+function ursprungMerken() {
+  var on = document.querySelector('.scr.on');
+  var id = on ? on.id : 'sh';
+  if (id === 'sf') return;                       // innerhalb der Rezeptansicht gibt es nichts Neues zu merken
+  G_ursprung = {
+    screen: id, scroll: window.scrollY || window.pageYOffset || 0,
+    rdb: { sort: G_rdb.sort, dir: G_rdb.dir, filter: G_rdb.filter, suche: G_rdb.suche, seite: G_rdb.seite },
+    tab: (id === 'sh2' && $('htab-plans') && $('htab-plans').classList.contains('on')) ? 'plans' : 'recipes'
+  };
+}
+function ursprungZurueck() {
+  var u = G_ursprung; G_ursprung = null;
+  if (!u) { openRezeptdatenbank(); return; }
+  if (u.screen === 'sh2') {
+    G_rdb.sort = u.rdb.sort; G_rdb.dir = u.rdb.dir; G_rdb.filter = u.rdb.filter; G_rdb.suche = u.rdb.suche; G_rdb.seite = u.rdb.seite;
+    go('sh2');
+    if (u.tab === 'plans') { loadHistory(); hwtab('plans'); } else { hwtab('recipes'); }
+  } else {
+    go(u.screen);
+  }
+  var y = u.scroll || 0;
+  setTimeout(function() { window.scrollTo(0, y); }, 60);
+  setTimeout(function() { window.scrollTo(0, y); }, 300);       // Bildschirme, die sich nach dem Wechsel selbst positionieren (Kalender)
+}
+
+// ── Einheitliche Rezeptkarte (A1) ───────────────────────────────────────────
+// Foto-, Text- und Wochenplan-Rezepte sehen gleich aus und bieten gleich viele Hauptaktionen: "Rezept öffnen" und
+// "Einplanen". Seltene Aktionen (Kochtag ändern, Status zurücksetzen, Löschen, ...) stehen im Menü "Weitere Aktionen".
+// Die Bewertung hat genau eine Stelle: die Sterne (oder "(bewerten)") neben dem Namen. Die Quelle ist Zusatzinfo.
+// m: { name, fotoHtml, sterne, bewertenJs, quelleHtml, meta, badgeHtml, oeffnenJs, einplanenJs, einplanenAria, menue:[{label, js, aria, gefahr, netz}] }
+function rezeptKarteHtml(m) {
+  var bew = '';
+  if (m.sterne) bew = '<button type="button" class="rk-bewerten hat" aria-label="Bewertung ändern: ' + m.sterne + ' von 5 Sternen" onclick="' + m.bewertenJs + '">' + '&#9733;'.repeat(m.sterne) + '</button>';
+  else if (m.bewertenJs) bew = '<button type="button" class="rk-bewerten titel-bewerten" aria-label="' + esc(m.name) + ' bewerten" onclick="' + m.bewertenJs + '">(bewerten)</button>';
+  var menue = (m.menue || []).map(function(it) {
+    return '<button type="button" class="btn btn-out' + (it.netz ? ' braucht-netz' : '') + (it.gefahr ? ' gefahr' : '') + '"' +
+      (it.aria ? ' aria-label="' + esc(it.aria) + '"' : '') + ' onclick="' + it.js + '">' + it.label + '</button>';
+  }).join('');
+  return '<div class="rdb-karte rk" data-art="' + esc(m.art || '') + '">'
+    + '<div class="rk-kopf">' + (m.fotoHtml || '')
+      + '<div class="rk-text"><div class="rk-zeile"><div class="rk-name">' + esc(m.name) + '</div>' + bew + '</div>'
+      + '<div class="rk-meta">' + (m.quelleHtml || '') + (m.meta ? ' · ' + m.meta : '') + '</div></div></div>'
+    + (m.badgeHtml ? '<div class="rk-badge">' + m.badgeHtml + '</div>' : '')
+    + '<div class="rk-aktionen"><button type="button" class="btn btn-red rk-oeffnen" style="flex:1.3" onclick="' + m.oeffnenJs + '">Rezept öffnen</button>'
+    + '<button type="button" class="btn btn-out rk-einplanen" style="flex:1" aria-label="' + esc(m.einplanenAria || 'Rezept einplanen') + '" onclick="' + m.einplanenJs + '">📅 Einplanen</button></div>'
+    + (menue ? '<details class="rk-menu" ontoggle="rkMenueToggle(this)"><summary aria-label="Weitere Aktionen zu ' + esc(m.name) + '">⋯ Weitere Aktionen</summary><div class="rk-menu-liste">' + menue + '</div></details>' : '')
+    + '</div>';
+}
+function rkMenueToggle(d) {
+  if (!d.open) return;
+  Array.prototype.forEach.call(document.querySelectorAll('.rk-menu[open]'), function(o) { if (o !== d) o.removeAttribute('open'); });
+}
+
 function rdbKarteRezept(e) {
-  var r = e.r, i = e.idx;
-  var zCount = (r.zutaten || []).length;
-  return '<div class="rdb-karte" style="background:#fff;border-radius:var(--rlg);border:.5px solid var(--bdr);margin-bottom:8px;overflow:hidden">'
-    + '<div style="padding:12px 14px;border-bottom:.5px solid var(--gr);display:flex;align-items:center;gap:10px">'
-      + (r._fotoId
-          ? '<img class="foto-img foto-thumb" data-fotoid="' + esc(r._fotoId) + '" data-fz-rezept="' + i + '" data-fz-rid="' + esc(r._id || '') + '" src="' + FOTO_LEER + '" alt="Foto von ' + esc(r.name || 'Rezept') + '" onclick="fotoGross(this)" style="width:44px;height:44px;min-height:44px;max-height:44px;border-radius:10px">'
-          : '<button type="button" class="foto-platz" aria-label="Foto hinzufügen: ' + esc(r.name || 'Rezept') + '" onclick="fotoWaehlenRezept(' + i + ')" style="width:44px;height:44px;border-radius:10px;font-size:20px">🍽</button>')
-      + '<div style="flex:1;min-width:0">'
-        + '<div style="display:flex;align-items:center;gap:6px"><div style="font-size:15px;font-weight:700;color:var(--txt);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + esc(r.name || 'Rezept') + '</div>' + (r.stars ? rdbSterne(r.stars) : (r.status === 'gekocht' ? '<span class="titel-bewerten" role="button" tabindex="0" onclick="showFotoRating(' + i + ')" style="color:var(--red);font-size:12px;white-space:nowrap;cursor:pointer;flex-shrink:0">(bewerten)</span>' : '')) + '</div>'
-        + '<div style="font-size:11px;color:var(--gr3);margin-top:2px">' + rdbQuelleHtml(r.quelle) + ' · ' + esc(r.saved || r.date || '') + ' · ' + personenLabel(r.portionen || 2) + (r.zeit_total ? ' · ' + esc(r.zeit_total) : '') + ' · ' + zCount + (zCount === 1 ? ' Zutat' : ' Zutaten') + '</div>'
-      + '</div>'
-    + '</div>'
-    + '<div style="padding:8px 14px;display:flex;flex-direction:column;gap:6px">'
-      + '<div style="width:100%;margin-bottom:4px">' + statusBadge(r.status||'gespeichert') + '</div>'
-      + '<div style="display:flex;gap:6px"><button class="btn btn-red" onclick="openHistoryRecipe(' + i + ')" style="flex:1;padding:9px;font-size:12px">Öffnen</button>' + (r.status === 'gekocht' ? '<button class="btn btn-out" onclick="showFotoRating(' + i + ')" style="flex:1;padding:9px;font-size:12px">★ Bewerten</button>' : '') + '</div>'
-      + '<div style="display:flex;gap:6px"><button class="btn btn-out braucht-netz" onclick="importHistoryRecipeToBring(' + i + ')" style="flex:1;padding:9px;font-size:12px;white-space:nowrap">In Bring!</button>' + (r.status !== 'gekocht' ? '<button class="btn btn-out" onclick="markFotoRezeptGekocht(' + i + ')" style="flex:1;padding:9px;font-size:12px;white-space:nowrap">🍽 Gekocht</button>' : '') + ((r.status==='einkauf'||r.status==='gekocht') ? '<button class="btn btn-out" aria-label="Status zurücksetzen" onclick="resetFotoRezeptStatus(' + i + ')" style="flex:1;padding:9px;font-size:12px;white-space:nowrap" title="Status zurücksetzen">↩ ' + (r.status === 'gekocht' ? 'Nicht gekocht' : 'Nicht eingekauft') + '</button>' : '') + '<button aria-label="Rezept löschen" title="Rezept löschen" onclick="deleteHistoryRecipe(' + i + ')" style="background:none;border:.5px solid var(--bdr);border-radius:8px;padding:9px 12px;color:var(--gr3);cursor:pointer;font-size:16px">🗑</button></div>' + '<button class="btn btn-out" aria-label="Rezept einplanen" onclick="einplanenEinzelrezept(' + i + ')" style="width:100%;margin-top:6px;padding:9px;font-size:12px">📅 Einplanen</button>' + (r.status === 'gekocht' ? kochtagWaehlerHtml(i, r) : '')
-    + '</div></div>';
+  var r = e.r, i = e.idx, zCount = (r.zutaten || []).length;
+  var foto = r._fotoId
+    ? '<img class="foto-img foto-thumb" data-fotoid="' + esc(r._fotoId) + '" data-fz-rezept="' + i + '" data-fz-rid="' + esc(r._id || '') + '" src="' + FOTO_LEER + '" alt="Foto von ' + esc(r.name || 'Rezept') + '" onclick="fotoGross(this)" style="width:44px;height:44px;min-height:44px;max-height:44px;border-radius:10px">'
+    : '<button type="button" class="foto-platz" aria-label="Foto hinzufügen: ' + esc(r.name || 'Rezept') + '" onclick="fotoWaehlenRezept(' + i + ')" style="width:44px;height:44px;border-radius:10px;font-size:20px">🍽</button>';
+  var menue = [];
+  if (r.status === 'gekocht') {
+    menue.push({ label: '📅 Kochtag ändern', js: 'kochtagOeffnen(\'rezept\',' + i + ')', aria: 'Kochtag ändern: ' + (r.name || 'Rezept') });
+    menue.push({ label: '↩ Nicht gekocht (Status zurücksetzen)', js: 'resetFotoRezeptStatus(' + i + ')', aria: 'Status zurücksetzen' });
+  } else {
+    menue.push({ label: '🍽 Als gekocht markieren', js: 'markFotoRezeptGekocht(' + i + ')' });
+    if (r.status === 'einkauf') menue.push({ label: '↩ Übertragung zurücksetzen', js: 'resetFotoRezeptStatus(' + i + ')', aria: 'Status zurücksetzen' });
+  }
+  menue.push({ label: 'In Bring! importieren', js: 'importHistoryRecipeToBring(' + i + ')', netz: true });
+  menue.push({ label: '🗑 Löschen', js: 'deleteHistoryRecipe(' + i + ')', aria: 'Rezept löschen', gefahr: true });
+  return rezeptKarteHtml({
+    art: 'rezept', name: r.name || 'Rezept', fotoHtml: foto, sterne: r.stars || 0,
+    bewertenJs: r.status === 'gekocht' ? 'showFotoRating(' + i + ')' : '',
+    quelleHtml: rdbQuelleHtml(r.quelle),
+    meta: (r.status === 'gekocht' ? 'Gekocht am ' + esc(rdbDatumTxt(/^\d{4}-\d{2}-\d{2}$/.test(r.gekochtAm || '') ? r.gekochtAm : rdbIsoVonSaved(r)) || r.saved || '') : 'Erstellt am ' + esc(r.saved || r.date || '')) + ' · ' + personenLabel(r.portionen || 2) + (r.zeit_total ? ' · ' + esc(r.zeit_total) : '') + ' · ' + zCount + (zCount === 1 ? ' Zutat' : ' Zutaten'),
+    badgeHtml: statusBadge(r.status || 'gespeichert'),
+    oeffnenJs: 'rkOeffnenRezept(' + i + ')', einplanenJs: 'einplanenEinzelrezept(' + i + ')', einplanenAria: 'Rezept einplanen', menue: menue
+  });
 }
 
 function rdbKarteGericht(e, k) {
   var vorne = e.fotoId
-    ? '<img class="foto-img foto-thumb" data-fotoid="' + esc(e.fotoId) + '"' + (e.planId ? ' data-fz-plan="' + esc(e.planId) + '" data-fz-idx="' + e.gi + '"' : '') + ' src="' + FOTO_LEER + '" alt="Foto von ' + esc(e.name) + '" onclick="fotoGross(this)" style="width:56px;height:56px;min-height:56px;max-height:56px;border-radius:10px">'
+    ? '<img class="foto-img foto-thumb" data-fotoid="' + esc(e.fotoId) + '"' + (e.planId ? ' data-fz-plan="' + esc(e.planId) + '" data-fz-idx="' + e.gi + '"' : '') + ' src="' + FOTO_LEER + '" alt="Foto von ' + esc(e.name) + '" onclick="fotoGross(this)" style="width:44px;height:44px;min-height:44px;max-height:44px;border-radius:10px">'
     : (e.planId
-        ? '<button type="button" class="foto-platz" aria-label="Foto hinzufügen: ' + esc(e.name) + '" onclick="fotoWaehlen(\'' + esc(e.planId) + '\',' + e.gi + ')" style="width:56px;height:56px;border-radius:10px;font-size:24px">🍽</button>'
-        : '<div style="width:56px;height:56px;border-radius:10px;background:var(--rl);display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0">🍽</div>');
+        ? '<button type="button" class="foto-platz" aria-label="Foto hinzufügen: ' + esc(e.name) + '" onclick="fotoWaehlen(\'' + esc(e.planId) + '\',' + e.gi + ')" style="width:44px;height:44px;border-radius:10px;font-size:20px">🍽</button>'
+        : '<div style="width:44px;height:44px;border-radius:10px;background:var(--rl);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0">🍽</div>');
   var dat = rdbDatumTxt(e.iso);
-  return '<div class="rdb-karte" style="background:#fff;border-radius:var(--rlg);border:.5px solid var(--bdr);margin-bottom:8px;overflow:hidden">'
-    + '<div style="padding:12px 14px;display:flex;align-items:center;gap:12px">' + vorne
-      + '<div style="flex:1;min-width:0">'
-        + '<div style="display:flex;align-items:center;gap:6px"><div style="font-size:15px;font-weight:700;color:var(--txt);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + esc(e.name) + '</div>' + (e.stars ? rdbSterne(e.stars) : (e.inHist ? '<span class="titel-bewerten" role="button" tabindex="0" onclick="rdbBewerten(' + k + ')" style="color:var(--red);font-size:12px;white-space:nowrap;cursor:pointer;flex-shrink:0">(bewerten)</span>' : '')) + '</div>'
-        + '<div style="font-size:11px;color:var(--gr3);margin-top:3px">' + rdbQuelleHtml('plan') + ' · Gekocht' + (dat ? ' · ' + esc(dat) : '') + (e.thema ? ' · ' + esc(e.thema) : '') + '</div>'
-      + '</div></div>'
-    + '<div style="padding:0 14px 12px;display:flex;gap:6px">'
-      + (e.inHist ? '<button class="btn btn-red" onclick="rdbAnsehen(' + k + ')" style="flex:1;padding:9px;font-size:12px">Ansehen</button>' : '')
-      + (e.inHist ? '<button class="btn btn-out" onclick="rdbBewerten(' + k + ')" style="flex:1;padding:9px;font-size:12px">★ Bewerten</button>' : '')
-      + '<button class="btn btn-out" aria-label="Gericht einplanen" onclick="rdbEinplanen(' + k + ')" style="flex:1;padding:9px;font-size:12px">📅 Einplanen</button>'
-    + '</div></div>';
+  var menue = [];
+  if (e.inHist) {
+    menue.push({ label: '📅 Kochtag ändern', js: 'kochtagOeffnen(\'gericht\',' + k + ')', aria: 'Kochtag ändern: ' + e.name });
+    menue.push({ label: '🗓 Ganzen Wochenplan ansehen', js: 'rdbPlanAnsehen(' + k + ')' });
+  }
+  return rezeptKarteHtml({
+    art: 'gericht', name: e.name, fotoHtml: vorne, sterne: e.stars || 0,
+    bewertenJs: e.inHist ? 'rdbBewerten(' + k + ')' : '',
+    quelleHtml: rdbQuelleHtml('plan'),
+    meta: 'Gekocht' + (dat ? ' · ' + esc(dat) : '') + (e.thema ? ' · ' + esc(e.thema) : '') + (e.archiv ? ' · Archiv' : ''),
+    badgeHtml: statusBadge('gekocht'),
+    oeffnenJs: 'rkOeffnenGericht(' + k + ')', einplanenJs: 'rdbEinplanen(' + k + ')', einplanenAria: 'Gericht einplanen', menue: menue
+  });
+}
+
+function rkOeffnenRezept(i) { ursprungMerken(); openHistoryRecipe(i); }
+function rkOeffnenGericht(k) { ursprungMerken(); rdbGerichtOeffnen(k); }
+
+// Vollstaendige Rezeptansicht fuer GENAU dieses Gericht (A2): Zutaten, Schritte, Zeiten, Tipp - lesen, drucken, kochen,
+// einplanen, ohne dass dafuer ein Plan aktiviert oder ganz angezeigt wird.
+function gerichtAlsRezept(g, planData) {
+  var modus = (planData && planData.modus) || G.modus || 'optional';
+  var schritte = (modus === 'fleisch' && g.schritte_fleisch && g.schritte_fleisch.length) ? g.schritte_fleisch
+    : (g.schritte_vegi && g.schritte_vegi.length ? g.schritte_vegi : (g.schritte_fleisch || g.schritte || []));
+  var basis = g._basisPortionen || (planData ? planGesamtPortionen(planData, g) : 0) || (planData && planData.personen) || 2;
+  var r = {
+    name: g.abend || g.name || 'Gericht', beschreibung: g.beschreibung || '', zeit_aktiv: g.zeit_aktiv || '', zeit_total: g.zeit_total || '',
+    zutaten: JSON.parse(JSON.stringify(g.zutaten || [])), schritte: JSON.parse(JSON.stringify(schritte)), tipp: g.tipp || '',
+    portionen: basis, quelle: 'plan'
+  };
+  if (alsListe(g.utensilien).length) r.utensilien = alsListe(g.utensilien);
+  // D1: Ein Gericht aus einem Aufbauend-Plan haengt an vorbereiteten Komponenten (Sauce, Reis ...), deren Zutaten nicht
+  // in SEINER Zutatenliste stehen. Einzeln wiederverwendet fehlt dieser Zusammenhang - er wird deshalb als erster
+  // Schritt ausdruecklich mitgegeben (erscheint damit auch im Kochmodus, in der Ansicht und im PDF).
+  try {
+    var sug = planData && planData.sug;
+    if (sug && sug.komponentenplan && g.gid) {
+      var ans = komponentenAnsicht(sug, g), zeilen = [];
+      var thema = sug.thema ? ' «' + sug.thema + '»' : '';
+      ans.verwendet.forEach(function(v) {
+        zeilen.push('Dieses Gericht baut auf «' + v.name + '» (' + mengeMitEinheit(v.menge, v.einheit) + ') auf. Im ursprünglichen Plan' + thema +
+          ' wurde es am ' + v.von.tag + ' im Gericht «' + v.von.abend + '» vorbereitet und steht deshalb NICHT in den Zutaten. ' +
+          'Für sich allein gekocht: «' + v.name + '» zuerst selbst zubereiten (siehe Rezept «' + v.von.abend + '») oder durch fertige Ware ersetzen.');
+      });
+      ans.herstellt.forEach(function(h) {
+        zeilen.push('Im ursprünglichen Plan' + thema + ' wurde hier «' + h.name + '» für mehrere Abende zubereitet (' + mengeMitEinheit(h.gesamt, h.einheit) +
+          ' insgesamt, davon ' + mengeMitEinheit(h.zurueck, h.einheit) + ' zurückgestellt für ' + h.fuer.map(function(f) { return f.tag + ' «' + f.abend + '»'; }).join(', ') +
+          '). Die Zutatenmengen sind darauf ausgelegt – für diesen Abend allein entsprechend weniger nehmen.');
+      });
+      if (zeilen.length) r.schritte.unshift({ titel: 'Vorbereitung beachten', text: zeilen.join('\n\n') });
+    }
+  } catch (e) {}
+  return rezeptNormalisieren(r);
+}
+function rdbGerichtOeffnen(k) {
+  var e = (window._rdbListe || [])[k]; if (!e || !e.g) return;
+  var planData = null;
+  if (G.activePlan && G.activePlan.planId === e.planId) planData = G.activePlan;
+  else collectHistoryPlans().forEach(function(h) { if (h && h.planId === e.planId && h.plan) planData = h.plan; });
+  var r = gerichtAlsRezept(e.g, planData);
+  r._ausPlan = { planId: e.planId, gi: e.gi, stars: e.stars || 0 };
+  rezeptAnsichtOeffnen(r);
+}
+function rdbPlanAnsehen(k) { ursprungMerken(); rdbAnsehen(k); }
+
+// Rezeptansicht (nur lesen/benutzen) und "Neues Rezept" (erstellen) sind getrennte Zustaende desselben Bildschirms (A5).
+var G_fotoAnsicht = false;
+function fotoSeiteModus(ansicht, r) {
+  G_fotoAnsicht = !!ansicht;
+  var ein = $('foto-eingabe'); if (ein) ein.style.display = ansicht ? 'none' : '';
+  var sec = $('foto-saved-section');
+  if (sec) {
+    var n = 0; try { n = JSON.parse(localStorage.getItem(userKey('foto_rezepte')) || '[]').length; } catch (e) {}
+    sec.style.display = (!ansicht && n) ? 'block' : 'none';
+  }
+  var h = $('sf-titel'), sub = $('sf-sub');
+  if (h) h.textContent = ansicht ? (r && r.name ? r.name : 'Rezept') : 'Neues Rezept';
+  if (sub) sub.textContent = ansicht ? 'Rezeptansicht' : 'Per Foto oder Text erstellen';
+}
+function fotoZurueck() {
+  if (G_fotoAnsicht) { ursprungZurueck(); return; }
+  go('sh');
+}
+function rezeptAnsichtOeffnen(r) {
+  window._fotoRezept = r; G_foto.portionen = r.portionen || 2;
+  go('sf');
+  fotoSeiteModus(true, r);
+  if ($('foto-load')) $('foto-load').style.display = 'none';
+  if ($('foto-err')) $('foto-err').style.display = 'none';
+  renderFotoRezept(r);
+  window.scrollTo(0, 0);
+}
+
+// ── Kochtag aendern (A3): echter Knopf im Menue, Dialog mit Datum, Speichern/Abbrechen ─────────────────────
+var G_kochtag = null;
+function kochtagOeffnen(art, ref) {
+  var name = '', iso = '';
+  if (art === 'rezept') {
+    var saved = JSON.parse(localStorage.getItem(userKey('foto_rezepte')) || '[]'); var r = saved[ref]; if (!r) return;
+    name = r.name || 'Rezept';
+    iso = /^\d{4}-\d{2}-\d{2}$/.test(r.gekochtAm || '') ? r.gekochtAm : rdbIsoVonSaved(r);
+    G_kochtag = { art: 'rezept', id: r._id || '', idx: ref };
+  } else {
+    var e = (window._rdbListe || [])[ref]; if (!e) return;
+    name = e.name; iso = e.iso || '';
+    G_kochtag = { art: 'gericht', planId: e.planId, gi: e.gi, name: e.name };
+  }
+  $('kochtag-titel').textContent = name;
+  var inp = $('kochtag-datum'); inp.value = iso; inp.max = isoDateLocal(new Date());
+  $('kochtag-fehler').style.display = 'none';
+  $('kochtag-modal').style.display = 'flex';
+}
+function kochtagSchliessen() { $('kochtag-modal').style.display = 'none'; G_kochtag = null; }
+function kochtagFehler(t) { var f = $('kochtag-fehler'); f.textContent = t; f.style.display = 'block'; }
+function kochtagSpeichern() {
+  var k = G_kochtag; if (!k) return;
+  var iso = $('kochtag-datum').value;
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(iso || '')) { kochtagFehler('Bitte ein Datum wählen.'); return; }
+  if (iso > isoDateLocal(new Date())) { kochtagFehler('Der Kochtag kann nicht in der Zukunft liegen.'); return; }
+  var ok = false;
+  if (k.art === 'rezept') {
+    var saved = JSON.parse(localStorage.getItem(userKey('foto_rezepte')) || '[]');
+    var i = -1; saved.forEach(function(r, x) { if (k.id && r._id === k.id) i = x; });
+    if (i < 0 && saved[k.idx]) i = k.idx;
+    if (i >= 0) {
+      saved[i].gekochtAm = iso; saved[i].status = 'gekocht';
+      localStorage.setItem(userKey('foto_rezepte'), JSON.stringify(saved)); saveFotoRezepteToGH(saved); ok = true;
+    }
+  } else {
+    var res = planGerichtKochtagSetzen(k.planId, k.gi, iso);
+    if (res.fehler) { kochtagFehler(res.fehler); return; }
+    ok = true;
+  }
+  if (!ok) { kochtagFehler('Das Rezept wurde nicht gefunden.'); return; }
+  kochtagSchliessen();
+  loadHistoryRecipes(); try { loadSavedFotoRezepte(); } catch (e) {} try { kalenderAktualisieren(); } catch (e) {}
+  kurzHinweis('Kochtag: ' + new Date(iso + 'T12:00:00').toLocaleDateString('de-CH', { day: 'numeric', month: 'long', year: 'numeric' }));
+}
+// Kochtag eines Plan-Gerichts. Im Kalender steht ein Plan-Gericht an seinem Plantag; damit Karte, Kalender und Daten
+// uebereinstimmen, wird das Gericht auf den neuen Tag VERSCHOBEN (Tageskuerzel + Mittagsrest), sofern dieser im
+// 7-Tage-Fenster seines Plans liegt und frei ist. Sonst bleibt alles unveraendert und der Dialog nennt den Grund.
+// Rueckgabe: { ok:true } oder { fehler:'...' }.
+function planGerichtKochtagSetzen(planId, gi, iso) {
+  var planObj = null, hist = null, istAktiv = false;
+  if (G.activePlan && G.activePlan.planId === planId && G.activePlan.sug) { planObj = G.activePlan; istAktiv = true; }
+  else {
+    hist = JSON.parse(localStorage.getItem(userKey('local_history')) || '[]');
+    hist.forEach(function(h) { if (h && h.planId === planId && h.plan && h.plan.sug) planObj = h.plan; });
+  }
+  var sug = planObj && planObj.sug, g = sug && sug.gerichte[gi];
+  if (!g) return { fehler: 'Das Gericht wurde nicht gefunden.' };
+  var neuerTag = planFensterMap(planObj)[iso];
+  if (!neuerTag) return { fehler: 'Dieser Tag liegt ausserhalb des Plans (' + tagReihe(planObj.weekStart).length + ' Tage ab ' +
+    new Date(planObj.weekStart + 'T12:00:00').toLocaleDateString('de-CH', { day: 'numeric', month: 'short' }) + ').' };
+  var alt = (g.tag || '').slice(0, 2);
+  if (neuerTag !== alt) {
+    var belegt = sug.gerichte.filter(function(x, i) { return i !== gi && !x._cancelled && (x.tag || '').slice(0, 2) === neuerTag; })[0];
+    if (belegt) return { fehler: 'An diesem Tag steht schon «' + belegt.abend + '» im Plan.' };
+    g.tag = neuerTag;
+    if (g.mittag_tag) g.mittag_tag = DAYS_ORDER[(DAYS_ORDER.indexOf(neuerTag) + 1) % 7];
+    sug.gerichte.sort(function(a, b) { return tagPos((a.tag || '').slice(0, 2), sug) - tagPos((b.tag || '').slice(0, 2), sug); });
+    aktualisierePlanKennzahlen(planObj);
+  }
+  g._gekocht = new Date(iso + 'T12:00:00').toISOString();
+  if (istAktiv) persistActivePlan();
+  else { updateHistoryEntryPlan(planObj); }
+  return { ok: true };
+}
+// Alte Funktionen bleiben fuer vorhandene Aufrufer: Kochtag per Datumsfeld.
+function kochtagWaehlerHtml(i, r) { return ''; }
+function setzeFotoKochtag(i, iso) {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(iso || '')) return;
+  var saved = JSON.parse(localStorage.getItem(userKey('foto_rezepte')) || '[]'); if (!saved[i]) return;
+  if (iso > isoDateLocal(new Date())) { kurzHinweis('Der Kochtag kann nicht in der Zukunft liegen.'); loadHistoryRecipes(); return; }
+  saved[i].gekochtAm = iso; saved[i].status = 'gekocht';
+  localStorage.setItem(userKey('foto_rezepte'), JSON.stringify(saved)); saveFotoRezepteToGH(saved);
+  loadHistoryRecipes(); loadSavedFotoRezepte(); try { kalenderAktualisieren(); } catch (e) {}
+  kurzHinweis('Kochtag: ' + new Date(iso + 'T12:00:00').toLocaleDateString('de-CH', { day: 'numeric', month: 'long', year: 'numeric' }));
 }
 
 function rdbAnsehen(k) {
@@ -10238,7 +11322,9 @@ function rdbBewerten(k) {
 }
 function rdbEinplanen(k) {
   var e = (window._rdbListe || [])[k]; if (!e) return;
-  openEinplanen(JSON.parse(JSON.stringify(e.g)));
+  var kopie = JSON.parse(JSON.stringify(e.g));
+  if (e.quellePortionen) kopie._quellPortionen = e.quellePortionen;
+  openEinplanen(kopie);
 }
 
 function rdbRender() {
@@ -10296,15 +11382,15 @@ function loadHistoryRecipes() {
     + '<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px">' + filterChip('alle', 'Alle', d.alle.length) + filterChip('gerichte', 'Gekochte Gerichte', d.nGerichte) + filterChip('rezepte', 'Einzelrezepte', d.nRezepte) + '</div>'
     + '<div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center"><span style="font-size:11px;color:var(--gr3)">Sortieren:</span>' + sortChip('datum', 'Datum') + sortChip('bewertung', 'Bewertung') + sortChip('name', 'Name') + '</div>'
     + '<div id="rdb-info" style="font-size:11px;color:var(--gr3);margin-top:8px"></div></div>'
-    + '<div id="rdb-items"></div><div id="rdb-pager"></div>';
+    + '<div id="rdb-items"></div><div id="rdb-pager"></div>'
+    + '<button class="btn btn-out" id="rdb-neu" onclick="openFotoScreen(true)" style="width:100%;margin:4px 0 14px;font-size:13px;padding:11px">＋ Neues Rezept aus Foto oder Text</button>';
   rdbRender();
 }
 function openHistoryRecipe(i) {
   var saved=JSON.parse(localStorage.getItem(userKey('foto_rezepte'))||'[]'); var r=saved[i]; if(!r)return;
-  window._fotoRezept=r; G_foto.portionen=r.portionen||2;
-  go('sf'); $('foto-upload-area').style.display='none'; $('foto-preview').style.display='none';
-  loadSavedFotoRezepte(); renderFotoRezept(r);
-  setTimeout(function(){if($('foto-result'))$('foto-result').scrollIntoView({behavior:'smooth',block:'start'});},150);
+  ursprungMerken();            // z.B. aus dem Kalender oder der Rezeptliste geoeffnet: dorthin geht "Zurueck"
+  loadSavedFotoRezepte();
+  rezeptAnsichtOeffnen(r);
 }
 function importHistoryRecipeToBring(i) {
   var saved=JSON.parse(localStorage.getItem(userKey('foto_rezepte'))||'[]'); var r=saved[i]; if(!r)return;
@@ -10313,34 +11399,14 @@ function importHistoryRecipeToBring(i) {
 function nochmalKochenFoto(i) {
   var saved = migriereFotoStatus(JSON.parse(localStorage.getItem(userKey('foto_rezepte')) || '[]'));
   var r = saved[i]; if (!r) return;
-  window._fotoRezept = r;
-  G_foto.portionen = r.portionen || 2;
-  go('sf');
-  renderFotoRezept(r);
+  ursprungMerken();
+  rezeptAnsichtOeffnen(r);
   showSwapToast('🔁 ' + r.name + ' – bereit zum Kochen!');
 }
 
 function markFotoRezeptGekocht(i) {
   var saved=JSON.parse(localStorage.getItem(userKey('foto_rezepte'))||'[]'); if(!saved[i])return;
   saved[i].status='gekocht'; saved[i].gekochtAm=isoDateLocal(new Date()); localStorage.setItem(userKey('foto_rezepte'),JSON.stringify(saved)); saveFotoRezepteToGH(saved); loadHistoryRecipes(); loadSavedFotoRezepte(); try{kalenderAktualisieren();}catch(e){}
-}
-// Kochtag eines gekochten Einzelrezepts aendern: Beschriftung ist ein echtes Datumsfeld (oeffnet auf jedem Geraet den eigenen Datumsdialog).
-function kochtagWaehlerHtml(i, r) {
-  var iso = (/^\d{4}-\d{2}-\d{2}$/.test(r.gekochtAm || '') ? r.gekochtAm : rdbIsoVonSaved(r));
-  var anz = iso ? new Date(iso + 'T12:00:00').toLocaleDateString('de-CH', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' }) : 'kein Datum';
-  return '<label class="kochtag-wahl" style="position:relative;display:flex;align-items:center;justify-content:center;gap:6px;margin-top:6px;padding:9px;border:.5px solid var(--bdr);border-radius:8px;font-size:12px;cursor:pointer;background:#fff">' +
-    '📅 Gekocht am <b>' + esc(anz) + '</b> · ändern' +
-    '<input type="date" class="kochtag-input" aria-label="Kochtag von ' + esc(r.name || 'Rezept') + ' ändern" value="' + esc(iso) + '" max="' + isoDateLocal(new Date()) + '" ' +
-      'onchange="setzeFotoKochtag(' + i + ',this.value)" style="position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer;font-size:16px"></label>';
-}
-function setzeFotoKochtag(i, iso) {
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(iso || '')) return;
-  var saved = JSON.parse(localStorage.getItem(userKey('foto_rezepte')) || '[]'); if (!saved[i]) return;
-  if (iso > isoDateLocal(new Date())) { kurzHinweis('Der Kochtag kann nicht in der Zukunft liegen.'); loadHistoryRecipes(); return; }
-  saved[i].gekochtAm = iso; saved[i].status = 'gekocht';
-  localStorage.setItem(userKey('foto_rezepte'), JSON.stringify(saved)); saveFotoRezepteToGH(saved);
-  loadHistoryRecipes(); loadSavedFotoRezepte(); try { kalenderAktualisieren(); } catch (e) {}
-  kurzHinweis('Kochtag: ' + new Date(iso + 'T12:00:00').toLocaleDateString('de-CH', { day: 'numeric', month: 'long', year: 'numeric' }));
 }
 function resetFotoRezeptStatus(i) {
   var saved=JSON.parse(localStorage.getItem(userKey('foto_rezepte'))||'[]'); if(!saved[i])return;
@@ -10410,11 +11476,17 @@ function handleFotoFile(file){
   });
 }
 function clearFoto(){G_foto.base64=null;G_foto.mime=null;$('foto-input').value='';if($('foto-kamera-input'))$('foto-kamera-input').value='';$('foto-preview').style.display='none';$('foto-upload-area').style.display='block';$('foto-btn').disabled=true;$('foto-result').style.display='none';}
-function openFotoScreen(){
+function openFotoScreen(neu){
   // Einen offenen Foto-Import beenden, sonst arbeitet ein spaeterer Import
   // noch auf dem alten Rezept.
   clearFotoImportContext();
   go('sf');
+  if (neu) {                 // "Neues Rezept": Eingabe zeigen, kein altes Rezept mehr daneben
+    fotoSeiteModus(false);
+    window._fotoRezept = null;
+    if ($('foto-result')) { $('foto-result').innerHTML = ''; $('foto-result').style.display = 'none'; }
+    if ($('foto-err')) $('foto-err').style.display = 'none';
+  }
   loadSavedFotoRezepte();
 }
 function syncFotoRezepte(btn){
@@ -10452,10 +11524,41 @@ function freieTageImPlan() {
 }
 
 // Vereinheitlicht Foto-Rezept und Verlaufs-Gericht auf die Planstruktur.
-function alsPlanGericht(r) {
+// Gesamtzahl der Portionen, fuer die die Zutatenmengen eines Plan-Gerichts gelten:
+// Personen + Mittagsreste + Tiefkuehlportionen (wie startCook() sie ableitet).
+function planGesamtPortionen(p, g) {
+  if (!p) return 0;
+  var pers = p.personen || 2;
+  var reste = (p.reste === undefined ? 1 : p.reste);
+  var tk = (p.freeze === undefined ? 1 : p.freeze) ? 2 : 0;
+  return pers + ((reste && !(g && g._cancelled)) ? pers : 0) + tk;
+}
+
+// Menge eines Rezepts auf eine andere Portionszahl umrechnen (Text -> Text). Mengen ohne Zahl
+// ("nach Geschmack") und unbekannte Formen bleiben unveraendert; die Quelle wird nie veraendert.
+function skaliereMengeText(menge, faktor) {
+  if (!menge || !isFinite(faktor) || faktor <= 0 || Math.abs(faktor - 1) < 1e-9) return menge;
+  var m = String(menge);
+  if (/^\s*[\d.,½⅓⅔¼¾⅕⅛]+\s*[-–]\s*\d/.test(m)) {      // Bereich "2-3 Zweige"
+    return m.replace(/\d+(?:[.,]\d+)?/g, function(z) {
+      var n = parseFloat(z.replace(',', '.')) * faktor;
+      return String(Math.max(1, Math.round(n)));
+    });
+  }
+  var num = parseMengeNum(m);
+  if (!(num > 0)) return menge;
+  var unit = parseMengeUnit(m), hint = klammerHinweis(m);
+  return skalierteMenge(num, faktor, unit) + (unit ? ' ' + unit : '') + (hint ? ' ' + skaliereKlammer(hint, faktor) : '');
+}
+
+// zielPlan: der Plan, in den das Gericht kommt (bestimmt die Zielportionen). Die Zutaten werden
+// von der Quellportionszahl (r._quellPortionen bzw. r.portionen) auf die Zielportionen
+// umgerechnet; so stimmen Einkaufsliste, Kochmodus und PDF ueberein. Das Original bleibt unveraendert.
+function alsPlanGericht(r, zielPlan) {
+  r = rezeptNormalisieren(JSON.parse(JSON.stringify(r || {})));          // Kopie: das Original bleibt unveraendert
   var g = {
     abend: r.abend || r.name || 'Rezept',
-    zutaten: (r.zutaten || []).slice(),
+    zutaten: (r.zutaten || []).map(function(z) { return (z && typeof z === 'object') ? Object.assign({}, z) : z; }),
     zeit_aktiv: r.zeit_aktiv || '',
     zeit_total: r.zeit_total || '',
     tipp: r.tipp || '',
@@ -10472,6 +11575,14 @@ function alsPlanGericht(r) {
   // Foto-Rezepte haben nur ein flaches schritte-Array.
   if (!hatV && !hatF && Array.isArray(r.schritte)) g.schritte_vegi = r.schritte.slice();
   // Reste-Angaben eines historischen Gerichts ergeben am neuen Tag keinen Sinn.
+  var quelle = Number(r._quellPortionen || r.portionen) || 0;
+  var ziel = zielPlan ? planGesamtPortionen(zielPlan, g) : 0;
+  if (quelle > 0 && ziel > 0) {
+    var f = ziel / quelle;
+    if (Math.abs(f - 1) > 1e-9) g.zutaten.forEach(function(z) { if (z && typeof z === 'object' && z.menge) z.menge = skaliereMengeText(z.menge, f); });
+    g._quellPortionen = quelle;       // woher die Mengen stammen (nur zur Nachvollziehbarkeit)
+    g._basisPortionen = ziel;         // fuer wie viele Portionen die Mengen jetzt gelten
+  }
   return g;
 }
 
@@ -10479,8 +11590,8 @@ function alsPlanGericht(r) {
 // ableiten. Wird von einplanenAuf(), deleteGerichtFromPlan(), cancelGericht()
 // und auswaartsGericht() aufgerufen. Beim Rueckgaengigmachen NICHT - dort
 // stellt der Schnappschuss die alten Werte exakt wieder her.
-function aktualisierePlanKennzahlen() {
-  var p = G.activePlan;
+function aktualisierePlanKennzahlen(plan) {
+  var p = plan || G.activePlan;
   if (!p || !p.sug) return;
   var aktive = (p.sug.gerichte || []).filter(function(g) { return !g._cancelled; });
   p.n = aktive.length;
@@ -10497,33 +11608,94 @@ function aktualisierePlanKennzahlen() {
 // laufen, nur eben mit einem einzigen Gericht statt einer ganzen Woche. Plant
 // der Nutzer spaeter tatsaechlich eine Woche, ersetzt das wie gewohnt den
 // aktiven Plan - der spontane Eintrag bleibt dabei im Verlauf erhalten.
-function einplanenSpontanHeute(r, datumIso) {
-  // datumIso (optional): beliebiger Tag statt heute; der Plan startet dann am Montag dieser Woche
-  var zielDatum = datumIso ? new Date(datumIso + 'T12:00:00') : new Date();
-  var heuteIdx = zielDatum.getDay() === 0 ? 6 : zielDatum.getDay() - 1; // 0=Mo ... 6=So
-  var heuteTag = DAYS_ORDER[heuteIdx];
+// Fenster eines Plans: { iso: tag } fuer die 7 Tage ab weekStart.
+function planFensterMap(p) {
+  var m = {};
+  if (!p || !p.sug || !p.weekStart) return m;
+  tagReihe(p.weekStart).forEach(function(t) { var d = dateFromTag(p.weekStart, t); if (d) m[isoDateLocal(d)] = t; });
+  return m;
+}
+
+// Alle Plaene, die einen Kalendertag tragen koennen: aktiver zuerst, dann Verlauf (ohne beendete).
+function alleBearbeitbarenPlaene() {
+  var out = [], seen = {};
+  if (G.activePlan && G.activePlan.sug) { out.push(G.activePlan); if (G.activePlan.planId) seen[G.activePlan.planId] = true; }
+  try {
+    JSON.parse(localStorage.getItem(userKey('local_history')) || '[]').forEach(function(e) {
+      var pl = e && e.plan; if (!pl || !pl.sug || e.beendetAm) return;
+      if (pl.planId && seen[pl.planId]) return;
+      if (pl.planId) seen[pl.planId] = true;
+      out.push(pl);
+    });
+  } catch (e) {}
+  return out;
+}
+
+// Der Plan, dessen Siebentagefenster diesen Tag enthaelt (eindeutig: Fenster ueberlappen nie, siehe neuerPlanStart).
+function planFuerDatum(iso) {
+  var pl = alleBearbeitbarenPlaene();
+  for (var i = 0; i < pl.length; i++) { var t = planFensterMap(pl[i])[iso]; if (t) return { plan: pl[i], tag: t }; }
+  return null;
+}
+
+// Startdatum fuer einen neuen Plan, der den Tag iso aufnimmt: Montag der Woche - ausser ein bestehendes Fenster
+// ueberlappt; dann beginnt der neue Plan am Tag nach dessen Ende (gleitendes Fenster, z.B. Do-Mi).
+function neuerPlanStart(iso) {
+  var d = new Date(iso + 'T12:00:00');
+  var start = mondayOf(d); start.setHours(12, 0, 0, 0);
+  alleBearbeitbarenPlaene().forEach(function(p) {
+    if (!p.weekStart) return;
+    var ws = new Date(p.weekStart + 'T12:00:00'), we = new Date(ws); we.setDate(we.getDate() + 6);
+    if (start >= ws && start <= we) { start = new Date(we); start.setDate(start.getDate() + 1); }
+    else if (start < ws) {            // anderes Fenster beginnt spaeter: neuer Plan darf es nicht ueberlagern
+      var ende = new Date(start); ende.setDate(ende.getDate() + 6);
+      if (ende >= ws && d < ws) { start = new Date(ws); start.setDate(start.getDate() - 7); }   // Fenster endet am Tag vor dem spaeteren Fenster und enthaelt d
+    }
+  });
+  return isoDateLocal(start);
+}
+
+// Neuer Ein-Gericht-Plan fuer einen Tag (Standard: heute). Er landet im Verlauf; aktiv wird er nur, wenn es keinen
+// aktuellen aktiven Plan gibt - ein Plan der laufenden Woche bleibt aktiv, ein spaeterer wird zu Wochenbeginn befoerdert.
+function einplanenNeuerPlan(r, datumIso) {
+  var zielIso = datumIso || isoDateLocal(new Date());
+  var zielDatum = new Date(zielIso + 'T12:00:00');
+  var start = neuerPlanStart(zielIso);
+  var startD = new Date(start + 'T12:00:00');
+  var tag = DAYS_ORDER[zielDatum.getDay() === 0 ? 6 : zielDatum.getDay() - 1];
   var planData = {
     planId: generatePlanId(),
     sug: { thema: r.abend || r.name || 'Spontanes Rezept', gerichte: [] },
     sel: 0, n: 0, personen: G.personen || 2,
-    reste: G.reste, freeze: G.freeze, budget: G.budget, modus: G.modus || 'optional',
+    reste: 0, freeze: 0, budget: G.budget, modus: G.modus || 'optional',   // Ein-Gericht-Plan: Mengen = Personenzahl, keine Reste-/Tiefkuehl-Extras
     resteMode: G.resteMode, days: G.days, planungsart: 'frei',
-    weekStart: isoDateLocal(mondayOf(zielDatum)),
+    weekStart: start,
     einkaufstag: G.einkaufstag || 'Mo',
     saved: new Date().toLocaleDateString('de-CH'),
     bringImportedAt: null, bringItemCount: 0
   };
+  if (startD.getDay() !== 1) planData.sug.startTag = DAYS_ORDER[startD.getDay() === 0 ? 6 : startD.getDay() - 1];
   planData.sugsAll = [planData.sug]; planData.sugsPartial = false;
-  if (G.activePlan && G.activePlan.sug) { try { updateHistoryEntryPlan(G.activePlan); } catch (e) {} }   // bisherigen Plan im Verlauf sichern
-  G.activePlan = planData; G.sugs = [planData.sug]; G.sel = 0; G.checked = {};
-  G.sugsPartial = false;
-  localStorage.setItem(userKey('active_plan'), JSON.stringify(planData));
-  localStorage.removeItem(userKey('einkauf_checked'));
-  saveToGH(planData);
-  saveToHistory(planData);     // legt den Verlaufseintrag an, den einplanenAuf() danach aktualisiert
+  saveToHistory(planData);                       // Verlaufseintrag; einplanenAuf() aktualisiert ihn danach
   window._einplanRezept = r;
-  einplanenAuf(heuteTag);
+  var a = G.activePlan;
+  var aktivVeraltet = !a || !a.sug || !a.weekStart || (function() {          // aktiver Plan liegt komplett in der Vergangenheit
+    var ende = new Date(a.weekStart + 'T12:00:00'); ende.setDate(ende.getDate() + 6);
+    var heute = new Date(); heute.setHours(0, 0, 0, 0); return ende < heute;
+  })();
+  if (aktivVeraltet) {
+    if (a && a.sug) { try { updateHistoryEntryPlan(a); } catch (e) {} }
+    G.activePlan = planData; G.sugs = [planData.sug]; G.sel = 0; G.checked = {};
+    G.sugsPartial = false;
+    localStorage.setItem(userKey('active_plan'), JSON.stringify(planData));
+    saveToGH(planData);
+    einplanenAuf(tag, planData);                 // ist jetzt der aktive Plan
+  } else {
+    // Der Plan liegt nur im Verlauf: die Referenz aus dem Verlauf verwenden, damit der Eintrag stimmt
+    einplanenAuf(tag, planData);
+  }
 }
+function einplanenSpontanHeute(r, datumIso) { return einplanenNeuerPlan(r, datumIso); }
 
 // Freie Kalendertage ab heute (4 Wochen): nicht belegt, nicht vergangen. Liegt ein Tag im
 // Fenster des aktiven Plans, kommt das Gericht dort hinein (tag gesetzt); sonst startet
@@ -10533,18 +11705,13 @@ function einplanTageListe() {
   var heute = new Date(); heute.setHours(0, 0, 0, 0);
   var belegt = {};
   try { belegt = belegteTageMap() || {}; } catch (e) { belegt = {}; }
-  var p = G.activePlan, tagVonIso = {}, imPlan = {};
-  if (p && p.sug && p.weekStart) {
-    tagReihe(p.weekStart).forEach(function(t) { var d = dateFromTag(p.weekStart, t); if (d) tagVonIso[isoDateLocal(d)] = t; });
-    (p.sug.gerichte || []).forEach(function(g) { imPlan[(g.tag || '').slice(0, 2)] = true; });
-  }
   var out = [];
   for (var n = 0; n < EINPLAN_HORIZONT_TAGE; n++) {
     var d = new Date(heute); d.setDate(heute.getDate() + n);
-    var iso = isoDateLocal(d), t = tagVonIso[iso] || '';
+    var iso = isoDateLocal(d);
     if (belegt[iso]) continue;
-    if (t && imPlan[t]) continue;
-    out.push({ iso: iso, tag: t, datum: d, label: d.toLocaleDateString('de-CH', { weekday: 'long', day: 'numeric', month: 'short' }),
+    var ziel = planFuerDatum(iso);
+    out.push({ iso: iso, tag: ziel ? ziel.tag : '', datum: d, label: d.toLocaleDateString('de-CH', { weekday: 'long', day: 'numeric', month: 'short' }),
                woche: isoDateLocal(mondayOf(d)) });
   }
   return out;
@@ -10580,7 +11747,9 @@ function openEinplanen(r) {
 // bis seine Woche beginnt (befoerdereWochenplan haelt den Plan der laufenden Woche aktiv).
 function einplanenFotoRezept() {
   var r = window._fotoRezept; if (!r) return;
-  openEinplanen(JSON.parse(JSON.stringify(r)));
+  var kopie = JSON.parse(JSON.stringify(r));
+  if (!kopie.portionen) kopie.portionen = G_foto.portionen || 2;     // Portionsbasis der angezeigten Mengen
+  openEinplanen(kopie);
 }
 function einplanenEinzelrezept(i) {
   var saved = JSON.parse(localStorage.getItem(userKey('foto_rezepte')) || '[]'); var r = saved[i]; if (!r) return;
@@ -10588,39 +11757,50 @@ function einplanenEinzelrezept(i) {
 }
 function einplanenAufDatum(iso) {
   var r = window._einplanRezept; if (!r) return closeEinplanen();
-  var eintrag = einplanTageListe().filter(function(f) { return f.iso === iso; })[0];
-  if (eintrag && eintrag.tag && G.activePlan && G.activePlan.sug) return einplanenAuf(eintrag.tag);
   window._einplanRezept = r;
+  var ziel = planFuerDatum(iso);
   $('einplan-modal').style.display = 'none';
-  einplanenSpontanHeute(r, iso);
+  if (ziel) return einplanenAuf(ziel.tag, ziel.plan);       // Tag liegt im Fenster eines vorhandenen Plans (aktiv oder kommende Woche)
+  einplanenNeuerPlan(r, iso);
 }
+
 function closeEinplanen() {
   $('einplan-modal').style.display = 'none';
   window._einplanRezept = null;
 }
 
-function einplanenAuf(tag) {
+// Legt das gewaehlte Rezept (window._einplanRezept) auf einen Tag eines BESTIMMTEN Plans (ziel; ohne Angabe: der
+// aktive). Plan und Tag werden hier einmal festgehalten - spaetere Kontextwechsel (Beförderung eines anderen
+// Plans) aendern weder Zielplan noch das gemeldete Datum.
+function einplanenAuf(tag, ziel) {
   var r = window._einplanRezept;
-  if (!r || !G.activePlan || !G.activePlan.sug) return closeEinplanen();
-  var g = alsPlanGericht(r);
+  var p = ziel || G.activePlan;
+  if (!r || !p || !p.sug) return closeEinplanen();
+  var istAktiv = (p === G.activePlan);
+  var g = alsPlanGericht(r, p);
   g.tag = tag;
-  G.activePlan.sug.gerichte.push(g);
+  p.sug.gerichte.push(g);
   // Nach Wochentag sortieren, damit die Reihenfolge stimmt.
-  G.activePlan.sug.gerichte.sort(function(a, b) {
-    return tagPos((a.tag || '').slice(0, 2), G.activePlan.sug) - tagPos((b.tag || '').slice(0, 2), G.activePlan.sug);
+  p.sug.gerichte.sort(function(a, b) {
+    return tagPos((a.tag || '').slice(0, 2), p.sug) - tagPos((b.tag || '').slice(0, 2), p.sug);
   });
-  if (G.sugs && G.sel !== null && G.sugs[G.sel]) G.sugs[G.sel] = G.activePlan.sug;
-  // Planzahlen mitziehen, sonst zeigen Dashboard und Verlauf weiter die alte
-  // Anzahl Kochabende.
-  aktualisierePlanKennzahlen();
+  if (istAktiv && G.sugs && G.sel !== null && G.sugs[G.sel]) G.sugs[G.sel] = p.sug;
+  // Planzahlen mitziehen, sonst zeigen Dashboard und Verlauf weiter die alte Anzahl Kochabende.
+  aktualisierePlanKennzahlen(p);
+  var d = dateFromTag(p.weekStart, tag);
+  var datumTxt = d ? d.toLocaleDateString('de-CH', { weekday: 'short', day: 'numeric', month: 'short' }) : '';
   closeEinplanen();
-  // Die Einkaufsliste enthaelt jetzt neue Zutaten - Bring! hat den alten Stand.
-  markPlanChangedSinceTransfer();
-  persistActivePlan();
-  renderActivePlan();
-  if ($('sw') && $('sw').classList.contains('on')) goWeekRender(G.activePlan.sug, { keepTab: true });
-  var d = dateFromTag(G.activePlan.weekStart, tag);
-  showSwapToast('Eingeplant für ' + d.toLocaleDateString('de-CH', { weekday: 'short', day: 'numeric', month: 'short' }), '#4F8067');
+  if (istAktiv) {
+    // Die Einkaufsliste enthaelt jetzt neue Zutaten - Bring! hat den alten Stand.
+    markPlanChangedSinceTransfer();
+    persistActivePlan();
+    renderActivePlan();
+    if ($('sw') && $('sw').classList.contains('on')) goWeekRender(G.activePlan.sug, { keepTab: true });
+  } else {
+    updateHistoryEntryPlan(p);        // Plan liegt im Verlauf (z.B. kommende Woche) und bleibt dort
+    try { updateDashboard(); } catch (e) {}
+  }
+  showSwapToast('Eingeplant für ' + datumTxt, '#4F8067');
 }
 
 // Foto-Rezepte trugen frueher den Standardstatus "geplant", obwohl sie nur
@@ -10685,19 +11865,41 @@ function fotoTextGeaendert() {
 }
 
 // Gemeinsame Weiterverarbeitung fuer beide Wege: parsen, validieren, anzeigen.
-function verarbeiteEinzelrezeptAntwort(raw) {
+// Unveraenderlicher Kontext einer Einzelrezept-Anfrage (C1): Nutzer, Quelle (Foto/Text) und Portionsbasis werden beim
+// START festgehalten. Die Antwort wird damit verarbeitet - nicht mit dem, was in der Oberflaeche inzwischen steht.
+// Eine Antwort, die zu einer aelteren Anfrage, einem anderen Nutzer oder einem verlassenen Dialog gehoert, wird ignoriert.
+var G_fotoAnfrageNr = 0;
+var G_fotoAnfrageLauf = null;
+function fotoAnfrageStarten() {
+  var s = getSession();
+  G_fotoAnfrageLauf = { nr: ++G_fotoAnfrageNr, user: s ? s.username : '', modus: G_fotoModus === 'text' ? 'text' : 'foto', portionen: G_foto.portionen || 2 };
+  return G_fotoAnfrageLauf;
+}
+function fotoAnfrageAktuell(ctx) {
+  var s = getSession();
+  return !!ctx && ctx === G_fotoAnfrageLauf && ctx.nr === G_fotoAnfrageNr && (s ? s.username : '') === ctx.user;
+}
+function fotoAnfrageAbbrechen() { G_fotoAnfrageNr++; G_fotoAnfrageLauf = null; }
+function verarbeiteEinzelrezeptAntwort(raw, ctx) {
+  ctx = ctx || G_fotoAnfrageLauf;
+  if (ctx && !fotoAnfrageAktuell(ctx)) return;            // veraltet: weder anzeigen noch Zustand aendern
   $('foto-load').style.display='none'; $('foto-btn').disabled=false;
   if(!raw)throw new Error('Keine Antwort');
   var rezept=parseJSON(raw);
   var fotoValidationError = validateFotoRecipe(rezept);
   if (fotoValidationError) throw new Error(fotoValidationError);
-  rezept.quelle = (G_fotoModus === 'text') ? 'text' : 'foto';
+  rezept.quelle = ctx ? ctx.modus : ((G_fotoModus === 'text') ? 'text' : 'foto');
+  rezept.portionen = ctx ? ctx.portionen : (G_foto.portionen || 2);       // Mengen gelten fuer genau diese Portionszahl
+  G_foto.portionen = rezept.portionen;
+  try { setFotoP(rezept.portionen); } catch (e) {}
   renderFotoRezept(rezept);
 }
 
-function zeigeEinzelrezeptFehler(e) {
+function zeigeEinzelrezeptFehler(e, ctx) {
+  ctx = ctx || G_fotoAnfrageLauf;
+  if (ctx && !fotoAnfrageAktuell(ctx)) return;
   $('foto-load').style.display='none'; $('foto-btn').disabled=false;
-  if($('foto-err')){$('foto-err').textContent='Fehler: '+e.message;$('foto-err').style.display='block';}
+  if($('foto-err')){fehlerTextSetzen($('foto-err'),'Fehler: '+e.message);$('foto-err').style.display='block';}
 }
 
 // Wird aufgerufen, bevor callWorker() nach einem Verbindungsabbruch einen
@@ -10732,6 +11934,7 @@ function analyzeEinzelrezeptText() {
   if (!beschreibung) return;
   $('foto-load').style.display='block'; if($('foto-result'))$('foto-result').style.display='none'; if($('foto-err'))$('foto-err').style.display='none'; $('foto-btn').disabled=true;
   var hint=$('foto-hint').value.trim(); var p=G_foto.portionen;
+  var ctx = fotoAnfrageStarten();
   var msg = 'Erstelle ein vollständiges Rezept für "' + beschreibung + '" für ' + p + ' Personen. ' +
     'Gib alle Zutaten mit genauen Mengen an. Schritte detailliert.' + (hint ? ' Hinweis: ' + hint + '.' : '');
   callWorker('einzelrezept', msg, 6000, currentOpts(), 'claude-sonnet-5', function(teil) {
@@ -10745,14 +11948,15 @@ function analyzeEinzelrezeptText() {
       z.textContent = 'Rezept wird erstellt… ' + teil.length + ' Zeichen';
     }
   }, null, zeigeEinzelrezeptWiederholung)
-  .then(verarbeiteEinzelrezeptAntwort)
-  .catch(zeigeEinzelrezeptFehler);
+  .then(function(raw) { return verarbeiteEinzelrezeptAntwort(raw, ctx); })
+  .catch(function(e) { zeigeEinzelrezeptFehler(e, ctx); });
 }
 
 function analyzeFoto(){
   if(!G_foto.base64)return;
   $('foto-load').style.display='block'; if($('foto-result'))$('foto-result').style.display='none'; if($('foto-err'))$('foto-err').style.display='none'; $('foto-btn').disabled=true;
   var hint=$('foto-hint').value.trim(); var p=G_foto.portionen;
+  var ctx = fotoAnfrageStarten();
   // Foto-Prompt liegt im Worker
   var msg='Analysiere dieses Foto und leite ein vollständiges Rezept für '+p+' Personen ab. Gib alle Zutaten mit genauen Mengen an. Schritte detailliert.'+(hint?' Hinweis: '+hint+'.':'');
   var bildNachricht = [{ role: 'user', content: [
@@ -10773,13 +11977,13 @@ function analyzeFoto(){
       z.textContent = 'Rezept wird gelesen… ' + teil.length + ' Zeichen';
     }
   }, bildNachricht, zeigeEinzelrezeptWiederholung)
-  .then(verarbeiteEinzelrezeptAntwort)
-  .catch(zeigeEinzelrezeptFehler);
+  .then(function(raw) { return verarbeiteEinzelrezeptAntwort(raw, ctx); })
+  .catch(function(e) { zeigeEinzelrezeptFehler(e, ctx); });
 }
 function renderFotoRezept(r){
   var zRows=(r.zutaten||[]).map(function(z){return '<div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:.5px solid #f5f5f5"><span style="font-size:14px;font-weight:500">'+esc(z.name)+'</span><span style="font-size:13px;color:var(--gr3)">'+mengeTxt(z.menge)+'</span></div>';}).join('');
   var sRows=(r.schritte||[]).map(function(s,i){var pills=normZs(s.zutaten_schritt).map(function(z){return '<span class="zpill">'+esc(z.name)+(z.menge?' '+esc(z.menge):'')+'</span>';}).join('');return '<div style="margin-bottom:14px"><div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><div style="width:24px;height:24px;border-radius:50%;background:var(--red);color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0">'+(i+1)+'</div><b style="font-size:13px;color:var(--txt)">'+esc(s.titel||'')+'</b>'+(s.timer_min>0?'<span style="font-size:11px;color:var(--gr3);background:#f5f5f5;padding:2px 8px;border-radius:100px">⏱ '+s.timer_min+' Min.</span>':'')+'</div>'+(pills?'<div class="zpills" style="margin-bottom:6px">'+pills+'</div>':'')+'<div style="font-size:14px;color:var(--txt);line-height:1.6">'+esc(s.text)+'</div></div>';}).join('');
-  var html='<div class="card"><div class="cp"><div style="font-size:19px;font-weight:800;color:var(--txt);margin-bottom:4px">'+esc(r.name||'Rezept')+'</div>'+(r.beschreibung?'<div style="font-size:13px;color:var(--gr3);margin-bottom:10px">'+esc(r.beschreibung)+'</div>':'')+'<div style="display:flex;gap:12px;margin-bottom:14px">'+(r.zeit_aktiv?'<span style="font-size:12px;color:var(--gr3)">✏ Aktiv: <b style="color:var(--txt2)">'+esc(r.zeit_aktiv)+'</b></span>':'')+(r.zeit_total?'<span style="font-size:12px;color:var(--gr3)">⏰ Total: <b style="color:var(--txt2)">'+esc(r.zeit_total)+'</b></span>':'')+'</div><div class="clbl">Zutaten für '+G_foto.portionen+' Personen</div><div style="margin-bottom:14px">'+zRows+'</div>'+(r.tipp?'<div style="background:#fffde7;border-left:3px solid #f9a825;padding:10px 12px;border-radius:0 8px 8px 0;font-size:13px;margin-bottom:14px"><b>Tipp:</b> '+esc(r.tipp)+'</div>':'')+'</div></div><div class="card"><div class="cp"><div class="clbl">Zubereitung</div>'+sRows+'</div></div><div style="padding:0 10px 10px;display:flex;flex-direction:column;gap:8px"><button class="btn btn-red" onclick="startFotoCook()" style="font-size:13px">👨‍🍳 Jetzt kochen</button><button class="btn btn-out" onclick="importFotoFromResult()" style="font-size:13px">In Bring! importieren</button><button class="btn btn-out" aria-label="Einzelrezept einplanen" onclick="einplanenFotoRezept()" style="font-size:13px">📅 Einplanen</button><div style="display:flex;gap:8px"><button class="btn btn-out" onclick="saveFotoRezept(this)" style="flex:1;font-size:13px">💾 Speichern</button><button class="btn btn-out" onclick="showFotoPrint()" style="flex:1;font-size:13px">🖨 PDF</button></div></div>';
+  var html='<div class="card"><div class="cp"><div style="font-size:19px;font-weight:800;color:var(--txt);margin-bottom:4px">'+esc(r.name||'Rezept')+'</div>'+(r.beschreibung?'<div style="font-size:13px;color:var(--gr3);margin-bottom:10px">'+esc(r.beschreibung)+'</div>':'')+'<div style="display:flex;gap:12px;margin-bottom:14px">'+(r.zeit_aktiv?'<span style="font-size:12px;color:var(--gr3)">✏ Aktiv: <b style="color:var(--txt2)">'+esc(r.zeit_aktiv)+'</b></span>':'')+(r.zeit_total?'<span style="font-size:12px;color:var(--gr3)">⏰ Total: <b style="color:var(--txt2)">'+esc(r.zeit_total)+'</b></span>':'')+'</div><div class="clbl">Zutaten für '+(r.portionen||G_foto.portionen)+' Personen</div><div style="margin-bottom:14px">'+zRows+'</div>'+(r.tipp?'<div style="background:#fffde7;border-left:3px solid #f9a825;padding:10px 12px;border-radius:0 8px 8px 0;font-size:13px;margin-bottom:14px"><b>Tipp:</b> '+esc(r.tipp)+'</div>':'')+'</div></div><div class="card"><div class="cp"><div class="clbl">Zubereitung</div>'+sRows+'</div></div><div style="padding:0 10px 10px;display:flex;flex-direction:column;gap:8px"><button class="btn btn-red" onclick="startFotoCook()" style="font-size:13px">👨‍🍳 Jetzt kochen</button><button class="btn btn-out" onclick="importFotoFromResult()" style="font-size:13px">In Bring! importieren</button><button class="btn btn-out" aria-label="Einzelrezept einplanen" onclick="einplanenFotoRezept()" style="font-size:13px">📅 Einplanen</button><div style="display:flex;gap:8px">'+(r._ausPlan?'':'<button class="btn btn-out" onclick="saveFotoRezept(this)" style="flex:1;font-size:13px">💾 Speichern</button>')+'<button class="btn btn-out" onclick="showFotoPrint()" style="flex:1;font-size:13px">🖨 PDF</button></div></div>';
   window._fotoRezept=r; if($('foto-result')){$('foto-result').innerHTML=html;$('foto-result').style.display='block';}
 }
 function importFotoFromResult(){
@@ -10895,18 +12099,9 @@ function fetchFotoTombstones(headers) {
 
 // Kompletter Foto-Sync: erst Loeschliste, dann Rezepte, dann zusammenfuehren.
 function syncFotoFromGH(headers) {
-  return fetchFotoTombstones(headers).then(function(tomb) {
-    return fetch(PROXY + '/gh/' + ghFile('foto-rezepte.json'), { headers: headers || {} })
-      .then(function(r) { return r.ok ? r.json() : null; })
-      .then(function(d) {
-        var fr = decodeGHContent(d);
-        if (!Array.isArray(fr)) return null;
-        var local = JSON.parse(localStorage.getItem(userKey('foto_rezepte')) || '[]');
-        var merged = mergeFotoRezepte(fr, local, tomb);
-        localStorage.setItem(userKey('foto_rezepte'), JSON.stringify(merged));
-        return merged;
-      });
-  });
+  // Loeschliste zuerst (Merge und Anzeige kennen sie), dann die Rezepte ueber den gemeinsamen Drei-Wege-Abgleich.
+  return fetchFotoTombstones(headers).then(function() { return syncDatei('foto-rezepte.json', headers); })
+    .then(function() { return syncLokalLesen('foto-rezepte.json'); });
 }
 
 function mergeFotoRezepte(remote, local, tomb) {
@@ -10938,7 +12133,7 @@ function fotoRezeptId(r){
 
 function saveFotoRezeptSilent(r,status){
   var _fid=fotoRezeptId(r);
-  var entry={_id:_fid,id:Date.now(),date:isoDateLocal(new Date()),saved:new Date().toLocaleDateString('de-CH'),name:r.name||'Foto-Rezept',beschreibung:r.beschreibung||'',zeit_aktiv:r.zeit_aktiv||'',zeit_total:r.zeit_total||'',portionen:G_foto.portionen,zutaten:r.zutaten||[],schritte:r.schritte||[],tipp:r.tipp||'',quelle:r.quelle||undefined,utensilien:(alsListe(r.utensilien).length?alsListe(r.utensilien):undefined),status:status||r.status||'gespeichert',stars:r.stars,ratingFeedback:r.ratingFeedback};
+  var entry={_id:_fid,id:Date.now(),date:isoDateLocal(new Date()),saved:new Date().toLocaleDateString('de-CH'),name:r.name||'Foto-Rezept',beschreibung:r.beschreibung||'',zeit_aktiv:r.zeit_aktiv||'',zeit_total:r.zeit_total||'',portionen:r.portionen||G_foto.portionen,zutaten:r.zutaten||[],schritte:r.schritte||[],tipp:r.tipp||'',quelle:r.quelle||undefined,utensilien:(alsListe(r.utensilien).length?alsListe(r.utensilien):undefined),status:status||r.status||'gespeichert',stars:r.stars,ratingFeedback:r.ratingFeedback};
   var saved=JSON.parse(localStorage.getItem(userKey('foto_rezepte'))||'[]');
   // Primaer ueber die stabile _id zuordnen; Namensvergleich nur noch als
   // Fallback fuer Alt-Eintraege, die noch keine _id haben.
@@ -10952,7 +12147,7 @@ function saveFotoRezeptSilent(r,status){
     entry.gekochtAm=(status==='gekocht')?isoDateLocal(new Date()):(r.gekochtAm||(_alt&&_alt.status==='gekocht'&&(_alt.gekochtAm||rdbIsoVonSaved(_alt)))||isoDateLocal(new Date()));
   }
   if(exists>=0)saved[exists]=entry; else saved.unshift(entry);
-  if(saved.length>100)saved=saved.slice(0,100);
+  if(saved.length>2000)saved=saved.slice(0,2000);     // praktisch unbegrenzt; frueher 100 (verdraengte alte Rezepte)
   localStorage.setItem(userKey('foto_rezepte'),JSON.stringify(saved));
   saveFotoRezepteToGH(saved);
 }
@@ -11374,6 +12569,11 @@ var STAR_LABELS = ['', 'Nicht so gut', 'Geht so', 'Gut', 'Sehr gut', 'Ausgezeich
     <div style="height:.5px;background:var(--bdr);margin:0 16px"></div>
     <button onclick="openPrefs();toggleUserMenu()" style="width:100%;text-align:left;padding:11px 16px;background:none;border:none;font-size:14px;color:var(--txt);cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:10px"><span style="font-size:17px">&#9881;</span> Präferenzen</button>
     <div style="height:.5px;background:var(--bdr);margin:0 16px"></div>
+    <button id="menu-sichern" onclick="toggleUserMenu();datenSichern()" style="width:100%;text-align:left;padding:11px 16px;background:none;border:none;font-size:14px;color:var(--txt);cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:10px">💾 Daten sichern</button>
+    <div style="height:.5px;background:var(--bdr);margin:0 16px"></div>
+    <button id="menu-wiederherstellen" onclick="toggleUserMenu();datenWiederherstellenWaehlen()" style="width:100%;text-align:left;padding:11px 16px;background:none;border:none;font-size:14px;color:var(--txt);cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:10px">♻️ Daten wiederherstellen</button>
+    <input type="file" id="sicherung-input" accept="application/json,.json" style="display:none" onchange="datenWiederherstellenDatei(this.files[0])">
+    <div style="height:.5px;background:var(--bdr);margin:0 16px"></div>
     <button onclick="toggleUserMenu();tourStarten()" style="width:100%;text-align:left;padding:11px 16px;background:none;border:none;font-size:14px;color:var(--txt);cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:10px"><span style="font-size:17px">&#128075;</span> Einführung</button>
     <div style="height:.5px;background:var(--bdr);margin:0 16px"></div>
     <button onclick="showInviteLink();toggleUserMenu()" style="width:100%;text-align:left;padding:11px 16px;background:none;border:none;font-size:14px;color:var(--txt);cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:10px"><span style="font-size:17px">&#128279;</span> Einladungslink</button>
@@ -11382,6 +12582,7 @@ var STAR_LABELS = ['', 'Nicht so gut', 'Geht so', 'Gut', 'Sehr gut', 'Ausgezeich
     <div id="menu-admin-sep" style="display:none;height:.5px;background:var(--bdr);margin:0 16px"></div>
     <button onclick="showChangePassword();toggleUserMenu()" style="width:100%;text-align:left;padding:11px 16px;background:none;border:none;font-size:14px;color:var(--txt);cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:10px"><span style="font-size:17px">&#128274;</span> Passwort ändern</button>
     <div style="height:.5px;background:var(--bdr);margin:0 16px"></div>
+    <button id="menu-alle-abmelden" onclick="if(confirm('Auf allen Geräten abmelden? Überall muss danach das Passwort neu eingegeben werden.')){doLogout(false,true);toggleUserMenu()}" style="width:100%;text-align:left;padding:11px 16px;background:none;border:none;font-size:14px;color:var(--red);cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:10px"><span style="font-size:17px">&#8855;</span> Auf allen Geräten abmelden</button>
     <button onclick="doLogout();toggleUserMenu()" style="width:100%;text-align:left;padding:11px 16px;background:none;border:none;font-size:14px;color:var(--red);cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:10px"><span style="font-size:17px">&#8594;</span> Abmelden</button>
   </div>
 </div>
@@ -11409,9 +12610,12 @@ var STAR_LABELS = ['', 'Nicht so gut', 'Geht so', 'Gut', 'Sehr gut', 'Ausgezeich
       <div style="font-size:13px;color:var(--gr3)">Neues Gericht wird generiert...</div>
     </div>
     <div id="rep-result" style="display:none;background:var(--grl);border:.5px solid #B8D5C4;border-radius:10px;padding:12px 14px;margin-bottom:12px">
-      <div style="font-size:11px;color:var(--grn);font-weight:700;margin-bottom:4px">Vorschlag</div>
-      <div id="rep-name" style="font-size:15px;font-weight:700;color:var(--txt);margin-bottom:2px"></div>
-      <div id="rep-meta" style="font-size:12px;color:var(--gr3)"></div>
+      <div id="rep-vorschlag">
+        <div style="font-size:11px;color:var(--grn);font-weight:700;margin-bottom:4px">Vorschlag</div>
+        <div id="rep-name" style="font-size:15px;font-weight:700;color:var(--txt);margin-bottom:2px"></div>
+        <div id="rep-meta" style="font-size:12px;color:var(--gr3)"></div>
+      </div>
+      <div id="rep-fehler" role="alert" style="display:none;color:var(--danger);font-size:13px"></div>
     </div>
     <div style="display:flex;gap:8px">
       <button class="btn btn-out" onclick="closeReplace()" id="rep-cancel" style="flex:1;padding:11px;font-size:13px">Abbrechen</button>
@@ -11548,6 +12752,35 @@ var STAR_LABELS = ['', 'Nicht so gut', 'Geht so', 'Gut', 'Sehr gut', 'Ausgezeich
     <div id="qr-inhalt"></div>
     <div id="qr-hinweis" style="font-size:12px;color:var(--gr3);margin-top:12px;line-height:1.5"></div>
     <button class="btn btn-out" onclick="closeQR()" style="width:100%;padding:11px;margin-top:14px">Schliessen</button>
+  </div>
+</div>
+
+<!-- KOCHTAG AENDERN -->
+<div id="kochtag-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:520;align-items:flex-end;justify-content:center" onclick="if(event.target===this)kochtagSchliessen()">
+  <div style="background:#fff;width:100%;max-width:480px;border-radius:var(--rlg) var(--rlg) 0 0;padding:18px 16px calc(18px + env(safe-area-inset-bottom))">
+    <div style="font-size:12px;color:var(--gr3);text-transform:uppercase;letter-spacing:.4px">Kochtag ändern</div>
+    <div id="kochtag-titel" style="font-size:16px;font-weight:700;color:var(--txt);margin:2px 0 10px"></div>
+    <label for="kochtag-datum" style="display:block;font-size:12px;color:var(--gr3);margin-bottom:4px">Gekocht am</label>
+    <input type="date" id="kochtag-datum" style="width:100%;box-sizing:border-box;padding:12px;font-size:16px;border:.5px solid var(--bdr);border-radius:8px;font-family:inherit" onkeydown="if(event.key==='Enter'){event.preventDefault();kochtagSpeichern()}">
+    <div id="kochtag-fehler" role="alert" style="display:none;color:var(--danger);font-size:12px;margin-top:6px"></div>
+    <div style="display:flex;gap:8px;margin-top:14px">
+      <button class="btn btn-out" id="kochtag-abbrechen" onclick="kochtagSchliessen()" style="flex:1;padding:12px">Abbrechen</button>
+      <button class="btn btn-red" id="kochtag-speichern" onclick="kochtagSpeichern()" style="flex:1;padding:12px">Speichern</button>
+    </div>
+  </div>
+</div>
+
+<!-- ALTEN PLAN ERNEUT VERWENDEN: Zielzeitraum waehlen -->
+<div id="wieder-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:520;align-items:flex-end;justify-content:center" onclick="if(event.target===this)wiederSchliessen()">
+  <div style="background:#fff;width:100%;max-width:480px;border-radius:var(--rlg) var(--rlg) 0 0;padding:18px 16px calc(18px + env(safe-area-inset-bottom))">
+    <div style="font-size:12px;color:var(--gr3);text-transform:uppercase;letter-spacing:.4px">Plan erneut verwenden</div>
+    <div id="wieder-titel" style="font-size:16px;font-weight:700;color:var(--txt);margin:2px 0 4px"></div>
+    <div style="font-size:12px;color:var(--gr3);margin-bottom:10px">Wann soll dieser Plan gelten? Bereits belegte Tage bleiben unberührt.</div>
+    <div id="wieder-liste"></div>
+    <div style="display:flex;gap:8px;margin-top:6px">
+      <button class="btn btn-out" id="wieder-abbrechen" onclick="wiederSchliessen()" style="flex:1;padding:12px">Abbrechen</button>
+      <button class="btn btn-red" id="wieder-ok" onclick="wiederBestaetigen()" style="flex:1;padding:12px">Übernehmen</button>
+    </div>
   </div>
 </div>
 
