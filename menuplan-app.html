@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=yes">
-<title>Menüplan v7.18</title>
+<title>Menüplan v7.19</title>
 <meta name="theme-color" content="#5B7C78">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -388,7 +388,7 @@ body:has(#sc.feed.on){overflow:hidden}
 
 <!-- HOME -->
 <div class="scr on" id="sh">
-  <div class="hero"><h1>Menüplan</h1><p id="hsub">v7.18 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
+  <div class="hero"><h1>Menüplan</h1><p id="hsub">v7.19 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
 
   <!-- Active plan card -->
 
@@ -1105,6 +1105,7 @@ function go(id) {
   var shell = document.getElementById('app-shell');
   if (shell) shell.classList.toggle('breit', id === 'sp');
   window.scrollTo(0, 0);
+  try { updateHinweisSichtbarkeit(); } catch (e) {}
   // Bildschirme, die den ENTWURF einer Planung zeigen oder aendern: Entwurf zurueck
   if (id === 'snew' || id === 'ss' || id === 'sprefs') wechselZuEntwurf();
   if (id === 'snew') setTimeout(initDayPicker, 50);
@@ -1339,26 +1340,40 @@ function updateNeuLaden() {
   }
   window.location.reload();
 }
+// Der Hinweis liegt IM Seitenfluss ganz oben (nicht ueber dem Inhalt), damit er weder die untere Leiste noch Aktionsknoepfe
+// verdeckt. Waehrend des Kochens erscheint er gar nicht und stoert nichts; "Spaeter" blendet ihn bis zum naechsten Start aus.
+var G_updateSpaeter = false;
+function updateHinweisSichtbarkeit() {
+  var d = document.getElementById('update-hinweis');
+  if (!d) return;
+  var sc = document.getElementById('sc');
+  var kocht = !!(sc && sc.classList.contains('on'));
+  d.style.display = (kocht || G_updateSpaeter) ? 'none' : 'flex';
+}
 function zeigeUpdateHinweis(reg) {
   if (document.getElementById('update-hinweis')) return;
   var d = document.createElement('div');
-  d.id = 'update-hinweis';
-  d.style.cssText = 'position:fixed;bottom:20px;left:50%;transform:translateX(-50%);' +
-    'background:var(--primary);color:#fff;padding:10px 12px 10px 16px;border-radius:12px;' +
-    'font-size:13px;font-weight:600;z-index:999;display:flex;align-items:center;gap:12px;max-width:92vw';
+  d.id = 'update-hinweis'; d.setAttribute('role', 'status');
+  d.style.cssText = 'background:var(--primary);color:#fff;padding:10px 12px 10px 16px;border-radius:12px;margin:8px 10px 0;' +
+    'font-size:13px;font-weight:600;display:flex;align-items:center;gap:10px;flex-wrap:wrap;box-sizing:border-box';
   var t = document.createElement('span');
-  t.textContent = 'Neue Version verfügbar';
+  t.textContent = 'Neue Version verfügbar'; t.style.cssText = 'flex:1 1 auto;min-width:0';
+  var btn = 'background:rgba(255,255,255,.2);border:none;color:#fff;font-weight:700;font-size:12px;padding:8px 12px;border-radius:8px;' +
+    'cursor:pointer;font-family:inherit;flex-shrink:0;min-height:36px';
   var b = document.createElement('button');
-  b.textContent = 'Neu laden';
-  b.style.cssText = 'background:rgba(255,255,255,.2);border:none;color:#fff;font-weight:700;' +
-    'font-size:12px;padding:6px 10px;border-radius:8px;cursor:pointer;font-family:inherit;flex-shrink:0';
+  b.textContent = 'Neu laden'; b.style.cssText = btn;
   b.onclick = function() {
     G_updateAngefordert = true;
     if (reg.waiting) reg.waiting.postMessage('jetzt-aktualisieren');
     d.remove();
   };
-  d.appendChild(t); d.appendChild(b);
-  document.body.appendChild(d);
+  var sp = document.createElement('button');
+  sp.textContent = 'Später'; sp.style.cssText = btn.replace('rgba(255,255,255,.2)', 'transparent');
+  sp.onclick = function() { G_updateSpaeter = true; updateHinweisSichtbarkeit(); };
+  d.appendChild(t); d.appendChild(sp); d.appendChild(b);
+  var shell = document.getElementById('app-shell');
+  if (shell) shell.insertBefore(d, shell.firstChild); else document.body.insertBefore(d, document.body.firstChild);
+  updateHinweisSichtbarkeit();
 }
 
 // Zurueck in der App (Tabwechsel, App aus dem Hintergrund holen): erneut
@@ -2921,7 +2936,7 @@ function archivEintraege() {
 }
 function archivGerichtSauber(g) {
   var c = JSON.parse(JSON.stringify(g || {}));
-  Object.keys(c).forEach(function(k) { if (k.charAt(0) === '_' && k !== '_basisPortionen' && k !== '_quellPortionen') delete c[k]; });
+  Object.keys(c).forEach(function(k) { if (k.charAt(0) === '_' && k !== '_basisPortionen' && k !== '_quellPortionen' && k !== '_fotoId') delete c[k]; });
   return c;
 }
 // Gekochte Gerichte eines Verlaufseintrags -> Archiveintraege.
@@ -2941,7 +2956,7 @@ function archivEintraegeAusPlan(entry) {
     var b = null; try { b = bewertungFuerGericht(sug.thema, g); } catch (e) {}
     out.push({ _id: (pl.planId || entry.planId || 'x') + '|' + (g.gid || g.tag || '') + '|' + g.abend,
                name: String(g.abend), iso: iso, thema: sug.thema || entry.thema || '', planId: pl.planId || entry.planId || '',
-               stars: b && b.stars ? b.stars : 0, basis: g._basisPortionen || planGesamtPortionen(pl, g), g: archivGerichtSauber(g),
+               stars: b && b.stars ? b.stars : 0, basis: g._basisPortionen || planGesamtPortionen(pl, g), fotoId: g._fotoId || '', g: archivGerichtSauber(g),
                archiviertAm: isoDateLocal(new Date()) });
   });
   return out;
@@ -6360,14 +6375,72 @@ function klammerHinweis(menge) {
   return m ? m[0] : '';
 }
 
+// Klammerhinweise ("(2 Dosen à 400 g)", "(ca. ½ Kopf)") mitskalieren - aber nur, was wirklich mitwaechst:
+// Stueckzahlen und Gesamtgewichte. Feste Packungsgroessen ("à 400 g", "je 200 g") bleiben, wie sie sind.
+// Eine Zahl, die sich nicht sicher einordnen laesst, ergibt KEINEN Hinweis (''), statt eine falsche Umrechnung zu zeigen.
+var KLAMMER_GEWICHT = /^(g|kg|mg|ml|l|dl|cl)$/;
+var KLAMMER_STUECK = {   // klein -> [Einzahl, Mehrzahl, ganzzahlig?]
+  'dose': ['Dose', 'Dosen', 1], 'dosen': ['Dose', 'Dosen', 1], 'packung': ['Packung', 'Packungen', 1], 'packungen': ['Packung', 'Packungen', 1],
+  'glas': ['Glas', 'Gläser', 1], 'gläser': ['Glas', 'Gläser', 1], 'flasche': ['Flasche', 'Flaschen', 1], 'flaschen': ['Flasche', 'Flaschen', 1],
+  'becher': ['Becher', 'Becher', 1], 'beutel': ['Beutel', 'Beutel', 1], 'tüte': ['Tüte', 'Tüten', 1], 'tüten': ['Tüte', 'Tüten', 1],
+  'würfel': ['Würfel', 'Würfel', 1], 'kopf': ['Kopf', 'Köpfe', 0], 'köpfe': ['Kopf', 'Köpfe', 0], 'bund': ['Bund', 'Bund', 0],
+  'stück': ['Stück', 'Stück', 0], 'stk': ['Stk', 'Stk', 0], 'zehe': ['Zehe', 'Zehen', 0], 'zehen': ['Zehe', 'Zehen', 0],
+  'stange': ['Stange', 'Stangen', 0], 'stangen': ['Stange', 'Stangen', 0], 'zweig': ['Zweig', 'Zweige', 0], 'zweige': ['Zweig', 'Zweige', 0],
+  'scheibe': ['Scheibe', 'Scheiben', 0], 'scheiben': ['Scheibe', 'Scheiben', 0], 'blatt': ['Blatt', 'Blätter', 0], 'blätter': ['Blatt', 'Blätter', 0],
+  'knolle': ['Knolle', 'Knollen', 0], 'knollen': ['Knolle', 'Knollen', 0], 'zwiebel': ['Zwiebel', 'Zwiebeln', 0], 'zwiebeln': ['Zwiebel', 'Zwiebeln', 0],
+  'tomate': ['Tomate', 'Tomaten', 0], 'tomaten': ['Tomate', 'Tomaten', 0], 'karotte': ['Karotte', 'Karotten', 0], 'karotten': ['Karotte', 'Karotten', 0],
+  'rüebli': ['Rüebli', 'Rüebli', 0], 'kartoffel': ['Kartoffel', 'Kartoffeln', 0], 'kartoffeln': ['Kartoffel', 'Kartoffeln', 0],
+  'ei': ['Ei', 'Eier', 1], 'eier': ['Ei', 'Eier', 1], 'zitrone': ['Zitrone', 'Zitronen', 0], 'zitronen': ['Zitrone', 'Zitronen', 0],
+  'limette': ['Limette', 'Limetten', 0], 'limetten': ['Limette', 'Limetten', 0], 'paprika': ['Paprika', 'Paprika', 0], 'handvoll': ['Handvoll', 'Handvoll', 0]
+};
+function klammerZahl(q) {
+  q = String(q).trim();
+  var m = q.match(/^(\d+)\s*([½⅓⅔¼¾⅕⅛])$/);
+  if (m) return parseInt(m[1], 10) + (FRACTION_MAP[m[2]] || 0);
+  if (FRACTION_MAP[q] !== undefined) return FRACTION_MAP[q];
+  m = q.match(/^(\d+)\s+(\d+)\s*\/\s*(\d+)$/);
+  if (m) return +m[1] + (+m[3] ? +m[2] / +m[3] : 0);
+  m = q.match(/^(\d+)\s*\/\s*(\d+)$/);
+  if (m) return +m[2] ? +m[1] / +m[2] : NaN;
+  m = q.match(/^\d+(?:[.,]\d+)?$/);
+  return m ? parseFloat(q.replace(',', '.')) : NaN;
+}
 function skaliereKlammer(hinweis, faktor) {
   if (!hinweis) return '';
   if (Math.abs(faktor - 1) < 1e-9) return hinweis;
-  return hinweis.replace(/\d+(?:[.,]\d+)?/g, function(z) {
-    var n = parseFloat(z.replace(',', '.')) * faktor;
-    if (/[.,]/.test(z)) return String(Math.round(n * 10) / 10).replace('.', ',');
-    return String(Math.max(1, Math.round(n)));
+  var Q = '(?:\\d+\\s+\\d+\\/\\d+|\\d+\\/\\d+|\\d+\\s*[½⅓⅔¼¾⅕⅛]|[½⅓⅔¼¾⅕⅛]|\\d+(?:[.,]\\d+)?)';
+  var re = new RegExp('((?:à|á|je|zu)\\s+)?(' + Q + ')(?:(\\s*[-–]\\s*)(' + Q + '))?(\\s*)([A-Za-zÄÖÜäöüß]+)?(\\.?)', 'g');
+  var unsicher = false;
+  var gewicht = function(q, z) {
+    var n = klammerZahl(q) * faktor;
+    if (isNaN(n)) { unsicher = true; return q; }
+    if (n >= 10) return String(Math.round(n));
+    var t = String(Math.round(n * 10) / 10);
+    return /,/.test(z) ? t.replace('.', ',') : t;
+  };
+  var zaehl = function(q, def) {
+    var n = klammerZahl(q) * faktor;
+    if (isNaN(n)) { unsicher = true; return { t: q, n: 1 }; }
+    var v = def[2] ? Math.max(1, Math.round(n)) : (n >= 3 ? Math.round(n) : Math.max(0.25, Math.round(n * 4) / 4));
+    var t = (Math.abs(v - Math.round(v)) < 1e-9) ? String(Math.round(v)) : (bruchTxt(v) || String(v).replace('.', ','));
+    return { t: t, n: v };
+  };
+  var out = String(hinweis).replace(re, function(all, pre, q1, sep, q2, gap, wort, punkt) {
+    if (pre) return all;                                            // feste Packungsgroesse: unveraendert
+    var w = (wort || '').toLowerCase();
+    if (KLAMMER_GEWICHT.test(w) && !punkt) {
+      return gewicht(q1, q1) + (q2 ? sep + gewicht(q2, q2) : '') + gap + wort;
+    }
+    var def = KLAMMER_STUECK[w];
+    if (def) {
+      var a = zaehl(q1, def), b = q2 ? zaehl(q2, def) : null;
+      var mehr = (b ? b.n : a.n) > 1;
+      return a.t + (b ? sep + b.t : '') + gap + (mehr ? def[1] : def[0]) + (punkt || '');
+    }
+    unsicher = true;                                                // Zahl ohne erkennbare Einheit/Stueckangabe
+    return all;
   });
+  return unsicher ? '' : out;
 }
 
 function parseMenge(menge) {
@@ -6377,12 +6450,16 @@ function parseMenge(menge) {
   return { num: parseFloat(m[1]), unit: m[2].trim() };
 }
 
+function portFest() { return Math.max(0, G_cook_base_port - G_cook_base_heute); }
+function portUntergrenze() { return portFest() + 1; }
 function adjPort(d) {
   // Obergrenze relativ zur tatsaechlichen Ausgangsmenge (G_cook_base_port)
   // statt eines festen Werts von 8 - sonst wuerde z.B. eine Ausgangsmenge
   // von 10 (6 Personen + Reste) beim ersten Klick sofort auf 8 herunterspringen.
   var maxPort = Math.max(20, G_cook_base_port + 10);
-  G_cook_port = Math.max(1, Math.min(maxPort, G_cook_port + d));
+  // EINE Rechnung fuer Anzeige, Schnellwahl und Zutaten: Minus aendert nur das HEUTIGE Essen. Reste- und
+  // Tiefkuehlportionen bleiben, also ist die Untergrenze "feste Zusatzportionen + 1".
+  G_cook_port = Math.max(portUntergrenze(), Math.min(maxPort, G_cook_port + d));
   var el = $('port-display');
   if (el) el.textContent = G_cook_port;
   // Kopfzeile "Gesamtmenge: N Portionen / davon …" mitziehen. Sie blieb
@@ -6398,18 +6475,19 @@ function adjPort(d) {
     // Skalieren mit Rundung liess bei kleinen Schritten alles unveraendert.
     var teile = String(kt.getAttribute('data-basis') || kt.textContent).split(', ');
     if (!kt.getAttribute('data-basis')) kt.setAttribute('data-basis', kt.textContent);
-    var fest = 0;
-    teile.forEach(function(t) { var m = t.match(/^(\d+)\s(.*)$/); if (m && !/heute/.test(m[2])) fest += parseInt(m[1], 10); });
+    var fest = portFest();
     kt.textContent = teile.map(function(t) {
       var m = t.match(/^(\d+)\s(.*)$/);
       if (!m) return t;
-      if (/heute/.test(m[2])) return Math.max(1, G_cook_port - fest) + ' ' + m[2];
+      if (/heute/.test(m[2])) return (G_cook_port - fest) + ' ' + m[2];
       return t;
     }).join(', ');
   }
   // Rescale ingredient amounts in the displayed list
   rescaleZutaten();
   markiereSchnellwahl();
+  var mi = $('port-minus');
+  if (mi) { var amMin = G_cook_port <= portUntergrenze(); mi.disabled = amMin; mi.setAttribute('aria-disabled', amMin ? 'true' : 'false'); mi.style.opacity = amMin ? '.4' : '1'; mi.style.cursor = amMin ? 'not-allowed' : 'pointer'; }
 }
 
 // Schnellwahl 2/4/6/8: der Knopf, der dem aktuellen Wert "heute" entspricht, ist markiert (Klasse + aria-pressed).
@@ -6493,7 +6571,7 @@ function rescaleZutaten() {
     var cell = rows[i].querySelector('.zutat-menge');
     if (cell && !isNaN(base) && base > 0) {
       cell.textContent = skalierteMenge(base, factor, unit) + (unit ? ' ' + unit : '') +
-        (rows[i].dataset.hint ? ' ' + skaliereKlammer(rows[i].dataset.hint, factor) : '');
+        (function(k) { return k ? ' ' + k : ''; })(rows[i].dataset.hint ? skaliereKlammer(rows[i].dataset.hint, factor) : '');
     }
   }
   zeigeKapazitaet();
@@ -6663,7 +6741,7 @@ function showIngOverview(g) {
     '<div style="background:#f9f9f9;border-radius:var(--r);padding:12px;margin-bottom:16px;border:.5px solid var(--bdr)">' +
       '<div style="font-size:12px;font-weight:600;color:var(--txt2);margin-bottom:8px">Portionen anpassen</div>' +
       '<div style="display:flex;align-items:center;gap:12px">' +
-        '<button aria-label="Eine Portion weniger" onclick="adjPort(-1)" style="width:44px;height:44px;border-radius:50%;background:#fff;border:1.5px solid var(--bdr);font-size:20px;cursor:pointer;font-family:inherit;line-height:1">-</button>' +
+        '<button id="port-minus" aria-label="Eine Portion weniger" onclick="adjPort(-1)" style="width:44px;height:44px;border-radius:50%;background:#fff;border:1.5px solid var(--bdr);font-size:20px;cursor:pointer;font-family:inherit;line-height:1">-</button>' +
         '<div style="flex:1;text-align:center"><div id="port-display" style="font-size:22px;font-weight:700;color:var(--red)">' + G_cook_port + '</div><div style="font-size:11px;color:var(--gr3)">Portionen</div></div>' +
         '<button aria-label="Eine Portion mehr" onclick="adjPort(1)" style="width:44px;height:44px;border-radius:50%;background:#fff;border:1.5px solid var(--bdr);font-size:20px;cursor:pointer;font-family:inherit;line-height:1">+</button>' +
       '</div>' +
@@ -6678,6 +6756,7 @@ function showIngOverview(g) {
   $('cbody').innerHTML = html;
   zeigeKapazitaet();
   markiereSchnellwahl();
+  adjPort(0);
 }
 
 function requestWakeLock() {
@@ -6767,27 +6846,64 @@ var VORBEREITUNGEN = [
 function zutatNameNorm(n) {
   return alsText(n).toLowerCase().replace(/ä/g, 'a').replace(/ö/g, 'o').replace(/ü/g, 'u').replace(/ß/g, 'ss').replace(/[^a-z0-9 ]/g, ' ').replace(/\s+/g, ' ').trim();
 }
-function vorbereitungenIn(st) {
-  var t = alsText(st && st.titel) + ' ' + alsText(st && st.text);
+// Zutaten, die man nicht schneidet, schaelt oder waescht (Gewuerze, Fluessigkeiten, Fette): sie bekommen nie einen
+// Vorbereitungshinweis - zusaetzlich zur Zuordnung unten, die ohnehin nur den tatsaechlichen Bezug zulaesst.
+var NICHT_VORBEREITBAR = /^(salz|pfeffer|zucker|mehl|wasser|ol|olivenol|rapsol|sonnenblumenol|butter|essig|balsamico|wein|milch|rahm|bouillon|brühe|bruhe|gewurz|paprikapulver|kurkuma|kreuzkummel|zimt|muskat|backpulver|honig|sirup|senf|sojasauce|sauce)/;
+// Gleich lange Vergleichsschreibweise (Umlaute/ß je ein Zeichen), damit Positionen im Text und im Original uebereinstimmen.
+function norm1(x) {
+  return String(x || '').toLowerCase().replace(/ä/g, 'a').replace(/ö/g, 'o').replace(/ü/g, 'u').replace(/ß/g, 's').replace(/[^a-z0-9]/g, ' ');
+}
+function zutatStamm(n) {
+  var t = norm1(alsText(n)).replace(/\s+/g, ' ').trim();
+  return t.length > 5 ? t.replace(/(en|n|e|s)$/, '') : t;
+}
+// Welche Vorbereitungen gelten fuer genau DIESE Zutat in diesem Schritt? Eine Taetigkeit zaehlt nur, wenn sie sich im selben
+// Satz eindeutig auf die Zutat bezieht: die zuletzt genannte Zutat vor dem Verb ("Kartoffeln waschen und schneiden"), sonst
+// die naechste danach ("Schneide die Kartoffeln"). Alles andere ergibt keinen Hinweis statt eines geratenen.
+function vorbereitungenFuerZutat(st, name) {
+  var mein = zutatStamm(name);
+  if (mein.length < 4 || NICHT_VORBEREITBAR.test(zutatNameNorm(name))) return [];
+  var alle = (st && st.zs || []).map(function(x) { return zutatStamm(x && x.name); }).filter(function(x) { return x.length >= 4; });
+  if (alle.indexOf(mein) < 0) alle.push(mein);
+  var text = alsText(st && st.titel) + '. ' + alsText(st && st.text);
   var out = [];
-  VORBEREITUNGEN.forEach(function(v) { if (v[0].test(t) && out.indexOf(v[1]) < 0) out.push(v[1]); });
+  text.split(/[.;!?:\n]+/).forEach(function(satz) {
+    var t = norm1(satz), ol = satz.toLowerCase();
+    if (!t.trim()) return;
+    var nennungen = [];
+    alle.forEach(function(stamm) {
+      var p = t.indexOf(stamm);
+      while (p >= 0) { nennungen.push({ pos: p, stamm: stamm }); p = t.indexOf(stamm, p + stamm.length); }
+    });
+    nennungen.sort(function(a, b) { return a.pos - b.pos; });
+    VORBEREITUNGEN.forEach(function(v) {
+      var rx = new RegExp(v[0].source, 'ig'), m;
+      while ((m = rx.exec(ol)) !== null) {
+        var davor = nennungen.filter(function(n) { return n.pos < m.index; });
+        var ziel = davor.length ? davor[davor.length - 1] : nennungen.filter(function(n) { return n.pos > m.index; })[0];
+        if (ziel && ziel.stamm === mein && out.indexOf(v[1]) < 0) out.push(v[1]);
+        if (m[0].length === 0) rx.lastIndex++;
+      }
+    });
+  });
   return out;
 }
 function zutatBereitsVorbereitet(i, z) {
   var n = zutatNameNorm(z && z.name);
-  if (n.length < 4 || !G.steps) return null;
-  if (vorbereitungenIn(G.steps[i]).length) return null; // dieser Schritt bereitet selbst vor
+  if (n.length < 4 || !G.steps || NICHT_VORBEREITBAR.test(n)) return null;
+  if (vorbereitungenFuerZutat(G.steps[i], z.name).length) return null; // dieser Schritt bereitet selbst vor
+  var gleich = function(a, b) { return zutatStamm(a) === zutatStamm(b) || (zutatStamm(a).length >= 4 && zutatStamm(b).length >= 4 && (zutatStamm(a).indexOf(zutatStamm(b)) >= 0 || zutatStamm(b).indexOf(zutatStamm(a)) >= 0)); };
   for (var j = i - 1; j >= 0; j--) {
     var st = G.steps[j];
     if (!st || !st.zs) continue;
-    var hit = st.zs.some(function(x) {
-      var m = zutatNameNorm(x && x.name);
-      return m.length >= 4 && (m.indexOf(n) >= 0 || n.indexOf(m) >= 0);
-    });
-    if (!hit) continue;
-    var v = vorbereitungenIn(st);
-    if (v.length) return { text: v.slice(0, 2).join(' und '), schritt: j + 1 };
-    return null; // zuletzt in einem Schritt ohne Vorbereitung gesehen
+    var x = st.zs.filter(function(e) { return gleich(e && e.name, z.name); })[0];
+    if (!x) continue;
+    var v = vorbereitungenFuerZutat(st, x.name);
+    if (!v.length) return null;                       // zuletzt ohne Vorbereitung gesehen: nichts behaupten
+    // Teilmengen: nur wenn die spaeter gebrauchte Menge genau der vorbereiteten entspricht.
+    if (!(parseMengeNum(x.menge) > 0 && parseMengeNum(x.menge) === parseMengeNum(z.menge) && parseMengeUnit(x.menge) === parseMengeUnit(z.menge))) return null;
+    var vs = v.slice(0, 3);
+    return { text: vs.length > 1 ? vs.slice(0, -1).join(', ') + ' und ' + vs[vs.length - 1] : vs[0], schritt: j + 1 };
   }
   return null;
 }
@@ -8231,15 +8347,20 @@ function bringUebertrageneNamen(plan) {
   var rek = getItems({ gerichte: aktive }).filter(function(it) { return !(G.checked && G.checked[itemKey(it)]); }).map(function(it) { return it.name; });
   return rek.length === plan.bringItemCount ? rek : null;
 }
+// Namensvergleich: gleiche Woerter (Ein-/Mehrzahl egal), KEIN Teilstring - "Milch" ist nicht "Kokosmilch", "Tomaten" nicht "Tomatenmark".
+function bringNameSchluessel(n) {
+  return bringNameNorm(n).split(' ').filter(Boolean).map(function(w) { return w.length > 4 ? w.replace(/(en|n|e|s)$/, '') : w; }).join(' ');
+}
 // Reine Berechnung (testbar): erwartet = uebertragene Namen, purchase = Bring-Eintraege "zu kaufen".
+// "erledigt" heisst NUR: der Artikel steht nicht mehr unter diesem Namen auf der Liste. Bring! unterscheidet nicht zuverlaessig
+// zwischen abgehakt, geloescht und umbenannt - mehr als das darf die App deshalb nicht behaupten.
 function bringStatusBerechnen(erwartet, purchaseNamen) {
   var offen = [];
-  var pn = purchaseNamen.map(bringNameNorm).filter(Boolean);
+  var pn = purchaseNamen.map(bringNameSchluessel).filter(Boolean);
   erwartet.forEach(function(name) {
-    var n = bringNameNorm(name);
+    var n = bringNameSchluessel(name);
     if (!n) return;
-    var da = pn.some(function(p) { return p === n || (n.length >= 4 && p.length >= 4 && (p.indexOf(n) >= 0 || n.indexOf(p) >= 0)); });
-    if (da) offen.push(name);
+    if (pn.indexOf(n) >= 0) offen.push(name);
   });
   return { gesamt: erwartet.length, offen: offen, erledigt: erwartet.length - offen.length };
 }
@@ -8277,10 +8398,10 @@ function bringStatusAnzeige(plan) {
   var st = G.bringStatus;
   if (!plan || !st || st.fehler || st.planId !== plan.planId || st.stand !== plan.bringImportedAt || st.gesamt == null) return null;
   var zeit = 'Übertragen: ' + plan.bringImportedAt;
-  if (st.offen.length === 0) return { fertig: true, txt: 'Einkauf erledigt – alle ' + st.gesamt + ' Artikel abgehakt', sub: zeit + ' · in Bring! alles abgehakt' };
+  if (st.offen.length === 0) return { fertig: true, txt: 'Bring!-Liste abgearbeitet – alle ' + st.gesamt + ' Artikel abgehakt oder entfernt', sub: zeit + ' · keiner steht mehr auf der Liste' };
   var liste = st.offen.slice(0, 4).join(', ') + (st.offen.length > 4 ? ' +' + (st.offen.length - 4) : '');
-  if (st.erledigt === 0) return { fertig: false, txt: st.gesamt + ' Artikel an Bring! übertragen', sub: zeit + ' · noch nichts abgehakt' };
-  return { fertig: false, txt: st.erledigt + ' von ' + st.gesamt + ' Artikeln eingekauft', sub: st.offen.length + ' offen: ' + liste };
+  if (st.erledigt === 0) return { fertig: false, txt: st.gesamt + ' Artikel an Bring! übertragen', sub: zeit + ' · alle stehen noch auf der Liste' };
+  return { fertig: false, txt: st.erledigt + ' von ' + st.gesamt + ' Artikeln nicht mehr auf der Bring!-Liste', sub: st.offen.length + ' noch auf der Liste: ' + liste };
 }
 
 // ─── ACTIVE PLAN ───────────────────────────────────────────
@@ -11138,7 +11259,7 @@ function gekochteGerichteListe() {
     archivEintraege().forEach(function(a) {
       if (a.planId && (gesehen[a.planId] || inHistIds[a.planId])) return;
       out.push({ art: 'gericht', archiv: true, name: a.name, iso: a.iso, stars: a.stars || 0, thema: a.thema || '', planId: a.planId || '',
-                 gi: -1, key: 'z' + a._id, fotoId: '', inHist: false, g: a.g, quellePortionen: a.basis || 0 });
+                 gi: -1, key: 'z' + a._id, fotoId: a.fotoId || (a.g && a.g._fotoId) || '', inHist: false, g: a.g, quellePortionen: a.basis || 0 });
     });
   } catch (e) {}
   return out;
@@ -11286,7 +11407,7 @@ function rdbKarteRezept(e) {
 function rdbKarteGericht(e, k) {
   var vorne = e.fotoId
     ? '<img class="foto-img foto-thumb" data-fotoid="' + esc(e.fotoId) + '"' + (e.planId ? ' data-fz-plan="' + esc(e.planId) + '" data-fz-idx="' + e.gi + '"' : '') + ' src="' + FOTO_LEER + '" alt="Foto von ' + esc(e.name) + '" onclick="fotoGross(this)" style="width:44px;height:44px;min-height:44px;max-height:44px;border-radius:10px">'
-    : (e.planId
+    : (e.planId && !e.archiv && e.gi >= 0
         ? '<button type="button" class="foto-platz" aria-label="Foto hinzufügen: ' + esc(e.name) + '" onclick="fotoWaehlen(\'' + esc(e.planId) + '\',' + e.gi + ')" style="width:44px;height:44px;border-radius:10px;font-size:20px">🍽</button>'
         : '<div style="width:44px;height:44px;border-radius:10px;background:var(--rl);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0">🍽</div>');
   var dat = rdbDatumTxt(e.iso);
@@ -11310,11 +11431,11 @@ function rkOeffnenGericht(k) { ursprungMerken(); rdbGerichtOeffnen(k); }
 
 // Vollstaendige Rezeptansicht fuer GENAU dieses Gericht (A2): Zutaten, Schritte, Zeiten, Tipp - lesen, drucken, kochen,
 // einplanen, ohne dass dafuer ein Plan aktiviert oder ganz angezeigt wird.
-function gerichtAlsRezept(g, planData) {
+function gerichtAlsRezept(g, planData, basisFallback) {
   var modus = (planData && planData.modus) || G.modus || 'optional';
   var schritte = (modus === 'fleisch' && g.schritte_fleisch && g.schritte_fleisch.length) ? g.schritte_fleisch
     : (g.schritte_vegi && g.schritte_vegi.length ? g.schritte_vegi : (g.schritte_fleisch || g.schritte || []));
-  var basis = g._basisPortionen || (planData ? planGesamtPortionen(planData, g) : 0) || (planData && planData.personen) || 2;
+  var basis = g._basisPortionen || (planData ? planGesamtPortionen(planData, g) : 0) || Number(basisFallback) || (planData && planData.personen) || 2;
   var r = {
     name: g.abend || g.name || 'Gericht', beschreibung: g.beschreibung || '', zeit_aktiv: g.zeit_aktiv || '', zeit_total: g.zeit_total || '',
     zutaten: JSON.parse(JSON.stringify(g.zutaten || [])), schritte: JSON.parse(JSON.stringify(schritte)), tipp: g.tipp || '',
@@ -11349,7 +11470,7 @@ function rdbGerichtOeffnen(k) {
   var planData = null;
   if (G.activePlan && G.activePlan.planId === e.planId) planData = G.activePlan;
   else collectHistoryPlans().forEach(function(h) { if (h && h.planId === e.planId && h.plan) planData = h.plan; });
-  var r = gerichtAlsRezept(e.g, planData);
+  var r = gerichtAlsRezept(e.g, planData, e.quellePortionen);
   r._ausPlan = { planId: e.planId, gi: e.gi, stars: e.stars || 0 };
   rezeptAnsichtOeffnen(r);
 }
@@ -11713,7 +11834,7 @@ function skaliereMengeText(menge, faktor) {
   var num = parseMengeNum(m);
   if (!(num > 0)) return menge;
   var unit = parseMengeUnit(m), hint = klammerHinweis(m);
-  return skalierteMenge(num, faktor, unit) + (unit ? ' ' + unit : '') + (hint ? ' ' + skaliereKlammer(hint, faktor) : '');
+  return skalierteMenge(num, faktor, unit) + (unit ? ' ' + unit : '') + (function(k) { return k ? ' ' + k : ''; })(hint ? skaliereKlammer(hint, faktor) : '');
 }
 
 // zielPlan: der Plan, in den das Gericht kommt (bestimmt die Zielportionen). Die Zutaten werden
