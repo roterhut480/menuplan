@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=yes">
-<title>Menüplan v7.17</title>
+<title>Menüplan v7.18</title>
 <meta name="theme-color" content="#5B7C78">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -143,6 +143,8 @@ button:focus:not(:focus-visible),[role=button]:focus:not(:focus-visible){outline
 .foto-platz{position:relative;border:1.5px dashed var(--bdr);background:var(--rl);padding:0;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-family:inherit;color:inherit}
 .foto-platz::after{content:'+';position:absolute;right:-5px;bottom:-5px;width:18px;height:18px;border-radius:50%;background:var(--red);color:#fff;font-size:14px;font-weight:700;line-height:17px;text-align:center}
 .foto-platz:active{transform:scale(.96)}
+.foto-platz.foto-platz-gross{width:100%;height:120px;margin-top:10px;border-radius:var(--r);flex-direction:column;gap:6px}
+.foto-platz.foto-platz-gross::after{right:12px;bottom:12px}
 /* Einheitliche Rezeptkarte (A1) */
 .rk{background:#fff;border-radius:var(--rlg);border:.5px solid var(--bdr);margin-bottom:8px;overflow:hidden}
 .rk-kopf{padding:12px 14px 6px;display:flex;align-items:center;gap:12px}
@@ -386,7 +388,7 @@ body:has(#sc.feed.on){overflow:hidden}
 
 <!-- HOME -->
 <div class="scr on" id="sh">
-  <div class="hero"><h1>Menüplan</h1><p id="hsub">v7.17 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
+  <div class="hero"><h1>Menüplan</h1><p id="hsub">v7.18 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
 
   <!-- Active plan card -->
 
@@ -3705,7 +3707,7 @@ function doImportItems() {
         // Der aktive Wochenplan wird durch einen Foto-Import NICHT veraendert
         // und nicht als erneut uebertragen markiert.
       } else {
-        markEinkaufDone(items ? items.length : 0);
+        markEinkaufDone(items ? items.length : 0, items ? items.map(function(it) { return it.name; }) : [], listUuid);
         if (uebersprungen > 0) {
           blog(uebersprungen + ' bereits abgehakte Artikel nicht uebertragen');
         }
@@ -6231,6 +6233,33 @@ function alsText(x) {
   if (typeof x === 'object') return alsText(x.text !== undefined ? x.text : (x.name !== undefined ? x.name : x.titel));
   return String(x);
 }
+// "Fertig wenn" nur zeigen, wenn es mehr sagt als der Schritt selbst. Beispiel:
+// Schritt "Knoblauch in duenne Scheiben schneiden" mit Hinweis "Scheiben sind duenn" -
+// das ist exakt die Aufgabe, also redundant und wird ausgeblendet. Echte Kriterien
+// (Farbe, Garpunkt, Konsistenz, Temperatur, Zeit) bleiben sichtbar.
+var KONTROLLE_FUELLWORTE = ['sind','ist','und','oder','wenn','wird','werden','sollte','sollen','alle','alles','gut','gleichmassig','gross','klein','etwa','ca','die','der','das','den','dem','ein','eine','einen','nicht','nur','noch','mit','von','auf','aus','bei','dann','sie','es','zu','im','in','am','an','so','sich','ganz','fertig','bereit'];
+function kontrolleStamm(w) {
+  w = w.replace(/ä/g, 'a').replace(/ö/g, 'o').replace(/ü/g, 'u').replace(/ß/g, 'ss');
+  if (w.length > 6 && w.indexOf('ge') === 0) w = w.slice(2);
+  return w.slice(0, 4);
+}
+function kontrolleWorte(t) {
+  return String(t || '').toLowerCase().replace(/[^a-z0-9äöüß]+/g, ' ').split(' ')
+    .filter(function(w) { return w.length >= 3 && KONTROLLE_FUELLWORTE.indexOf(w.replace(/ä/g, 'a').replace(/ö/g, 'o').replace(/ü/g, 'u').replace(/ß/g, 'ss')) < 0; });
+}
+function kontrolleRedundant(s) {
+  var k = alsText(s && s.kontrolle).trim();
+  if (!k) return true;
+  var schritt = alsText(s.titel) + ' ' + alsText(s.text);
+  // neue Zahl (Minuten, Grad, Anzahl) = neue Information
+  var zk = k.match(/\d+/g) || [];
+  for (var i = 0; i < zk.length; i++) { if (!new RegExp('(^|\\D)' + zk[i] + '(\\D|$)').test(schritt)) return false; }
+  var kw = kontrolleWorte(k);
+  if (!kw.length) return true;
+  var stamm = kontrolleWorte(schritt).map(kontrolleStamm);
+  var gleich = kw.filter(function(w) { return stamm.indexOf(kontrolleStamm(w)) >= 0; }).length;
+  return gleich / kw.length >= 0.6;
+}
 function alsListe(x) {
   if (x === null || x === undefined || x === '') return [];
   var a = Array.isArray(x) ? x : [x];
@@ -6726,6 +6755,42 @@ function cookNachObenWennNeu(modus) {
 var G_feed = { auto: 0, raf: 0, nach: 0, warte: false, letzte: -1 };
 function istFeed() { return !!($('sc') && $('sc').classList.contains('feed')); }
 
+// Zutat in einem spaeteren Schritt, die weiter vorne schon vorbereitet wurde (geschnitten,
+// geschaelt ...): nicht nochmal als "8 Zehen" stehen lassen, das wirkt wie zusaetzliche Ware.
+// Gibt z.B. { text: 'geschnitten', schritt: 1 } zurueck oder null.
+var VORBEREITUNGEN = [
+  [/sch(ä|ae)l/i, 'geschält'], [/schneid|schnitt|in scheiben|in streifen|in ringe/i, 'geschnitten'],
+  [/würfel|wuerfel/i, 'gewürfelt'], [/hack/i, 'gehackt'], [/rieb|raspel/i, 'gerieben'],
+  [/press/i, 'gepresst'], [/hobel/i, 'gehobelt'], [/wasch|abspül|abspuel/i, 'gewaschen'],
+  [/zupf/i, 'gezupft'], [/auftau/i, 'aufgetaut'], [/abtropf/i, 'abgetropft'], [/zerkleiner|zerdrück|zerdrueck/i, 'zerkleinert']
+];
+function zutatNameNorm(n) {
+  return alsText(n).toLowerCase().replace(/ä/g, 'a').replace(/ö/g, 'o').replace(/ü/g, 'u').replace(/ß/g, 'ss').replace(/[^a-z0-9 ]/g, ' ').replace(/\s+/g, ' ').trim();
+}
+function vorbereitungenIn(st) {
+  var t = alsText(st && st.titel) + ' ' + alsText(st && st.text);
+  var out = [];
+  VORBEREITUNGEN.forEach(function(v) { if (v[0].test(t) && out.indexOf(v[1]) < 0) out.push(v[1]); });
+  return out;
+}
+function zutatBereitsVorbereitet(i, z) {
+  var n = zutatNameNorm(z && z.name);
+  if (n.length < 4 || !G.steps) return null;
+  if (vorbereitungenIn(G.steps[i]).length) return null; // dieser Schritt bereitet selbst vor
+  for (var j = i - 1; j >= 0; j--) {
+    var st = G.steps[j];
+    if (!st || !st.zs) continue;
+    var hit = st.zs.some(function(x) {
+      var m = zutatNameNorm(x && x.name);
+      return m.length >= 4 && (m.indexOf(n) >= 0 || n.indexOf(m) >= 0);
+    });
+    if (!hit) continue;
+    var v = vorbereitungenIn(st);
+    if (v.length) return { text: v.slice(0, 2).join(' und '), schritt: j + 1 };
+    return null; // zuletzt in einem Schritt ohne Vorbereitung gesehen
+  }
+  return null;
+}
 function schrittKarteInnen(i) {
   var s = G.steps[i];
   var isDone = !!G.done[i];
@@ -6744,7 +6809,7 @@ function schrittKarteInnen(i) {
         // unveraendert im Datenmodell, nur die ANZEIGE wird bei Portionsaenderung skaliert.
         var zHint = klammerHinweis(z.menge);
         return '<div class="zutat-row" data-base="' + mNum + '" data-unit="' + esc(mUnit) + '"' + (zHint ? ' data-hint="' + esc(zHint) + '"' : '') + ' style="display:flex;justify-content:space-between;padding:4px 0;font-size:14px">' +
-          '<span>' + esc(z.name) + '</span>' + (z.menge ? '<span class="zutat-menge" style="font-weight:600;color:var(--txt2)">' + esc(z.menge) + '</span>' : '') +
+          '<span>' + esc(z.name) + (function() { var b = zutatBereitsVorbereitet(i, z); return b ? '<span style="display:block;font-size:11px;font-weight:400;color:var(--gr3)">' + esc(b.text) + ' &middot; aus Schritt ' + b.schritt + '</span>' : ''; })() + '</span>' + (z.menge ? '<span class="zutat-menge" style="font-weight:600;color:var(--txt2)">' + esc(z.menge) + '</span>' : '') +
         '</div>';
       }).join('') + '</div>';
   }
@@ -6776,7 +6841,7 @@ function schrittKarteInnen(i) {
     }
   }
 
-  var kontrolleHtml = s.kontrolle ? '<div style="background:var(--bll);border-radius:8px;padding:10px 12px;margin-bottom:12px;font-size:13px;color:var(--blu)"><b>&#10003; Fertig wenn:</b> ' + esc(s.kontrolle) + '</div>' : '';
+  var kontrolleHtml = (s.kontrolle && !kontrolleRedundant(s)) ? '<div style="background:var(--bll);border-radius:8px;padding:10px 12px;margin-bottom:12px;font-size:13px;color:var(--blu)"><b>&#10003; Fertig wenn:</b> ' + esc(s.kontrolle) + '</div>' : '';
   var ablageHtml = ablageAnzeigen(i) ? '<div style="background:#EEF5F0;border-left:3px solid #4F8067;padding:10px 12px;border-radius:0 8px 8px 0;margin-bottom:12px;font-size:13px;color:#2f5a45"><b>&#128205; Wohin damit:</b> ' + esc(s.ablage) + '</div>' : '';
   var parallelHtml = s.parallel ? '<div style="background:#FFF3E3;border-left:3px solid #f9a825;padding:10px 12px;border-radius:0 8px 8px 0;margin-bottom:12px;font-size:13px;color:#7d5a00"><b>Währenddessen:</b> ' + esc(s.parallel) + '</div>' : '';
 
@@ -7827,8 +7892,28 @@ function rezeptFotoZuordnen(idx, rezeptId, neueId) {
   saveFotoRezepteToGH(saved);
   return { ok: true, alt: alt };
 }
+// Die Nur-Ansicht arbeitet auf einer Kopie des Plans. Nach einer Fotoaenderung die Foto-IDs aus dem
+// gespeicherten Plan (Verlauf bzw. aktiver Plan) in die Kopie uebernehmen, sonst bliebe die Ansicht alt.
+function historyViewFotosAbgleichen() {
+  var hv = G.histView;
+  if (!hv || !hv.plan || !hv.plan.sug || !hv.plan.planId) return;
+  var quelle = null;
+  if (G.activePlan && G.activePlan.planId === hv.plan.planId) quelle = G.activePlan.sug;
+  else {
+    var hist; try { hist = JSON.parse(localStorage.getItem(userKey('local_history')) || '[]'); } catch (e) { hist = []; }
+    var en = hist.filter(function(h) { return h && h.planId === hv.plan.planId; })[0];
+    quelle = en && en.plan && en.plan.sug;
+  }
+  if (!quelle || !quelle.gerichte) return;
+  (hv.plan.sug.gerichte || []).forEach(function(g, gi) {
+    var q = quelle.gerichte[gi];
+    if (!q) return;
+    if (q._fotoId) g._fotoId = q._fotoId; else delete g._fotoId;
+  });
+}
 // Listen nach einer Fotoaenderung nachziehen (Rezeptdatenbank, Kalender)
 function fotoListenAktualisieren() {
+  try { if (G.histView && $('shview') && $('shview').classList.contains('on')) { historyViewFotosAbgleichen(); renderHistoryView(); } } catch (e) {}
   try { if ($('rdb-items')) { window._rdbDaten = rdbEintraege(); window._historyRecipes = window._rdbDaten.saved; rdbRender(); } } catch (e) {}
   try { kalenderAktualisieren(); } catch (e) {}
 }
@@ -8109,7 +8194,7 @@ function updateHistoryStatus(planData, status) {
   saveHistoryToGH(hist);
 }
 
-function markEinkaufDone(itemCount) {
+function markEinkaufDone(itemCount, namen, listUuid) {
   if (!G.activePlan) return;
   G.activePlan.einkaufDone = true;
   G.activePlan.bringImportedAt = new Date().toLocaleString('de-CH', {day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});
@@ -8118,6 +8203,10 @@ function markEinkaufDone(itemCount) {
   // Auch 0 uebernehmen: "alles schon vorhanden" ist ein gueltiges Ergebnis,
   // "if (itemCount)" haette die Null verworfen und die alte Zahl stehen lassen.
   if (itemCount != null) G.activePlan.bringItemCount = itemCount;
+  // Welche Artikel wirklich uebertragen wurden (ohne die in der App abgehakten) und wohin: damit sich spaeter
+  // abgleichen laesst, was in Bring! schon gekauft ist.
+  if (Array.isArray(namen)) { G.activePlan.bringItems = namen; G.activePlan.bringListUuid = listUuid || ''; }
+  G.bringStatus = null;
   localStorage.setItem(userKey('active_plan'), JSON.stringify(G.activePlan));
   renderActivePlan();
   updateTransferStatusUI();
@@ -8125,6 +8214,75 @@ function markEinkaufDone(itemCount) {
   saveToGH(G.activePlan);
   updateHistoryStatus(G.activePlan, 'einkauf');
 }
+// ─── EINKAUFSSTATUS AUS BRING! ──────────────────────────────
+// Bring! trennt "zu kaufen" (purchase) von "zuletzt gekauft" (recently). Was von der App uebertragen wurde und
+// nicht mehr unter "zu kaufen" steht, ist abgehakt (oder dort geloescht). In der App abgehakte Artikel wurden nie
+// uebertragen und zaehlen deshalb gar nicht erst mit.
+function bringNameNorm(n) {
+  return String(n || '').toLowerCase().replace(/ä/g, 'a').replace(/ö/g, 'o').replace(/ü/g, 'u').replace(/ß/g, 'ss').replace(/[^a-z0-9 ]/g, ' ').replace(/\s+/g, ' ').trim();
+}
+// Die uebertragenen Artikel: gespeichert (ab v7.18) oder - fuer aeltere Uebertragungen - aus dem Plan und den
+// App-Haken rekonstruiert, aber nur, wenn die Zahl mit der damals gemeldeten uebereinstimmt.
+function bringUebertrageneNamen(plan) {
+  if (!plan) return null;
+  if (Array.isArray(plan.bringItems)) return plan.bringItems.slice();
+  if (!plan.bringItemCount) return null;
+  var aktive = (plan.sug && plan.sug.gerichte || []).filter(function(g) { return !g._cancelled; });
+  var rek = getItems({ gerichte: aktive }).filter(function(it) { return !(G.checked && G.checked[itemKey(it)]); }).map(function(it) { return it.name; });
+  return rek.length === plan.bringItemCount ? rek : null;
+}
+// Reine Berechnung (testbar): erwartet = uebertragene Namen, purchase = Bring-Eintraege "zu kaufen".
+function bringStatusBerechnen(erwartet, purchaseNamen) {
+  var offen = [];
+  var pn = purchaseNamen.map(bringNameNorm).filter(Boolean);
+  erwartet.forEach(function(name) {
+    var n = bringNameNorm(name);
+    if (!n) return;
+    var da = pn.some(function(p) { return p === n || (n.length >= 4 && p.length >= 4 && (p.indexOf(n) >= 0 || n.indexOf(p) >= 0)); });
+    if (da) offen.push(name);
+  });
+  return { gesamt: erwartet.length, offen: offen, erledigt: erwartet.length - offen.length };
+}
+function bringStatusLaden(force) {
+  var plan = G.activePlan;
+  if (!plan || !plan.bringImportedAt || plan.bringStale || !G.bToken || !G.bUUID || G.fotoImport) return;
+  var st = G.bringStatus;
+  if (G.bringStatusLaeuft) return;
+  if (!force && st && st.planId === plan.planId && st.stand === plan.bringImportedAt && Date.now() - st.ts < 120000) return;
+  var erwartet = bringUebertrageneNamen(plan);
+  var uuid = plan.bringListUuid || getBringListPref() || ($('blist') && $('blist').value) || (G.bLists && G.bLists[0] && G.bLists[0].listUuid) || '';
+  if (!erwartet || !erwartet.length || !uuid) return;
+  var h = {};
+  for (var k in BH) h[k] = BH[k];
+  h['Authorization'] = G.bToken; h['X-BRING-USER-UUID'] = G.bUUID; h['Content-Type'] = 'application/json';
+  G.bringStatusLaeuft = true;
+  var planId = plan.planId, stand = plan.bringImportedAt;
+  fetch(BAPI + '/v2/bringlists/' + uuid, { headers: withMpAuth(h) })
+    .then(function(r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+    .then(function(d) {
+      var arr = extractBringPurchase(d);
+      if (arr === null) throw new Error('Antwort nicht verstanden');
+      var res = bringStatusBerechnen(erwartet, arr.map(bringItemName));
+      res.planId = planId; res.stand = stand; res.ts = Date.now();
+      G.bringStatus = res;
+    })
+    .catch(function(e) {
+      // Kein Ergebnis ist kein Beweis: nichts anzeigen, spaeter erneut versuchen.
+      G.bringStatus = { planId: planId, stand: stand, ts: Date.now(), fehler: String(e && e.message || e) };
+    })
+    .then(function() { G.bringStatusLaeuft = false; try { updateDashboard(); } catch (e) {} });
+}
+// Text fuer die Startseite: { txt, sub, fertig } oder null, wenn (noch) nichts Verlaessliches bekannt ist.
+function bringStatusAnzeige(plan) {
+  var st = G.bringStatus;
+  if (!plan || !st || st.fehler || st.planId !== plan.planId || st.stand !== plan.bringImportedAt || st.gesamt == null) return null;
+  var zeit = 'Übertragen: ' + plan.bringImportedAt;
+  if (st.offen.length === 0) return { fertig: true, txt: 'Einkauf erledigt – alle ' + st.gesamt + ' Artikel abgehakt', sub: zeit + ' · in Bring! alles abgehakt' };
+  var liste = st.offen.slice(0, 4).join(', ') + (st.offen.length > 4 ? ' +' + (st.offen.length - 4) : '');
+  if (st.erledigt === 0) return { fertig: false, txt: st.gesamt + ' Artikel an Bring! übertragen', sub: zeit + ' · noch nichts abgehakt' };
+  return { fertig: false, txt: st.erledigt + ' von ' + st.gesamt + ' Artikeln eingekauft', sub: st.offen.length + ' offen: ' + liste };
+}
+
 // ─── ACTIVE PLAN ───────────────────────────────────────────
 
 // ─── AKTIVER PLAN: EINE Quelle der Wahrheit ────────────────
@@ -10202,7 +10360,14 @@ function updateDashboard() {
             ? 'Zuletzt: ' + plan.bringImportedAt + ' · nichts einzukaufen'
             : 'Zuletzt: ' + plan.bringImportedAt + ' · Abhaken in Bring!')
         : totalItems + ' Artikel bereit zum Übertragen';
-    if ($('dash-einkauf-dot')) $('dash-einkauf-dot').style.background = stale ? '#B97836' : imported ? 'var(--grn)' : 'var(--gr2)';
+    // Echter Stand aus Bring!: ersetzt die blosse "uebertragen"-Meldung, sobald verlaesslich bekannt.
+    var bs = imported && plan.bringItemCount !== 0 ? bringStatusAnzeige(plan) : null;
+    if (bs) {
+      if ($('dash-einkauf-txt')) $('dash-einkauf-txt').textContent = bs.txt;
+      if ($('dash-einkauf-sub')) $('dash-einkauf-sub').textContent = bs.sub;
+    }
+    if (imported && plan.bringItemCount !== 0) { try { bringStatusLaden(false); } catch (e) {} }
+    if ($('dash-einkauf-dot')) $('dash-einkauf-dot').style.background = stale ? '#B97836' : (bs && !bs.fertig) ? '#E0A030' : imported ? 'var(--grn)' : 'var(--gr2)';
     if ($('dash-einkauf-btn')) $('dash-einkauf-btn').textContent = (imported || stale)
       ? 'Liste ansehen / erneut übertragen →' : 'Einkaufsliste öffnen →';
   }
@@ -10587,7 +10752,7 @@ function renderHistoryView() {
       '<div class="chead"><span>' + esc(datum) + '</span>' + kopfStatus + '</div>' +
       '<div class="cbody"' + (aus ? ' style="opacity:.65"' : '') + '>' +
         '<div style="font-size:15px;font-weight:700;color:var(--txt);line-height:1.35">' + esc(g.abend || '') + bewertungsZusatz(sug.thema, g, !!g._gekocht, hv.plan.planId, gi) + '</div>' +
-        (g._fotoId ? '<div class="foto-box"><img class="foto-img" data-fotoid="' + esc(g._fotoId) + '" src="' + FOTO_LEER + '" alt="Foto von ' + esc(g.abend || 'dem Gericht') + '" onclick="fotoGross(this)"><div class="foto-leer">Das Foto ist auf diesem Gerät noch nicht verfügbar.</div></div>' : '') +
+        (g._fotoId ? '<div class="foto-box"><img class="foto-img" data-fotoid="' + esc(g._fotoId) + '" src="' + FOTO_LEER + '" alt="Foto von ' + esc(g.abend || 'dem Gericht') + '" onclick="fotoGross(this)"><div class="foto-leer">Das Foto ist auf diesem Gerät noch nicht verfügbar.</div></div>' : (!aus && hv.plan.planId ? '<button type="button" class="foto-platz foto-platz-gross" aria-label="Foto hinzufügen: ' + esc(g.abend || 'Gericht') + '" onclick="fotoWaehlen(\'' + esc(hv.plan.planId) + '\',' + gi + ')"><span style="font-size:30px;line-height:1">📷</span><span style="font-size:13px;font-weight:600;color:var(--gr3)">Foto hinzufügen</span></button>' : '')) +
         (g.mittag_nächster_tag ? '<div class="hv-reste">&#8594; ' +
            esc(g.mittag_tag || '') + ': ' + esc(g.mittag_nächster_tag) + '</div>' : '') +
         zut +
@@ -12392,6 +12557,7 @@ function vielfaltsText(n, art) {
       : 'Die Hauptbeilage (Reis, Teigwaren, Kartoffeln, Brot/Teig, Polenta) moeglichst nicht wiederholen. ') +
     'Mindestens zwei verschiedene Zubereitungsarten (Ofen, Pfanne, Topf, kalt). ' +
     'Mindestens zwei verschiedene Proteinquellen. ' +
+    'Huelsenfruechte (Kichererbsen, Linsen, Bohnen) hoechstens in EINEM Gericht, nicht als Standard-Eiweiss; Eiweiss auch ueber Eier, Kaese, Halloumi, Tofu, Quark, Nuesse. ' +
     'Kein Gericht darf eine blosse Variante eines anderen sein - ' +
     '"Hoernli-Auflauf mit Spinat" und "Hoernli-Auflauf mit Pilzen" waeren unzulaessig, ' +
     '"Spinat-Hoernli-Auflauf" und "Pilzrisotto" dagegen richtig.';
