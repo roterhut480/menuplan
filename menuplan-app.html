@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=yes">
-<title>Menüplan v7.19</title>
+<title>Menüplan v7.21</title>
 <meta name="theme-color" content="#5B7C78">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -388,7 +388,7 @@ body:has(#sc.feed.on){overflow:hidden}
 
 <!-- HOME -->
 <div class="scr on" id="sh">
-  <div class="hero"><h1>Menüplan</h1><p id="hsub">v7.19 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
+  <div class="hero"><h1>Menüplan</h1><p id="hsub">v7.21 &nbsp;·&nbsp; Deine Wochenplanung</p></div>
 
   <!-- Active plan card -->
 
@@ -529,7 +529,7 @@ body:has(#sc.feed.on){overflow:hidden}
   <!-- Cook options -->
   <div class="card">
     <div class="cp">
-      <div class="clbl">Diese Woche</div>
+      <div class="clbl" id="snew-zeitraum">Planung</div>
 
       <!-- Personen Regler -->
       <div class="fld">
@@ -647,7 +647,7 @@ body:has(#sc.feed.on){overflow:hidden}
   <div class="tbar">
     <div class="tbar-bk" onclick="go('snew')">&#8592;</div>
     <div class="tbar-bk" onclick="go('sh')" style="margin-left:4px" title="Startseite">&#8962;</div>
-    <div><h1>Menüvorschläge</h1><div class="tbar-sub">Wähle eine Abfolge</div></div>
+    <div><h1>Menüvorschläge</h1><div class="tbar-sub" id="ss-sub">Wähle einen Menüplan</div></div>
   </div>
   <div id="sload" style="display:none;text-align:center;padding:40px 16px">
     <div class="spin" style="width:26px;height:26px;margin:0 auto 12px;border-width:2.5px"></div>
@@ -1918,7 +1918,9 @@ function initDayPicker() {
             KL_SVG.haken + '<span class="kl-datum">' + datum + '</span><span class="kl-titel dp-titel" style="display:flex;align-items:baseline;gap:4px"><span style="min-width:0;overflow:hidden;text-overflow:ellipsis" title="Einzelrezept">🍳 ' + esc(e.name) + '</span>' +
             '<span style="flex:none">' + (e.stars ? sterneHtml(e.stars) : '<span class="titel-bewerten" role="button" tabindex="0" aria-label="Einzelrezept bewerten" onclick="event.stopPropagation();showFotoRating(' + e.idx + ',\'skal\')" style="display:inline-block;color:var(--red);font-size:.8em;font-weight:500;white-space:nowrap;cursor:pointer;padding:2px 0">(bewerten)</span>') + '</span></span>' +
             (e.fotoId ? '<img class="foto-img foto-thumb" data-fotoid="' + esc(e.fotoId) + '" src="' + FOTO_LEER + '" alt="" style="width:30px;height:30px;min-height:30px;max-height:30px;border-radius:6px">' : '') +
-          '</button></div>';
+          '</button>' +
+          '<button type="button" class="ez-kochtag" onclick="kochtagOeffnen(\'rezept\',' + e.idx + ')" aria-label="Kochtag ändern: ' + esc(e.name) + '" title="Kochtag ändern" ' +
+            'style="flex:none;border:none;background:none;font-size:16px;min-width:40px;min-height:40px;cursor:pointer">📅</button></div>';
       }).join('');
       if (ezHtml && !t.titel) html += ezHtml;
       var kl = 'day-row' + (t.heute ? ' heute' : '') + (t.vergangen ? ' vergangen' : '') +
@@ -2064,6 +2066,7 @@ function renderNCount() {
   if ($('kl-n')) $('kl-n').textContent = G.n + ' ' + (G.n === 1 ? 'Kochabend' : 'Kochabende');
   if ($('kl-tage')) $('kl-tage').textContent = tageZusammenfassung().map(function(t) { return t.datum; }).join(' · ') ||
     'Wähle freie Tage in der Liste';
+  if ($('snew-zeitraum')) $('snew-zeitraum').textContent = planungsZeitraumEtikett();
   if ($('kl-planen')) { $('kl-planen').disabled = !G.n; $('kl-planen').style.opacity = G.n ? '1' : '.4'; }
   if ($('snew-tage')) {
     var z = tageZusammenfassung();
@@ -2072,6 +2075,23 @@ function renderNCount() {
         esc(t.datum) + '</span><span style="font-size:13px;color:var(--gr3)">' + esc(t.modus) + '</span></div>';
     }).join('') : '<div style="font-size:13px;color:var(--gr3)">Noch keine Tage gewählt – tippe auf «Ändern».</div>';
   }
+}
+
+// Zeitraum-Etikett im Planungsformular. Frueher stand dort fest "Diese Woche",
+// auch wenn die gewaehlten Kochtage in der Folgewoche lagen. Jetzt: relative
+// Woche des ersten Kochtags + die gewaehlten Daten ("Nächste Woche · Di 24.11. – Do 26.11.").
+function planungsZeitraumEtikett() {
+  var tage = [];
+  try { tage = cookingDays(); } catch (e) { tage = []; }
+  var daten = tage.map(function(t) { return G.planWoche ? dateFromTag(G.planWoche, t) : null; })
+                  .filter(function(d) { return !!d; });
+  if (!daten.length) return 'Planung';
+  var heute = new Date();
+  var diff = Math.round((mondayOf(daten[0]) - mondayOf(heute)) / (7 * 86400000));
+  var rel = diff === 0 ? 'Diese Woche' : diff === 1 ? 'Nächste Woche' : diff === -1 ? 'Letzte Woche' :
+            diff > 1 ? 'In ' + diff + ' Wochen' : 'Vor ' + Math.abs(diff) + ' Wochen';
+  var von = kalenderTagKurz(daten[0]), bis = kalenderTagKurz(daten[daten.length - 1]);
+  return rel + ' · ' + (von === bis ? von : von + ' – ' + bis);
 }
 
 // Gewaehlte Kochtage der aktiven Woche als [{ datum: 'Do 29.10.', modus: 'Normal – 30–45 Min.' }].
@@ -2936,8 +2956,17 @@ function archivEintraege() {
 }
 function archivGerichtSauber(g) {
   var c = JSON.parse(JSON.stringify(g || {}));
-  Object.keys(c).forEach(function(k) { if (k.charAt(0) === '_' && k !== '_basisPortionen' && k !== '_quellPortionen' && k !== '_fotoId') delete c[k]; });
+  Object.keys(c).forEach(function(k) { if (k.charAt(0) === '_' && k !== '_basisPortionen' && k !== '_quellPortionen' && k !== '_fotoId' && k !== '_kompKontext') delete c[k]; });
   return c;
+}
+// Zusammenhang eines Gerichts im Komponentenplan (aufbauend): welche Komponente in welcher Menge aus welchem Gericht
+// uebernommen oder fuer welche Abende vorbereitet wird. Verlaesst der Plan den Verlauf, ist der Plan selbst nicht mehr
+// da - ohne diese Kopie fehlte dem archivierten Rezept die Angabe "Vorbereitung beachten" (z.B. Lasagne ohne Sauce).
+function kompKontextFuer(sug, g) {
+  if (!sug || !sug.komponentenplan || !g || !g.gid) return null;
+  var ans = komponentenAnsicht(sug, g);
+  if (!ans.verwendet.length && !ans.herstellt.length) return null;
+  return JSON.parse(JSON.stringify({ thema: sug.thema || '', verwendet: ans.verwendet, herstellt: ans.herstellt }));
 }
 // Gekochte Gerichte eines Verlaufseintrags -> Archiveintraege.
 function archivEintraegeAusPlan(entry) {
@@ -2956,7 +2985,12 @@ function archivEintraegeAusPlan(entry) {
     var b = null; try { b = bewertungFuerGericht(sug.thema, g); } catch (e) {}
     out.push({ _id: (pl.planId || entry.planId || 'x') + '|' + (g.gid || g.tag || '') + '|' + g.abend,
                name: String(g.abend), iso: iso, thema: sug.thema || entry.thema || '', planId: pl.planId || entry.planId || '',
-               stars: b && b.stars ? b.stars : 0, basis: g._basisPortionen || planGesamtPortionen(pl, g), fotoId: g._fotoId || '', g: archivGerichtSauber(g),
+               stars: b && b.stars ? b.stars : 0, basis: g._basisPortionen || planGesamtPortionen(pl, g), fotoId: g._fotoId || '', g: (function() {
+                 var gs = archivGerichtSauber(g), kk = null;
+                 try { kk = kompKontextFuer(sug, g); } catch (e) {}
+                 if (kk) gs._kompKontext = kk;
+                 return gs;
+               })(),
                archiviertAm: isoDateLocal(new Date()) });
   });
   return out;
@@ -4010,6 +4044,118 @@ function currentOpts(extra) {
   return o;
 }
 
+// ─── AUFBAUEND: ABENDESSEN STATT KOMPONENTE ─────────────────
+// Beim aufbauenden Kochen ist die Komponente (Tomatensauce, Bechamel, Grundteig) eine ZUSAETZLICHE
+// Vorratsmenge; jeder Kochabend bleibt ein vollstaendig servierbares Abendessen. Frueher
+// kamen alle drei Vorschlaege mit "Tomatensauce mit Basilikum" bzw. "Klassische Bechamel" als erstem
+// Abend - ein Abend, der nur aus einer Sauce besteht.
+var NUR_KOMP_FUELLWORT = /^(mit|und|an|auf|in|der|die|das|dem|von|vom|klassische[rsn]?|einfache[rsn]?|hausgemachte[rsn]?|selbstgemachte[rsn]?|frische[rsn]?|gekochte[rsn]?|grosse[rsn]?|grundrezept|basis|vorrat|auf|ca)$/i;
+var NUR_KOMP_BASIS = /(sauce|sosse|soße|béchamel|bechamel|grundsauce|grundteig|grundrezept|\bbasis\b|\bfond\b|brühe|bruehe|passata|\bsugo\b|\bragù\b|\bragu\b|salsa|dressing|pesto|\bdip\b|mirepoix|\bpaste\b)/i;
+var NUR_KOMP_FORM = /(pasta|nudel|spaghetti|penne|tagliatelle|rigatoni|fusilli|gnocchi|risotto|polenta|lasagne|gratin|auflauf|pizza|wrap|taco|bowl|suppe|eintopf|curry|salat|wähe|waehe|quiche|pfanne|bratling|burger|schnitzel|knödel|knoedel|rösti|roesti|tarte|flammkuchen|gefüllt|gefuellt|enchilada|burrito|chili|tortilla|omelett|frittata|\bdal\b|dhal|falafel|laibchen|strudel|ramen|udon|blech|sandwich|toast|püree|pueree)/i;
+var NUR_KOMP_ZUTAT = /(reis|kartoffel|brot|couscous|quinoa|bulgur|gemüse|gemuese|tofu|linsen|bohnen|kichererbsen|\bei\b|eier|käse|kaese|fleisch|poulet|huhn|lachs|fisch|knusper)/i;
+var NUR_KOMP_WORT = function(t) { return String(t || '').toLowerCase().match(/[a-zäöüéèàß]+/g) || []; };
+
+// Besteht der Gerichtsname nur aus der Komponente (oder einer reinen Grundzubereitung ohne Beilage)?
+function nurKomponenteGericht(g) {
+  if (!g) return false;
+  var name = String(g.abend || '').trim();
+  if (!name) return false;
+  var ws = NUR_KOMP_WORT(name).filter(function(w) { return !NUR_KOMP_FUELLWORT.test(w); });
+  if (!ws.length) return false;
+  var komp = NUR_KOMP_WORT(g.komponente).filter(function(w) { return !NUR_KOMP_FUELLWORT.test(w); });
+  // 1) Alle bedeutungstragenden Woerter des Namens gehoeren zur Komponente ("Gekochte Linsen" / Komponente "Linsen")
+  if (komp.length && !NUR_KOMP_FORM.test(name) &&
+      ws.every(function(w) { return komp.some(function(k) { return w === k || w.indexOf(k) === 0 || k.indexOf(w) === 0; }); })) return true;
+  // 2) Reine Grundzubereitung ("Tomatensauce mit Basilikum", "Klassische Béchamel") ohne Traeger-Wort (Pasta, Reis, Gnocchi, ...)
+  var ohneBasis = name.replace(NUR_KOMP_BASIS, ' ');
+  return NUR_KOMP_BASIS.test(name) && !NUR_KOMP_FORM.test(ohneBasis) && !NUR_KOMP_ZUTAT.test(ohneBasis);
+}
+
+// Mangel-Text fuer einen aufbauenden Vorschlag oder null.
+function pruefeAufbauGerichte(sug) {
+  var g = (sug && sug.gerichte) || [];
+  for (var i = 0; i < g.length; i++) {
+    if (nurKomponenteGericht(g[i])) return 'Abend ' + g[i].tag + ' «' + g[i].abend + '» ist nur eine Komponente, kein vollständiges Abendessen';
+  }
+  return null;
+}
+
+// ─── ZEITVORGABEN ───────────────────────────────────────────
+// Die Zeitrahmen der Tagesplanung ("Schnell" max. ~20 Min., "Normal" 30-45 Min.) beziehen
+// sich auf die GESAMTZEIT eines Abends (zeit_total, vom ersten Schnitt bis zum Servieren,
+// inklusive Garzeiten) - dieselbe Messgroesse wie bei der Uebersicht. Sie galt frueher nur
+// dort; das Vollrezept bekam keine Vorgabe und wurde nicht geprueft (Frei Mo "Normal bis
+// 45 Min." kam mit 105 Min. total zurueck).
+var ZEIT_MAX_TAG = { schnell: 20, normal: 45 };
+var ZEIT_AUFBAU_MAX = 60;     // Das vorbereitende Gericht beim aufbauenden Kochen darf laenger dauern.
+var ZEIT_MODUS_NAME = { schnell: 'Schnell', normal: 'Normal' };
+
+// Minuten aus freien Zeittexten: "45 Min", "45m", "1h 10", "1 Stunde 10 Minuten",
+// "1½ Std", "30-45 Min." (Bereich: obere Grenze). Alles ohne Zahl ergibt null.
+function zeitMinuten(txt) {
+  var t = String(txt == null ? '' : txt).toLowerCase()
+    .replace(/½/g, '.5').replace(/¼/g, '.25').replace(/¾/g, '.75')
+    .replace(/(\d),(\d)/g, '$1.$2');
+  if (!/\d/.test(t)) return null;
+  var NUM = '(\\d+(?:\\.\\d+)?)';
+  var RANGE = NUM + '(?:\\s*[-–—]\\s*' + NUM + ')?';
+  var hRe = new RegExp(RANGE + '\\s*(?:stunden|stunde|std|h)(?![a-zäöü])\\.?', 'g');
+  var mRe = new RegExp(RANGE + '\\s*(?:minuten|minute|min|m)(?![a-zäöü])\\.?', 'g');
+  var wert = function(a, b) { return parseFloat(b !== undefined ? b : a); };
+  var min = 0, gefunden = false, m;
+  while ((m = hRe.exec(t))) { min += wert(m[1], m[2]) * 60; gefunden = true; }
+  var rest = t.replace(hRe, '|H|');
+  while ((m = mRe.exec(t))) { min += wert(m[1], m[2]); gefunden = true; }
+  if (!gefunden) { var n = new RegExp(RANGE).exec(t); return n ? Math.round(wert(n[1], n[2])) : null; }
+  // "1h 10" - Zahl direkt hinter der Stundenangabe ohne eigene Einheit
+  var nach = /\|H\|\s*(\d{1,2})(?!\s*[a-zäöü\d.])/.exec(rest);
+  if (nach && !/(minuten|minute|min|m)(?![a-zäöü])/.test(rest)) min += parseInt(nach[1], 10);
+  return Math.round(min);
+}
+
+// Verbindliche Zeitvorgabe fuer EIN Gericht eines gespeicherten Plans (oder null).
+// Quelle ist der Plan des Gerichts (plan.days), nie der gerade offene Entwurf.
+function zeitLimitFuer(plan, g) {
+  if (!plan || !g || !g.tag) return null;
+  var modus = (plan.days || {})[g.tag];
+  var max = ZEIT_MAX_TAG[modus];
+  if (!max) return null;                       // aufwendig, auswaerts, kein Eintrag: keine Obergrenze
+  var lim = { modus: modus, max: max };
+  if (planungsartVonPlan(plan) === 'aufbauend') {
+    var sug = plan.sug || {};
+    var herstellt = false;
+    try {
+      if (planIstAltKette(plan)) {
+        var akt = (sug.gerichte || []).filter(function(x) { return !x._cancelled; });
+        herstellt = akt.length > 0 && akt[0] === g;
+      } else {
+        herstellt = komponentenAnsicht(sug, g).herstellt.length > 0;
+      }
+    } catch (e) {}
+    if (herstellt && ZEIT_AUFBAU_MAX > max) { lim.max = ZEIT_AUFBAU_MAX; lim.laenger = true; }
+  }
+  return lim;
+}
+
+// Ueberschreitet das (fertige) Rezept seine Zeitvorgabe? Ergebnis: null oder {min, max, modus}.
+function zeitUeberschreitung(rezept, lim) {
+  if (!lim || !rezept) return null;
+  var t = zeitMinuten(rezept.zeit_total), a = zeitMinuten(rezept.zeit_aktiv);
+  var min = Math.max(t || 0, a || 0);
+  if (min && min > lim.max) return { min: min, max: lim.max, modus: lim.modus, laenger: !!lim.laenger };
+  return null;
+}
+
+// Sichtbarer Hinweis, wenn ein Rezept trotz Korrekturversuch ueber der Vorgabe liegt.
+function zeitHinweisHtml(g) {
+  var z = g && g._zeitAbweichung;
+  if (!z) return '';
+  var name = ZEIT_MODUS_NAME[z.modus] || z.modus;
+  return '<div class="zeit-hinweis" style="margin:6px 0;padding:8px 10px;border-radius:8px;background:#fff6e5;border:.5px solid #e6c27a;font-size:12px;color:#7a5200">' +
+    '&#9888;&#65039; Dauert ca. <b>' + z.min + ' Min.</b> &ndash; mehr als der Zeitrahmen «' + esc(name) + '» (max. ' + z.max + ' Min.). ' +
+    'Das Rezept wurde trotz Korrektur nicht kürzer; der Tag kann auf «Aufwendig» gestellt oder das Gericht ersetzt werden.</div>';
+}
+
 // Optionen fuer eine Anfrage, die zu einem GESPEICHERTEN PLAN gehoert (Vollrezept,
 // Nachladen, Ersatzgericht). Sie stammen aus dem Plan, nie aus dem gerade offenen
 // Entwurf: ein neuer Entwurf darf Modus, Portionsbasis und Planungsart bestehender
@@ -4484,18 +4630,13 @@ function goSuggest() {
     return treffer / Math.min(wa.length, wb.length);
   }
 
-  // Minuten aus "45m", "45 Min", "1h 10" - alles andere ergibt null.
-  function minutenAus(txt) {
-    var t = String(txt || '').toLowerCase();
-    var h = /(\d+)\s*h/.exec(t), m = /(\d+)\s*(m|min)/.exec(t);
-    if (!h && !m) { var n = /(\d+)/.exec(t); return n ? parseInt(n[1], 10) : null; }
-    return (h ? parseInt(h[1], 10) * 60 : 0) + (m ? parseInt(m[1], 10) : 0);
-  }
+  // Minuten aus Zeittexten - gemeinsame Funktion zeitMinuten() (versteht auch "1 Stunde 10 Minuten").
+  function minutenAus(txt) { return zeitMinuten(txt); }
 
   // Obergrenze pro Zeitrahmen. Bei "aufwendig" gibt es keine.
   // Dieselben Werte wie in der Oberflaeche ("max. ~20 Min." / "30-45 Min.")
   // und im Prompt. Frueher 25/50 - ein 48-Minuten-Gericht galt als "normal".
-  var ZEIT_MAX = { schnell: 20, normal: 45 };
+  var ZEIT_MAX = ZEIT_MAX_TAG;
 
   // Verletzt ein Gericht den Zeitrahmen seines Tages? Frueher kam bei "Normal
   // 30-45 Min." ein Vorschlag mit 60 Minuten pro Abend durch.
@@ -4518,6 +4659,7 @@ function goSuggest() {
   function pruefeVielfalt(sug) {
     var zeit = pruefeZeit(sug);
     if (zeit) return 'Zeitrahmen: ' + zeit;
+    if (planArt === 'aufbauend') { var komp = pruefeAufbauGerichte(sug); if (komp) return 'Aufbau: ' + komp; }
     var g = (sug && sug.gerichte) || [];
     if (g.length < 2) return null;
     var formen = g.map(formVon).filter(Boolean);
@@ -4534,7 +4676,7 @@ function goSuggest() {
   }
 
   // Load all 3 suggestions in parallel
-  function loadOne(id, istWiederholung) {
+  function loadOne(id, istWiederholung, grund) {
     // 400 war zu knapp: ein einzelner Vorschlag mit drei Gerichten liegt genau
     // an der Grenze, mal passt er, mal wird er abgeschnitten - daher kamen
     // sporadisch nur 1 von 3 Vorschlaegen. Ausgabe-Tokens werden nur nach
@@ -4588,6 +4730,10 @@ function goSuggest() {
       _zusatz += ' Der vorherige Versuch enthielt zu aehnliche Gerichte oder ueberschritt den Zeitrahmen. ' +
         'Achte besonders darauf, dass jedes Gericht eine ANDERE Gerichtsart hat und die ' +
         'Gesamtzeit pro Abend den Zeitrahmen des Tages einhaelt (schnell: max 20 Min, normal: max 45 Min).';
+      if (grund && /^Aufbau:/.test(grund)) {
+        _zusatz += ' KORREKTUR: ' + grund.replace(/^Aufbau: /, '') + '. Jeder Abend ist ein vollstaendig servierbares ' +
+          'Gericht mit Hauptbestandteil und Beilage (z.B. "Penne mit Tomatensauce"); die Komponente wird nur ZUSAETZLICH in groesserer Menge gekocht.';
+      }
     }
     return callWorker('overview', msg + _zusatz, 2000)
       .then(function(raw) {
@@ -4615,8 +4761,10 @@ function goSuggest() {
           var maengel = pruefeVielfalt(sugs[0]);
           if (maengel && !istWiederholung) {
             console.warn('Vorschlag ' + id + ' zu eintoenig (' + maengel + ') - neuer Versuch');
-            return loadOne(id, true);
+            return loadOne(id, true, maengel);
           }
+          // Ein Abend, der nur aus einer Komponente besteht, wird nicht als waehlbarer Plan angeboten.
+          if (maengel && /^Aufbau:/.test(maengel)) throw new Error(maengel.replace(/^Aufbau: /, ''));
           if (maengel) {
             // Nicht still uebernehmen: der Nutzer soll sehen, dass dieser
             // Vorschlag die Vielfaltspruefung nicht bestanden hat.
@@ -4735,6 +4883,8 @@ function mengeTxt(m) {
 
 function renderSugs() {
   var html = '';
+  // "Abfolge" passt nur zu aufbauend (Kochabende bauen aufeinander auf); bei frei/clever gibt es keine Reihenfolge-Abhaengigkeit.
+  if ($('ss-sub')) $('ss-sub').textContent = G.planungsart === 'aufbauend' ? 'Wähle eine Abfolge' : 'Wähle einen Menüplan';
   for (var i = 0; i < G.sugs.length; i++) {
     var s = G.sugs[i];
     var sel = (i === G.sel) ? ' sel' : '';
@@ -4764,7 +4914,7 @@ function renderSugs() {
         '</button>' +
       '</div>';
       if (g.mittag_nächster_tag && g.mittag_nächster_tag !== 'Restename') {
-        days += '<div class="sug-nx">&#8627; ' + esc(g.mittag_tag||'') + ': ' + esc(g.mittag_nächster_tag) + '</div>';
+        days += '<div class="sug-nx">&#8627; ' + esc(mittagTagFuer(g)) + ': ' + esc(g.mittag_nächster_tag) + '</div>';
       }
     }
     var zeitInfo = s.gerichte.length > 0 && s.gerichte[0].zeit_total ?
@@ -5217,11 +5367,24 @@ function komponentenNeuPlanenAusfuehren() {
 // (Verlauf, nicht aktiver Plan) gleichermassen sicher nutzbar.
 // plan: der Plan, zu dem das Gericht gehoert. Planungsart, Portionsbasis, Ernaehrung und
 // Komponentenrolle stammen aus DIESEM Plan - nie aus dem gerade offenen Entwurf.
-function ladeVollrezeptFuerGericht(g, modus, plan, versuch) {
+// Start-Token-Budget fuer Rezepte. Im Modus "optional" enthaelt jedes Gericht
+// zwei vollstaendige Schrittvarianten (vegi + Fleisch); 6000 reichte dafuer
+// regelmaessig nicht, der erste Versuch wurde abgeschnitten und musste mit
+// 12000 wiederholt werden - doppelte Wartezeit und doppelte Kosten. Der
+// kontrollierte Retry (Verdopplung bis 16000) bleibt unveraendert.
+function rezeptTokenBudget(basis, modus) {
+  return modus === 'optional' ? Math.round(basis * 1.5) : basis;
+}
+
+function ladeVollrezeptFuerGericht(g, modus, plan, versuch, zeitKorrektur) {
   var msg = 'Erzeuge die vollständigen Kochschritte.';
   var extra = { dishes: gerichtBeschreibung(g), tag: g.tag };
+  // Zeitvorgabe des Tages aus dem Plan des Gerichts (nicht aus einem offenen Entwurf).
+  var lim = plan ? zeitLimitFuer(plan, g) : null;
+  if (lim) extra.zeitLimit = lim;
+  if (lim && zeitKorrektur) extra.zeitKorrektur = zeitKorrektur;
   var opts = plan ? planOpts(plan, g, extra) : extra;
-  return callWorker('full', msg, 6000, opts, undefined, undefined)
+  return callWorker('full', msg, rezeptTokenBudget(6000, opts.modus), opts, undefined, undefined)
     .then(function(raw) {
       var parsed = parseJSON(raw);
       var validationError = validateFullRecipe(parsed, [g.tag], modus);
@@ -5231,10 +5394,17 @@ function ladeVollrezeptFuerGericht(g, modus, plan, versuch) {
       // Rolle im Komponentenplan pruefen, BEVOR das Rezept uebernommen wird.
       var rollenFehler = pruefeKomponentenRezept(match, opts.komponenten);
       if (rollenFehler) {
-        if (!versuch) return ladeVollrezeptFuerGericht(g, modus, plan, 1);
+        if (!versuch) return ladeVollrezeptFuerGericht(g, modus, plan, 1, zeitKorrektur);
         throw new Error(rollenFehler);
       }
+      // Zeitvorgabe pruefen, BEVOR das Rezept uebernommen wird: einmal mit Korrekturhinweis
+      // neu anfordern, danach ehrlich markieren statt es still als passend zu speichern.
+      var ueber = zeitUeberschreitung(match, lim);
+      if (ueber && !zeitKorrektur) {
+        return ladeVollrezeptFuerGericht(g, modus, plan, versuch, { min: ueber.min, max: lim.max });
+      }
       uebernimmVollrezept(g, match);
+      if (ueber) g._zeitAbweichung = ueber; else delete g._zeitAbweichung;
       validateIngredients([g]);
     });
 }
@@ -5318,6 +5488,38 @@ function nachholeFehlendeRezepteFuerPlan(planId, onFortschritt) {
   });
 }
 
+// ─── HINTERGRUND-GENERIERUNG ────────────────────────────────
+// Das Erzeugen der Kochschritte dauert ein bis zwei Minuten. Wer in der Zwischenzeit zur Startseite wechselt, darf nicht
+// beim Fertigwerden zurueck in die Planansicht gerissen werden - und die Ansicht eines ANDEREN Plans oder Entwurfs
+// darf nicht ueberschrieben werden. Die Fertigmeldung zieht deshalb nur dann in die Ansicht, wenn genau dieser Plan
+// noch angezeigt wird; sonst erscheint ein dezenter Hinweis mit "Anzeigen".
+var G_planAnsichtSug = null;      // Vorschlag/Plan, der in der Planansicht (#sw) zuletzt gezeichnet wurde
+function ladeAnsichtAktiv(sug) {
+  var sw = $('sw');
+  return !!(sw && sw.classList.contains('on') && G_planAnsichtSug === sug);
+}
+function hintergrundHinweis(text, knopf, aktion) {
+  var alt = document.getElementById('bg-hinweis'); if (alt) alt.remove();
+  var d = document.createElement('div');
+  d.id = 'bg-hinweis'; d.setAttribute('role', 'status');
+  d.style.cssText = 'position:fixed;left:50%;bottom:20px;transform:translateX(-50%);max-width:92%;background:#2f5a45;color:#fff;padding:10px 14px;border-radius:12px;' +
+    'font-size:13px;z-index:9998;display:flex;gap:12px;align-items:center;box-shadow:0 2px 10px rgba(0,0,0,.25)';
+  var t = document.createElement('span'); t.textContent = text; d.appendChild(t);
+  if (knopf && aktion) {
+    var b = document.createElement('button'); b.textContent = knopf; b.id = 'bg-hinweis-knopf';
+    b.style.cssText = 'background:#fff;color:#2f5a45;border:0;border-radius:8px;padding:6px 10px;font-weight:700;font-size:13px;cursor:pointer;white-space:nowrap';
+    b.onclick = function() { d.remove(); aktion(); };
+    d.appendChild(b);
+  }
+  document.body.appendChild(d);
+  setTimeout(function() { if (d.parentNode) d.remove(); }, 20000);
+}
+// Plan nach Hintergrund-Generierung anzeigen: den aktiven Plan direkt, sonst ueber die Planliste (kein Ueberschreiben von Entwuerfen).
+function planNachHintergrundAnzeigen(sug) {
+  if (G.activePlan && G.activePlan.sug === sug) openActivePlan('e');
+  else openHistory();
+}
+
 function goWeek() {
   if (G.sel === null) return;
   var sug = G.sugs[G.sel];
@@ -5342,6 +5544,7 @@ function goWeek() {
   if (!netzOnline()) { G_ladeRezepte = false; netzHinweis(); return; }
   // Need to load full recipes
   go('sw');
+  G_planAnsichtSug = sug;
   if ($('wtit')) $('wtit').textContent = sug.thema;
   if ($('wsub')) $('wsub').textContent = 'Rezepte werden geladen...';
   // Das Erzeugen der Kochschritte dauert je nach Wochengroesse ein bis zwei
@@ -5429,6 +5632,11 @@ function goWeek() {
         // SOFORT sichern: ein spaeteres Scheitern eines anderen Gerichts darf
         // dieses hier nicht mit in den Abgrund reissen.
         if (G.activePlan && G.sel !== null && G.sugs[G.sel] === sug) persistActivePlan();
+        else if (planObj && G.activePlan === planObj) {
+          // Der Nutzer hat inzwischen den Entwurf gewechselt: direkt sichern, ohne G.sugs/G.sel zu beruehren.
+          try { localStorage.setItem(userKey('active_plan'), JSON.stringify(G.activePlan)); } catch (x) {}
+          saveToGH(G.activePlan); updateHistoryEntryPlan(G.activePlan);
+        }
         zeigeStand();
       })
       .catch(function(e) {
@@ -5471,7 +5679,9 @@ function goWeek() {
     // War das ein Plan fuer eine SPAETERE Woche, waehrend die laufende noch
     // einen hat? Dann tritt jetzt der laufende wieder in den Vordergrund, und
     // der neue wartet im Verlauf auf den Wochenwechsel.
+    var ansichtAktiv = ladeAnsichtAktiv(sug);      // noch in der Ansicht dieses Plans? (sonst nichts verschieben)
     if (warZukunft && befoerdereWochenplan()) {
+      if (!ansichtAktiv) { hintergrundHinweis('Plan „' + sug.thema + '“ ist gespeichert (' + wochenEtikett(G_zuletztAktiviert) + ').', 'Zur Planliste', openHistory); return; }
       goWeekRender(G.activePlan.sug, { keepTab: true });
       if ($('rlist')) $('rlist').insertAdjacentHTML('afterbegin',
         '<div class="st inf" style="margin:10px 10px 0">Plan „' + esc(sug.thema) + '" ist gespeichert – ' +
@@ -5479,6 +5689,7 @@ function goWeek() {
         'bis dahin bleibt die laufende Woche im Vordergrund. In der Zeitachse ist er bereits sichtbar.</div>');
       return;
     }
+    if (!ansichtAktiv) { hintergrundHinweis('Plan „' + sug.thema + '“ ist fertig.', 'Plan anzeigen', function() { planNachHintergrundAnzeigen(sug); }); return; }
     goWeekRender(sug, { keepTab: true });
   })
   .catch(function(e) {
@@ -5489,6 +5700,14 @@ function goWeek() {
     var warZukunftTeil = e && e.teilweise && G.activePlan && !wocheEnthaelt(G.activePlan.weekStart, new Date());
     if (warZukunftTeil && G.activePlan && G.sel !== null && G.sugs[G.sel] === sug) persistActivePlan();
     G_ladeRezepte = false;
+    var ansichtAktivF = ladeAnsichtAktiv(sug);
+    if (!ansichtAktivF) {
+      // Der Nutzer ist woanders: nichts ueberschreiben, sondern dezent melden.
+      if (!e.teilweise) logFehler('rezepte', 'Fehler beim Laden der Rezepte', e.message);
+      if (warZukunftTeil) befoerdereWochenplan();
+      hintergrundHinweis('Plan „' + sug.thema + '“: ' + (e.teilweise ? 'Rezepte unvollständig.' : 'Rezepte konnten nicht geladen werden.'), 'Anzeigen', function() { planNachHintergrundAnzeigen(sug); });
+      return;
+    }
     if (warZukunftTeil && befoerdereWochenplan()) {
       goWeekRender(G.activePlan.sug, { keepTab: true });
       if ($('rlist')) $('rlist').insertAdjacentHTML('afterbegin',
@@ -5549,6 +5768,7 @@ function currentWeekTab() {
 
 function goWeekRender(sug, opts) {
   if (!sug || !Array.isArray(sug.gerichte)) sug = { thema: (sug && sug.thema) || '', gerichte: [] };
+  G_planAnsichtSug = sug;
   releaseWakeLock();
   clearAllCookTimers();
   clearFotoImportContext();
@@ -5951,15 +6171,25 @@ function nachholeVerlaufsplan(btn, planId) {
   });
 }
 
+// Tag der Reste-Mahlzeit: immer der Tag NACH dem Kochabend, aus g.tag
+// abgeleitet (So -> Mo). Der gespeicherte mittag_tag stammt aus der Generierung
+// und kann gleich dem Kochtag sein oder fehlen; ihm wird nicht vertraut.
+// Ohne gueltigen Kochtag: neutral "Am Folgetag".
+function mittagTagFuer(g) {
+  var i = g ? DAYS_ORDER.indexOf((g.tag || '').slice(0, 2)) : -1;
+  return i < 0 ? 'Am Folgetag' : DAYS_ORDER[(i + 1) % 7];
+}
+
 function timelineCardDetail(entry) {
   var g = entry.gericht;
   var i = entry.gerichtIdx;
-  var next = g.mittag_nächster_tag ? ('&#8594; ' + esc(g.mittag_tag) + ': ' + esc(g.mittag_nächster_tag)) : '';
+  var next = g.mittag_nächster_tag ? ('&#8594; ' + esc(mittagTagFuer(g)) + ': ' + esc(g.mittag_nächster_tag)) : '';
   var zeitHtml = (g.zeit_aktiv || g.zeit_total) ?
     '<div style="display:flex;gap:12px;margin-top:5px">' +
     (g.zeit_aktiv ? '<span style="font-size:11px;color:var(--gr3)">&#9998; Aktiv: <b style="color:var(--txt2)">' + esc(g.zeit_aktiv) + '</b></span>' : '') +
     (g.zeit_total ? '<span style="font-size:11px;color:var(--gr3)">&#9200; Total: <b style="color:var(--txt2)">' + esc(g.zeit_total) + '</b></span>' : '') +
     '</div>' : '';
+  zeitHtml += zeitHinweisHtml(g);
   var zutatenHtml = timelineZutatenHtml(g);
   var kompHtml = komponentenBadgeHtml(entry.sugRef, g, !!entry.isActivePlan);
   if (!entry.isActivePlan) {
@@ -5994,6 +6224,7 @@ function timelineCardDetail(entry) {
         '<span style="color:#f59e0b;font-size:16px">&#9733;</span> Bewerten</button>' : '') +
       ((g._gekocht || entry.entryStatus === 'gekocht') && entry.planId ? '<button class="btn btn-out" onclick="gerichtNichtGekocht(\'' + esc(entry.planId) + '\', ' +
         entry.gerichtIdx + ')" style="margin-top:10px;font-size:13px">↩ Nicht gekocht</button>' : '') +
+      kochtagKnopfHtml(entry) +
       (loeschbar ? '<button onclick="deletePastDish(\'' + esc(entry.planId) + '\', ' + entry.gerichtIdx +
         ')" style="width:100%;background:none;border:none;padding:10px 0 4px;font-size:12px;color:var(--gr3);' +
         'cursor:pointer;font-family:inherit;text-decoration:underline">Gericht endgültig entfernen</button>' : '') +
@@ -6016,6 +6247,7 @@ function timelineCardDetail(entry) {
     '</div>' +
     (g._gekocht ? '<button class="btn btn-out" onclick="showRatingModal(' + i + ')" style="display:flex;align-items:center;justify-content:center;gap:6px"><span style="color:#f59e0b;font-size:16px">&#9733;</span> Bewerten</button>' : '') +
     // Beide Ausgabewege nebeneinander - sie gehoeren inhaltlich zusammen.
+    kochtagKnopfHtml(entry) +
     '<div class="btnrow">' +
       '<button class="btn btn-out" onclick="showPrint(' + i + ')" style="font-size:13px">📄 Als PDF</button>' +
       '<button class="btn btn-out" onclick="teileRezept(' + i + ')" style="font-size:13px">📱 Aufs Tablet</button>' +
@@ -6184,7 +6416,29 @@ var G_tlVisible = {};   // iso -> true, solange die Zeile im Blickfeld ist
 // Zeigt den gerade sichtbaren Tag an. Frueher wurde hier einmalig das HEUTIGE
 // Datum gesetzt und nie wieder aktualisiert - beim Zurueckscrollen stand oben
 // also weiterhin "heute", obwohl man Wochen davor las.
+// Hoehe des Bereichs oben, der Zeilen verdeckt: Kopfleiste UND die klebende
+// Datumsleiste mit "Heute". Frueher stand hier fest 56px (nur die Kopfleiste) -
+// die Datumsleiste verdeckte dann den obersten Tag, und das Label nannte den
+// Tag davor, obwohl die HEUTE-Karte oben stand. Gemessen statt geraten.
+function tlVerdeckteHoehe() {
+  var bar = $('timeline-heute-btn');
+  var h = 56;
+  try {
+    if (bar && bar.offsetParent !== null) {
+      var b = bar.getBoundingClientRect().bottom;
+      if (b > 0) h = Math.ceil(b) + 1;
+    }
+  } catch (e) {}
+  return h;
+}
+var G_tlResizeGebunden = false;
 function initTimelineLabelObserver() {
+  if (!G_tlResizeGebunden) {
+    G_tlResizeGebunden = true;
+    window.addEventListener('resize', function() {
+      if (G_tlObserver) { try { initTimelineLabelObserver(); } catch (e) {} }
+    });
+  }
   if (G_tlObserver) { G_tlObserver.disconnect(); G_tlObserver = null; }
   G_tlVisible = {};
   var lbl = $('timeline-visible-label');
@@ -6207,14 +6461,23 @@ function initTimelineLabelObserver() {
       else delete G_tlVisible[iso];
     });
     var visible = Object.keys(G_tlVisible).sort();
-    if (visible.length) setTimelineLabel(visible[0]);
+    if (!visible.length) return;
+    // Zeilen, die ganz hinter Kopf- und Datumsleiste stecken, zaehlen nicht: die
+    // Leistenhoehe wird JETZT gemessen (beim Anlegen des Observers war der Tab
+    // evtl. noch nicht sichtbar, dann galt nur der Notwert).
+    var h = tlVerdeckteHoehe(), wahl = visible[0];
+    for (var k = 0; k < visible.length; k++) {
+      var el = $('rlist') && $('rlist').querySelector('.tl-day[data-tliso="' + visible[k] + '"]');
+      if (el && el.getBoundingClientRect().bottom > h) { wahl = visible[k]; break; }
+    }
+    setTimelineLabel(wahl);
   }, {
     // Ganzer Bereich unterhalb der Sticky-Leiste. Ein schmales Band (z.B.
     // -70% unten) sieht praeziser aus, laesst aber Luecken: liegt keine Zeile
     // darin, bliebe das Label auf einem alten Tag stehen. Stattdessen alle
     // sichtbaren Zeilen sammeln und die oberste anzeigen.
     root: null,
-    rootMargin: '-56px 0px 0px 0px',
+    rootMargin: '-' + tlVerdeckteHoehe() + 'px 0px 0px 0px',
     threshold: 0
   });
 
@@ -6418,10 +6681,16 @@ function skaliereKlammer(hinweis, faktor) {
     var t = String(Math.round(n * 10) / 10);
     return /,/.test(z) ? t.replace('.', ',') : t;
   };
-  var zaehl = function(q, def) {
+  // Hat das Gebinde eine feste Groesse ("2 Dosen à 400 g"), beschreibt die Klammer den VERBRAUCH beim Kochen:
+  // 500 g aus 400-g-Dosen sind 1¼ Dosen, nicht "1 Dose". Wie viele Dosen gekauft werden, rechnet die Einkaufsliste
+  // getrennt (aufgerundet). Ohne Groessenangabe bleibt es bei ganzen Gebinden.
+  var mitGroesse = /(?:à|á|je)\s*\d/.test(String(hinweis));
+  var GEBINDE = /^(dose|dosen|packung|packungen|glas|gläser|flasche|flaschen|becher|beutel|tüte|tüten)$/;
+  var zaehl = function(q, def, wortKlein) {
     var n = klammerZahl(q) * faktor;
     if (isNaN(n)) { unsicher = true; return { t: q, n: 1 }; }
-    var v = def[2] ? Math.max(1, Math.round(n)) : (n >= 3 ? Math.round(n) : Math.max(0.25, Math.round(n * 4) / 4));
+    var v = (mitGroesse && GEBINDE.test(wortKlein || '')) ? Math.max(0.25, Math.round(n * 4) / 4)
+          : def[2] ? Math.max(1, Math.round(n)) : (n >= 3 ? Math.round(n) : Math.max(0.25, Math.round(n * 4) / 4));
     var t = (Math.abs(v - Math.round(v)) < 1e-9) ? String(Math.round(v)) : (bruchTxt(v) || String(v).replace('.', ','));
     return { t: t, n: v };
   };
@@ -6433,7 +6702,7 @@ function skaliereKlammer(hinweis, faktor) {
     }
     var def = KLAMMER_STUECK[w];
     if (def) {
-      var a = zaehl(q1, def), b = q2 ? zaehl(q2, def) : null;
+      var a = zaehl(q1, def, w), b = q2 ? zaehl(q2, def, w) : null;
       var mehr = (b ? b.n : a.n) > 1;
       return a.t + (b ? sep + b.t : '') + gap + (mehr ? def[1] : def[0]) + (punkt || '');
     }
@@ -6558,6 +6827,158 @@ function skalierteMenge(basis, faktor, einheit) {
   return String(Math.round(wert * 10) / 10);
 }
 
+// ─── MENGEN IM SCHRITTTEXT ──────────────────────────────────
+// Die Mengenbox skaliert mit der Portionszahl, der Fliesstext ("2 Eier und 1 TL Salz")
+// blieb dagegen stehen: bei 6 statt 4 Portionen zeigte die Box 3 Eier, der Text 2.
+// Hier wird NUR umgerechnet, was sich sicher einer Zutat des Rezepts zuordnen laesst
+// (gleiche Zutat, gleiche Einheitenklasse, Zahl = Ausgangsmenge). Zeiten, Temperaturen,
+// Masse (cm) und Chargen sind nicht proportional und bleiben unberuehrt. Mengen, die sich
+// nicht eindeutig zuordnen lassen, werden NICHT geraten, sondern mit einem Hinweis markiert.
+var TXT_EINHEIT = {
+  'g': ['g', 1], 'kg': ['g', 1000], 'ml': ['ml', 1], 'cl': ['ml', 10], 'dl': ['ml', 100], 'l': ['ml', 1000],
+  'liter': ['ml', 1000], 'litern': ['ml', 1000], 'tl': ['tl', 1], 'teelöffel': ['tl', 1], 'el': ['el', 1], 'esslöffel': ['el', 1],
+  'prise': ['prise', 1], 'prisen': ['prise', 1], 'stück': ['stk', 1], 'stk': ['stk', 1], 'zehe': ['zehe', 1], 'zehen': ['zehe', 1],
+  'bund': ['bund', 1], 'dose': ['dose', 1], 'dosen': ['dose', 1], 'packung': ['packung', 1], 'packungen': ['packung', 1],
+  'scheibe': ['scheibe', 1], 'scheiben': ['scheibe', 1], 'blatt': ['blatt', 1], 'blätter': ['blatt', 1],
+  'zweig': ['zweig', 1], 'zweige': ['zweig', 1], 'stange': ['stange', 1], 'stangen': ['stange', 1]
+};
+var TXT_Q = '(?:\\d+\\s+\\d+\\/\\d+|\\d+\\/\\d+|\\d+\\s*[½⅓⅔¼¾⅕⅛]|[½⅓⅔¼¾⅕⅛]|\\d+(?:[.,]\\d+)?)';
+var TXT_EINHEITEN_RE = 'kg|ml|cl|dl|g|l|liter|litern|el|tl|teelöffel|esslöffel|prisen|prise|stück|stk|zehen|zehe|bund|dosen|dose|packungen|packung|scheiben|scheibe|blätter|blatt|zweige|zweig|stangen|stange';
+
+function einheitWort(u) { return String(u || '').toLowerCase().replace(/\./g, '').split(/\s+/)[0]; }
+
+// Zutat -> Mengen-Klassen, mit denen eine Textangabe verglichen werden darf.
+function zutatMengenInfo(z) {
+  var menge = String(z && z.menge || '');
+  var info = { name: alsText(z && z.name).toLowerCase(), num: parseMengeNum(menge), unitRaw: parseMengeUnit(menge), klassen: [] };
+  var w = einheitWort(info.unitRaw), e = TXT_EINHEIT[w];
+  if (info.num > 0) {
+    if (e) info.klassen.push({ k: e[0], w: info.num * e[1], haupt: true });
+    else if (!w) info.klassen.push({ k: 'stk', w: info.num, haupt: true });
+  }
+  var kl = klammerHinweis(menge);
+  if (kl) {
+    var m = new RegExp('(' + TXT_Q + ')\\s*(' + TXT_EINHEITEN_RE + ')(?![\\p{L}])', 'iu').exec(kl.replace(/^\(/, '').replace(/^\s*ca\.?\s*/i, ''));
+    if (m) { var e2 = TXT_EINHEIT[einheitWort(m[2])]; if (e2) info.klassen.push({ k: e2[0], w: klammerZahl(m[1]) * e2[1], haupt: false }); }
+  }
+  return info;
+}
+
+function namePasst(wort, name) {
+  wort = String(wort || '').toLowerCase(); name = String(name || '').toLowerCase();
+  if (!wort || !name) return false;
+  // erstes Namenswort der Zutat ("Knoblauch", "Eier", "Olivenöl") gegen das Textwort
+  var n = name.replace(/\([^)]*\)/g, '').trim().split(/[\s,\/]+/)[0];
+  if (!n || n.length < 2 || wort.length < 2) return false;
+  if (n.length <= 3 || wort.length <= 3) {        // kurze Namen ("Ei", "Öl"): fast woertlich oder Zusammensetzung
+    var kurz = n.length <= wort.length ? n : wort, lang = kurz === n ? wort : n;
+    if (kurz === lang) return true;
+    if (kurz.length >= 3 || kurz === 'öl') return lang.slice(-kurz.length) === kurz || (lang.indexOf(kurz) === 0 && lang.length <= kurz.length + 3);
+    return lang.indexOf(kurz) === 0 && lang.length <= kurz.length + 3;     // Ei -> Eier
+  }
+  var k2 = n.length <= wort.length ? n : wort, l2 = k2 === n ? wort : n;
+  return l2.indexOf(k2.slice(0, Math.max(3, k2.length - 2))) === 0 || l2.slice(-k2.length) === k2;
+}
+
+// Zaehlbare Angaben ohne feste Einheit (3 Zwiebeln): wie in der Klammerskalierung - ab 3 ganzzahlig, darunter in Vierteln.
+function zaehlSkaliert(num, faktor) {
+  var n = num * faktor;
+  var v = n >= 3 ? Math.round(n) : Math.max(0.25, Math.round(n * 4) / 4);
+  return (Math.abs(v - Math.round(v)) < 1e-9) ? String(Math.round(v)) : (bruchTxt(v) || String(v).replace('.', ','));
+}
+
+// Rechnet die Mengen EINES Textes um. Ergebnis: { text, offen: [Angaben, die nicht sicher zuzuordnen waren] }.
+function skaliereSchrittText(text, infos, faktor) {
+  text = alsText(text);
+  var res = { text: text, offen: [] };
+  if (!text || Math.abs(faktor - 1) < 1e-9) return res;
+  var re = new RegExp('(^|[^\\d.,/\\p{L}])(' + TXT_Q + ')(?:(\\s*[-–]\\s*)(' + TXT_Q + '))?(\\s*)(' + TXT_EINHEITEN_RE + ')?(?![\\p{L}])', 'giu');
+  var out = '', letzte = 0, m;
+  while ((m = re.exec(text))) {
+    var q1 = m[2], bis = m[4], uTxt = m[6] || '';
+    var startZahl = m.index + m[1].length;
+    var ende = m.index + m[0].length;
+    var uw = einheitWort(uTxt), e = uw ? TXT_EINHEIT[uw] : null;
+    // Woerter direkt nach der Angabe (Zutatenname) und davor (im selben Satzteil: "Wasser (2 l)")
+    var nach = /^[^\p{L}\d]{0,3}([\p{L}-]+)(?:\s+([\p{L}-]+))?(?:\s+([\p{L}-]+))?/u.exec(text.slice(ende));
+    var folgen = nach ? [nach[1], nach[2], nach[3]].filter(Boolean) : [];
+    var davor = text.slice(0, startZahl).split(/[.;:!?]/).pop().match(/[\p{L}-]+/gu) || [];
+    davor = davor.slice(-2);
+    var klasse = e ? e[0] : null, mult = e ? e[1] : 1, nurZahl = !e;
+    if (nurZahl) {   // Zahl ohne Einheit: nur mit Zaehlwort einer Zutat ("2 Eier", "8 Knoblauchzehen")
+      var nw = folgen[0] ? folgen[0].toLowerCase() : '';
+      if (!nw || !infos.some(function(z) { return namePasst(nw, z.name); })) { re.lastIndex = Math.max(re.lastIndex, ende); continue; }
+      klasse = /zehen?$/.test(nw) ? 'zehe' : 'stk';
+    }
+    if (bis) {   // Bereich ("2-3 EL") nicht umrechenbar -> melden, nicht raten
+      res.offen.push((q1 + (m[3] || '–').trim() + bis + ' ' + (uTxt || folgen[0] || '')).trim());
+      continue;
+    }
+    var num = parseMengeNum(q1), wert = num * mult;
+    var treffer = null, namenTreffer = false;
+    var woerterReihen = nurZahl ? [[folgen[0]]] : [folgen, davor];
+    for (var wr = 0; wr < woerterReihen.length && !treffer; wr++) {
+      var reihe = woerterReihen[wr];
+      for (var zi = 0; zi < infos.length && !treffer; zi++) {
+        var z = infos[zi];
+        if (!reihe.some(function(wd) { return namePasst(wd, z.name); })) continue;
+        namenTreffer = true;
+        for (var ki = 0; ki < z.klassen.length; ki++) {
+          var kl = z.klassen[ki];
+          if (kl.k === klasse && Math.abs(kl.w - wert) <= Math.max(0.005 * wert, 1e-6)) { treffer = { z: z, kl: kl }; break; }
+        }
+      }
+    }
+    if (!treffer) {
+      // Mengenangabe, die keiner Zutat sicher entspricht -> Hinweis (statt zu raten)
+      if ((e && klasse !== 'stk') || namenTreffer) res.offen.push((q1 + ' ' + (uTxt || folgen[0] || '')).trim());
+      continue;
+    }
+    // Gleiche Darstellung wie die Mengenbox, wenn es dieselbe Angabe ist; sonst eigene Rundung.
+    var neu, boxEinheit = treffer.z.unitRaw;
+    if (treffer.kl.haupt && (!uw || einheitWort(boxEinheit) === uw)) neu = skalierteMenge(treffer.z.num, faktor, boxEinheit);
+    else if (!uw || klasse === 'stk' || klasse === 'zehe') neu = treffer.kl.haupt ? skalierteMenge(num, faktor, uTxt) : zaehlSkaliert(num, faktor);
+    else neu = skalierteMenge(num, faktor, uTxt);
+    out += text.slice(letzte, startZahl) + neu;
+    letzte = startZahl + q1.length;
+  }
+  res.text = out + text.slice(letzte);
+  return res;
+}
+
+// Alle Zutaten, mit denen ein Schritt verglichen wird: zuerst seine eigenen, dann die uebrigen des Rezepts.
+function schrittZutatInfos(i) {
+  var eigene = (G.steps[i] && G.steps[i].zs) || [], andere = [];
+  (G.steps || []).forEach(function(st, k) { if (k !== i && st && st.zs) andere = andere.concat(st.zs); });
+  return eigene.concat(andere).map(zutatMengenInfo);
+}
+
+// Alle Textfelder eines Schritts, umgerechnet auf die gewaehlte Portionszahl.
+var SCHRITT_TEXTFELDER = ['titel', 'text', 'kontrolle', 'ablage', 'parallel'];
+function skalierterSchritt(i) {
+  var st = G.steps[i] || {};
+  var faktor = G_cook_base_port > 0 ? G_cook_port / G_cook_base_port : 1;
+  var infos = null, out = { offen: [] };
+  SCHRITT_TEXTFELDER.forEach(function(f) {
+    if (!st[f]) { out[f] = st[f]; return; }
+    if (!infos) infos = schrittZutatInfos(i);
+    var r = skaliereSchrittText(st[f], infos, faktor);
+    out[f] = r.text;
+    r.offen.forEach(function(o) { if (out.offen.indexOf(o) < 0) out.offen.push(o); });
+  });
+  return out;
+}
+
+function mengenHinweisText(offen) {
+  if (!offen || !offen.length) return '';
+  return 'Mengen im Text (' + offen.slice(0, 3).join(', ') + ') gelten für ' + G_cook_base_port + ' Portionen – für die gewählte Portionszahl gilt die Mengenbox.';
+}
+function mengenHinweisHtml(i, offen) {
+  var t = mengenHinweisText(offen);
+  return '<div class="skal-hinweis" data-skal-hinweis="' + i + '" role="note" style="' + (t ? '' : 'display:none;') +
+    'background:#FFF8E6;border-left:3px solid #f9a825;padding:8px 12px;border-radius:0 8px 8px 0;margin-bottom:12px;font-size:12px;color:#7d5a00">' + esc(t) + '</div>';
+}
+
 function rescaleZutaten() {
   // Skaliert sowohl die Zutatenuebersicht VOR dem Kochen (#cing) als auch die
   // "Zutaten fuer diesen Schritt"-Box WAEHREND des Kochens (#cbody) - beide
@@ -6569,10 +6990,32 @@ function rescaleZutaten() {
     var base = parseFloat(rows[i].dataset.base);
     var unit = rows[i].dataset.unit || '';
     var cell = rows[i].querySelector('.zutat-menge');
-    if (cell && !isNaN(base) && base > 0) {
+    if (cell && rows[i].dataset.menge && istBereichsMenge(rows[i].dataset.menge)) {
+      // Bereich ("200–300 g"): dieselbe Skalierung wie beim Einplanen (data-base/unit kennen nur die untere Grenze)
+      cell.textContent = skaliereMengeText(rows[i].dataset.menge, factor);
+    } else if (cell && !isNaN(base) && base > 0) {
       cell.textContent = skalierteMenge(base, factor, unit) + (unit ? ' ' + unit : '') +
         (function(k) { return k ? ' ' + k : ''; })(rows[i].dataset.hint ? skaliereKlammer(rows[i].dataset.hint, factor) : '');
     }
+  }
+  // Auch die Mengen im Fliesstext der Schritte mitziehen (nur sicher zugeordnete, siehe oben).
+  var tEls = document.querySelectorAll('[data-skal]');
+  var cache = {};
+  for (var t = 0; t < tEls.length; t++) {
+    var sp = tEls[t].getAttribute('data-skal').split(':');
+    var si = parseInt(sp[0], 10);
+    if (!G.steps || !G.steps[si]) continue;
+    var sx = cache[si] || (cache[si] = skalierterSchritt(si));
+    var neuTxt = sx[sp[1]];
+    if (neuTxt && tEls[t].textContent !== neuTxt) tEls[t].textContent = neuTxt;
+  }
+  var hEls = document.querySelectorAll('[data-skal-hinweis]');
+  for (var h = 0; h < hEls.length; h++) {
+    var hi = parseInt(hEls[h].getAttribute('data-skal-hinweis'), 10);
+    if (!G.steps || !G.steps[hi]) continue;
+    var hx = cache[hi] || (cache[hi] = skalierterSchritt(hi));
+    var ht = mengenHinweisText(hx.offen);
+    hEls[h].textContent = ht; hEls[h].style.display = ht ? '' : 'none';
   }
   zeigeKapazitaet();
 }
@@ -6701,7 +7144,7 @@ function showIngOverview(g) {
     var _mNum = parseMengeNum(zutaten[i].menge);
     var _mUnit = parseMengeUnit(zutaten[i].menge);
     var _hint = klammerHinweis(zutaten[i].menge);
-    rows += '<div class="zutat-row" data-base="' + _mNum + '" data-unit="' + esc(_mUnit) + '"' + (_hint ? ' data-hint="' + esc(_hint) + '"' : '') + ' style="display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:.5px solid #f0f0f0">' +
+    rows += '<div class="zutat-row" data-base="' + _mNum + '" data-unit="' + esc(_mUnit) + '" data-menge="' + esc(zutaten[i].menge || '') + '"' + (_hint ? ' data-hint="' + esc(_hint) + '"' : '') + ' style="display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:.5px solid #f0f0f0">' +
       '<span style="font-size:14px;font-weight:500">' + esc(zutaten[i].name) + '</span>' +
       '<span class="zutat-menge" style="font-size:13px;color:var(--gr3);font-weight:500">' + mengeTxt(zutaten[i].menge) + '</span></div>';
   }
@@ -6731,6 +7174,7 @@ function showIngOverview(g) {
       (g.zeit_aktiv ? '<span style="font-size:12px;color:var(--gr3)">&#9998; Aktiv: <b style="color:var(--txt2)">' + esc(g.zeit_aktiv) + '</b></span>' : '') +
       (g.zeit_total ? '<span style="font-size:12px;color:var(--gr3)">&#9200; Total: <b style="color:var(--txt2)">' + esc(g.zeit_total) + '</b></span>' : '') +
       '</div>' : '<div style="margin-bottom:16px"></div>') +
+    zeitHinweisHtml(g) +
     kompBox +
     '<div style="background:#f9f9f9;border-radius:var(--r);padding:0 12px;margin-bottom:16px;border:.5px solid var(--bdr)">' +
     '<div style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--gr3);padding:10px 0 6px">' + (kompBox ? 'Zusätzlich einzukaufende Zutaten' : 'Zutaten') + '</div>' +
@@ -6912,7 +7356,8 @@ function schrittKarteInnen(i) {
   var isDone = !!G.done[i];
   var isAct = i === G.act;
   var activeTimer = G.timers[i];
-  var title = s.titel || (s.text ? s.text.split(' ').slice(0,4).join(' ') : 'Schritt');
+  var sx = skalierterSchritt(i);      // Mengen im Text passend zur gewaehlten Portionszahl
+  var title = sx.titel || (sx.text ? sx.text.split(' ').slice(0,4).join(' ') : 'Schritt');
 
   var zutatenHtml = '';
   if (s.zs && s.zs.length) {
@@ -6924,7 +7369,7 @@ function schrittKarteInnen(i) {
         // data-base/data-unit wie bei der Zutatenuebersicht: Originalmenge bleibt
         // unveraendert im Datenmodell, nur die ANZEIGE wird bei Portionsaenderung skaliert.
         var zHint = klammerHinweis(z.menge);
-        return '<div class="zutat-row" data-base="' + mNum + '" data-unit="' + esc(mUnit) + '"' + (zHint ? ' data-hint="' + esc(zHint) + '"' : '') + ' style="display:flex;justify-content:space-between;padding:4px 0;font-size:14px">' +
+        return '<div class="zutat-row" data-base="' + mNum + '" data-unit="' + esc(mUnit) + '" data-menge="' + esc(z.menge || '') + '"' + (zHint ? ' data-hint="' + esc(zHint) + '"' : '') + ' style="display:flex;justify-content:space-between;padding:4px 0;font-size:14px">' +
           '<span>' + esc(z.name) + (function() { var b = zutatBereitsVorbereitet(i, z); return b ? '<span style="display:block;font-size:11px;font-weight:400;color:var(--gr3)">' + esc(b.text) + ' &middot; aus Schritt ' + b.schritt + '</span>' : ''; })() + '</span>' + (z.menge ? '<span class="zutat-menge" style="font-weight:600;color:var(--txt2)">' + esc(z.menge) + '</span>' : '') +
         '</div>';
       }).join('') + '</div>';
@@ -6957,9 +7402,9 @@ function schrittKarteInnen(i) {
     }
   }
 
-  var kontrolleHtml = (s.kontrolle && !kontrolleRedundant(s)) ? '<div style="background:var(--bll);border-radius:8px;padding:10px 12px;margin-bottom:12px;font-size:13px;color:var(--blu)"><b>&#10003; Fertig wenn:</b> ' + esc(s.kontrolle) + '</div>' : '';
-  var ablageHtml = ablageAnzeigen(i) ? '<div style="background:#EEF5F0;border-left:3px solid #4F8067;padding:10px 12px;border-radius:0 8px 8px 0;margin-bottom:12px;font-size:13px;color:#2f5a45"><b>&#128205; Wohin damit:</b> ' + esc(s.ablage) + '</div>' : '';
-  var parallelHtml = s.parallel ? '<div style="background:#FFF3E3;border-left:3px solid #f9a825;padding:10px 12px;border-radius:0 8px 8px 0;margin-bottom:12px;font-size:13px;color:#7d5a00"><b>Währenddessen:</b> ' + esc(s.parallel) + '</div>' : '';
+  var kontrolleHtml = (s.kontrolle && !kontrolleRedundant(s)) ? '<div style="background:var(--bll);border-radius:8px;padding:10px 12px;margin-bottom:12px;font-size:13px;color:var(--blu)"><b>&#10003; Fertig wenn:</b> <span data-skal="' + i + ':kontrolle">' + esc(sx.kontrolle) + '</span></div>' : '';
+  var ablageHtml = ablageAnzeigen(i) ? '<div style="background:#EEF5F0;border-left:3px solid #4F8067;padding:10px 12px;border-radius:0 8px 8px 0;margin-bottom:12px;font-size:13px;color:#2f5a45"><b>&#128205; Wohin damit:</b> <span data-skal="' + i + ':ablage">' + esc(sx.ablage) + '</span></div>' : '';
+  var parallelHtml = s.parallel ? '<div style="background:#FFF3E3;border-left:3px solid #f9a825;padding:10px 12px;border-radius:0 8px 8px 0;margin-bottom:12px;font-size:13px;color:#7d5a00"><b>Währenddessen:</b> <span data-skal="' + i + ':parallel">' + esc(sx.parallel) + '</span></div>' : '';
 
   var hinweisHtml = '';
   if (isAct && G.cookHinweis) {
@@ -6971,8 +7416,9 @@ function schrittKarteInnen(i) {
   return '<div class="cfeed-kopf"><span class="cfeed-nr">Schritt ' + (i + 1) + ' von ' + G.steps.length + '</span>' + chip + '</div>' +
     hinweisHtml +
     (BADGES[s.type] || '') +
-    '<div class="cfeed-titel">' + esc(title) + '</div>' +
-    (s.text ? '<div style="font-size:15px;color:var(--txt2);line-height:1.5;margin-bottom:14px">' + esc(s.text) + '</div>' : '') +
+    '<div class="cfeed-titel" data-skal="' + i + ':titel">' + esc(title) + '</div>' +
+    (s.text ? '<div data-skal="' + i + ':text" style="font-size:15px;color:var(--txt2);line-height:1.5;margin-bottom:14px">' + esc(sx.text) + '</div>' : '') +
+    mengenHinweisHtml(i, sx.offen) +
     '<div id="cook-kap-' + i + '"></div>' +
     zubehoerHtml + zutatenHtml + timerHtml + ablageHtml + kontrolleHtml + parallelHtml;
 }
@@ -7146,7 +7592,7 @@ function renderAllSteps() {
     html += '<div class="' + cardCls + '" id="csc_' + i + '" onclick="jumpToStep(' + i + ');">' +
       '<div class="cstep-head">' +
         '<div class="cstep-num">' + (isDone ? '&#10003;' : (i+1)) + '</div>' +
-        '<div class="cstep-head-txt">' + esc(s.titel || title) + '</div>' +
+        '<div class="cstep-head-txt" data-skal="' + i + ':titel">' + esc(skalierterSchritt(i).titel || title) + '</div>' +
         (G.timers[i] && !G.timers[i].done ? '<span style="font-size:11px;color:#B97836;font-weight:700">&#9201;</span>' : '') +
       '</div>' +
     '</div>';
@@ -7599,7 +8045,7 @@ function baueDruckInhalt(ri) {
   var druckHtml =
     '<div style="border-bottom:3px solid #5B7C78;padding-bottom:16px;margin-bottom:20px">' +
       '<h1 style="font-size:24px;font-weight:800;color:#1a1a1a;margin:0 0 4px">' + esc(g.abend) + '</h1>' +
-      (g.mittag_tag ? '<p style="font-size:12px;color:#888;margin:0">&#8594; ' + esc(g.mittag_tag) + ': ' + esc(g.mittag_nächster_tag) + '</p>' : '') +
+      (g.mittag_nächster_tag ? '<p style="font-size:12px;color:#888;margin:0">&#8594; ' + esc(mittagTagFuer(g)) + ': ' + esc(g.mittag_nächster_tag) + '</p>' : '') +
     '</div>' +
     metaHtml +
     '<div class="druck-spalten" style="display:grid;grid-template-columns:1fr 1.3fr;gap:28px">' +
@@ -9668,7 +10114,7 @@ function planFuerSug(sug) {
   var ap = G.activePlan;
   if (ap && ap.sug === sug) return ap;
   return { sug: sug, personen: G.personen, modus: G.modus, reste: G.reste, resteMode: G.resteMode, freeze: G.freeze,
-    budget: G.budget, einkaufstag: G.einkaufstag, planungsart: G.planungsart, n: G.n };
+    budget: G.budget, einkaufstag: G.einkaufstag, planungsart: G.planungsart, n: G.n, days: G.days };
 }
 
 function showReplaceGericht(ri) {
@@ -9772,15 +10218,28 @@ function generateReplace() {
       .split('SCHRITT').join('{"titel":"Schritt","text":"Detail","timer_min":0,"zutaten_schritt":[{"name":"X","menge":"Y"}],"zubehoer":[],"kontrolle":"","parallel_hinweis":"","ablage":""}') +
     ',"tipp":"Tipp"}]}';
 
-  var repOpts = planOpts(planR, g, { dishes: existing, tag: g.tag });
+  // Zeitvorgabe des Tages (aus dem Plan des Gerichts) gilt auch fuer das Ersatzgericht.
+  var repLim = zeitLimitFuer(planR, g);
+  var repOpts = planOpts(planR, g, repLim ? { dishes: existing, tag: g.tag, zeitLimit: repLim } : { dishes: existing, tag: g.tag });
   // Veraltet: Dialog wurde geschlossen, ein anderes Gericht gewaehlt oder neu angefragt.
   function veraltet() {
     return anfrageNr !== G_repAnfrage || $('replace-modal').style.display === 'none' || G_rep.gerichtIdx !== ri ||
            G.sugs[G.sel] !== ankerSug || (ankerGid && (ankerSug.gerichte[ri] || {}).gid !== ankerGid);
   }
-  callWorker('replace', msg, 5000, repOpts)
+  var repKorrigiert = false;
+  function repAnfrage(korrektur) {
+  var o = korrektur ? Object.assign({}, repOpts, { zeitKorrektur: korrektur }) : repOpts;
+  callWorker('replace', msg, rezeptTokenBudget(5000, o.modus), o)
     .then(function(raw) {
       if (veraltet()) return;
+      // Zu lang fuer den Zeitrahmen des Tages: einmal mit Korrekturhinweis neu anfordern.
+      if (repLim && !korrektur) {
+        try {
+          var p0 = parseJSON(raw), g0 = ((p0 && p0.gerichte) || [])[0];
+          var u0 = g0 && zeitUeberschreitung(g0, repLim);
+          if (u0) { repKorrigiert = true; return repAnfrage({ min: u0.min, max: repLim.max }); }
+        } catch (e0) { /* ungueltige Antwort: der normale Pfad meldet den Fehler */ }
+      }
       $('rep-load').style.display = 'none';
       $('rep-gen-btn').disabled = false;
       try {
@@ -9797,11 +10256,14 @@ function generateReplace() {
         // Uebergabemengen des Komponentenplans muessen im Ersatzgericht vorkommen.
         var rollenFehler = pruefeKomponentenRezept(ng, repOpts.komponenten);
         if (rollenFehler) throw new Error(rollenFehler + ' Bitte nochmals generieren.');
+        var repUeber = zeitUeberschreitung(ng, repLim);
+        if (repUeber) ng._zeitAbweichung = repUeber; else delete ng._zeitAbweichung;
         G_rep.newGericht = ng;
         $('rep-name').textContent = ng.abend;
         $('rep-meta').textContent =
           (ng.zeit_aktiv||'') + (ng.zeit_total ? ' · Total ' + ng.zeit_total : '') +
-          ((ng.zutaten||[]).length ? ' · ' + ng.zutaten.length + (ng.zutaten.length === 1 ? ' Zutat' : ' Zutaten') : '');
+          ((ng.zutaten||[]).length ? ' · ' + ng.zutaten.length + (ng.zutaten.length === 1 ? ' Zutat' : ' Zutaten') : '') +
+          (repUeber ? ' · ⚠ länger als «' + (ZEIT_MODUS_NAME[repUeber.modus] || repUeber.modus) + '» (max. ' + repUeber.max + ' Min.)' : '');
         $('rep-fehler').style.display = 'none';
         $('rep-vorschlag').style.display = '';
         $('rep-result').style.display = 'block';
@@ -9819,6 +10281,8 @@ function generateReplace() {
       G_rep.newGericht = null;
       repFehlerZeigen(e.message);
     });
+  }
+  repAnfrage(null);
 }
 
 function applyReplace() {
@@ -10589,7 +11053,7 @@ function showRatingModal(ri) {
   }
   if ($('rating-modal')) $('rating-modal').style.display = 'flex';
 }
-function closeRating() { $('rating-modal').style.display='none'; go(G_rating.returnScreen || 'sw'); }
+function closeRating() { $('rating-modal').style.display='none'; go(G_rating.returnScreen || 'sw'); nachBewertungAktualisieren(); }
 function setStar(n) {
   G_rating.stars = n;
   var stars = $('rm-stars').querySelectorAll('.star-btn');
@@ -10853,6 +11317,15 @@ function renderHistoryView() {
   var sug = hv.plan.sug;
   var gerichte = sug.gerichte || [];
   if ($('hv-title')) $('hv-title').textContent = sug.thema || 'Plan';
+  if ($('hv-hinweis-art')) {
+    // Je nach Zeitraum: ein Plan, der noch nicht begonnen hat, ist nicht "vergangen".
+    var ws = hv.plan.weekStart ? new Date(hv.plan.weekStart + 'T00:00:00') : null;
+    var heute0 = new Date(); heute0.setHours(0, 0, 0, 0);
+    var ende = ws ? new Date(ws.getTime() + 7 * 86400000) : null;
+    $('hv-hinweis-art').textContent = !ws ? 'Nur-Ansicht eines gespeicherten Plans.' :
+      ws > heute0 ? 'Nur-Ansicht eines kommenden Plans.' :
+      ende <= heute0 ? 'Nur-Ansicht eines vergangenen Plans.' : 'Nur-Ansicht eines laufenden Plans.';
+  }
   if ($('hv-sub')) {
     $('hv-sub').textContent = (hv.plan.weekStart ? 'Woche ab ' +
       new Date(hv.plan.weekStart + 'T00:00:00').toLocaleDateString('de-CH') : '') +
@@ -10875,7 +11348,7 @@ function renderHistoryView() {
         '<div style="font-size:15px;font-weight:700;color:var(--txt);line-height:1.35">' + esc(g.abend || '') + bewertungsZusatz(sug.thema, g, !!g._gekocht, hv.plan.planId, gi) + '</div>' +
         (g._fotoId ? '<div class="foto-box"><img class="foto-img" data-fotoid="' + esc(g._fotoId) + '" src="' + FOTO_LEER + '" alt="Foto von ' + esc(g.abend || 'dem Gericht') + '" onclick="fotoGross(this)"><div class="foto-leer">Das Foto ist auf diesem Gerät noch nicht verfügbar.</div></div>' : (!aus && hv.plan.planId ? '<button type="button" class="foto-platz foto-platz-gross" aria-label="Foto hinzufügen: ' + esc(g.abend || 'Gericht') + '" onclick="fotoWaehlen(\'' + esc(hv.plan.planId) + '\',' + gi + ')"><span style="font-size:30px;line-height:1">📷</span><span style="font-size:13px;font-weight:600;color:var(--gr3)">Foto hinzufügen</span></button>' : '')) +
         (g.mittag_nächster_tag ? '<div class="hv-reste">&#8594; ' +
-           esc(g.mittag_tag || '') + ': ' + esc(g.mittag_nächster_tag) + '</div>' : '') +
+           esc(mittagTagFuer(g)) + ': ' + esc(g.mittag_nächster_tag) + '</div>' : '') +
         zut +
         '<button class="btn btn-out" onclick="einplanenAusVerlauf(' + gi + ')" ' +
           'style="width:100%;padding:9px;margin-top:10px;font-size:12px">📅 Einplanen</button>' +
@@ -11201,7 +11674,23 @@ function bewerteGericht(planId, idx) {
   logFehler('bewertung', 'Gericht zum Bewerten nicht gefunden', String(planId) + '/' + idx);
 }
 // Nach einer Bewertung: alle Ansichten mit Sternen nachziehen.
+// Zeitachse der Planansicht aus den aktuellen Daten neu zeichnen, ohne den Zustand zu verlieren
+// (geoeffneter Tag, Scrollposition, Reiter). Frueher zeigte die offene Plankarte nach dem Kochen weiter "geplant",
+// obwohl Dashboard und Kalender schon "gekocht" zeigten - erst ein Neuladen holte es nach.
+function planAnsichtAktualisieren() {
+  var liste = $('rlist');
+  if (!liste || !liste.children.length) return;            // Planansicht wurde noch nie gezeichnet
+  var y = window.scrollY, offen = G_timelineOpen, init = G_timelineInitialized, gescrollt = G_timelineScrolled;
+  var sug = (G.activePlan && G.activePlan.sug) || (G.sugs && G.sel !== null && G.sugs[G.sel]) || null;
+  if (!sug) return;
+  G_timelineInitialized = true;                             // kein automatisches "Heute oeffnen" beim Neuzeichnen
+  renderRez(sug);
+  G_timelineOpen = offen; G_timelineInitialized = init || true; G_timelineScrolled = gescrollt;
+  var sw = $('sw');
+  if (sw && sw.classList.contains('on')) window.scrollTo(0, y);
+}
 function nachBewertungAktualisieren() {
+  try { planAnsichtAktualisieren(); } catch (e) {}
   try { updateDashboard(); } catch (e) {}
   try { kalenderAktualisieren(); } catch (e) {}
   try { if ($('hrecipes-list') && $('htab-recipes-content') && $('htab-recipes-content').style.display !== 'none') loadHistoryRecipes(); } catch (e) {}
@@ -11431,6 +11920,46 @@ function rkOeffnenGericht(k) { ursprungMerken(); rdbGerichtOeffnen(k); }
 
 // Vollstaendige Rezeptansicht fuer GENAU dieses Gericht (A2): Zutaten, Schritte, Zeiten, Tipp - lesen, drucken, kochen,
 // einplanen, ohne dass dafuer ein Plan aktiviert oder ganz angezeigt wird.
+// D1: Ein Gericht aus einem Aufbauend-Plan haengt an vorbereiteten Komponenten (Sauce, Reis ...), deren Zutaten nicht
+// in SEINER Zutatenliste stehen. Einzeln wiederverwendet fehlt dieser Zusammenhang - er wird deshalb als erster
+// Schritt ausdruecklich mitgegeben (erscheint damit auch im Kochmodus, in der Ansicht und im PDF).
+// Quelle: der Plan, falls noch vorhanden - sonst die beim Archivieren mitgespeicherte Kopie (g._kompKontext).
+// Archiveintraege aus der Zeit davor (Gericht kennt seine Komponente, aber kein Kontext): ehrlicher Hinweis statt
+// eines scheinbar vollstaendigen Rezepts.
+function vorbereitungSchritt(g, planData) {
+  try {
+    var sug = planData && planData.sug;
+    var ans = null, thema0 = '';
+    if (sug && sug.komponentenplan && g.gid) { ans = komponentenAnsicht(sug, g); thema0 = sug.thema || ''; }
+    if ((!ans || (!ans.verwendet.length && !ans.herstellt.length)) && g._kompKontext) {
+      ans = { verwendet: g._kompKontext.verwendet || [], herstellt: g._kompKontext.herstellt || [] }; thema0 = g._kompKontext.thema || '';
+    }
+    var zeilen = [];
+    if (ans) {
+      var thema = thema0 ? ' «' + thema0 + '»' : '';
+      ans.verwendet.forEach(function(v) {
+        zeilen.push('Dieses Gericht baut auf «' + v.name + '» (' + mengeMitEinheit(v.menge, v.einheit) + ') auf. Im ursprünglichen Plan' + thema +
+          ' wurde es am ' + v.von.tag + ' im Gericht «' + v.von.abend + '» vorbereitet und steht deshalb NICHT in den Zutaten. ' +
+          'Für sich allein gekocht: «' + v.name + '» zuerst selbst zubereiten (siehe Rezept «' + v.von.abend + '») oder durch fertige Ware ersetzen.');
+      });
+      ans.herstellt.forEach(function(h) {
+        zeilen.push('Im ursprünglichen Plan' + thema + ' wurde hier «' + h.name + '» für mehrere Abende zubereitet (' + mengeMitEinheit(h.gesamt, h.einheit) +
+          ' insgesamt, davon ' + mengeMitEinheit(h.zurueck, h.einheit) + ' zurückgestellt für ' + h.fuer.map(function(f) { return f.tag + ' «' + f.abend + '»'; }).join(', ') +
+          '). Die Zutatenmengen sind darauf ausgelegt – für diesen Abend allein entsprechend weniger nehmen.');
+      });
+    }
+    if (!zeilen.length && (g.nutzt || g.komponente) && !(sug && sug.komponentenplan)) {
+      zeilen.push(g.nutzt
+        ? 'Dieses Gericht baut im ursprünglichen Plan auf der vorbereiteten Komponente «' + g.nutzt + '» auf, die NICHT in den Zutaten steht. ' +
+          'Menge und Herkunft wurden beim Archivieren nicht gespeichert – «' + g.nutzt + '» bitte selbst zubereiten oder durch fertige Ware ersetzen und die Menge anhand der Schritte abschätzen.'
+        : 'Im ursprünglichen Plan wurde hier «' + g.komponente + '» auch für spätere Abende zubereitet. ' +
+          'Die Aufteilung wurde beim Archivieren nicht gespeichert – die Zutatenmengen können deshalb grösser sein, als dieser Abend allein braucht.');
+    }
+    if (zeilen.length) return { titel: 'Vorbereitung beachten', text: zeilen.join('\n\n') };
+  } catch (e) {}
+  return null;
+}
+
 function gerichtAlsRezept(g, planData, basisFallback) {
   var modus = (planData && planData.modus) || G.modus || 'optional';
   var schritte = (modus === 'fleisch' && g.schritte_fleisch && g.schritte_fleisch.length) ? g.schritte_fleisch
@@ -11442,27 +11971,8 @@ function gerichtAlsRezept(g, planData, basisFallback) {
     portionen: basis, quelle: 'plan'
   };
   if (alsListe(g.utensilien).length) r.utensilien = alsListe(g.utensilien);
-  // D1: Ein Gericht aus einem Aufbauend-Plan haengt an vorbereiteten Komponenten (Sauce, Reis ...), deren Zutaten nicht
-  // in SEINER Zutatenliste stehen. Einzeln wiederverwendet fehlt dieser Zusammenhang - er wird deshalb als erster
-  // Schritt ausdruecklich mitgegeben (erscheint damit auch im Kochmodus, in der Ansicht und im PDF).
-  try {
-    var sug = planData && planData.sug;
-    if (sug && sug.komponentenplan && g.gid) {
-      var ans = komponentenAnsicht(sug, g), zeilen = [];
-      var thema = sug.thema ? ' «' + sug.thema + '»' : '';
-      ans.verwendet.forEach(function(v) {
-        zeilen.push('Dieses Gericht baut auf «' + v.name + '» (' + mengeMitEinheit(v.menge, v.einheit) + ') auf. Im ursprünglichen Plan' + thema +
-          ' wurde es am ' + v.von.tag + ' im Gericht «' + v.von.abend + '» vorbereitet und steht deshalb NICHT in den Zutaten. ' +
-          'Für sich allein gekocht: «' + v.name + '» zuerst selbst zubereiten (siehe Rezept «' + v.von.abend + '») oder durch fertige Ware ersetzen.');
-      });
-      ans.herstellt.forEach(function(h) {
-        zeilen.push('Im ursprünglichen Plan' + thema + ' wurde hier «' + h.name + '» für mehrere Abende zubereitet (' + mengeMitEinheit(h.gesamt, h.einheit) +
-          ' insgesamt, davon ' + mengeMitEinheit(h.zurueck, h.einheit) + ' zurückgestellt für ' + h.fuer.map(function(f) { return f.tag + ' «' + f.abend + '»'; }).join(', ') +
-          '). Die Zutatenmengen sind darauf ausgelegt – für diesen Abend allein entsprechend weniger nehmen.');
-      });
-      if (zeilen.length) r.schritte.unshift({ titel: 'Vorbereitung beachten', text: zeilen.join('\n\n') });
-    }
-  } catch (e) {}
+  var vb = vorbereitungSchritt(g, planData);
+  if (vb) r.schritte.unshift(vb);
   return rezeptNormalisieren(r);
 }
 function rdbGerichtOeffnen(k) {
@@ -11523,6 +12033,30 @@ function kochtagOeffnen(art, ref) {
   $('kochtag-fehler').style.display = 'none';
   $('kochtag-modal').style.display = 'flex';
 }
+// Einstieg aus dem Kalender: Kochtag eines gekochten Plan-Gerichts aendern (planId/gi wie in der Zeitachse).
+function kochtagOeffnenPlan(planId, gi) {
+  var planObj = null;
+  if (G.activePlan && G.activePlan.planId === planId && G.activePlan.sug) planObj = G.activePlan;
+  else {
+    var hist = []; try { hist = JSON.parse(localStorage.getItem(userKey('local_history')) || '[]'); } catch (e) {}
+    hist.forEach(function(h) { if (h && h.planId === planId && h.plan && h.plan.sug) planObj = h.plan; });
+  }
+  var g = planObj && planObj.sug.gerichte[gi]; if (!g) return;
+  G_kochtag = { art: 'gericht', planId: planId, gi: gi, name: g.abend };
+  $('kochtag-titel').textContent = g.abend || 'Gericht';
+  var inp = $('kochtag-datum'); inp.value = g._gekocht ? isoDateLocal(new Date(g._gekocht)) : ''; inp.max = isoDateLocal(new Date());
+  $('kochtag-fehler').style.display = 'none';
+  $('kochtag-modal').style.display = 'flex';
+}
+// Knopf im aufgeklappten Kalendertag (nur bei gekochten Plan-Gerichten)
+function kochtagKnopfHtml(entry) {
+  var g = entry && entry.gericht;
+  if (!g || g._cancelled || !(g._gekocht || entry.entryStatus === 'gekocht')) return '';
+  var pid = entry.planId || (entry.isActivePlan && G.activePlan && G.activePlan.planId) || '';
+  if (!pid) return '';
+  return '<button class="btn btn-out" onclick="kochtagOeffnenPlan(\'' + esc(pid) + '\',' + entry.gerichtIdx + ')" ' +
+    'aria-label="Kochtag ändern: ' + esc(g.abend || 'Gericht') + '" style="margin-top:10px;font-size:13px">📅 Kochtag ändern</button>';
+}
 function kochtagSchliessen() { $('kochtag-modal').style.display = 'none'; G_kochtag = null; }
 function kochtagFehler(t) { var f = $('kochtag-fehler'); f.textContent = t; f.style.display = 'block'; }
 function kochtagSpeichern() {
@@ -11547,6 +12081,7 @@ function kochtagSpeichern() {
   if (!ok) { kochtagFehler('Das Rezept wurde nicht gefunden.'); return; }
   kochtagSchliessen();
   loadHistoryRecipes(); try { loadSavedFotoRezepte(); } catch (e) {} try { kalenderAktualisieren(); } catch (e) {}
+  try { if ($('sw') && $('sw').classList.contains('on')) planAnsichtAktualisieren(); } catch (e) {}
   kurzHinweis('Kochtag: ' + new Date(iso + 'T12:00:00').toLocaleDateString('de-CH', { day: 'numeric', month: 'long', year: 'numeric' }));
 }
 // Kochtag eines Plan-Gerichts. Im Kalender steht ein Plan-Gericht an seinem Plantag; damit Karte, Kalender und Daten
@@ -11610,6 +12145,17 @@ function rdbEinplanen(k) {
   var e = (window._rdbListe || [])[k]; if (!e) return;
   var kopie = JSON.parse(JSON.stringify(e.g));
   if (e.quellePortionen) kopie._quellPortionen = e.quellePortionen;
+  // Ein Gericht, das an einer vorbereiteten Komponente haengt, behaelt auch beim erneuten Einplanen den Hinweis
+  // "Vorbereitung beachten" (beide Schrittvarianten) - sonst fehlt am neuen Tag die Sauce.
+  try {
+    var pd = null;
+    if (G.activePlan && G.activePlan.planId === e.planId) pd = G.activePlan;
+    else collectHistoryPlans().forEach(function(h) { if (h && h.planId === e.planId && h.plan) pd = h.plan; });
+    var vb = vorbereitungSchritt(kopie, pd);
+    if (vb) ['schritte_vegi', 'schritte_fleisch'].forEach(function(f) {
+      if (Array.isArray(kopie[f]) && kopie[f].length && !(kopie[f][0] && kopie[f][0].titel === vb.titel)) kopie[f].unshift(vb);
+    });
+  } catch (x) {}
   openEinplanen(kopie);
 }
 
@@ -11822,19 +12368,29 @@ function planGesamtPortionen(p, g) {
 
 // Menge eines Rezepts auf eine andere Portionszahl umrechnen (Text -> Text). Mengen ohne Zahl
 // ("nach Geschmack") und unbekannte Formen bleiben unveraendert; die Quelle wird nie veraendert.
+// Bereichsangaben ("200–300 g", "2-3 Zweige") getrennt vom Klammerzusatz: jede Bereichsgrenze wird wie eine
+// einzelne Menge skaliert, der Klammerzusatz ("(1 Packung à 400 g)") laeuft durch skaliereKlammer() - dieselben
+// Gebinderegeln wie ueberall. Frueher wurde im Bereichsfall JEDE Zahl der Zeile multipliziert, auch die Packungsgroesse
+// ("200–300 g (1 Packung à 400 g)" x2 ergab "(2 Packung à 800 g)").
+var MENGE_BEREICH_RE = new RegExp('^\\s*(' + '(?:\\d+\\s+\\d+\\/\\d+|\\d+\\/\\d+|\\d+\\s*[½⅓⅔¼¾⅕⅛]|[½⅓⅔¼¾⅕⅛]|\\d+(?:[.,]\\d+)?)' + ')\\s*[-–—]\\s*(' + '(?:\\d+\\s+\\d+\\/\\d+|\\d+\\/\\d+|\\d+\\s*[½⅓⅔¼¾⅕⅛]|[½⅓⅔¼¾⅕⅛]|\\d+(?:[.,]\\d+)?)' + ')\\s*(.*?)\\s*$');
+function istBereichsMenge(menge) { return MENGE_BEREICH_RE.test(ohneKlammerzusatz(menge)); }
 function skaliereMengeText(menge, faktor) {
   if (!menge || !isFinite(faktor) || faktor <= 0 || Math.abs(faktor - 1) < 1e-9) return menge;
   var m = String(menge);
-  if (/^\s*[\d.,½⅓⅔¼¾⅕⅛]+\s*[-–]\s*\d/.test(m)) {      // Bereich "2-3 Zweige"
-    return m.replace(/\d+(?:[.,]\d+)?/g, function(z) {
-      var n = parseFloat(z.replace(',', '.')) * faktor;
-      return String(Math.max(1, Math.round(n)));
-    });
+  var hint = klammerHinweis(m);
+  var hintTxt = (function(k) { return k ? ' ' + k : ''; })(hint ? skaliereKlammer(hint, faktor) : '');
+  var br = MENGE_BEREICH_RE.exec(ohneKlammerzusatz(m));
+  if (br) {                                                  // Bereich "2-3 Zweige", "200–300 g"
+    var a = klammerZahl(br[1]), b2 = klammerZahl(br[2]);
+    if (!(a > 0) || !(b2 > 0)) return menge;
+    var unit = br[3];
+    var trenner = (br[0].slice(br[0].indexOf(br[1]) + br[1].length).match(/[-–—]/) || ['–'])[0];   // Schreibweise des Nutzers/Rezepts beibehalten
+    return skalierteMenge(a, faktor, unit) + trenner + skalierteMenge(b2, faktor, unit) + (unit ? ' ' + unit : '') + hintTxt;
   }
   var num = parseMengeNum(m);
   if (!(num > 0)) return menge;
-  var unit = parseMengeUnit(m), hint = klammerHinweis(m);
-  return skalierteMenge(num, faktor, unit) + (unit ? ' ' + unit : '') + (function(k) { return k ? ' ' + k : ''; })(hint ? skaliereKlammer(hint, faktor) : '');
+  var unit2 = parseMengeUnit(m);
+  return skalierteMenge(num, faktor, unit2) + (unit2 ? ' ' + unit2 : '') + hintTxt;
 }
 
 // zielPlan: der Plan, in den das Gericht kommt (bestimmt die Zielportionen). Die Zutaten werden
@@ -12223,7 +12779,7 @@ function analyzeEinzelrezeptText() {
   var ctx = fotoAnfrageStarten();
   var msg = 'Erstelle ein vollständiges Rezept für "' + beschreibung + '" für ' + p + ' Personen. ' +
     'Gib alle Zutaten mit genauen Mengen an. Schritte detailliert.' + (hint ? ' Hinweis: ' + hint + '.' : '');
-  callWorker('einzelrezept', msg, 6000, currentOpts(), 'claude-sonnet-5', function(teil) {
+  callWorker('einzelrezept', msg, rezeptTokenBudget(6000, currentOpts().modus), currentOpts(), 'claude-sonnet-5', function(teil) {
     var el = $('foto-load');
     if (el && teil) {
       var z = el.querySelector('.foto-fortschritt');
@@ -12974,7 +13530,7 @@ var STAR_LABELS = ['', 'Nicht so gut', 'Geht so', 'Gut', 'Sehr gut', 'Ausgezeich
       <p style="margin:2px 0 0" id="hv-sub"></p></div>
   </div>
   <div class="st inf" style="margin:10px">
-    Nur-Ansicht eines vergangenen Plans. Bearbeiten, Einkaufen und Kochen sind hier nicht möglich –
+    <span id="hv-hinweis-art">Nur-Ansicht eines vergangenen Plans.</span> Bearbeiten, Einkaufen und Kochen sind hier nicht möglich –
     dein aktiver Plan bleibt unberührt.
   </div>
   <div id="hv-list"></div>
